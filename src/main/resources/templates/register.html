@@ -1,0 +1,35 @@
+<html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glassmorphism Registration Form</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="wrapper">
+    <form th:action="@{/register}" th:object="${user}" method="post">
+        <h2>Registration Form</h2>
+        <div class="input-field">
+            <input type="text" th:field="*{username}" required>
+            <label>Enter your username</label>
+        </div>
+        <div class="input-field">
+            <input type="email" th:field="*{email}" required>
+            <label>Enter your email</label>
+        </div>
+        <div class="input-field">
+            <input type="password" th:field="*{password}" required>
+            <label>Enter your password</label>
+        </div>
+        <button type="submit">Register</button>
+        <div class="login">
+            <p>Already have an account\? <a th:href="@{/login}">Login</a></p>
+        </div>
+    </form>
+    <a th:href="@{/}" class="icon-button"><i class="fas fa-arrow-left"></i></a>
+</div>
+</body>
+</html>

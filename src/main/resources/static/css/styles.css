@@ -1,0 +1,286 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@200;300;400;500;600;700&display=swap");
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+}
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 0 10px;
+}
+body::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('/static/image/hero-bg.jpg') no-repeat center center; /* Aggiungi l'immagine di sfondo */
+    background-size: cover;
+    pointer-events: none; /* Prevents the pseudo-element from blocking clicks */
+}
+.wrapper {
+    width: 400px;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    border: 1px solid rgba(163, 162, 162, 0.5);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+}
+form {
+    display: flex;
+    flex-direction: column;
+}
+h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #000000;
+}
+.input-field {
+    position: relative;
+    border-bottom: 2px solid #040303;
+    margin: 15px 0;
+}
+.input-field label {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    color: #040303;
+    font-size: 16px;
+    pointer-events: none;
+    transition: 0.15s ease;
+}
+.input-field input {
+    width: 100%;
+    height: 40px;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #040303;
+}
+.input-field input:focus~label,
+.input-field input:valid~label {
+    font-size: 0.8rem;
+    top: 10px;
+    transform: translateY(-120%);
+}
+.forget {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 25px 0 35px 0;
+    color: #716f6f;
+}
+#remember {
+    accent-color: #434141;
+}
+.forget label {
+    display: flex;
+    align-items: center;
+}
+.forget label p {
+    margin-left: 8px;
+}
+.wrapper a {
+    color: rgba(163, 162, 162, 0.5);
+    text-decoration: none;
+}
+.wrapper a:hover {
+    text-decoration: underline;
+}
+button {
+    background: #bac180;
+    color: #000;
+    font-weight: 600;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 16px;
+    border: 2px solid transparent;
+    transition: 0.3s ease;
+}
+button:hover {
+    color: #e6e09b;
+    border-color: #bac180;
+    background: rgba(255, 255, 255, 0.15);
+}
+.register {
+    text-align: center;
+    margin-top: 30px;
+    color: #e6e09b;
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(163, 162, 162, 0.5);
+}
+
+#user-auth {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+.icon-button {
+    font-size: 24px;
+    color: #000;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.icon-button:hover {
+    color: #bac180;
+}
+
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-right: 1px solid rgba(163, 162, 162, 0.5);
+    padding-top: 60px;
+}
+
+#sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+#sidebar ul li {
+    margin: 20px 0;
+}
+
+#sidebar ul li a {
+    text-decoration: none;
+    color: #000;
+    font-size: 18px;
+    padding: 10px 20px;
+    display: block;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#sidebar ul li a:hover {
+    background-color: #bac180;
+    color: #fff;
+
+}.product-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.product-item {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    text-align: center;
+}
+
+.product-item img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.icon-button {
+    display: block;
+    margin: 20px auto;
+    font-size: 24px;
+    color: #000;
+    text-align: center;
+}
+
+.icon-button i {
+    font-size: 24px;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 0 10px;
+    background-color: #f0f0f0; /* Light background color */
+}
+
+.wrapper {
+    width: 600px;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    border: 1px solid rgba(163, 162, 162, 0.5);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+    background-color: rgba(255, 255, 255, 0.8); /* Light background for wrapper */
+}
+
+.product-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.product-item {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    text-align: center;
+    background-color: #fff; /* White background for product items */
+}
+
+.product-item img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.icon-button {
+    display: block;
+    margin: 20px auto;
+    font-size: 24px;
+    color: #000;
+    text-align: center;
+}
+
+.icon-button i {
+    font-size: 24px;
+}
+
+/* Add these styles to your existing styles.css */
+#modalOverlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
+#editModal {
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    width: 300px;
+    text-align: left;
+}
+#modalToggle:checked + #modalOverlay {
+    display: flex;
+}

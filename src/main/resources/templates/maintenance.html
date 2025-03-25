@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Maintenance</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="wrapper">
+    <h2>Site Management</h2>
+    <form th:action="@{/manutenzione/aggiungiProdotto}" method="post" th:object="${productForm}" th:if="${productForm.id} == null">
+        <label>Name:</label>
+        <input type="text" th:field="*{name}" />
+        <label>Price:</label>
+        <div class="price-field">
+            <input type="number" th:field="*{price}" step="0.01" />
+            <span>€</span>
+        </div>
+        <label>Description:</label>
+        <textarea th:field="*{description}"></textarea>
+        <label>Image URL:</label>
+        <input type="text" th:field="*{imageUrl}" />
+        <button type="submit">Add Product</button>
+    </form>
+
+    <form th:action="@{/manutenzione/modificaProdotto}" method="post" th:object="${productForm}" th:if="${productForm.id} != null">
+        <label>ID:</label>
+        <input type="number" th:field="*{id}" readonly />
+        <label>Name:</label>
+        <input type="text" th:field="*{name}" />
+        <label>Price:</label>
+        <div class="price-field">
+            <input type="number" th:field="*{price}" step="0.01" />
+            <span>€</span>
+        </div>
+        <label>Description:</label>
+        <textarea th:field="*{description}"></textarea>
+        <label>Image URL:</label>
+        <input type="text" th:field="*{imageUrl}" />
+        <button type="submit">Save</button>
+    </form>
+
+    <a href="/manutenzione" class="button">Back to Maintenance</a>
+
+    <hr/>
+
+    <div>
+        <h3>Existing Products</h3>
+        <div class="product-container">
+            <div th:each="p : ${products}" class="product-item">
+                <span th:text="${p.name}">Product Name</span> -
+                <span th:text="${p.price}">Product Price</span> €
+                <p th:text="${p.description}">Product Description</p>
+                <img th:src="${p.imageUrl}" alt="Product Image" />
+                <a th:href="@{/manutenzione/modificaProdotto/{id}(id=${p.id})}">Edit</a>
+                <form th:action="@{/manutenzione/elimina/{id}(id=${p.id})}" method="post"
+                      onsubmit="return confirm('Are you sure you want to delete this item?');" style="display:inline;">
+                    <input type="hidden" name="_method" value="delete" />
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<a href="/" class="icon-button"><i class="fas fa-arrow-left"></i></a>
+</body>
+</html>
