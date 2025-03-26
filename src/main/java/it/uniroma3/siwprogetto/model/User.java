@@ -15,7 +15,8 @@ public class User {
     private String password;
     private String email;
 
-    // Getters and Setters
+    /*     Metodi Getters e Setters    */
+
     public Long getId() {
         return id;
     }

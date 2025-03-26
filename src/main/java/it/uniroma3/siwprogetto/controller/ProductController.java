@@ -22,18 +22,21 @@ public class ProductController {
         return "maintenance";
     }
 
+    // Aggiungi un nuovo prodotto
     @PostMapping("/aggiungiProdotto")
     public String addProduct(@ModelAttribute ProductForm productForm) {
         productService.save(productForm);
         return "redirect:/manutenzione/prodotti";
     }
 
+    // Elimina un prodotto
     @PostMapping("/elimina/{id}")
     public String deleteProduct(@PathVariable("id") Long id) {
         productService.deleteProductById(id);
         return "redirect:/manutenzione/prodotti";
     }
 
+    // Modifica un prodotto esistente
     @GetMapping("/modificaProdotto/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
         Product product = productService.findById(id);
@@ -44,6 +47,7 @@ public class ProductController {
         return "maintenance";
     }
 
+    //Aggiorna un prodotto
   @PostMapping("/modificaProdotto")
   public String updateProduct(@ModelAttribute("productForm") ProductForm productForm) {
       Long id = productForm.getId();

@@ -9,7 +9,8 @@ public class ProductForm {
     private String description;
     private String imageUrl;
 
-    // Getters and setters
+    /*     Metodi Getters e Setters    */
+
     public Long getId() {
         return id;
     }

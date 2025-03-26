@@ -18,7 +18,8 @@ public class Order {
     private List<Product> products;
     private BigDecimal total;
 
-    // Getters and Setters
+    /*     Metodi Getters e Setters    */
+
     public Long getId() {
         return id;
     }

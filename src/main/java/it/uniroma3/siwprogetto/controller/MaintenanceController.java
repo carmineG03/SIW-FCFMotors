@@ -18,6 +18,7 @@ public class MaintenanceController {
         this.productRepository = productRepository;
     }
 
+    // Mostra la pagina di manutenzione
     @GetMapping
     public String showMaintenancePage(Model model) {
         model.addAttribute("products", productRepository.findAll());
@@ -25,12 +26,14 @@ public class MaintenanceController {
         return "maintenance";
     }
 
+    // Aggiungi un nuovo prodotto
     @PostMapping("/aggiungi")
     public String addProduct(@ModelAttribute("productForm") Product product) {
         productRepository.save(product);
         return "redirect:/manutenzione";
     }
 
+    // Modifica un prodotto esistente
     @GetMapping("/modifica/{id}")
     public String editProduct(@PathVariable Long id, Model model) {
         Product product = productRepository.findById(id).orElse(null);
@@ -41,6 +44,7 @@ public class MaintenanceController {
         return "maintenance";
     }
 
+    // Salva le modifiche al prodotto
     @PostMapping("/modifica")
     public String updateProduct(@ModelAttribute("productForm") Product product) {
         // Non includere l'ID nel form di modifica, usiamo quello già passato nel Path

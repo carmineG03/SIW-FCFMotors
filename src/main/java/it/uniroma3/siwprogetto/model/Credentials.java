@@ -14,7 +14,8 @@ public class Credentials {
 	private String password;
 	private String role;
 
-	// Getters and Setters
+	/*     Metodi Getters e Setters    */
+
 	public Long getId() {
 		return id;
 	}

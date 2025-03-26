@@ -17,22 +17,28 @@ public class UserService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    // Questo metodo serve per salvare un utente
     public void save(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
+    // Questo metodo serve per trovare un utente dato il suo username
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+
+    // Questo metodo serve per trovare un utente dato il suo id
     public User getUser(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
+    // Questo metodo serve per salvare un utente
     public User saveUser(User user) {
         return userRepository.save(user);
     }
 
+    // Questo metodo serve per trovare un utente data la sua email
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }

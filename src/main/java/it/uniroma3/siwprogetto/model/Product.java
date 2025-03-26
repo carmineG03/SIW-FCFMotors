@@ -18,7 +18,8 @@ public class Product {
     private BigDecimal price;
     private String imageUrl;
 
-    // Getters and Setters
+    /*     Metodi Getters e Setters    */
+
     public Long getId() {
         return id;
     }

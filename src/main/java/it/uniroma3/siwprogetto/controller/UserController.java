@@ -15,19 +15,21 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    //Vedi pagina registrazione
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
         return "register";
     }
 
+    //Registra l'utente
     @PostMapping("/register")
     public String registerUser(@ModelAttribute User user) {
         userService.save(user);
         return "redirect:/login";
     }
 
-    // Changed to avoid conflict with LoginController
+    //Vedi pagina di login
     @GetMapping("/user/login")
     public String showUserLoginForm() {
         return "login";

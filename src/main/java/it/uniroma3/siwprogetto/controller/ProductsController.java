@@ -18,6 +18,7 @@ public class ProductsController {
         this.productService = productService;
     }
 
+    //Per mostrare la vetrina dei prodotti
     @GetMapping
     public String showProductsPage(Model model) {
         model.addAttribute("products", productService.findAll());

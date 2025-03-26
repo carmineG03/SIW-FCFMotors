@@ -36,7 +36,7 @@ public class AccountController {
     @GetMapping("/")
     public String index(Model model, Principal principal) {
         model.addAttribute("isAuthenticated", principal != null);
-        return "index";
+        return "index"; //Verifica se l'user è autenticato
     }
 
 }
