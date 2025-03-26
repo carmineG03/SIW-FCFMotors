@@ -15,7 +15,9 @@
         <div th:each="product : ${products}" class="product-item">
             <h2 th:text="${product.name}">Product Name</h2>
             <p th:text="${product.description}">Product Description</p>
-            <p th:text="${product.price}">Product Price</p> €
+            <p>
+                <span th:text="${product.price}">Product Price</span>€
+            </p>
             <img th:src="${product.imageUrl}" alt="Product Image"/>
         </div>
     </div>

@@ -27,8 +27,9 @@ public class UserController {
         return "redirect:/login";
     }
 
-    @GetMapping("/login")
-    public String showLoginForm() {
+    // Changed to avoid conflict with LoginController
+    @GetMapping("/user/login")
+    public String showUserLoginForm() {
         return "login";
     }
 }

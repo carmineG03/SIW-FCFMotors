@@ -39,8 +39,9 @@ public class WebSecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index", "/login", "/register", "/css/**", "/images/**", "favicon.ico").permitAll()
+                        .requestMatchers("/", "/index", "/login", "/register","/products", "/css/**", "/images/**", "favicon.ico").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login", "/register").permitAll()
+                        .requestMatchers("/account").authenticated() // Solo utenti autenticati possono accedere a /account
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -52,7 +53,7 @@ public class WebSecurityConfig {
                         .passwordParameter("password")
                         .successHandler(customAuthenticationSuccessHandler)
                         .failureHandler(customAuthenticationFailureHandler)
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/account", true)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")

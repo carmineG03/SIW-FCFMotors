@@ -9,10 +9,14 @@
 <body>
     <header>
         <h1>E-commerce Site</h1>
-        <nav id="user-auth">
-            <a href="/login" class="icon-button"><i class="fas fa-sign-in-alt"></i></a>
-        </nav>
     </header>
+        <div class="nav-container">
+            <div class="nav-bar">
+                <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i></a>
+                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i></a>
+            </div>
+        </div>
+
     <aside id="sidebar">
         <ul>
             <li><a href="/manutenzione" class="button">Maintenance</a></li>
