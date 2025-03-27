@@ -9,13 +9,14 @@
 <body>
     <header>
         <h1>E-commerce Site</h1>
-    </header>
+
         <div class="nav-container">
             <div class="nav-bar">
                 <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i></a>
                 <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i></a>
             </div>
         </div>
+    </header>
 
     <aside id="sidebar">
         <ul>

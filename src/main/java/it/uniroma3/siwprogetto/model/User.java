@@ -15,6 +15,9 @@ public class User {
     private String password;
     private String email;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private AccountInformation accountInformation;
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -46,6 +49,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public AccountInformation getAccountInformation() {
+        return accountInformation;
+    }
+
+    public void setAccountInformation(AccountInformation accountInformation) {
+        this.accountInformation = accountInformation;
     }
 
 

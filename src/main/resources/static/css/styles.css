@@ -41,6 +41,7 @@ h2 {
     font-size: 2rem;
     margin-bottom: 20px;
     color: #000000;
+    text-align: center; /* Center the title text */
 }
 .input-field {
     position: relative;
@@ -120,12 +121,15 @@ button:hover {
 }
 header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* Center the content */
     align-items: center;
-    padding: 10px 20px;
-    background-color: #fff;
-    border-bottom: 1px solid #ddd;
-    position: relative;
+    padding: 20px; /* Increase padding for better spacing */
+    background-color: #8fb996; /* Different background color */
+    border-bottom: 1px solid #ccc;
+    position: fixed; /* Fix the header at the top */
+    top: 0;
+    width: 100%;
+    z-index: 1000; /* Ensure it stays above other content */
 }
 
 .nav-container {
@@ -168,6 +172,7 @@ header {
 
 #sidebar ul li {
     margin: 20px 0;
+
 }
 
 #sidebar ul li a {
@@ -177,6 +182,8 @@ header {
     padding: 10px 20px;
     display: block;
     transition: background-color 0.3s ease, color 0.3s ease;
+    margin-top: 30px;
+
 }
 
 #sidebar ul li a:hover {
@@ -216,6 +223,7 @@ button,
     padding: 10px 15px;
     font-size: 14px;
     transition: background-color 0.2s ease;
+    margin-top: 10px;
 }
 
 button:hover,
