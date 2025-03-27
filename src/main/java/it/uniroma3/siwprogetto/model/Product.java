@@ -1,10 +1,7 @@
 package it.uniroma3.siwprogetto.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 
@@ -16,6 +13,7 @@ public class Product {
     private String name;
     private String description;
     private BigDecimal price;
+    @Column(length = 100000)
     private String imageUrl;
 
     /*     Metodi Getters e Setters    */
