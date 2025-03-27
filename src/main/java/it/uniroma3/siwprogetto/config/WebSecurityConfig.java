@@ -1,6 +1,8 @@
 package it.uniroma3.siwprogetto.config;
 
+import it.uniroma3.siwprogetto.model.User;
 import it.uniroma3.siwprogetto.service.CustomUserDetailsService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,6 +67,27 @@ public class WebSecurityConfig {
                         .permitAll()
                 );
         return http.build();
+    }
+
+    @PostConstruct
+    public void init() {
+        if (userRepository.findByUsername("admin") == null) {
+            User admin = new User();
+            admin.setUsername("admin");
+            admin.setPassword(passwordEncoder.encode("adminpassword"));
+            admin.setEmail("admin@example.com");
+            admin.setRoles(Set.of(Role.ADMIN));
+            userRepository.save(admin);
+        }
+
+        if (userRepository.findByUsername("user") == null) {
+            User user = new User();
+            user.setUsername("user");
+            user.setPassword(passwordEncoder.encode("userpassword"));
+            user.setEmail("user@example.com");
+            user.setRoles(Set.of(Role.USER));
+            userRepository.save(user);
+        }
     }
 
     @Autowired

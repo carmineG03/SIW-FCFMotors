@@ -4,11 +4,13 @@ package it.uniroma3.siwprogetto.controller;
 
 import it.uniroma3.siwprogetto.model.Product;
 import it.uniroma3.siwprogetto.repository.ProductRepository;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@Secured("ROLE_ADMIN")
 @RequestMapping("/manutenzione")
 public class MaintenanceController {
 
