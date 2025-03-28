@@ -20,9 +20,12 @@
 
     <aside id="sidebar">
         <ul>
-            <li><a href="/manutenzione" class="button">Maintenance</a></li>
+            <li th:if="${@securityUtils.hasRole('ROLE_ADMIN')}">
+                <a href="/manutenzione" class="button">Maintenance</a>
+            </li>
             <li><a href="/products" class="button">Products</a></li>
         </ul>
+
     </aside>
     <main>
         <!-- Additional content here -->

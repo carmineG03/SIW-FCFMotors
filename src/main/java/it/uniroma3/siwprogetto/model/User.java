@@ -16,9 +16,8 @@ public class User {
     private String password;
     private String email;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+
+    private String rolesString;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private AccountInformation accountInformation;
@@ -64,5 +63,13 @@ public class User {
         this.accountInformation = accountInformation;
     }
 
+
+    public String getRolesString() {
+        return rolesString;
+    }
+
+    public void setRolesString(String rolesString) {
+        this.rolesString = rolesString;
+    }
 
 }

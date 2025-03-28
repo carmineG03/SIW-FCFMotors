@@ -1,13 +1,14 @@
 package it.uniroma3.siwprogetto.config;
 
-import it.uniroma3.siwprogetto.model.User;
 import it.uniroma3.siwprogetto.service.CustomUserDetailsService;
-import jakarta.annotation.PostConstruct;
+import it.uniroma3.siwprogetto.service.UserService;
+import it.uniroma3.siwprogetto.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,12 +19,14 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final AuthenticationFailureHandler customAuthenticationFailureHandler;
     private final PasswordEncoder passwordEncoder;
+    private UserService userService;
 
     @Autowired
     public WebSecurityConfig(CustomUserDetailsService customUserDetailsService,
@@ -44,8 +47,10 @@ public class WebSecurityConfig {
                         .requestMatchers("/", "/index", "/login", "/register","/products", "/css/**", "/images/**", "favicon.ico").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login", "/register").permitAll()
                         .requestMatchers("/account").authenticated() // Solo utenti autenticati possono accedere a /account
-                        .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
+                        //.requestMatchers("/admin/**").hasAnyAuthority(SecurityConstants.ADMIN_ROLE)
+                        .requestMatchers("/manutenzione/**").hasAnyAuthority(SecurityConstants.ADMIN_ROLE)
                         .anyRequest().authenticated()
+
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) -> response.sendRedirect("/index")))
                 .formLogin(formLogin -> formLogin
@@ -69,30 +74,20 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    @PostConstruct
-    public void init() {
-        if (userRepository.findByUsername("admin") == null) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("adminpassword"));
-            admin.setEmail("admin@example.com");
-            admin.setRoles(Set.of(Role.ADMIN));
-            userRepository.save(admin);
-        }
-
-        if (userRepository.findByUsername("user") == null) {
-            User user = new User();
-            user.setUsername("user");
-            user.setPassword(passwordEncoder.encode("userpassword"));
-            user.setEmail("user@example.com");
-            user.setRoles(Set.of(Role.USER));
-            userRepository.save(user);
-        }
+    @Bean
+    public SecurityUtils securityUtils() {
+        return new SecurityUtils();
     }
+
 
     @Autowired
     public void configureAuth(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDetailsService)
                 .passwordEncoder(passwordEncoder);
+    }
+
+	@Autowired
+	public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 }
