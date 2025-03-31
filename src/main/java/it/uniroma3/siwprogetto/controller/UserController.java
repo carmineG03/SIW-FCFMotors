@@ -22,9 +22,14 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user) {
-        userService.save(user);
-        return "redirect:/login";
+    public String registerUser(@ModelAttribute User user, Model model) {
+        try {
+            userService.save(user);
+            return "redirect:/login";
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "register";
+        }
     }
 
     // Changed to avoid conflict with LoginController

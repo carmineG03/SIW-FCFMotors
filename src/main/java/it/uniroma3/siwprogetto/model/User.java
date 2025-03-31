@@ -2,6 +2,7 @@ package it.uniroma3.siwprogetto.model;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
 
@@ -15,9 +16,14 @@ public class User {
     private String username;
     private String password;
     private String email;
+    private String confirmPassword;
 
 
     private String rolesString;
+
+    private String resetToken;
+
+    private LocalDateTime resetTokenExpiry;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private AccountInformation accountInformation;
@@ -62,14 +68,28 @@ public class User {
     public void setAccountInformation(AccountInformation accountInformation) {
         this.accountInformation = accountInformation;
     }
-
-
     public String getRolesString() {
         return rolesString;
     }
 
     public void setRolesString(String rolesString) {
         this.rolesString = rolesString;
+    }
+
+    public String getResetToken() { return resetToken; }
+
+    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
+
+    public LocalDateTime getResetTokenExpiry() { return resetTokenExpiry; }
+
+    public void setResetTokenExpiry(LocalDateTime resetTokenExpiry) { this.resetTokenExpiry = resetTokenExpiry; }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
 
 }

@@ -9,7 +9,6 @@
 <body>
 <header>
     <h2>Site Management</h2>
-
     <div class="nav-container">
         <div class="nav-bar">
             <a href="/account" id="user-auth" class="icon-button"><i class="fas fa-user"></i></a>
@@ -17,42 +16,55 @@
     </div>
 </header>
 
-
 <div class="wrapper">
-    <form th:action="@{/manutenzione/aggiungiProdotto}" method="post" th:object="${productForm}" th:if="${productForm.id} == null">
-        <label>Name:</label>
-        <input type="text" th:field="*{name}" />
-        <label>Price:</label>
-        <div class="price-field">
-            <input type="number" th:field="*{price}" step="0.01" />
-            <span>€</span>
-        </div>
-        <label>Description:</label>
-        <textarea th:field="*{description}"></textarea>
-        <label>Image URL:</label>
-        <input type="text" th:field="*{imageUrl}" />
-        <button type="submit">Add Product</button>
-    </form>
+    <div class="form-container">
+        <form th:action="@{/manutenzione/aggiungiProdotto}" method="post" th:object="${productForm}" th:if="${productForm.id} == null">
+            <div class="input-field">
+                <input type="text" th:field="*{name}" required />
+                <label>Name:</label>
+            </div>
+            <div class="input-field price-field">
+                <input type="number" th:field="*{price}" step="0.01" required />
+                <label>Price:</label>
+                <span>€</span>
+            </div>
+            <div class="input-field">
+                <textarea th:field="*{description}" required></textarea>
+                <label>Description:</label>
+            </div>
+            <div class="input-field">
+                <input type="text" th:field="*{imageUrl}" required />
+                <label>Image URL:</label>
+            </div>
+            <button type="submit">Add Product</button>
+        </form>
 
-    <form th:action="@{/manutenzione/modificaProdotto}" method="post" th:object="${productForm}" th:if="${productForm.id} != null">
-        <label>ID:</label>
-        <input type="number" th:field="*{id}" readonly />
-        <label>Name:</label>
-        <input type="text" th:field="*{name}" />
-        <label>Price:</label>
-        <div class="price-field">
-            <input type="number" th:field="*{price}" step="0.01" />
-            <span>€</span>
-        </div>
-        <label>Description:</label>
-        <textarea th:field="*{description}"></textarea>
-        <label>Image URL:</label>
-        <input type="text" th:field="*{imageUrl}" />
-        <button type="submit">Save</button>
-        <a href="/manutenzione" class="button">Back to Maintenance</a>
-    </form>
-
-
+        <form th:action="@{/manutenzione/modificaProdotto}" method="post" th:object="${productForm}" th:if="${productForm.id} != null">
+            <div class="input-field">
+                <input type="number" th:field="*{id}" readonly />
+                <label>ID:</label>
+            </div>
+            <div class="input-field">
+                <input type="text" th:field="*{name}" required />
+                <label>Name:</label>
+            </div>
+            <div class="input-field price-field">
+                <input type="number" th:field="*{price}" step="0.01" required />
+                <label>Price:</label>
+                <span>€</span>
+            </div>
+            <div class="input-field">
+                <textarea th:field="*{description}" required></textarea>
+                <label>Description:</label>
+            </div>
+            <div class="input-field">
+                <input type="text" th:field="*{imageUrl}" required />
+                <label>Image URL:</label>
+            </div>
+            <button type="submit">Save</button>
+            <a href="/manutenzione" class="button">Back to Maintenance</a>
+        </form>
+    </div>
 
     <hr/>
 

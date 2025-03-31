@@ -42,12 +42,11 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index", "/login", "/register","/products", "/css/**", "/images/**", "favicon.ico").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/login", "/register").permitAll()
+                        .requestMatchers("/","/forgot-password", "/reset-password", "/index", "/login", "/register","/products", "/css/**", "/images/**", "favicon.ico").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login", "/register", "/forgot-password", "/reset-password").permitAll()
                         .requestMatchers("/account").authenticated() // Solo utenti autenticati possono accedere a /account
-                        //.requestMatchers("/admin/**").hasAnyAuthority(SecurityConstants.ADMIN_ROLE)
+                        //.requestMatchers("/admin/**").hasAnyAuthority(SecurityConstants.ADMIN_ROLE)   //lasciato per il futuro
                         .requestMatchers("/manutenzione/**").hasAnyAuthority(SecurityConstants.ADMIN_ROLE)
                         .anyRequest().authenticated()
 
@@ -61,6 +60,12 @@ public class WebSecurityConfig {
                         .successHandler(customAuthenticationSuccessHandler)
                         .failureHandler(customAuthenticationFailureHandler)
                         .defaultSuccessUrl("/account", true)
+                )
+                .rememberMe(rememberMe -> rememberMe // Aggiunta di Remember Me
+                        .key("uniqueAndSecretKey")
+                        .tokenValiditySeconds(86400) // 24 ore
+                        .rememberMeParameter("remember-me")
+                        .userDetailsService(customUserDetailsService)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
