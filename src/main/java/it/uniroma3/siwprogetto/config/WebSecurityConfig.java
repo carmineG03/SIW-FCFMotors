@@ -53,7 +53,7 @@ public class WebSecurityConfig {
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) -> response.sendRedirect("/index")))
                 .formLogin(formLogin -> formLogin
-                        .loginPage("/login").permitAll()
+                        .loginPage("/login").failureUrl("/login?error=true").permitAll()
                         .loginProcessingUrl("/perform_login")
                         .usernameParameter("username")
                         .passwordParameter("password")

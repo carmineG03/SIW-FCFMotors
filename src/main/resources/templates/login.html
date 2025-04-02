@@ -27,6 +27,9 @@
             <a href="/forgot-password">Forgot password?</a>
         </div>
         <button type="submit">Log In</button>
+        <div th:if="${param.error}" style="color: red;">
+            Credenziali non valide.
+        </div>
         <div class="register">
             <p>Don't have an account? <a th:href="@{/register}">Register</a></p>
         </div>

@@ -22,7 +22,7 @@ public class UserService {
     }
 
     public void save(User user) {
-        if ((userRepository.findByEmail(user.getEmail()) != null) || userRepository.findByUsername(user.getUsername()) != null) {
+        if ((userRepository.findByEmail(user.getEmail()) != null) && (userRepository.findByUsername(user.getUsername()) != null)) {
             throw new RuntimeException("Email e username già registrati");
         }
         if (userRepository.findByEmail(user.getEmail()) != null) {
