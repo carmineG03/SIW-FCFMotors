@@ -9,26 +9,90 @@
 <body>
     <header>
         <h1>E-commerce Site</h1>
-
         <div class="nav-container">
             <div class="nav-bar">
-                <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i></a>
-                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i></a>
+                <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
+                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
+                <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
             </div>
         </div>
     </header>
 
-    <aside id="sidebar">
-        <ul>
-            <li th:if="${@securityUtils.hasRole('ROLE_ADMIN')}">
-                <a href="/manutenzione" class="button">Maintenance</a>
-            </li>
-            <li><a href="/products" class="button">Products</a></li>
-        </ul>
-
-    </aside>
     <main>
-        <!-- Additional content here -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h2>Trova l'auto perfetta per te</h2>
+                <form class="search-form" action="/search" method="get" onsubmit="return validateSearch()">
+                    <div class="input-field">
+                        <input type="text" name="query" id="search-input" placeholder="Cerca auto..." required/>
+                    </div>
+                    <button type="submit"><i class="fas fa-search"></i> Cerca</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="categories-section">
+            <h3>Esplora le Categorie</h3>
+            <div class="carousel-container">
+                <button id="prev-btn" class="carousel-btn"><i class="fas fa-chevron-left"></i></button>
+                <div class="carousel" id="carousel">
+                    <div class="category-item" data-category="Berlina">
+                        <img src="/static/images/berlina.jpg" alt="Berlina"/>
+                        <p>Berlina</p>
+                    </div>
+                    <div class="category-item" data-category="City Car">
+                        <img src="/static/images/citycar.jpg" alt="City Car"/>
+                        <p>City Car</p>
+                    </div>
+                    <div class="category-item" data-category="SUV">
+                        <img src="/static/images/suv.jpg" alt="SUV"/>
+                        <p>SUV</p>
+                    </div>
+                    <div class="category-item" data-category="Station Wagon">
+                        <img src="/static/images/stationwagon.jpg" alt="Station Wagon"/>
+                        <p>Station Wagon</p>
+                    </div>
+                    <div class="category-item" data-category="Sportiva">
+                        <img src="/static/images/sportiva.jpg" alt="Sportiva"/>
+                        <p>Sportiva</p>
+                    </div>
+                    <div class="category-item" data-category="Monovolume">
+                        <img src="/static/images/monovolume.jpg" alt="Monovolume"/>
+                        <p>Monovolume</p>
+                    </div>
+                </div>
+                <button id="next-btn" class="carousel-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <section class="featured-products">
+            <h3>Auto in Evidenza</h3>
+            <div class="filter-bar">
+                <input type="text" id="product-filter" placeholder="Filtra auto..." onkeyup="filterProducts()"/>
+            </div>
+            <div class="product-container" id="product-container">
+                <div class="product-item" data-name="Auto 1">
+                    <img src="/static/images/auto1.jpg" alt="Auto 1"/>
+                    <h4>Auto 1</h4>
+                    <p class="price">€29.990</p>
+                    <a href="/products/1" class="button">Dettagli</a>
+                </div>
+                <div class="product-item" data-name="Auto 2">
+                    <img src="/static/images/auto2.jpg" alt="Auto 2"/>
+                    <h4>Auto 2</h4>
+                    <p class="price">€49.990</p>
+                    <a href="/products/2" class="button">Dettagli</a>
+                </div>
+                <div class="product-item" data-name="Auto 3">
+                    <img src="/static/images/auto3.jpg" alt="Auto 3"/>
+                    <h4>Auto 3</h4>
+                    <p class="price">€19.990</p>
+                    <a href="/products/3" class="button">Dettagli</a>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <script src="/js/homepage.js"></script>
 </body>
 </html>
