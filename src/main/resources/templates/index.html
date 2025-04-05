@@ -2,13 +2,20 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>E-commerce Site</title>
+    <title>FCF Motors</title>
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+
 <body>
-    <header>
-        <h1>E-commerce Site</h1>
+    <header id="main-header">
+        <h1 class="main-title">FCF MOTORS</h1>
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img src="https://static.vecteezy.com/ti/vettori-gratis/p1/623098-icona-di-vettore-di-logo-auto-auto-gratuito-vettoriale.jpg" alt="FCF Motors Logo" class="logo"/>
+                <span class="logo-text">FCF MOTORS</span>
+            </div>
+        </a>
         <div class="nav-container">
             <div class="nav-bar">
                 <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
@@ -21,7 +28,7 @@
     <main>
         <section class="hero-section">
             <div class="hero-content">
-                <h2>Trova l'auto perfetta per te</h2>
+                <h2>Scopri la tua auto ideale oggi!</h2>
                 <form class="search-form" action="/search" method="get" onsubmit="return validateSearch()">
                     <div class="input-field">
                         <input type="text" name="query" id="search-input" placeholder="Cerca auto..." required/>
@@ -37,27 +44,27 @@
                 <button id="prev-btn" class="carousel-btn"><i class="fas fa-chevron-left"></i></button>
                 <div class="carousel" id="carousel">
                     <div class="category-item" data-category="Berlina">
-                        <img src="/static/images/berlina.jpg" alt="Berlina"/>
+                        <img src="https://static.vecteezy.com/system/resources/previews/055/606/971/non_2x/high-resolution-car-silhouette-images-for-designers-and-artists-vector.jpg" alt="Berlina"/>
                         <p>Berlina</p>
                     </div>
                     <div class="category-item" data-category="City Car">
-                        <img src="/static/images/citycar.jpg" alt="City Car"/>
+                        <img src="https://static.vecteezy.com/system/resources/previews/056/438/702/non_2x/car-icon-symbol-vector.jpg" alt="City Car"/>
                         <p>City Car</p>
                     </div>
                     <div class="category-item" data-category="SUV">
-                        <img src="/static/images/suv.jpg" alt="SUV"/>
+                        <img src="https://static.vecteezy.com/ti/vettori-gratis/p1/33224328-suv-auto-icona-vettore-sport-utilita-veicolo-silhouette-per-icona-simbolo-o-cartello-suv-auto-grafico-risorsa-per-mezzi-di-trasporto-o-settore-automobilistico-gratuito-vettoriale.jpg" alt="SUV"/>
                         <p>SUV</p>
                     </div>
                     <div class="category-item" data-category="Station Wagon">
-                        <img src="/static/images/stationwagon.jpg" alt="Station Wagon"/>
+                        <img src="https://static.vecteezy.com/system/resources/previews/054/947/380/non_2x/vintage-station-wagon-silhouette-art-vector.jpg" alt="Station Wagon"/>
                         <p>Station Wagon</p>
                     </div>
                     <div class="category-item" data-category="Sportiva">
-                        <img src="/static/images/sportiva.jpg" alt="Sportiva"/>
+                        <img src="https://static.vecteezy.com/system/resources/previews/007/473/763/non_2x/black-and-white-car-illustration-for-conceptual-design-free-vector.jpg" alt="Sportiva"/>
                         <p>Sportiva</p>
                     </div>
                     <div class="category-item" data-category="Monovolume">
-                        <img src="/static/images/monovolume.jpg" alt="Monovolume"/>
+                        <img src="https://static.vecteezy.com/system/resources/previews/047/621/954/non_2x/simple-line-icon-of-a-minivan-car-on-a-white-background-vector.jpg" alt="Monovolume"/>
                         <p>Monovolume</p>
                     </div>
                 </div>
@@ -93,6 +100,6 @@
         </section>
     </main>
 
-    <script src="/js/homepage.js"></script>
+    <script src="/js/homepage.js"defer></script>
 </body>
 </html>
