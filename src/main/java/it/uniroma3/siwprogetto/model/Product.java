@@ -1,11 +1,9 @@
 package it.uniroma3.siwprogetto.model;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
 import java.math.BigDecimal;
 
 @Entity
@@ -17,6 +15,9 @@ public class Product {
     private String description;
     private BigDecimal price;
     private String imageUrl;
+    private String category; // Nuovo campo per la categoria
+
+    public Product() {}
 
     // Getters and Setters
     public Long getId() {
@@ -57,5 +58,13 @@ public class Product {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

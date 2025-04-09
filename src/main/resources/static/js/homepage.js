@@ -12,30 +12,70 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Carosello inizializzato con', categoryItems.length, 'elementi.');
     }
 
-    const itemWidth = categoryItems[0].offsetWidth + 20; // Larghezza item + gap
+    const itemCount = categoryItems.length;
     let currentIndex = 0;
 
-    function updateCarousel() {
-        const maxIndex = categoryItems.length - 4; // Mostra 4 elementi per volta
+    // Calcola il numero di elementi visibili in base alla larghezza dello schermo
+    const getVisibleItems = () => {
+        if (window.innerWidth <= 768) {
+            return 2; // Su schermi piccoli, mostra 2 elementi (50% ciascuno)
+        }
+        return 4; // Su schermi grandi, mostra 4 elementi (25% ciascuno)
+    };
+
+    let visibleItems = getVisibleItems();
+
+    // Calcola la larghezza di un elemento in percentuale
+    const itemWidthPercentage = 100 / visibleItems;
+
+    // Aggiorna la posizione del carosello
+    const updateCarousel = () => {
+        const maxIndex = itemCount - visibleItems;
         if (currentIndex < 0) currentIndex = 0;
         if (currentIndex > maxIndex) currentIndex = maxIndex;
-        carousel.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
-        console.log('Indice corrente:', currentIndex); // Debug
-    }
 
+        const offset = -currentIndex * itemWidthPercentage;
+        carousel.style.transform = `translateX(${offset}%)`;
+
+        // Disabilita i pulsanti se necessario
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex >= maxIndex;
+
+        console.log('Indice corrente:', currentIndex, 'Elementi visibili:', visibleItems);
+    };
+
+    // Gestisci il click sul pulsante "Precedente"
     prevBtn.addEventListener('click', () => {
         console.log('Pulsante Precedente cliccato');
-        currentIndex--;
-        updateCarousel();
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCarousel();
+        }
     });
 
+    // Gestisci il click sul pulsante "Successivo"
     nextBtn.addEventListener('click', () => {
         console.log('Pulsante Successivo cliccato');
-        currentIndex++;
-        updateCarousel();
+        if (currentIndex < itemCount - visibleItems) {
+            currentIndex++;
+            updateCarousel();
+        }
     });
 
-    // Altre funzioni
+    // Aggiorna il numero di elementi visibili quando la finestra viene ridimensionata
+    window.addEventListener('resize', () => {
+        const newVisibleItems = getVisibleItems();
+        if (newVisibleItems !== visibleItems) {
+            visibleItems = newVisibleItems;
+            currentIndex = 0; // Resetta l'indice per evitare problemi
+            updateCarousel();
+        }
+    });
+
+    // Inizializza il carosello
+    updateCarousel();
+
+    // Altre funzioni (rimaste invariate)
     function validateSearch() {
         const searchInput = document.getElementById('search-input').value.trim();
         if (searchInput.length < 3) {

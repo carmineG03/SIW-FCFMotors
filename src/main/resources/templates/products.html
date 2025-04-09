@@ -1,27 +1,94 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8"/>
-    <title>Products</title>
+    <title>FCF Motors - Compra Auto</title>
     <link rel="stylesheet" href="/css/styles.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
 </head>
 <body>
-<header>
-    <h1>Products</h1>
-</header>
-<main>
-    <div class="product-container">
-        <div th:each="product : ${products}" class="product-item">
-            <h2 th:text="${product.name}">Product Name</h2>
-            <p th:text="${product.description}">Product Description</p>
-            <p>
-                <span th:text="${product.price}">Product Price</span>€
-            </p>
-            <img th:src="${product.imageUrl}" alt="Product Image"/>
+    <header id="main-header">
+        <div class="header-left">
+            <a href="/" class="logo-link">
+                <div class="logo-container">
+                    <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
+                </div>
+            </a>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
+                <a href="/products" class="products-button"><i class="fas fa-car"></i> Prodotti</a>
+            </div>
         </div>
+        <div class="nav-container">
+            <div class="nav-bar">
+                <!-- Mostra sempre il pulsante "Account" -->
+                <a href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
+                <!-- Mostra sempre il pulsante "Carrello" -->
+                <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="products-hero">
+            <div class="hero-content">
+                <h2>Esplora la Nostra Gamma di Auto</h2>
+                <p>Trova il veicolo perfetto per ogni esigenza!</p>
+            </div>
+        </section>
+
+        <section class="products-section">
+            <div class="filter-bar">
+                <!-- Filtro per categoria -->
+                <div class="category-filter">
+                    <label for="category-select">Filtra per categoria:</label>
+                    <select id="category-select" onchange="filterByCategory()">
+                        <option value="all">Tutte</option>
+                        <option value="elettriche">Elettriche</option>
+                        <option value="ibride">Ibride</option>
+                        <option value="benzina">Benzina</option>
+                    </select>
+                </div>
+                <!-- Filtro per nome -->
+                <input type="text" id="product-filter" placeholder="Filtra per nome..." onkeyup="filterProducts()"/>
+            </div>
+            <!-- Spinner di caricamento -->
+            <div id="loading-spinner" class="spinner">
+                <i class="fas fa-spinner fa-spin"></i> Caricamento...
+            </div>
+            <div class="product-container" id="product-container" style="display: none;">
+                <div th:each="product : ${products}" class="product-item" 
+                     th:attr="data-name=${product.name}, data-category=${product.category}">
+                    <div class="product-image">
+                        <img th:src="@{${product.imageUrl != null ? product.imageUrl : '/images/default-car.jpg'}}" 
+                             th:alt="|Immagine di ${product.name != null ? product.name : 'Prodotto'}|"/>
+                    </div>
+                    <div class="product-details">
+                        <h3 th:text="${product.name != null ? product.name : 'Nome non disponibile'}">Nome non disponibile</h3>
+                        <p class="description" th:text="${product.description != null ? product.description : 'Descrizione non disponibile'}">Descrizione non disponibile</p>
+                        <p class="price"><span th:text="${product.price != null ? product.price : 'N/D'}">N/D</span>€</p>
+                        <div class="button-group">
+                            <a th:href="@{/products/{id}(id=${product.id})}" 
+                               th:if="${product.id != null}" 
+                               class="button">Dettagli</a>
+                            <button th:attr="data-id=${product.id}" 
+                                    class="button add-to-cart" 
+                                    onclick="addToCart(this)">Aggiungi al Carrello</button>
+                        </div>
+                        <span th:unless="${product.id != null}" class="no-details">ID non disponibile</span>
+                    </div>
+                </div>
+            </div>
+            <a href="/" class="back-button"><i class="fas fa-arrow-left"></i> Torna alla Home</a>
+        </section>
+    </main>
+
+    <!-- Toast per conferma aggiunta al carrello -->
+    <div id="toast" class="toast">
+        <span id="toast-message"></span>
     </div>
-    <a href="/" class="icon-button"><i class="fas fa-arrow-left"></i></a>
-</main>
+
+    <script src="/js/products.js" defer></script>
 </body>
 </html>

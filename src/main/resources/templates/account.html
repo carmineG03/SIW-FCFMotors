@@ -8,46 +8,61 @@
 <body>
 <header>
     <h2>Account Information</h2>
-
+    <a href="/" class="icon-button"><i class="fas fa-arrow-left"></i></a>
 </header>
 
 <div class="wrapper">
-    <div th:if="${!editMode}">
-        <h3>Your Account Details</h3>
-        <p th:if="${error}" th:text="${error}"></p>
-        <p th:if="${user != null}">Username: <span th:text="${user.username}"></span></p>
-        <p th:if="${user != null}">Email: <span th:text="${user.email}"></span></p>
-        <p th:if="${accountInformation != null}">First Name: <span th:text="${accountInformation.firstName}"></span></p>
-        <p th:if="${accountInformation != null}">Last Name: <span th:text="${accountInformation.lastName}"></span></p>
-        <p th:if="${accountInformation != null}">Birth Date: <span th:text="${accountInformation.birthDate}"></span></p>
-        <p th:if="${accountInformation != null}">Address: <span th:text="${accountInformation.address}"></span></p>
-        <p th:if="${accountInformation != null}">Phone Number: <span th:text="${accountInformation.phoneNumber}"></span></p>
-        <p th:if="${accountInformation != null}">Additional Info: <span th:text="${accountInformation.additionalInfo}"></span></p>
-        <a th:href="@{/account/edit}">Edit</a>
-        <form th:action="@{/logout}" method="post">
-            <button type="submit">Logout</button>
-        </form>
-    </div>
+    <div class="account-details-container">
+        <div th:if="${!editMode}">
+            <h3>Your Account Details</h3>
+            <p th:if="${error}" th:text="${error}"></p>
+            <p th:if="${user != null}">Username: <span th:text="${user.username}"></span></p>
+            <p th:if="${user != null}">Email: <span th:text="${user.email}"></span></p>
+            <p th:if="${accountInformation != null}">First Name: <span th:text="${accountInformation.firstName}"></span></p>
+            <p th:if="${accountInformation != null}">Last Name: <span th:text="${accountInformation.lastName}"></span></p>
+            <p th:if="${accountInformation != null}">Birth Date: <span th:text="${accountInformation.birthDate}"></span></p>
+            <p th:if="${accountInformation != null}">Address: <span th:text="${accountInformation.address}"></span></p>
+            <p th:if="${accountInformation != null}">Phone Number: <span th:text="${accountInformation.phoneNumber}"></span></p>
+            <p th:if="${accountInformation != null}">Additional Info: <span th:text="${accountInformation.additionalInfo}"></span></p>
+            <a th:href="@{/account/edit}" class="edit-link">Edit</a>
+            <div class="logout-container">
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="logout-button">Logout</button>
+                </form>
+            </div>
+        </div>
 
-    <div th:if="${editMode}">
-        <form th:action="@{/account}" method="post" th:object="${accountInformation}">
-            <label>First Name:</label>
-            <input type="text" th:field="*{firstName}" />
-            <label>Last Name:</label>
-            <input type="text" th:field="*{lastName}" />
-            <label>Birth Date:</label>
-            <input type="date" th:field="*{birthDate}" />
-            <label>Address:</label>
-            <input type="text" th:field="*{address}" />
-            <label>Phone Number:</label>
-            <input type="text" th:field="*{phoneNumber}" />
-            <label>Additional Info:</label>
-            <textarea th:field="*{additionalInfo}"></textarea>
-            <button type="submit">Save</button>
-            <button href="/account" class="button">Cancel</button>
-        </form>
+        <div th:if="${editMode}">
+            <form th:action="@{/account}" method="post" th:object="${accountInformation}" class="edit-form">
+                <div class="form-group">
+                    <label>First Name:</label>
+                    <input type="text" th:field="*{firstName}" />
+                </div>
+                <div class="form-group">
+                    <label>Last Name:</label>
+                    <input type="text" th:field="*{lastName}" />
+                </div>
+                <div class="form-group">
+                    <label>Birth Date:</label>
+                    <input type="date" th:field="*{birthDate}" />
+                </div>
+                <div class="form-group">
+                    <label>Address:</label>
+                    <input type="text" th:field="*{address}" />
+                </div>
+                <div class="form-group">
+                    <label>Phone Number:</label>
+                    <input type="text" th:field="*{phoneNumber}" />
+                </div>
+                <div class="form-group">
+                    <label>Additional Info:</label>
+                    <textarea th:field="*{additionalInfo}"></textarea>
+                </div>
+                <button type="submit" class="save-button">Save</button>
+                <a href="/account" class="cancel-button">Cancel</a>
+            </form>
+        </div>
     </div>
 </div>
-<a href="/" class="icon-button"><i class="fas fa-arrow-left"></i></a>
 </body>
 </html>

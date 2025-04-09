@@ -9,13 +9,14 @@
 
 <body>
     <header id="main-header">
-        <h1 class="main-title">FCF MOTORS</h1>
-        <a href="/" class="logo-link">
-            <div class="logo-container">
-                <img src="https://static.vecteezy.com/ti/vettori-gratis/p1/623098-icona-di-vettore-di-logo-auto-auto-gratuito-vettoriale.jpg" alt="FCF Motors Logo" class="logo"/>
-                <span class="logo-text">FCF MOTORS</span>
-            </div>
-        </a>
+        <div class="header-left">
+            <a href="/" class="logo-link">
+                <div class="logo-container">
+                    <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
+                </div>
+            </a>
+            <h1 class="main-title">FCF MOTORS</h1>
+        </div>
         <div class="nav-container">
             <div class="nav-bar">
                 <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
@@ -38,29 +39,85 @@
             </div>
         </section>
 
+        <!-- Sezione per le marche -->
+        <section class="brands-section">
+            <h3>Trova una selezione delle nostre auto più popolari</h3>
+            <div class="brands-container">
+                <a href="/brand/Alfa Romeo" class="brand-item">
+                    <img th:src="@{/image/alfa-romeo-logo.png}" alt="Alfa Romeo"/>
+                    <p>Alfa Romeo</p>
+                </a>
+                <a href="/brand/Audi" class="brand-item">
+                    <img th:src="@{/image/audi-logo.png}" alt="Audi"/>
+                    <p>Audi</p>
+                </a>
+                <a href="/brand/BMW" class="brand-item">
+                    <img th:src="@{/image/bmw-logo.png}" alt="BMW"/>
+                    <p>BMW</p>
+                </a>
+                <a href="/brand/Fiat" class="brand-item">
+                    <img th:src="@{/image/fiat-logo.png}" alt="Fiat"/>
+                    <p>Fiat</p>
+                </a>
+                <a href="/brand/Ford" class="brand-item">
+                    <img th:src="@{/image/ford-logo.png}" alt="Ford"/>
+                    <p>Ford</p>
+                </a>
+                <a href="/brand/Hyundai" class="brand-item">
+                    <img th:src="@{/image/hyundai-logo.png}" alt="Hyundai"/>
+                    <p>Hyundai</p>
+                </a>
+                <a href="/brand/Mercedes-Benz" class="brand-item">
+                    <img th:src="@{/image/mercedes-benz-logo.png}" alt="Mercedes-Benz"/>
+                    <p>Mercedes-Benz</p>
+                </a>
+                <a href="/brand/Mini" class="brand-item">
+                    <img th:src="@{/image/mini-logo.png}" alt="Mini"/>
+                    <p>Mini</p>
+                </a>
+                <a href="/brand/Peugeot" class="brand-item">
+                    <img th:src="@{/image/peugeot-logo.png}" alt="Peugeot"/>
+                    <p>Peugeot</p>
+                </a>
+                <a href="/brand/Renault" class="brand-item">
+                    <img th:src="@{/image/renault-logo.png}" alt="Renault"/>
+                    <p>Renault</p>
+                </a>
+                <a href="/brand/Toyota" class="brand-item">
+                    <img th:src="@{/image/toyota-logo.png}" alt="Toyota"/>
+                    <p>Toyota</p>
+                </a>
+                <a href="/brand/Volkswagen" class="brand-item">
+                    <img th:src="@{/image/volkswagen-logo.png}" alt="Volkswagen"/>
+                    <p>Volkswagen</p>
+                </a>
+            </div>
+            <a href="/brands" class="all-brands-link">Tutte le marche <i class="fas fa-chevron-right"></i></a>
+        </section>
+
         <section class="categories-section">
             <h3>Esplora le Categorie</h3>
             <div class="carousel-container">
                 <button id="prev-btn" class="carousel-btn"><i class="fas fa-chevron-left"></i></button>
                 <div class="carousel" id="carousel">
                     <div class="category-item" data-category="Berlina">
-                        <img src="https://static.vecteezy.com/system/resources/previews/055/606/971/non_2x/high-resolution-car-silhouette-images-for-designers-and-artists-vector.jpg" alt="Berlina"/>
+                        <img src="https://img.freepik.com/vettori-gratuito/illustrazione-del-concetto-di-auto-berlina_114360-12264.jpg?t=st=1743976464~exp=1743980064~hmac=58e2c1f1f0653b5e94800b1afb3ffbebf12068fae410b29a54dac35b18eaca2d&w=996" alt="Berlina"/>
                         <p>Berlina</p>
                     </div>
                     <div class="category-item" data-category="City Car">
-                        <img src="https://static.vecteezy.com/system/resources/previews/056/438/702/non_2x/car-icon-symbol-vector.jpg" alt="City Car"/>
+                        <img src="https://img.freepik.com/vettori-gratuito/illustrazione-del-concetto-di-guida_114360-11043.jpg?t=st=1743975741~exp=1743979341~hmac=7202d3b64cd01614d74e27e39eeac0e06525d154475e1e146e5dc568250645ab&w=996" alt="City Car"/>
                         <p>City Car</p>
                     </div>
                     <div class="category-item" data-category="SUV">
-                        <img src="https://static.vecteezy.com/ti/vettori-gratis/p1/33224328-suv-auto-icona-vettore-sport-utilita-veicolo-silhouette-per-icona-simbolo-o-cartello-suv-auto-grafico-risorsa-per-mezzi-di-trasporto-o-settore-automobilistico-gratuito-vettoriale.jpg" alt="SUV"/>
+                        <img src="https://img.freepik.com/vettori-gratuito/illustrazione-del-concetto-di-auto-suv_114360-12267.jpg?t=st=1743975714~exp=1743979314~hmac=3da3aa139b45ac6c8153a9e11d29169eaaef1cdcaca05b733a15c1f03a5c5866&w=996" alt="SUV"/>
                         <p>SUV</p>
                     </div>
                     <div class="category-item" data-category="Station Wagon">
-                        <img src="https://static.vecteezy.com/system/resources/previews/054/947/380/non_2x/vintage-station-wagon-silhouette-art-vector.jpg" alt="Station Wagon"/>
+                        <img src="https://img.freepik.com/vettori-gratuito/illustrazione-del-concetto-di-auto-suv_114360-16466.jpg?t=st=1743975866~exp=1743979466~hmac=4851fd830d9b0eae1a3b4bf864e130d6a90e40951c491a8e857a3869f7b81174&w=996" alt="Station Wagon"/>
                         <p>Station Wagon</p>
                     </div>
                     <div class="category-item" data-category="Sportiva">
-                        <img src="https://static.vecteezy.com/system/resources/previews/007/473/763/non_2x/black-and-white-car-illustration-for-conceptual-design-free-vector.jpg" alt="Sportiva"/>
+                        <img src="https://img.freepik.com/vettori-gratuito/illustrazione-del-concetto-di-auto-sportiva_114360-13217.jpg?t=st=1743975774~exp=1743979374~hmac=bfcfc849701e1f6e75a28bbeb215ea6f9ebedccd3ff1ddbab782bb86a9f960a6&w=996" alt="Sportiva"/>
                         <p>Sportiva</p>
                     </div>
                     <div class="category-item" data-category="Monovolume">
@@ -100,6 +157,6 @@
         </section>
     </main>
 
-    <script src="/js/homepage.js"defer></script>
+    <script src="/js/homepage.js" defer></script>
 </body>
 </html>

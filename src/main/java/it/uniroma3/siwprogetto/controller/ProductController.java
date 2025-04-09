@@ -44,14 +44,14 @@ public class ProductController {
         return "maintenance";
     }
 
-  @PostMapping("/modificaProdotto")
-  public String updateProduct(@ModelAttribute("productForm") ProductForm productForm) {
-      Long id = productForm.getId();
-      if (id == null) {
-          // Handle error
-          return "redirect:/error";
-      }
-      productService.updateProduct(id, productForm);
-      return "redirect:/manutenzione/prodotti";
-  }
+    @PostMapping("/modificaProdotto")
+    public String updateProduct(@ModelAttribute("productForm") ProductForm productForm) {
+        Long id = productForm.getId();
+        if (id == null) {
+            // Gestione errore: ID mancante
+            return "redirect:/manutenzione/prodotti?error=id_missing";
+        }
+        productService.updateProduct(id, productForm);
+        return "redirect:/manutenzione/prodotti";
+    }
 }

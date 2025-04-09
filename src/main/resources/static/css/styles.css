@@ -1,5 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@200;300;400;500;600;700&display=swap");
 
+/* Importa il font Bungee Spice da Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -15,10 +18,12 @@ body {
 /* Header */
 header {
     display: flex;
-    justify-content: center;
+    justify-content: space-between; /* Logo e titolo a sinistra, nav a destra */
     align-items: center;
-    padding: 20px;
-    background-color: #FFFFFF;
+    padding: 10px 20px;
+    background-color: rgb(1, 10, 51); /* Blu scuro */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid #E5E5E5;
     position: fixed;
     top: 0;
@@ -28,11 +33,17 @@ header {
 
 /* Sfondo trasparente per l'header durante lo scroll */
 .header-transparent {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(0, 48, 135, 0.3);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Contenitore per logo e titolo */
+.header-left {
+    display: flex;
+    align-items: center;
 }
 
 /* Logo */
@@ -49,36 +60,56 @@ header {
 }
 
 .logo {
-    height: 50px;
+    height: 55px;
     width: auto;
     margin-bottom: 1px;
 }
 
-.logo-text {
-    font-size: 12px;
-    font-weight: 600;
-    font-family: 'Roboto', sans-serif !important;
-    color: #333333;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+/* Contenitore per titolo e bottone */
+.title-container {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Spazio tra il titolo e il bottone */
 }
 
 /* Main title */
 .main-title {
     text-align: center;
-    font-size: 4rem;
+    font-size: 2.5rem;
     font-weight: bold;
-    font-family: 'Roboto', sans-serif !important;
+    font-family: 'Bungee Spice', sans-serif !important;
     color: #F5A623;
     margin: 0;
-    margin-right: 10px;
+    margin-left: 10px; /* Spazio tra logo e titolo */
+    line-height: 1;
+}
+
+/* Stili per il bottone Prodotti */
+.products-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: #F5A623;
+    color: #FFFFFF;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.products-button:hover {
+    background-color: #E59400;
+}
+
+.products-button i {
+    margin-right: 8px;
 }
 
 /* Nav */
 .nav-container {
-    position: absolute;
-    top: 10px;
-    right: 20px;
+    display: flex;
+    align-items: center;
 }
 
 .nav-bar {
@@ -87,44 +118,306 @@ header {
 }
 
 .icon-button {
-    font-size: 24px;
-    color: #333333;
+    font-size: 20px;
+    color: #F5A623;
     text-decoration: none;
     margin-left: 15px;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    padding: 5px 8px;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .icon-button:hover {
-    color: #F5A623;
+    color: #E59400;
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
-/* Login Section */
-.login-section {
+/* Aggiunta per migliorare la leggibilità quando l'header è trasparente */
+.header-transparent .icon-button {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 5px 8px;
+    border-radius: 5px;
+    color: #F5A623;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.header-transparent .icon-button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: #E59400;
+}
+
+/* Products Hero Section */
+.products-hero {
+    position: relative;
+    height: 60vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #FFFFFF;
+    background: url('https://wallpapers.com/images/high/4k-car-3840-x-2160-background-yxcpysgkd61l40hf.webp') no-repeat center center;
+    background-size: cover;
+    margin-top: 60px;
+}
+
+.products-hero .hero-content {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px 40px;
+    border-radius: 10px;
+}
+
+.products-hero h2 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #F5A623;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    font-weight: 700;
+}
+
+.products-hero p {
+    font-size: 1.2rem;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Products Section */
+.products-section {
+    padding: 40px 20px;
+    text-align: center;
+    background-color: #F5F6F5;
+}
+
+/* Spinner di caricamento */
+.spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: #003087;
+    margin: 20px 0;
+}
+
+.spinner i {
+    margin-right: 10px;
+}
+
+/* Filtro per categoria */
+.category-filter {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.category-filter label {
+    font-size: 16px;
+    color: #333333;
+    font-weight: 600;
+}
+
+.category-filter select {
+    padding: 8px;
+    border: 1px solid #666666;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #333333;
+    background-color: #FFFFFF;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.category-filter select:focus {
+    border-color: #F5A623;
+    outline: none;
+}
+
+/* Filtro per nome */
+.products-section .filter-bar {
+    max-width: 600px;
+    margin: 0 auto 30px;
+}
+
+.products-section #product-filter {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #666666;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #333333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.product-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.product-item {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.product-image {
+    margin-bottom: 15px;
+}
+
+.product-image img {
+    max-width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.product-details h3 {
+    font-size: 1.4rem;
+    color: #003087;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.product-details .description {
+    font-size: 1rem;
+    color: #666666;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.product-details .price {
+    font-size: 1.3rem;
+    color: #F5A623;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+/* Gruppo di pulsanti */
+.button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.button-group .button {
+    flex: 1;
+    text-align: center;
+}
+
+.product-details .button {
+    background-color: #F5A623;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+.product-details .button:hover {
+    background-color: #E59400;
+}
+
+.add-to-cart {
+    background-color: #28A745;
+}
+
+.add-to-cart:hover {
+    background-color: #218838;
+}
+
+/* Stile per messaggio di ID non disponibile */
+.no-details {
+    color: #666666;
+    font-size: 14px;
+    font-style: italic;
+}
+
+/* Toast di conferma */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #28A745;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+/* Back Button */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 30px;
+    padding: 10px 20px;
+    background-color: #003087;
+    color: #FFFFFF;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #002066;
+}
+
+.back-button i {
+    margin-right: 8px;
+}
+
+/* Wrapper (sostituisce login-section e login-container) */
+.wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     background: url('https://img.freepik.com/foto-gratuito/giovani-coppie-che-scelgono-un-automobile-in-una-stanza-di-manifestazione-di-automobile_1303-15122.jpg?t=st=1743712327~exp=1743715927~hmac=215eaaa79bdb1c7b04d5c5cc7ea517066a3f524daba123a5591c72dc6908162c&w=996') no-repeat center center;
     background-size: cover;
-    padding-top: 80px; /* Spazio per l'header fisso */
+    padding-top: 60px;
 }
 
-.login-container {
-    background: rgba(0, 0, 0, 0.5); /* Sfondo semi-trasparente */
-    backdrop-filter: blur(10px); /* Effetto sfocatura */
+.wrapper form {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Bordo chiaro */
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 10px;
     padding: 40px;
     max-width: 400px;
     width: 100%;
-    text-align: center; /* Centra il testo e gli elementi inline */
+    text-align: center;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centra i figli orizzontalmente */
+    align-items: center;
 }
 
-.login-container h2 {
+.wrapper form h2 {
     color: #FFFFFF;
     font-size: 1.5rem;
     font-weight: 600;
@@ -133,33 +426,28 @@ header {
     letter-spacing: 2px;
 }
 
-.login-form {
+.input-field {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    width: 100%; /* Assicura che il form occupi tutto lo spazio disponibile */
-    align-items: center; /* Centra i .form-group orizzontalmente */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centra i figli (label e input) */
-    width: 100%; /* Assicura che il gruppo occupi tutto lo spazio */
-}
-
-.form-group label {
+.input-field label {
     color: #FFFFFF;
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 8px;
     text-transform: uppercase;
-    width: 100%; /* Assicura che l'etichetta sia larga quanto il contenitore */
-    text-align: center; /* Centra il testo dell'etichetta */
+    width: 100%;
+    text-align: center;
 }
 
-.form-group input {
-    background: transparent;
+.wrapper form .input-field input {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     border: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     padding: 10px 0;
@@ -167,26 +455,27 @@ header {
     color: #FFFFFF;
     outline: none;
     transition: border-color 0.3s ease;
-    width: 80%; /* Riduci la larghezza per un aspetto più bilanciato */
-    text-align: center; /* Centra il testo all'interno dell'input */
+    width: 80%;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.form-group input::placeholder {
+.input-field input::placeholder {
     color: rgba(255, 255, 255, 0.7);
     font-size: 14px;
-    text-align: center; /* Centra il placeholder */
+    text-align: center;
 }
 
-.form-group input:focus {
+.wrapper form .input-field input:focus {
     border-bottom-color: #FFFFFF;
 }
 
 .forget {
     display: flex;
-    justify-content: center; /* Centra i figli (checkbox e link) */
+    justify-content: center;
     align-items: center;
     margin-top: 10px;
-    width: 100%; /* Assicura che il contenitore occupi tutto lo spazio */
+    width: 100%;
 }
 
 .forget label {
@@ -195,6 +484,10 @@ header {
     gap: 5px;
     color: #FFFFFF;
     font-size: 14px;
+}
+
+.forget label p {
+    margin: 0;
 }
 
 .forget input[type="checkbox"] {
@@ -213,7 +506,7 @@ header {
 }
 
 .forget input[type="checkbox"]:checked::after {
-    content: '\f00c'; /* Icona di spunta da Font Awesome */
+    content: '\f00c';
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
     color: #FFFFFF;
@@ -228,14 +521,14 @@ header {
     color: #F5A623;
     font-size: 14px;
     text-decoration: none;
-    margin-left: 10px; /* Spazio tra checkbox e link */
+    margin-left: 10px;
 }
 
 .forget a:hover {
     text-decoration: underline;
 }
 
-.login-button {
+.wrapper form button {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 5px;
@@ -246,30 +539,46 @@ header {
     text-transform: uppercase;
     cursor: pointer;
     transition: background 0.3s ease, border-color 0.3s ease;
-    width: 80%; /* Riduci la larghezza per un aspetto più bilanciato */
-    margin: 0 auto; /* Centra il pulsante */
+    width: 80%;
+    margin: 20px auto 0;
 }
 
-.login-button:hover {
+.wrapper form button:hover {
     background: rgba(255, 255, 255, 0.1);
     border-color: #FFFFFF;
 }
 
-.login-container p {
+.register {
     margin-top: 20px;
     color: #FFFFFF;
     font-size: 14px;
-    text-align: center; /* Centra il testo */
+    text-align: center;
 }
 
-.login-container p a {
+.register p {
+    margin: 0;
+}
+
+.register a {
     color: #F5A623;
     text-decoration: none;
     font-weight: 600;
 }
 
-.login-container p a:hover {
+.register a:hover {
     text-decoration: underline;
+}
+
+.wrapper .icon-button {
+    margin-top: 20px;
+    font-size: 24px;
+    color: #F5A623;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.wrapper .icon-button:hover {
+    color: #E59400;
 }
 
 /* Hero Section */
@@ -282,9 +591,9 @@ header {
     justify-content: center;
     text-align: center;
     color: #FFFFFF;
-    background: url('https://www.gocar.it/wp-content/uploads/2019/12/BMW-840d-Coup%C3%A9.jpg') no-repeat center center;
+    background: url('https://wallpapers.com/images/high/4k-car-3840-x-2160-background-yxcpysgkd61l40hf.webp') no-repeat center center;
     background-size: cover;
-    margin-top: 80px;
+    margin-top: 60px;
 }
 
 .hero-content {
@@ -313,9 +622,11 @@ header {
     justify-content: center;
     width: 100%;
     max-width: 600px;
-    background: #FFFFFF;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     overflow: hidden;
 }
 
@@ -331,7 +642,12 @@ header {
     outline: none;
     font-size: 16px;
     background: transparent;
-    color: #333333;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.search-form input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .search-form button {
@@ -376,7 +692,6 @@ header {
     display: flex;
     overflow: hidden;
     width: 100%;
-    gap: 20px;
     transition: transform 0.5s ease;
 }
 
@@ -393,6 +708,11 @@ header {
     justify-content: center;
     align-items: center;
     height: 200px;
+    margin-right: 20px;
+}
+
+.category-item:last-child {
+    margin-right: 0;
 }
 
 .category-item:hover {
@@ -437,6 +757,15 @@ header {
     background: #002066;
 }
 
+.carousel-btn:disabled {
+    background: #666666;
+    cursor: not-allowed;
+}
+
+.carousel-btn:disabled:hover {
+    background: #666666;
+}
+
 #prev-btn {
     left: 10px;
 }
@@ -445,92 +774,298 @@ header {
     right: 10px;
 }
 
-/* Featured Products */
-.featured-products {
+/* Brands Section */
+.brands-section {
     padding: 40px 20px;
     text-align: center;
-    background-color: #F5F6F5;
+    background-color: #FFFFFF;
 }
 
-.featured-products h3 {
+.brands-section h3 {
     font-size: 2rem;
     margin-bottom: 30px;
     color: #003087;
     font-weight: 600;
-}
-
-.filter-bar {
-    max-width: 600px;
-    margin: 20px auto;
-}
-
-#product-filter {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #666666;
-    border-radius: 4px;
-    font-size: 16px;
-    color: #333333;
-}
-
-.product-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.product-item {
-    background-color: #FFFFFF;
-    border: 1px solid #E5E5E5;
-    border-radius: 6px;
-    padding: 15px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease;
-}
-
-.product-item:hover {
-    transform: translateY(-5px);
-}
-
-.product-item img {
-    max-width: 100%;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
-
-.product-item h4 {
-    font-size: 1.2rem;
-    color: #333333;
-    margin-bottom: 5px;
-    font-weight: 500;
-}
-
-.product-item .price {
-    font-size: 1.1rem;
-    color: #F5A623;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-.product-item .button {
-    background-color: #F5A623;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    padding: 10px 15px;
-    font-size: 14px;
-    transition: background-color 0.2s ease;
-    margin-top: 10px;
-    text-decoration: none;
+    position: relative;
     display: inline-block;
 }
 
-.product-item .button:hover {
-    background-color: #E59400;
+.brands-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background-color: #F5A623;
+}
+
+.brands-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.brand-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.brand-item:hover {
+    transform: scale(1.05);
+}
+
+.brand-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.brand-item p {
+    font-size: 1rem;
+    color: #333333;
+    font-weight: 400;
+}
+
+.all-brands-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #F5A623;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.all-brands-link:hover {
+    color: #E59400;
+}
+
+.all-brands-link i {
+    margin-left: 5px;
+}
+
+/* Account Details Section */
+.account-details-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background: url('https://img.freepik.com/foto-gratuito/giovani-coppie-che-scelgono-un-automobile-in-una-stanza-di-manifestazione-di-automobile_1303-15122.jpg?t=st=1743712327~exp=1743715927~hmac=215eaaa79bdb1c7b04d5c5cc7ea517066a3f524daba123a5591c72dc6908162c&w=996') no-repeat center center;
+    background-size: cover;
+    padding: 100px 20px;
+}
+
+.account-details-section header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: rgb(1, 10, 51);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid #E5E5E5;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.account-details-section header .icon-button {
+    position: static;
+    color: #F5A623;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 5px 8px;
+    border-radius: 5px;
+}
+
+.account-details-section header .icon-button:hover {
+    color: #E59400;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.account-details-section h2 {
+    color: #F5A623;
+    font-size: 2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.account-details-container {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 500px;
+    width: 100%;
+    text-align: left;
+    color: #FFFFFF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.account-details-container h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.account-details-container p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.account-details-container p span {
+    font-weight: 400;
+}
+
+.account-details-container p strong {
+    font-weight: 600;
+    margin-right: 5px;
+}
+
+.edit-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #F5A623;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.edit-link:hover {
+    text-decoration: underline;
+}
+
+.account-details-container .logout-container {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    padding: 0;
+    box-shadow: none !important;
+}
+
+.account-details-container .logout-container form {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+}
+
+.logout-button {
+    display: block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.logout-button:hover {
+    background: rgba(255, 250, 250, 0.1);
+    border-color: #FFFFFF;
+}
+
+/* Edit Form Styles */
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.edit-form .form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.edit-form .form-group label {
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.edit-form .form-group input,
+.edit-form .form-group textarea {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    font-size: 16px;
+    color: #FFFFFF;
+    outline: none;
+    transition: border-color 0.3s ease, backdrop-filter 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.edit-form .form-group input:focus,
+.edit-form .form-group textarea:focus {
+    border-bottom-color: #FFFFFF;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.edit-form .form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.save-button {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    padding: 10px;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.save-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #FFFFFF;
+}
+
+.cancel-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px;
+    color: #F5A623;
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.cancel-button:hover {
+    text-decoration: underline;
 }
 
 /* Responsive */
@@ -538,6 +1073,11 @@ header {
     .category-item {
         flex: 0 0 50%;
         height: 180px;
+        margin-right: 20px;
+    }
+
+    .category-item:last-child {
+        margin-right: 0;
     }
 
     .category-item img {
@@ -549,6 +1089,14 @@ header {
         font-size: 1.8rem;
     }
 
+    .products-hero h2 {
+        font-size: 1.8rem;
+    }
+
+    .products-hero p {
+        font-size: 1rem;
+    }
+
     .search-form {
         max-width: 90%;
     }
@@ -558,19 +1106,67 @@ header {
     }
 
     .logo {
-        height: 40px;
+        height: 30px;
     }
 
-    .logo-text {
-        font-size: 10px;
+    .main-title {
+        font-size: 1.8rem;
     }
 
-    .login-container {
+    .wrapper form {
         padding: 20px;
         max-width: 90%;
     }
 
-    .login-container h2 {
+    .wrapper form h2 {
         font-size: 1.2rem;
+    }
+
+    .account-details-container {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    .account-details-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .title-container {
+        gap: 10px;
+    }
+
+    .products-button {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+
+    .product-item {
+        padding: 15px;
+    }
+
+    .product-image img {
+        height: 150px;
+    }
+
+    .product-details h3 {
+        font-size: 1.2rem;
+    }
+
+    .product-details .description {
+        font-size: 0.9rem;
+    }
+
+    .product-details .price {
+        font-size: 1.1rem;
+    }
+
+    .back-button {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+
+    .category-filter {
+        flex-direction: column;
+        gap: 5px;
     }
 }
