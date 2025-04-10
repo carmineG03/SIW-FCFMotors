@@ -43,13 +43,13 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/forgot-password", "/reset-password", "/index", "/login", "/register","/products", "/css/**", "/image/**","/js/**", "favicon.ico").permitAll()
+                        .requestMatchers("/", "/forgot-password", "/reset-password", "/index", "/login", "/register", "/products", "/css/**", "/image/**", "/js/**", "favicon.ico").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login", "/register", "/forgot-password", "/reset-password").permitAll()
-                        .requestMatchers("/account").authenticated() // Solo utenti autenticati possono accedere a /account
-                        //.requestMatchers("/admin/**").hasAnyAuthority(SecurityConstants.ADMIN_ROLE)   //lasciato per il futuro
+                        .requestMatchers("/cart/**").permitAll() // Permetti tutte le richieste a /cart/**
+                        .requestMatchers(HttpMethod.POST, "/cart/**").permitAll() // Permetti esplicitamente le POST a /cart/**
+                        .requestMatchers("/account").authenticated()
                         .requestMatchers("/manutenzione/**").hasAnyAuthority(SecurityConstants.ADMIN_ROLE)
                         .anyRequest().authenticated()
-
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) -> response.sendRedirect("/index")))
                 .formLogin(formLogin -> formLogin
@@ -61,9 +61,9 @@ public class WebSecurityConfig {
                         .failureHandler(customAuthenticationFailureHandler)
                         .defaultSuccessUrl("/account", true)
                 )
-                .rememberMe(rememberMe -> rememberMe // Aggiunta di Remember Me
+                .rememberMe(rememberMe -> rememberMe
                         .key("uniqueAndSecretKey")
-                        .tokenValiditySeconds(86400) // 24 ore
+                        .tokenValiditySeconds(86400)
                         .rememberMeParameter("remember-me")
                         .userDetailsService(customUserDetailsService)
                 )
@@ -84,15 +84,14 @@ public class WebSecurityConfig {
         return new SecurityUtils();
     }
 
-
     @Autowired
     public void configureAuth(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDetailsService)
                 .passwordEncoder(passwordEncoder);
     }
 
-	@Autowired
-	public void setUserService(UserService userService) {
+    @Autowired
+    public void setUserService(UserService userService) {
         this.userService = userService;
     }
 }
