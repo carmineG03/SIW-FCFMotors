@@ -15,7 +15,13 @@ public class Product {
     private String description;
     private BigDecimal price;
     private String imageUrl;
-    private String category; // Nuovo campo per la categoria
+    private String category;
+    private String brand;      // Nuovo campo per la marca
+    private String model;      // Nuovo campo per il modello
+    private Integer mileage;   // Nuovo campo per il chilometraggio (in km)
+    private Integer year;      // Nuovo campo per l'anno
+    private String fuelType;   // Nuovo campo per il tipo di carburante
+    private String transmission; // Nuovo campo per la trasmissione
 
     public Product() {}
 
@@ -66,5 +72,53 @@ public class Product {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public Integer getMileage() {
+        return mileage;
+    }
+
+    public void setMileage(Integer mileage) {
+        this.mileage = mileage;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public String getFuelType() {
+        return fuelType;
+    }
+
+    public void setFuelType(String fuelType) {
+        this.fuelType = fuelType;
+    }
+
+    public String getTransmission() {
+        return transmission;
+    }
+
+    public void setTransmission(String transmission) {
+        this.transmission = transmission;
     }
 }

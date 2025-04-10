@@ -5,6 +5,7 @@ import it.uniroma3.siwprogetto.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -27,5 +28,31 @@ public class ProductService {
 
     public List<String> findAllCategories() {
         return productRepository.findAllCategories();
+    }
+
+    public List<String> findAllBrands() {
+        return productRepository.findAllBrands();
+    }
+
+    public List<String> findModelsByBrand(String brand) {
+        return productRepository.findModelsByBrand(brand);
+    }
+
+    public List<String> findAllFuelTypes() {
+        return productRepository.findAllFuelTypes();
+    }
+
+    public List<String> findAllTransmissions() {
+        return productRepository.findAllTransmissions();
+    }
+
+    public List<Product> findByFilters(String category, String brand, String selectedModel,
+                                       BigDecimal minPrice, BigDecimal maxPrice,
+                                       Integer minMileage, Integer maxMileage,
+                                       Integer minYear, Integer maxYear,
+                                       String fuelType, String transmission) {
+        return productRepository.findByFilters(category, brand, selectedModel,
+                minPrice, maxPrice, minMileage, maxMileage,
+                minYear, maxYear, fuelType, transmission);
     }
 }
