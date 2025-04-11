@@ -1696,3 +1696,68 @@ header h2 {
         height: 100px;
     }
 }
+
+/* Aggiungi margine superiore a tutte le sezioni principali per evitare sovrapposizione con l'header */
+main,
+.products-page,
+.cart-section,
+.wrapper,
+.dealers-section,
+.maintenance-section {
+    margin-top: 75px;
+}
+
+/* Stili per search-section (allineati con hero-section) */
+.search-section {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* Allineato con hero-section */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #FFFFFF;
+    background: url('/image/car-lot-background.jpg') no-repeat center center; /* Immagine diversa rispetto a hero-section */
+    background-size: cover;
+    padding-top: 75px; /* Mantenuto per evitare sovrapposizione con l'header */
+}
+
+/* Stili per search-content (allineati con hero-content) */
+.search-content {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px 40px;
+    border-radius: 10px;
+}
+
+.search-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #F5A623;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    font-weight: 700;
+}
+
+/* Regola il margine e il padding su schermi più piccoli */
+@media (max-width: 768px) {
+    main,
+    .products-page,
+    .cart-section,
+    .wrapper,
+    .dealers-section,
+    .maintenance-section{
+        margin-top: 50px;
+    }
+
+    .search-section {
+        height: 70vh; /* Allineato con hero-section */
+        padding-top: 50px;
+    }
+
+    .search-content {
+        padding: 15px 20px;
+    }
+
+    .search-content h2 {
+        font-size: 1.5rem;
+    }
+}

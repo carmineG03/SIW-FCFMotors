@@ -1,387 +1,263 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Prodotti - FCF Motors</title>
-    <link rel="stylesheet" href="/css/styles.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Stili specifici per la pagina prodotti */
-        .hero-section {
-            position: relative;
-            background-image: url('/image/car-lot-background.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            padding: 50px 0;
-            text-align: center;
-            width: 100%;
-            margin: 0;
-        }
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1;
-        }
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            /* Riquadro trasparente */
-        }
-        .hero-content h2 {
-            font-size: 2em;
+        .filters {
+            display: flex;
+            flex-wrap: nowrap; /* Modificato per evitare l'avvolgimento */
+            gap: 15px;
             margin-bottom: 20px;
-            color: white;
-        }
-        .search-form-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .search-form {
-            display: flex;
-            gap: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border-radius: 10px;
-            padding: 5px;
+            -webkit-backdrop-filter: blur(10px);
+            overflow-x: auto; /* Aggiunto per consentire lo scorrimento orizzontale */
+            white-space: nowrap; /* Impedisce ai filtri di andare a capo */
         }
-        .search-form .input-field {
-            width: 300px;
+        .filter-group {
+            flex: 0 0 auto; /* Impedisce ai filtri di ridursi troppo */
+            min-width: 200px; /* Larghezza minima per ogni filtro */
         }
-        .search-form input {
-            padding: 10px;
-            font-size: 1em;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            width: 100%;
-            box-sizing: border-box;
-            background-color: transparent;
-            color: white;
-        }
-        .search-form input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        .search-form button {
-            padding: 10px 20px;
-            background-color: rgba(0, 123, 255, 0.8);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .search-form button:hover {
-            background-color: rgba(0, 86, 179, 0.8);
-        }
-        .filters-section {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            align-items: flex-start;
-            margin-top: 20px;
-        }
-        .filter-item {
-            position: relative;
-            flex: 0 0 auto;
-        }
-        .filter-button {
-            padding: 8px 12px;
-            font-size: 0.9em;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            background-color: rgba(0, 123, 255, 0.8); /* Stesso colore del bottone Cerca */
-            backdrop-filter: blur(10px);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: white;
-        }
-        .filter-button:hover {
-            background-color: rgba(0, 86, 179, 0.8); /* Stesso colore del bottone Cerca al passaggio del mouse */
-        }
-        .filter-button i {
-            font-size: 0.8em;
-        }
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background-color: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-            padding: 10px;
-            min-width: 150px;
-        }
-        .filter-item.active .dropdown-menu {
+        .filter-group label {
             display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #FFFFFF;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
-        .dropdown-menu select,
-        .dropdown-menu input {
+        .filter-group select, .filter-group input {
             width: 100%;
             padding: 8px;
-            font-size: 0.9em;
-            border: 1px solid rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 5px;
-            box-sizing: border-box;
-            margin-bottom: 5px;
-            background-color: rgba(255, 255, 255, 0.5);
+            background: transparent;
+            color: #FFFFFF;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
         }
-        .dropdown-menu .range {
-            display: flex;
-            gap: 5px;
-            align-items: center;
+        .filter-group select:focus, .filter-group input:focus {
+            border-color: #F5A623;
         }
-        .dropdown-menu .range input {
-            width: 80px;
-        }
-        .dropdown-menu .range-label {
-            font-size: 0.9em;
-            color: #333;
-        }
-        .products-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        .filter-group select option {
+            background: #333333;
+            color: #FFFFFF;
         }
         .cars-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+            padding: 20px;
         }
         .car-item {
             border: 1px solid #ddd;
             border-radius: 5px;
-            overflow: hidden;
+            padding: 15px;
             text-align: center;
-            padding: 10px;
-            background-color: white;
+            background-color: #fff;
         }
         .car-item img {
             width: 100%;
-            height: 150px;
+            height: 200px;
             object-fit: cover;
+            border-radius: 5px;
         }
         .car-item h3 {
-            font-size: 1.2em;
             margin: 10px 0;
+            font-size: 1.2em;
+            color: #333;
         }
         .car-item p {
             margin: 5px 0;
             color: #666;
         }
-        .car-item .price {
-            font-size: 1.1em;
+        .price {
             font-weight: bold;
             color: #007bff;
-            margin: 10px 0;
         }
-        .car-item a {
-            display: inline-block;
-            padding: 8px 15px;
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .button {
             background-color: #007bff;
             color: white;
-            text-decoration: none;
+            padding: 8px 15px;
+            border: none;
             border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
         }
-        .car-item a:hover {
+        .button:hover {
             background-color: #0056b3;
         }
         .no-products {
             text-align: center;
+            padding: 20px;
             color: #666;
-            font-size: 1.2em;
-            margin-top: 20px;
         }
-        .back-to-home {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 50%;
-            text-decoration: none;
+        .search-content {
+            max-width: 600px;
         }
-        .back-to-home:hover {
-            background-color: #0056b3;
+        @media (max-width: 768px) {
+            .search-content {
+                max-width: 90%;
+            }
+            .filters {
+                padding: 10px;
+            }
+            .filter-group {
+                min-width: 150px;
+            }
         }
     </style>
 </head>
 <body>
-    <header id="main-header">
+    <header>
         <div class="header-left">
             <a href="/" class="logo-link">
                 <div class="logo-container">
-                    <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
+                    <img src="/image/logo1.png" alt="Logo" class="logo">
+                </div>
+                <div class="title-container">
+                    <h1 class="main-title">FCF MOTORS</h1>
                 </div>
             </a>
-            <div class="title-container">
-                <h1 class="main-title">FCF MOTORS</h1>
-                <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-            </div>
         </div>
         <div class="nav-container">
-            <div class="nav-bar">
-                <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
-                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
-                <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
-            </div>
+            <nav class="nav-bar">
+                <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
+                <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i></a>
+                <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-sign-in-alt"></i></a>
+                <a href="/cart" class="icon-button cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}"></span>
+                </a>
+            </nav>
         </div>
     </header>
 
-    <main>
-        <!-- Sezione di ricerca -->
-        <section class="hero-section">
-            <div class="hero-content">
-                <h2>Scopri la tua auto ideale oggi!</h2>
-                <form action="/products" method="get" onsubmit="return validateSearch()">
-                    <div class="search-form-container">
-                        <div class="search-form">
-                            <div class="input-field">
-                                <input type="text" name="query" id="search-input" placeholder="Cerca auto..." required/>
-                            </div>
-                            <button type="submit"><i class="fas fa-search"></i> Cerca</button>
-                        </div>
+    <section class="products-page">
+        <section class="search-section">
+            <div class="search-content">
+                <h2>Trova Auto</h2>
+                <form class="search-form" action="/search" method="get" onsubmit="return validateSearch()">
+                    <div class="input-field">
+                        <input type="text" name="query" id="search-input" placeholder="Cerca auto..." required/>
                     </div>
-
-                    <!-- Sezione dei filtri -->
-                    <section class="filters-section">
-                        <div class="filter-item">
-                            <button type="button" class="filter-button">Marca <i class="fas fa-chevron-down"></i></button>
-                            <div class="dropdown-menu">
-                                <select name="brand" onchange="this.form.submit()">
-                                    <option value="">Tutte le marche</option>
-                                    <option th:each="b : ${brands}" th:value="${b}" th:text="${b}"></option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="filter-item">
-                            <button type="button" class="filter-button">Modello <i class="fas fa-chevron-down"></i></button>
-                            <div class="dropdown-menu">
-                                <select name="model" onchange="this.form.submit()" th:disabled="${brand == null}">
-                                    <option value="">Tutti i modelli</option>
-                                    <option th:each="m : ${models}" th:value="${m}" th:text="${m}"></option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="filter-item">
-                            <button type="button" class="filter-button">Prezzo <i class="fas fa-chevron-down"></i></button>
-                            <div class="dropdown-menu">
-                                <div class="range">
-                                    <input type="number" name="minPrice" placeholder="Min (€)" step="0.01" onchange="this.form.submit()"/>
-                                    <span class="range-label">A</span>
-                                    <input type="number" name="maxPrice" placeholder="Max (€)" step="0.01" onchange="this.form.submit()"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="filter-item">
-                            <button type="button" class="filter-button">Chilometraggio <i class="fas fa-chevron-down"></i></button>
-                            <div class="dropdown-menu">
-                                <div class="range">
-                                    <input type="number" name="minMileage" placeholder="Min (km)" onchange="this.form.submit()"/>
-                                    <span class="range-label">A</span>
-                                    <input type="number" name="maxMileage" placeholder="Max (km)" onchange="this.form.submit()"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="filter-item">
-                            <button type="button" class="filter-button">Anno <i class="fas fa-chevron-down"></i></button>
-                            <div class="dropdown-menu">
-                                <div class="range">
-                                    <input type="number" name="minYear" placeholder="Min" onchange="this.form.submit()"/>
-                                    <span class="range-label">A</span>
-                                    <input type="number" name="maxYear" placeholder="Max" onchange="this.form.submit()"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="filter-item">
-                            <button type="button" class="filter-button">Tipo di Carburante <i class="fas fa-chevron-down"></i></button>
-                            <div class="dropdown-menu">
-                                <select name="fuelType" onchange="this.form.submit()">
-                                    <option value="">Tutti i carburanti</option>
-                                    <option th:each="ft : ${fuelTypes}" th:value="${ft}" th:text="${ft}"></option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="filter-item">
-                            <button type="button" class="filter-button">Trasmissione <i class="fas fa-chevron-down"></i></button>
-                            <div class="dropdown-menu">
-                                <select name="transmission" onchange="this.form.submit()">
-                                    <option value="">Tutte le trasmissioni</option>
-                                    <option th:each="t : ${transmissions}" th:value="${t}" th:text="${t}"></option>
-                                </select>
-                            </div>
-                        </div>
-                    </section>
+                    <button type="submit"><i class="fas fa-search"></i> Cerca</button>
+                </form>
+                <form th:action="@{/products}" method="get" class="filters">
+                    <div class="filter-group">
+                        <label for="category">Categoria</label>
+                        <select id="category" name="category">
+                            <option value="">Tutte</option>
+                            <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="brand">Marca</label>
+                        <select id="brand" name="brand" onchange="this.form.submit()">
+                            <option value="">Tutte</option>
+                            <option th:each="b : ${brands}" th:value="${b}" th:text="${b}"></option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="model">Modello</label>
+                        <select id="model" name="model">
+                            <option value="">Tutti</option>
+                            <option th:each="m : ${models}" th:value="${m}" th:text="${m}"></option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="minPrice">Prezzo Min (€)</label>
+                        <input type="number" id="minPrice" name="minPrice" step="0.01"/>
+                    </div>
+                    <div class="filter-group">
+                        <label for="maxPrice">Prezzo Max (€)</label>
+                        <input type="number" id="maxPrice" name="maxPrice" step="0.01"/>
+                    </div>
+                    <div class="filter-group">
+                        <label for="minMileage">Chilometraggio Min</label>
+                        <input type="number" id="minMileage" name="minMileage"/>
+                    </div>
+                    <div class="filter-group">
+                        <label for="maxMileage">Chilometraggio Max</label>
+                        <input type="number" id="maxMileage" name="maxMileage"/>
+                    </div>
+                    <div class="filter-group">
+                        <label for="minYear">Anno Min</label>
+                        <input type="number" id="minYear" name="minYear"/>
+                    </div>
+                    <div class="filter-group">
+                        <label for="maxYear">Anno Max</label>
+                        <input type="number" id="maxYear" name="maxYear"/>
+                    </div>
+                    <div class="filter-group">
+                        <label for="fuelType">Carburante</label>
+                        <select id="fuelType" name="fuelType">
+                            <option value="">Tutti</option>
+                            <option th:each="fuel : ${fuelTypes}" th:value="${fuel}" th:text="${fuel}"></option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="transmission">Trasmissione</label>
+                        <select id="transmission" name="transmission">
+                            <option value="">Tutte</option>
+                            <option th:each="trans : ${transmissions}" th:value="${trans}" th:text="${trans}"></option>
+                        </select>
+                    </div>
+                    <button type="submit" class="button">Filtra</button>
                 </form>
             </div>
         </section>
 
-        <div class="products-container">
-            <!-- Griglia delle auto -->
-            <section class="cars-grid">
-                <div th:if="${products != null and not #lists.isEmpty(products)}">
-                    <div th:each="product : ${products}" class="car-item">
-                        <img th:src="${product.imageUrl}" alt="Car Image"/>
-                        <h3 th:text="${product.name}"></h3>
-                        <p th:text="${product.description}"></p>
-                        <p th:text="'Categoria: ' + ${product.category}"></p>
-                        <p class="price" th:text="${#numbers.formatDecimal(product.price, 1, 2, 'COMMA')} + ' €'"></p>
-                        <a th:href="@{'/products/' + ${product.id}}">Scopri di più</a>
+        <div class="cars-grid">
+            <div th:if="${products != null and not #lists.isEmpty(products)}">
+                <div th:each="product : ${products}" class="car-item">
+                    <img th:src="${product.imageUrl}" th:alt="${product.name}"/>
+                    <h3 th:text="${product.name}"></h3>
+                    <p th:text="${product.description}"></p>
+                    <p th:text="'Categoria: ' + ${product.category}"></p>
+                    <p class="price" th:text="${#numbers.formatDecimal(product.price, 1, 2, 'COMMA')} + ' €'"></p>
+                    <div class="button-group">
+                        <div th:if="${product.sellerType == 'PRIVATE'}">
+                            <a th:href="@{'/contact-seller/' + ${product.id}}" class="button">Contatta il Venditore</a>
+                        </div>
+                        <div th:if="${product.sellerType == 'DEALER'}">
+                            <a th:href="@{'/request-quote/' + ${product.id}}" class="button">Richiedi Preventivo</a>
+                        </div>
+                        <a th:href="@{'/add-subscription/' + ${product.id}}" class="button">Aggiungi Abbonamento</a>
                     </div>
                 </div>
-                <div th:if="${products == null or #lists.isEmpty(products)}" class="no-products">
-                    Nessun prodotto trovato.
-                </div>
-            </section>
+            </div>
+            <div th:if="${products == null or #lists.isEmpty(products)}" class="no-products">
+                Nessun prodotto trovato.
+            </div>
         </div>
-    </main>
-
-    <a href="/" class="back-to-home"><i class="fas fa-arrow-left"></i></a>
+    </section>
 
     <script>
-        // Gestione apertura/chiusura delle tendine
-        document.querySelectorAll('.filter-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const filterItem = button.parentElement;
-                const isActive = filterItem.classList.contains('active');
-
-                // Chiudi tutte le tendine aperte
-                document.querySelectorAll('.filter-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-
-                // Apri la tendina corrente se non era già aperta
-                if (!isActive) {
-                    filterItem.classList.add('active');
-                }
-            });
-        });
-
-        // Chiudi le tendine se si clicca fuori
-        document.addEventListener('click', (event) => {
-            if (!event.target.closest('.filter-item')) {
-                document.querySelectorAll('.filter-item').forEach(item => {
-                    item.classList.remove('active');
-                });
+        function validateSearch() {
+            const searchInput = document.getElementById('search-input').value.trim();
+            if (searchInput === '') {
+                alert('Inserisci un termine di ricerca.');
+                return false;
             }
-        });
+            return true;
+        }
     </script>
 </body>
 </html>

@@ -7,7 +7,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.UUID;
 
 @Service
@@ -36,16 +35,18 @@ public class UserService {
         }
 
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        // Imposta un ruolo di default
         user.setRolesString("USER");
         userRepository.save(user);
     }
 
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Utente non trovato con username: " + username));
     }
+
     public User getUser(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Utente non trovato con ID: " + id));
     }
 
     public User saveUser(User user) {
@@ -53,19 +54,18 @@ public class UserService {
     }
 
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Utente non trovato con email: " + email));
     }
 
     public String generateResetToken(String email) {
-        User user = userRepository.findByEmail(email);
-        if (user != null) {
-            String token = UUID.randomUUID().toString();
-            user.setResetToken(token);
-            user.setResetTokenExpiry(LocalDateTime.now().plusHours(1)); // Token valido per 1 ora
-            userRepository.save(user);
-            return token;
-        }
-        throw new RuntimeException("User not found");
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Utente non trovato con email: " + email));
+        String token = UUID.randomUUID().toString();
+        user.setResetToken(token);
+        user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
+        userRepository.save(user);
+        return token;
     }
 
     public boolean isResetTokenValid(String token) {
@@ -77,11 +77,11 @@ public class UserService {
         User user = userRepository.findByResetToken(token);
         if (user != null && LocalDateTime.now().isBefore(user.getResetTokenExpiry())) {
             user.setPassword(bCryptPasswordEncoder.encode(newPassword));
-            user.setResetToken(null); // Invalida il token
+            user.setResetToken(null);
             user.setResetTokenExpiry(null);
             userRepository.save(user);
         } else {
-            throw new RuntimeException("Invalid or expired token");
+            throw new RuntimeException("Token non valido o scaduto");
         }
     }
 }

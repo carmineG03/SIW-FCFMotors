@@ -2,15 +2,16 @@ package it.uniroma3.siwprogetto.service;
 
 import it.uniroma3.siwprogetto.model.CartItem;
 import it.uniroma3.siwprogetto.model.Product;
+import it.uniroma3.siwprogetto.model.Subscription;
 import it.uniroma3.siwprogetto.repository.CartItemRepository;
 import it.uniroma3.siwprogetto.repository.ProductRepository;
+import it.uniroma3.siwprogetto.repository.SubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CartService {
@@ -21,97 +22,58 @@ public class CartService {
     @Autowired
     private ProductRepository productRepository;
 
-    private List<CartItem> savedItems = new ArrayList<>(); // Simulazione salvataggio per dopo
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
 
     public List<CartItem> getCartItems() {
         return cartItemRepository.findAll();
     }
 
-    public List<CartItem> getSavedItems() {
-        return savedItems;
-    }
+    public void addSubscriptionToCart(Long productId, Long subscriptionId) {
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new IllegalArgumentException("Prodotto non trovato"));
+        Subscription subscription = subscriptionRepository.findById(subscriptionId)
+            .orElseThrow(() -> new IllegalArgumentException("Abbonamento non trovato"));
 
-    public void addToCart(Long productId) {
-        Optional<Product> product = productRepository.findById(productId);
-        if (product.isPresent()) {
-            CartItem item = new CartItem();
-            item.setProduct(product.get());
-            item.setQuantity(1);
-            cartItemRepository.save(item);
-        } else {
-            throw new IllegalArgumentException("Prodotto non trovato con ID: " + productId);
-        }
+        CartItem item = new CartItem();
+        item.setProduct(product);
+        item.setSubscription(subscription);
+        item.setQuantity(1);
+        cartItemRepository.save(item);
     }
 
     public void updateQuantity(Long itemId, int quantity) {
-        Optional<CartItem> item = cartItemRepository.findById(itemId);
-        if (item.isPresent()) {
-            CartItem cartItem = item.get();
-            if (quantity <= 0) {
-                cartItemRepository.delete(cartItem); // Rimuovi se la quantità è 0
-            } else {
-                cartItem.setQuantity(quantity);
-                cartItemRepository.save(cartItem);
-            }
+        CartItem item = cartItemRepository.findById(itemId)
+            .orElseThrow(() -> new IllegalArgumentException("Elemento non trovato"));
+        if (quantity <= 0) {
+            cartItemRepository.delete(item);
         } else {
-            throw new IllegalArgumentException("Elemento del carrello non trovato con ID: " + itemId);
+            item.setQuantity(quantity);
+            cartItemRepository.save(item);
         }
     }
 
     public void removeFromCart(Long itemId) {
-        Optional<CartItem> item = cartItemRepository.findById(itemId);
-        if (item.isPresent()) {
-            cartItemRepository.deleteById(itemId);
-        } else {
-            throw new IllegalArgumentException("Elemento del carrello non trovato con ID: " + itemId);
-        }
-    }
-
-    public void saveForLater(Long itemId) {
-        Optional<CartItem> item = cartItemRepository.findById(itemId);
-        if (item.isPresent()) {
-            savedItems.add(item.get());
-            cartItemRepository.deleteById(itemId);
-        } else {
-            throw new IllegalArgumentException("Elemento del carrello non trovato con ID: " + itemId);
-        }
-    }
-
-    public void addBackToCart(Long itemId) {
-        CartItem itemToAdd = null;
-        for (CartItem item : savedItems) {
-            if (item.getId().equals(itemId)) {
-                itemToAdd = item;
-                break;
-            }
-        }
-        if (itemToAdd != null) {
-            savedItems.remove(itemToAdd);
-            cartItemRepository.save(itemToAdd);
-        } else {
-            throw new IllegalArgumentException("Elemento salvato non trovato con ID: " + itemId);
-        }
+        CartItem item = cartItemRepository.findById(itemId)
+            .orElseThrow(() -> new IllegalArgumentException("Elemento non trovato"));
+        cartItemRepository.delete(item);
     }
 
     public double calculateSubtotal() {
         return cartItemRepository.findAll().stream()
-                .mapToDouble(item -> {
-                    BigDecimal price = item.getProduct().getPrice();
-                    BigDecimal quantity = BigDecimal.valueOf(item.getQuantity());
-                    return price.multiply(quantity).doubleValue();
-                })
-                .sum();
+            .filter(item -> item.getSubscription() != null)
+            .mapToDouble(item -> BigDecimal.valueOf(item.getSubscription().getPrice()).multiply(BigDecimal.valueOf(item.getQuantity())).doubleValue())
+            .sum();
     }
 
-    public double calculateTotal() {
-        return calculateSubtotal(); // Aggiungi logica per spedizione se necessario
-    }
-
-    public List<Product> getSuggestedProducts() {
-        return productRepository.findAll().stream()
-                .filter(p -> !cartItemRepository.findAll().stream()
-                        .anyMatch(item -> item.getProduct().getId().equals(p.getId())))
-                .limit(4)
-                .toList();
+    public void checkoutSubscriptions() {
+        List<CartItem> items = cartItemRepository.findAll();
+        for (CartItem item : items) {
+            Product product = item.getProduct();
+            product.setIsFeatured(true);
+            product.setFeaturedUntil(LocalDateTime.now().plusDays(item.getSubscription().getDurationDays()));
+            productRepository.save(product);
+        }
+        cartItemRepository.deleteAll();
     }
 }

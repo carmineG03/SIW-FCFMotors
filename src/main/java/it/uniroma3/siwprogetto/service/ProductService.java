@@ -19,7 +19,7 @@ public class ProductService {
     }
 
     public List<Product> findAll() {
-        return productRepository.findAll();
+        return (List<Product>) productRepository.findAll();
     }
 
     public List<Product> findByCategory(String category) {
@@ -30,8 +30,8 @@ public class ProductService {
         return productRepository.findAllCategories();
     }
 
-    public List<String> findAllBrands() {
-        return productRepository.findAllBrands();
+    public Iterable<Product> findAllBrands() {
+        return productRepository.findAll();
     }
 
     public List<String> findModelsByBrand(String brand) {

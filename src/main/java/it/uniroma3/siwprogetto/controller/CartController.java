@@ -1,6 +1,10 @@
 package it.uniroma3.siwprogetto.controller;
 
 import it.uniroma3.siwprogetto.model.CartItem;
+import it.uniroma3.siwprogetto.model.Product;
+import it.uniroma3.siwprogetto.model.Subscription;
+import it.uniroma3.siwprogetto.repository.ProductRepository;
+import it.uniroma3.siwprogetto.repository.SubscriptionRepository;
 import it.uniroma3.siwprogetto.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,29 +25,56 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
+
     @GetMapping("/cart")
     public String showCartPage(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal());
-        model.addAttribute("isAuthenticated", isAuthenticated);
+        if (!isAuthenticated) {
+            return "redirect:/login";
+        }
 
+        model.addAttribute("isAuthenticated", isAuthenticated);
         List<CartItem> cartItems = cartService.getCartItems();
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("cartCount", cartItems.size());
         model.addAttribute("subtotal", cartService.calculateSubtotal());
-        model.addAttribute("total", cartService.calculateTotal());
-        model.addAttribute("suggestedProducts", cartService.getSuggestedProducts());
-        model.addAttribute("savedItems", cartService.getSavedItems());
 
         return "cart";
     }
 
-    @PostMapping("/cart/add/{productId}")
+    @GetMapping("/add-subscription/{productId}")
+    public String showAddSubscriptionPage(@PathVariable Long productId, Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal());
+        if (!isAuthenticated) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("isAuthenticated", isAuthenticated);
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new IllegalArgumentException("Prodotto non trovato"));
+        List<Subscription> subscriptions = subscriptionRepository.findAll();
+        List<CartItem> cartItems = cartService.getCartItems();
+
+        model.addAttribute("product", product);
+        model.addAttribute("subscriptions", subscriptions);
+        model.addAttribute("cartCount", cartItems.size());
+
+        return "add-subscription";
+    }
+
+    @PostMapping("/cart/add-subscription/{productId}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> addToCart(@PathVariable Long productId) {
+    public ResponseEntity<Map<String, Object>> addSubscriptionToCart(@PathVariable Long productId, @RequestParam Long subscriptionId) {
         Map<String, Object> response = new HashMap<>();
         try {
-            cartService.addToCart(productId);
+            cartService.addSubscriptionToCart(productId, subscriptionId);
             response.put("success", true);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -84,27 +115,12 @@ public class CartController {
         }
     }
 
-    @PostMapping("/cart/save-for-later/{itemId}")
+    @PostMapping("/cart/checkout-subscriptions")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> saveForLater(@PathVariable Long itemId) {
+    public ResponseEntity<Map<String, Object>> checkoutSubscriptions() {
         Map<String, Object> response = new HashMap<>();
         try {
-            cartService.saveForLater(itemId);
-            response.put("success", true);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    @PostMapping("/cart/add-back/{itemId}")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> addBackToCart(@PathVariable Long itemId) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            cartService.addBackToCart(itemId);
+            cartService.checkoutSubscriptions();
             response.put("success", true);
             return ResponseEntity.ok(response);
         } catch (Exception e) {

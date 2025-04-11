@@ -62,6 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Aggiungi evento di click per filtrare per categoria
+    categoryItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const category = item.getAttribute('data-category');
+            window.location.href = `/products?category=${category}`;
+        });
+    });
+
     // Aggiorna il numero di elementi visibili quando la finestra viene ridimensionata
     window.addEventListener('resize', () => {
         const newVisibleItems = getVisibleItems();
@@ -75,17 +83,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inizializza il carosello
     updateCarousel();
 
-    // Altre funzioni (rimaste invariate)
-    function validateSearch() {
+    // Funzione per mostrare un toast
+    const showToast = (message, isError = false) => {
+        let toast = document.getElementById('toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.className = 'toast';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.className = 'toast show';
+        toast.style.backgroundColor = isError ? '#DC3545' : '#28A745';
+        setTimeout(() => toast.className = 'toast', 3000);
+    };
+
+    // Validazione del form di ricerca
+    window.validateSearch = function() {
         const searchInput = document.getElementById('search-input').value.trim();
         if (searchInput.length < 3) {
-            alert('Inserisci almeno 3 caratteri per la ricerca.');
+            showToast('Inserisci almeno 3 caratteri per la ricerca.', true);
             return false;
         }
         return true;
-    }
+    };
 
-    function filterProducts() {
+    // Filtro dei prodotti in evidenza
+    window.filterProducts = function() {
         const filterValue = document.getElementById('product-filter').value.toLowerCase();
         const products = document.querySelectorAll('.product-item');
         products.forEach(product => {
@@ -96,8 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 product.style.display = 'none';
             }
         });
-    }
+    };
 
+    // Effetti visivi sul form di ricerca
     const searchInput = document.getElementById('search-input');
     searchInput.addEventListener('focus', function() {
         this.parentElement.parentElement.style.transform = 'scale(1.05)';

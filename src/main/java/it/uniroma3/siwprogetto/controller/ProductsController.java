@@ -1,5 +1,6 @@
 package it.uniroma3.siwprogetto.controller;
 
+import it.uniroma3.siwprogetto.service.CartService;
 import it.uniroma3.siwprogetto.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -17,17 +18,19 @@ import java.math.BigDecimal;
 public class ProductsController {
 
     private final ProductService productService;
+    private final CartService cartService;
 
     @Autowired
-    public ProductsController(ProductService productService) {
+    public ProductsController(ProductService productService, CartService cartService) {
         this.productService = productService;
+        this.cartService = cartService;
     }
 
     @GetMapping
     public String showProductsPage(Model model,
                                    @RequestParam(value = "category", required = false) String category,
                                    @RequestParam(value = "brand", required = false) String brand,
-                                   @RequestParam(value = "model", required = false) String selectedModel, // Rinominato
+                                   @RequestParam(value = "model", required = false) String selectedModel,
                                    @RequestParam(value = "minPrice", required = false) BigDecimal minPrice,
                                    @RequestParam(value = "maxPrice", required = false) BigDecimal maxPrice,
                                    @RequestParam(value = "minMileage", required = false) Integer minMileage,
@@ -52,6 +55,9 @@ public class ProductsController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal());
         model.addAttribute("isAuthenticated", isAuthenticated);
+
+        // Aggiungi il conteggio del carrello
+        model.addAttribute("cartCount", cartService.getCartItems().size());
 
         return "products";
     }
