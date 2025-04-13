@@ -9,6 +9,12 @@
 <header>
     <h2>Informazioni Account</h2>
     <a href="/" class="icon-button"><i class="fas fa-arrow-left"></i></a>
+   <button th:if="${user.rolesString != null and user.rolesString.contains('PRIVATE')}" onclick="window.location.href='/manutenzione/private'">
+       Manutenzione Private
+   </button>
+   <button th:if="${user.rolesString != null and user.rolesString.contains('DEALER')}" onclick="window.location.href='/manutenzione/dealer'">
+       Manutenzione Dealer
+   </button>
 </header>
 
 <div class="wrapper">

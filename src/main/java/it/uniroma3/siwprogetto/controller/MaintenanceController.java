@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @Secured("ROLE_ADMIN")
-@RequestMapping("/manutenzione")
+@RequestMapping("/manutenzione/admin")
 public class MaintenanceController {
 
     private final ProductRepository productRepository;

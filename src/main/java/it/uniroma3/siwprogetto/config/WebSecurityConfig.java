@@ -48,7 +48,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/cart/**").permitAll() // Permetti tutte le richieste a /cart/**
                         .requestMatchers(HttpMethod.POST, "/cart/**").permitAll() // Permetti esplicitamente le POST a /cart/**
                         .requestMatchers("/account").authenticated()
-                        .requestMatchers("/manutenzione/**").hasAnyAuthority(SecurityConstants.ADMIN_ROLE)
+                        //.requestMatchers("/manutenzione/**").hasAnyAuthority(SecurityConstants.ADMIN_ROLE)
+                        .requestMatchers("/manutenzione/private").hasAnyAuthority(SecurityConstants.PRIVATE_ROLE)
+                        .requestMatchers("/manutenzione/dealer").hasAuthority(SecurityConstants.DEALER_ROLE)
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) -> response.sendRedirect("/index")))
