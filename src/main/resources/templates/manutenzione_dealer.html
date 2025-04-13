@@ -1,6 +1,88 @@
-<html>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manutenzione - Dealer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
 <body>
-    <h1>Manutenzione - Dealer</h1>
-    <p>Questa è la schermata di manutenzione per gli utenti DEALER.</p>
+<header class="header-transparent">
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img src="/image/logo1.png" alt="FCF Motors Logo" class="logo">
+            </div>
+        </a>
+    </div>
+    <div class="nav-container">
+        <a href="javascript:history.back()" class="back-button"><i class="fas fa-arrow-left"></i> Torna Indietro</a>
+    </div>
+</header>
+
+<section class="hero-section" id="dealership-form-section">
+    <div class="hero-content">
+        <h2>Crea/Modifica Concessionario</h2>
+        <form id="dealership-form" class="search-form">
+            <div class="input-field">
+                <input type="text" id="dealership-name" placeholder="Nome Concessionario" required>
+            </div>
+            <div class="input-field">
+                <textarea id="dealership-description" placeholder="Descrizione" required></textarea>
+            </div>
+            <div class="input-field">
+                <input type="text" id="dealership-address" placeholder="Indirizzo" required>
+            </div>
+            <div class="input-field">
+                <input type="text" id="dealership-contact" placeholder="Contatti" required>
+            </div>
+            <div class="input-field">
+                <input type="file" id="dealership-image" accept="image/*" required>
+            </div>
+            <button type="submit"><i class="fas fa-save"></i> Salva</button>
+        </form>
+    </div>
+</section>
+
+<section class="account-details-section" id="dealership-details" style="display: none;">
+    <div class="account-details-container">
+        <h3>Dettagli Concessionario</h3>
+        <div id="dealership-image-preview"></div>
+        <p><strong>Nome:</strong> <span id="display-name"></span></p>
+        <p><strong>Descrizione:</strong> <span id="display-description"></span></p>
+        <p><strong>Indirizzo:</strong> <span id="display-address"></span></p>
+        <p><strong>Contatti:</strong> <span id="display-contact"></span></p>
+        <a href="#" class="edit-link" onclick="editDealership()">Modifica</a>
+    </div>
+</section>
+
+<section class="hero-section" id="add-car-section" style="display: none;">
+    <div class="hero-content">
+        <h2>Aggiungi una Macchina</h2>
+        <form id="dealer-add-car-form" class="search-form">
+            <div class="input-field">
+                <input type="text" id="dealer-car-name" placeholder="Nome Macchina" required>
+            </div>
+            <div class="input-field">
+                <textarea id="dealer-car-description" placeholder="Descrizione" required></textarea>
+            </div>
+            <div class="input-field">
+                <input type="number" id="dealer-car-price" placeholder="Prezzo (€)" required>
+            </div>
+            <div class="input-field">
+                <input type="file" id="dealer-car-image" accept="image/*" required>
+            </div>
+            <button type="submit"><i class="fas fa-plus"></i> Aggiungi</button>
+        </form>
+    </div>
+</section>
+
+<section class="products-section">
+    <div id="dealer-added-cars" class="product-container"></div>
+</section>
+
+<div class="toast" id="toast">Operazione completata con successo!</div>
+<script src="/js/maintenance_dealer.js"></script>
 </body>
 </html>
