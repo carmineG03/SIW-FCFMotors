@@ -5,7 +5,7 @@
     <title>Trova Concessionario - FCF Motors</title>
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Includi Mapbox GL JS -->
+    <!-- Mapbox GL JS -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet"/>
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
 </head>
@@ -19,7 +19,7 @@
             </a>
             <div class="title-container">
                 <h1 class="main-title">FCF MOTORS</h1>
-                <a href="/products" class="products-button"><i class="fas fa-car"></i> Prodotti</a>
+                <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
                 <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Trova Concessionario</a>
             </div>
         </div>
@@ -35,16 +35,45 @@
     <main>
         <section class="dealers-section">
             <h2>Trova un Concessionario</h2>
-            <form id="dealer-search-form" onsubmit="searchDealers(event)">
+            <p class="section-subtitle">Inserisci il tuo codice postale o città per trovare i concessionari più vicini.</p>
+            <form id="dealer-search-form">
                 <div class="input-field">
-                    <input type="text" id="search-input" placeholder="Inserisci codice postale o indirizzo" required/>
+                    <input type="text" id="search-input" placeholder="Es. 20121 o Milano" required/>
                 </div>
-                <button type="submit"><i class="fas fa-search"></i> Cerca</button>
+                <button type="submit" class="search-button"><i class="fas fa-search"></i> Cerca</button>
             </form>
-            <div id="map"></div>
+            <p id="search-error" class="error-message"></p>
+            <div id="map" class="map-container"></div>
             <div id="dealers-list" class="dealers-list"></div>
         </section>
     </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Navigazione</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Trova Auto</a></li>
+                    <li><a href="/dealers">Concessionari</a></li>
+                    <li><a href="/cart">Carrello</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contatti</h4>
+                <p>Email: info@fcfmotors.com</p>
+                <p>Telefono: +39 123 456 7890</p>
+                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+            </div>
+            <div class="footer-section">
+                <h4>Informazioni</h4>
+                <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
 
     <script src="/js/dealers.js" defer></script>
 </body>

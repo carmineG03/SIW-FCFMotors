@@ -31,5 +31,5 @@ public class CartItem {
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
     public Subscription getSubscription() { return subscription; }
-    public void setSubscription(Subscription subscription) { this.subscription = subscription; }
+    public void setSubscription(Subscription subscription2) { this.subscription = subscription2; }
 }

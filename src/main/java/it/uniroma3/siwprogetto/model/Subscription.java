@@ -1,7 +1,5 @@
 package it.uniroma3.siwprogetto.model;
 
-import java.math.BigDecimal;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

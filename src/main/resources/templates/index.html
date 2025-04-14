@@ -34,18 +34,19 @@
         <section class="hero-section">
             <div class="hero-content">
                 <h2>Scopri la tua auto ideale oggi!</h2>
+                <p class="hero-subtitle">Esplora migliaia di auto nuove e usate, trova il modello perfetto per te.</p>
                 <form class="search-form" action="/search" method="get" onsubmit="return validateSearch()">
                     <div class="input-field">
-                        <input type="text" name="query" id="search-input" placeholder="Cerca auto..." required/>
+                        <input type="text" name="query" id="search-input" placeholder="Cerca marca, modello o categoria..." required/>
                     </div>
-                    <button type="submit"><i class="fas fa-search"></i> Cerca</button>
+                    <button type="submit" class="search-button"><i class="fas fa-search"></i> Cerca</button>
                 </form>
+                <a href="/products" class="cta-button">Sfoglia tutte le auto</a>
             </div>
         </section>
 
-        <!-- Sezione per le marche -->
         <section class="brands-section">
-            <h3>Trova una selezione delle nostre auto più popolari</h3>
+            <h3>Marche più popolari</h3>
             <div class="brands-container">
                 <a href="/brand/Alfa Romeo" class="brand-item">
                     <img th:src="@{/image/alfa-romeo-logo.png}" alt="Alfa Romeo"/>
@@ -63,85 +64,45 @@
                     <img th:src="@{/image/fiat-logo.png}" alt="Fiat"/>
                     <p>Fiat</p>
                 </a>
-                <a href="/brand/Ford" class="brand-item">
-                    <img th:src="@{/image/ford-logo.png}" alt="Ford"/>
-                    <p>Ford</p>
-                </a>
-                <a href="/brand/Hyundai" class="brand-item">
-                    <img th:src="@{/image/hyundai-logo.png}" alt="Hyundai"/>
-                    <p>Hyundai</p>
-                </a>
                 <a href="/brand/Mercedes-Benz" class="brand-item">
                     <img th:src="@{/image/mercedes-benz-logo.png}" alt="Mercedes-Benz"/>
                     <p>Mercedes-Benz</p>
-                </a>
-                <a href="/brand/Mini" class="brand-item">
-                    <img th:src="@{/image/mini-logo.png}" alt="Mini"/>
-                    <p>Mini</p>
-                </a>
-                <a href="/brand/Peugeot" class="brand-item">
-                    <img th:src="@{/image/peugeot-logo.png}" alt="Peugeot"/>
-                    <p>Peugeot</p>
-                </a>
-                <a href="/brand/Renault" class="brand-item">
-                    <img th:src="@{/image/renault-logo.png}" alt="Renault"/>
-                    <p>Renault</p>
                 </a>
                 <a href="/brand/Toyota" class="brand-item">
                     <img th:src="@{/image/toyota-logo.png}" alt="Toyota"/>
                     <p>Toyota</p>
                 </a>
-                <a href="/brand/Volkswagen" class="brand-item">
-                    <img th:src="@{/image/volkswagen-logo.png}" alt="Volkswagen"/>
-                    <p>Volkswagen</p>
-                </a>
-                <a href="/brand/Honda" class="brand-item">
-                    <img th:src="@{/image/honda.png}" alt="Honda"/>
-                    <p>Honda</p>
-                </a>
-                <a href="/brand/Citroen" class="brand-item">
-                    <img th:src="@{/image/citroen.jpg}" alt="Citroen"/>
-                    <p>Citroen</p>
-                </a>
-                <a href="/brand/Jeep" class="brand-item">
-                    <img th:src="@{/image/jeep.png}" alt="Jeep"/>
-                    <p>Jeep</p>
-                </a>
-                <a href="/brand/Kia" class="brand-item">
-                    <img th:src="@{/image/kia.jpg}" alt="Kia"/>
-                    <p>Kia</p>
-                </a>
             </div>
-            <a href="/brands" class="all-brands-link">Tutte le marche <i class="fas fa-chevron-right"></i></a>
+            <a href="/products" class="all-brands-link">Scopri tutte le marche <i class="fas fa-chevron-right"></i></a>
         </section>
 
         <section class="categories-section">
-            <h3>Esplora le Categorie</h3>
+            <h3>Esplora le nostre categorie</h3>
             <div class="carousel-container">
                 <button id="prev-btn" class="carousel-btn"><i class="fas fa-chevron-left"></i></button>
                 <div class="carousel" id="carousel">
                     <div class="category-item" data-category="Berlina">
-                        <img src="https://img.freepik.com/vettori-gratuito/illustrazione-del-concetto-di-auto-berlina_114360-12264.jpg?t=st=1743976464~exp=1743980064~hmac=58e2c1f1f0653b5e94800b1afb3ffbebf12068fae410b29a54dac35b18eaca2d&w=996" alt="Berlina"/>
+                        <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a" alt="Berlina"/>
                         <p>Berlina</p>
                     </div>
                     <div class="category-item" data-category="City Car">
-                        <img src="https://img.freepik.com/vettori-gratuito/illustrazione-del-concetto-di-guida_114360-11043.jpg?t=st=1743975741~exp=1743979341~hmac=7202d3b64cd01614d74e27e39eeac0e06525d154475e1e146e5dc568250645ab&w=996" alt="City Car"/>
+                        <img src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7" alt="City Car"/>
                         <p>City Car</p>
                     </div>
                     <div class="category-item" data-category="SUV">
-                        <img src="https://img.freepik.com/vettori-gratuito/illustrazione-del-concetto-di-auto-suv_114360-12267.jpg?t=st=1743975714~exp=1743979314~hmac=3da3aa139b45ac6c8153a9e11d29169eaaef1cdcaca05b733a15c1f03a5c5866&w=996" alt="SUV"/>
+                        <img src="https://images.unsplash.com/photo-1580273916550-ebdde69686ab" alt="SUV"/>
                         <p>SUV</p>
                     </div>
                     <div class="category-item" data-category="Station Wagon">
-                        <img src="https://img.freepik.com/vettori-gratuito/illustrazione-del-concetto-di-auto-suv_114360-16466.jpg?t=st=1743975866~exp=1743979466~hmac=4851fd830d9b0eae1a3b4bf864e130d6a90e40951c491a8e857a3869f7b81174&w=996" alt="Station Wagon"/>
+                        <img src="https://images.unsplash.com/photo-1616788494707-ec28f08d05a1" alt="Station Wagon"/>
                         <p>Station Wagon</p>
                     </div>
                     <div class="category-item" data-category="Sportiva">
-                        <img src="https://img.freepik.com/vettori-gratuito/illustrazione-del-concetto-di-auto-sportiva_114360-13217.jpg?t=st=1743975774~exp=1743979374~hmac=bfcfc849701e1f6e75a28bbeb215ea6f9ebedccd3ff1ddbab782bb86a9f960a6&w=996" alt="Sportiva"/>
+                        <img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8" alt="Sportiva"/>
                         <p>Sportiva</p>
                     </div>
                     <div class="category-item" data-category="Monovolume">
-                        <img src="https://static.vecteezy.com/system/resources/previews/047/621/954/non_2x/simple-line-icon-of-a-minivan-car-on-a-white-background-vector.jpg" alt="Monovolume"/>
+                        <img src="https://images.unsplash.com/photo-1590650046871-92c887180603" alt="Monovolume"/>
                         <p>Monovolume</p>
                     </div>
                 </div>
@@ -149,33 +110,62 @@
             </div>
         </section>
 
-        <section class="featured-products">
-            <h3>Auto in Evidenza</h3>
-            <div class="filter-bar">
-                <input type="text" id="product-filter" placeholder="Filtra auto..." onkeyup="filterProducts()"/>
-            </div>
-            <div class="product-container" id="product-container">
-                <div class="product-item" data-name="Auto 1">
-                    <img src="/static/images/auto1.jpg" alt="Auto 1"/>
-                    <h4>Auto 1</h4>
-                    <p class="price">€29.990</p>
-                    <a href="/products/1" class="button">Dettagli</a>
+        <section class="why-choose-us">
+            <h3>Perché scegliere FCF Motors?</h3>
+            <div class="features-container">
+                <div class="feature-item">
+                    <i class="fas fa-car"></i>
+                    <h4>Vasta selezione</h4>
+                    <p>Trova auto di ogni marca e modello, nuove o usate, tutte in un unico posto.</p>
                 </div>
-                <div class="product-item" data-name="Auto 2">
-                    <img src="/static/images/auto2.jpg" alt="Auto 2"/>
-                    <h4>Auto 2</h4>
-                    <p class="price">€49.990</p>
-                    <a href="/products/2" class="button">Dettagli</a>
+                <div class="feature-item">
+                    <i class="fas fa-handshake"></i>
+                    <h4>Acquisto sicuro</h4>
+                    <p>Garanzie certificate e supporto dedicato per un’esperienza senza pensieri.</p>
                 </div>
-                <div class="product-item" data-name="Auto 3">
-                    <img src="/static/images/auto3.jpg" alt="Auto 3"/>
-                    <h4>Auto 3</h4>
-                    <p class="price">€19.990</p>
-                    <a href="/products/3" class="button">Dettagli</a>
+                <div class="feature-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h4>Concessionari vicini</h4>
+                    <p>Collabora con i migliori concessionari nella tua zona.</p>
                 </div>
             </div>
         </section>
     </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Link Utili</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Trova Auto</a></li>
+                    <li><a href="/dealers">Concessionari</a></li>
+                    <li><a href="/cart">Carrello</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contatti</h4>
+                <p>Email: info@fcfmotors.com</p>
+                <p>Telefono: +39 123 456 7890</p>
+                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+            </div>
+            <div class="footer-section">
+                <h4>Seguici</h4>
+                <div class="social-links">
+                    <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Informazioni</h4>
+                <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
 
     <script src="/js/homepage.js" defer></script>
 </body>

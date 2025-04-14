@@ -55,4 +55,9 @@ public class ProductService {
                 minPrice, maxPrice, minMileage, maxMileage,
                 minYear, maxYear, fuelType, transmission);
     }
+
+    public Product findById(Long productId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+    }
 }

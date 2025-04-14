@@ -2,7 +2,6 @@ package it.uniroma3.siwprogetto.controller;
 
 import it.uniroma3.siwprogetto.model.CartItem;
 import it.uniroma3.siwprogetto.model.Product;
-import it.uniroma3.siwprogetto.model.Subscription;
 import it.uniroma3.siwprogetto.repository.ProductRepository;
 import it.uniroma3.siwprogetto.repository.SubscriptionRepository;
 import it.uniroma3.siwprogetto.service.CartService;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import it.uniroma3.siwprogetto.model.Subscription;
 
 @Controller
 public class CartController {
@@ -35,11 +35,8 @@ public class CartController {
     public String showCartPage(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal());
-        if (!isAuthenticated) {
-            return "redirect:/login";
-        }
-
         model.addAttribute("isAuthenticated", isAuthenticated);
+
         List<CartItem> cartItems = cartService.getCartItems();
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("cartCount", cartItems.size());
@@ -52,11 +49,8 @@ public class CartController {
     public String showAddSubscriptionPage(@PathVariable Long productId, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal());
-        if (!isAuthenticated) {
-            return "redirect:/login";
-        }
-
         model.addAttribute("isAuthenticated", isAuthenticated);
+
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new IllegalArgumentException("Prodotto non trovato"));
         List<Subscription> subscriptions = subscriptionRepository.findAll();

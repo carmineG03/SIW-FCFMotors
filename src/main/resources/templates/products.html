@@ -8,120 +8,6 @@
     <title>Prodotti - FCF Motors</title>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        .filters {
-            display: flex;
-            flex-wrap: nowrap; /* Modificato per evitare l'avvolgimento */
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            overflow-x: auto; /* Aggiunto per consentire lo scorrimento orizzontale */
-            white-space: nowrap; /* Impedisce ai filtri di andare a capo */
-        }
-        .filter-group {
-            flex: 0 0 auto; /* Impedisce ai filtri di ridursi troppo */
-            min-width: 200px; /* Larghezza minima per ogni filtro */
-        }
-        .filter-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #FFFFFF;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-        .filter-group select, .filter-group input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 5px;
-            background: transparent;
-            color: #FFFFFF;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-        .filter-group select:focus, .filter-group input:focus {
-            border-color: #F5A623;
-        }
-        .filter-group select option {
-            background: #333333;
-            color: #FFFFFF;
-        }
-        .cars-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-        .car-item {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            text-align: center;
-            background-color: #fff;
-        }
-        .car-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-        .car-item h3 {
-            margin: 10px 0;
-            font-size: 1.2em;
-            color: #333;
-        }
-        .car-item p {
-            margin: 5px 0;
-            color: #666;
-        }
-        .price {
-            font-weight: bold;
-            color: #007bff;
-        }
-        .button-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .button {
-            background-color: #007bff;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            text-align: center;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
-        .no-products {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
-        .search-content {
-            max-width: 600px;
-        }
-        @media (max-width: 768px) {
-            .search-content {
-                max-width: 90%;
-            }
-            .filters {
-                padding: 10px;
-            }
-            .filter-group {
-                min-width: 150px;
-            }
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -149,81 +35,94 @@
         </div>
     </header>
 
-    <section class="products-page">
-        <section class="search-section">
-            <div class="search-content">
-                <h2>Trova Auto</h2>
+    <section class="search-section">
+        <div class="search-content">
+            <h2>Trova Auto</h2>
+            <div class="search-filter-group">
                 <form class="search-form" action="/search" method="get" onsubmit="return validateSearch()">
                     <div class="input-field">
                         <input type="text" name="query" id="search-input" placeholder="Cerca auto..." required/>
                     </div>
-                    <button type="submit"><i class="fas fa-search"></i> Cerca</button>
+                    <button type="submit" class="search-button">
+                        <i class="fas fa-search"></i> Cerca
+                    </button>
                 </form>
-                <form th:action="@{/products}" method="get" class="filters">
-                    <div class="filter-group">
-                        <label for="category">Categoria</label>
-                        <select id="category" name="category">
-                            <option value="">Tutte</option>
-                            <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="brand">Marca</label>
-                        <select id="brand" name="brand" onchange="this.form.submit()">
-                            <option value="">Tutte</option>
-                            <option th:each="b : ${brands}" th:value="${b}" th:text="${b}"></option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="model">Modello</label>
-                        <select id="model" name="model">
-                            <option value="">Tutti</option>
-                            <option th:each="m : ${models}" th:value="${m}" th:text="${m}"></option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="minPrice">Prezzo Min (€)</label>
-                        <input type="number" id="minPrice" name="minPrice" step="0.01"/>
-                    </div>
-                    <div class="filter-group">
-                        <label for="maxPrice">Prezzo Max (€)</label>
-                        <input type="number" id="maxPrice" name="maxPrice" step="0.01"/>
-                    </div>
-                    <div class="filter-group">
-                        <label for="minMileage">Chilometraggio Min</label>
-                        <input type="number" id="minMileage" name="minMileage"/>
-                    </div>
-                    <div class="filter-group">
-                        <label for="maxMileage">Chilometraggio Max</label>
-                        <input type="number" id="maxMileage" name="maxMileage"/>
-                    </div>
-                    <div class="filter-group">
-                        <label for="minYear">Anno Min</label>
-                        <input type="number" id="minYear" name="minYear"/>
-                    </div>
-                    <div class="filter-group">
-                        <label for="maxYear">Anno Max</label>
-                        <input type="number" id="maxYear" name="maxYear"/>
-                    </div>
-                    <div class="filter-group">
-                        <label for="fuelType">Carburante</label>
-                        <select id="fuelType" name="fuelType">
-                            <option value="">Tutti</option>
-                            <option th:each="fuel : ${fuelTypes}" th:value="${fuel}" th:text="${fuel}"></option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="transmission">Trasmissione</label>
-                        <select id="transmission" name="transmission">
-                            <option value="">Tutte</option>
-                            <option th:each="trans : ${transmissions}" th:value="${trans}" th:text="${trans}"></option>
-                        </select>
-                    </div>
-                    <button type="submit" class="button">Filtra</button>
-                </form>
+                <button class="filter-button" onclick="openFilterPopup()">Filtra</button>
             </div>
-        </section>
+        </div>
+    </section>
 
+    <!-- Popup per i filtri -->
+    <div id="filterPopup" class="filter-popup">
+        <div class="filter-popup-content">
+            <span class="close-popup" onclick="closeFilterPopup()">×</span>
+            <h3>Filtra Auto</h3>
+            <form th:action="@{/products}" method="get" class="filters-popup">
+                <div class="filter-group">
+                    <label for="category">Categoria</label>
+                    <select id="category" name="category">
+                        <option value="">Tutte</option>
+                        <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="brand">Marca</label>
+                    <select id="brand" name="brand">
+                        <option value="">Tutte</option>
+                        <option th:each="b : ${brands}" th:value="${b}" th:text="${b}"></option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="model">Modello</label>
+                    <select id="model" name="model">
+                        <option value="">Tutti</option>
+                        <option th:each="m : ${models}" th:value="${m}" th:text="${m}"></option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="minPrice">Prezzo Min (€)</label>
+                    <input type="number" id="minPrice" name="minPrice" step="0.01"/>
+                </div>
+                <div class="filter-group">
+                    <label for="maxPrice">Prezzo Max (€)</label>
+                    <input type="number" id="maxPrice" name="maxPrice" step="0.01"/>
+                </div>
+                <div class="filter-group">
+                    <label for="minMileage">Chilometraggio Min</label>
+                    <input type="number" id="minMileage" name="minMileage"/>
+                </div>
+                <div class="filter-group">
+                    <label for="maxMileage">Chilometraggio Max</label>
+                    <input type="number" id="maxMileage" name="maxMileage"/>
+                </div>
+                <div class="filter-group">
+                    <label for="minYear">Anno Min</label>
+                    <input type="number" id="minYear" name="minYear"/>
+                </div>
+                <div class="filter-group">
+                    <label for="maxYear">Anno Max</label>
+                    <input type="number" id="maxYear" name="maxYear"/>
+                </div>
+                <div class="filter-group">
+                    <label for="fuelType">Carburante</label>
+                    <select id="fuelType" name="fuelType">
+                        <option value="">Tutti</option>
+                        <option th:each="fuel : ${fuelTypes}" th:value="${fuel}" th:text="${fuel}"></option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="transmission">Trasmissione</label>
+                    <select id="transmission" name="transmission">
+                        <option value="">Tutte</option>
+                        <option th:each="trans : ${transmissions}" th:value="${trans}" th:text="${trans}"></option>
+                    </select>
+                </div>
+                <button type="submit" class="apply-button">Applica</button>
+            </form>
+        </div>
+    </div>
+
+    <section class="products-page">
         <div class="cars-grid">
             <div th:if="${products != null and not #lists.isEmpty(products)}">
                 <div th:each="product : ${products}" class="car-item">
@@ -249,6 +148,45 @@
         </div>
     </section>
 
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>FCF Motors</h3>
+                <p>La tua passione trova la sua strada con noi.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Link Utili</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Trova Auto</a></li>
+                    <li><a href="/dealers">Concessionari</a></li>
+                    <li><a href="/account">Account</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contatti</h4>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:info@fcfmotors.com">info@fcfmotors.com</a></li>
+                    <li><i class="fas fa-phone"></i> <a href="tel:+390123456789">+39 012 345 6789</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Seguici</h4>
+                <div class="social-links">
+                    <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span id="current-year"></span> FCF Motors. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+
     <script>
         function validateSearch() {
             const searchInput = document.getElementById('search-input').value.trim();
@@ -257,6 +195,21 @@
                 return false;
             }
             return true;
+        }
+
+        function openFilterPopup() {
+            document.getElementById('filterPopup').style.display = 'flex';
+        }
+
+        function closeFilterPopup() {
+            document.getElementById('filterPopup').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const popup = document.getElementById('filterPopup');
+            if (event.target === popup) {
+                popup.style.display = 'none';
+            }
         }
     </script>
 </body>

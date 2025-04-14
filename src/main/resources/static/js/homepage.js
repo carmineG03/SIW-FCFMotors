@@ -108,19 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     };
 
-    // Filtro dei prodotti in evidenza
-    window.filterProducts = function() {
-        const filterValue = document.getElementById('product-filter').value.toLowerCase();
-        const products = document.querySelectorAll('.product-item');
-        products.forEach(product => {
-            const productName = product.getAttribute('data-name').toLowerCase();
-            if (productName.includes(filterValue)) {
-                product.style.display = 'block';
-            } else {
-                product.style.display = 'none';
-            }
-        });
-    };
 
     // Effetti visivi sul form di ricerca
     const searchInput = document.getElementById('search-input');
