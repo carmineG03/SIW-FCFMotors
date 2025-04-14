@@ -5,6 +5,7 @@ import it.uniroma3.siwprogetto.model.User;
 import it.uniroma3.siwprogetto.repository.AccountInformationRepository;
 import it.uniroma3.siwprogetto.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.security.Principal;
 import java.util.Optional;
+
+import static it.uniroma3.siwprogetto.util.SecurityUtils.hasRole;
 
 @Controller
 public class AccountController {
@@ -123,5 +126,25 @@ public class AccountController {
         }
         model.addAttribute("isAuthenticated", principal != null);
         return "index";
+    }
+
+    @GetMapping("/manutenzione")
+    public String manutenzione(Authentication auth) {
+        if (hasRole("ROLE_PRIVATE")) {
+            return "redirect:/manutenzione/private";
+        } else if (hasRole("ROLE_DEALER")) {
+            return "redirect:/manutenzione/dealer";
+        }
+        return "redirect:/access-denied";
+    }
+
+    @GetMapping("/manutenzione/private")
+    public String manutenzionePrivate() {
+        return "manutenzione_private"; // Template per PRIVATE
+    }
+
+    @GetMapping("/manutenzione/dealer")
+    public String manutenzioneDealer() {
+        return "manutenzione_dealer"; // Template per DEALER
     }
 }

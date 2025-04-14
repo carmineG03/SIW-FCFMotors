@@ -21,13 +21,13 @@ public class UserService {
     }
 
     public void save(User user) {
-        if ((userRepository.findByEmail(user.getEmail()) != null) && (userRepository.findByUsername(user.getUsername()) != null)) {
+        if ((userRepository.findByEmail(user.getEmail()).isPresent()) && (userRepository.findByUsername(user.getUsername()).isPresent())) {
             throw new RuntimeException("Email e username già registrati");
         }
-        if (userRepository.findByEmail(user.getEmail()) != null) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("Email già registrata");
         }
-        if (userRepository.findByUsername(user.getUsername()) != null) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new RuntimeException("Username già in uso");
         }
         if (!user.getPassword().equals(user.getConfirmPassword())) {
