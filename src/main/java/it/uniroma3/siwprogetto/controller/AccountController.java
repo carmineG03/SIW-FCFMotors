@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.security.Principal;
-import java.util.Optional;
 
 import static it.uniroma3.siwprogetto.util.SecurityUtils.hasRole;
 
@@ -145,6 +144,6 @@ public class AccountController {
 
     @GetMapping("/manutenzione/dealer")
     public String manutenzioneDealer() {
-        return "manutenzione_dealer"; // Template per DEALER
+        return "manage_dealer"; // Template per DEALER
     }
 }

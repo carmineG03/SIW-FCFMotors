@@ -21,8 +21,10 @@ public class Product {
     private String fuelType;
     private String transmission;
     private String sellerType;
+
     @ManyToOne
-    private User seller;
+    private User seller; // Cambiato da Dealer a User
+
     private boolean isFeatured;
     private LocalDateTime featuredUntil;
 
@@ -55,8 +57,8 @@ public class Product {
     public void setTransmission(String transmission) { this.transmission = transmission; }
     public String getSellerType() { return sellerType; }
     public void setSellerType(String sellerType) { this.sellerType = sellerType; }
-    public User getSeller() { return seller; }
-    public void setSeller(User seller) { this.seller = seller; }
+    public User getSeller() { return seller; } // Cambiato da getDealer a getSeller
+    public void setSeller(User seller) { this.seller = seller; } // Cambiato da setDealer a setSeller
     public boolean isFeatured() { return isFeatured; }
     public void setIsFeatured(boolean isFeatured) { this.isFeatured = isFeatured; }
     public LocalDateTime getFeaturedUntil() { return featuredUntil; }

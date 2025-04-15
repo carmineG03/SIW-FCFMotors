@@ -1,5 +1,6 @@
 package it.uniroma3.siwprogetto.config;
 
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import it.uniroma3.siwprogetto.service.CustomUserDetailsService;
 import it.uniroma3.siwprogetto.service.UserService;
 import it.uniroma3.siwprogetto.util.SecurityUtils;
@@ -17,6 +18,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
@@ -26,7 +28,6 @@ public class WebSecurityConfig {
     private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final AuthenticationFailureHandler customAuthenticationFailureHandler;
     private final PasswordEncoder passwordEncoder;
-    private UserService userService;
 
     @Autowired
     public WebSecurityConfig(CustomUserDetailsService customUserDetailsService,
@@ -42,20 +43,26 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringRequestMatchers("/rest/api/**"))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/forgot-password", "/reset-password", "/index", "/login", "/register", "/products", "/css/**", "/image/**", "/js/**", "favicon.ico").permitAll()
+                        .requestMatchers("/", "/forgot-password", "/reset-password", "/index", "/login", "/register", "/products", "/css/**", "/image/**", "/js/**", "favicon.ico","/static/**", "/Uploads/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login", "/register", "/forgot-password", "/reset-password").permitAll()
-                        .requestMatchers("/cart/**").permitAll() // Permetti tutte le richieste a /cart/**
-                        .requestMatchers(HttpMethod.POST, "/cart/**").permitAll() // Permetti esplicitamente le POST a /cart/**
+                        .requestMatchers("/cart/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/cart/**").permitAll()
                         .requestMatchers("/account").authenticated()
-                        //.requestMatchers("/manutenzione/**").hasAnyAuthority(SecurityConstants.ADMIN_ROLE)
+                        .requestMatchers(HttpMethod.POST, "/rest/api/dealers").hasAuthority(SecurityConstants.DEALER_ROLE)
                         .requestMatchers("/manutenzione/private").hasAnyAuthority(SecurityConstants.PRIVATE_ROLE)
                         .requestMatchers("/manutenzione/dealer").hasAuthority(SecurityConstants.DEALER_ROLE)
+                        .requestMatchers(HttpMethod.POST, "/rest/api/dealers").authenticated() // Richiede autenticazione per /rest/api/dealers POST
+                        .requestMatchers("/rest/dealers-page", "/rest/api/dealers").authenticated()// richiede autenticazione per /rest/api/dealers Get
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) -> response.sendRedirect("/index")))
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login").failureUrl("/login?error=true").permitAll()
+                        .defaultSuccessUrl("/rest/dealers-page",true)
                         .loginProcessingUrl("/perform_login")
                         .usernameParameter("username")
                         .passwordParameter("password")
@@ -92,8 +99,4 @@ public class WebSecurityConfig {
                 .passwordEncoder(passwordEncoder);
     }
 
-    @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
 }

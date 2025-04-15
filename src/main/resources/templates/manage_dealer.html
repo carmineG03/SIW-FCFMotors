@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}" th:if="${_csrf != null}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" th:if="${_csrf != null}"/>
+    <title>Gestione Concessionario</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/toast.css">
+</head>
+<body>
+<header class="header-transparent">
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img src="/image/logo1.png" alt="FCF Motors Logo" class="logo">
+            </div>
+        </a>
+    </div>
+    <div class="nav-container">
+        <a href="/account" class="back-button"><i class="fas fa-arrow-left"></i> Torna Indietro</a>
+    </div>
+</header>
+
+<main>
+    <!-- Debug: Mostra lo stato del dealer -->
+    <div style="display: none;">
+        <div th:if="${dealer != null}">
+            Debug: Dealer trovato - ID: <span th:text="${dealer.id}"></span>, Nome: <span th:text="${dealer.name}"></span>
+        </div>
+        <div th:if="${dealer == null}">
+            Debug: Nessun dealer trovato per l'utente autenticato
+        </div>
+    </div>
+
+    <section class="account-details-section" id="dealership-details" th:if="${dealer != null}">
+        <div class="account-details-container">
+            <h3>Dettagli Concessionario</h3>
+            <p th:if="${errorMessage}" th:text="${errorMessage}" class="error-message"></p>
+            <div id="display-dealer-details">
+                <p><strong>Nome:</strong> <span id="display-name" th:text="${dealer.name}"></span></p>
+                <p><strong>Descrizione:</strong> <span id="display-description" th:text="${dealer.description} ?: ''"></span></p>
+                <p><strong>Indirizzo:</strong> <span id="display-address" th:text="${dealer.address} ?: ''"></span></p>
+                <p><strong>Contatti:</strong> <span id="display-contact" th:text="${dealer.contact} ?: ''"></span></p>
+                <p><strong>Immagine:</strong> <span id="display-imagePath" th:text="${dealer.imagePath} ?: ''"></span></p>
+                <a href="#" id="edit-dealer-button" class="edit-link">Modifica</a>
+            </div>
+            <form id="dealership-form" class="search-form" style="display: none;">
+                <div class="input-field">
+                    <input type="text" id="edit-dealership-name" placeholder="Nome Concessionario" th:value="${dealer.name}" required>
+                </div>
+                <div class="input-field">
+                    <textarea id="edit-dealership-description" placeholder="Descrizione" th:text="${dealer.description}"></textarea>
+                </div>
+                <div class="input-field">
+                    <input type="text" id="edit-dealership-address" placeholder="Indirizzo" th:value="${dealer.address}">
+                </div>
+                <div class="input-field">
+                    <input type="text" id="edit-dealership-contact" placeholder="Contatti" th:value="${dealer.contact}">
+                </div>
+                <div class="input-field">
+                    <input type="text" id="edit-dealership-imagePath" placeholder="URL Immagine" th:value="${dealer.imagePath}">
+                </div>
+                <button type="submit"><i class="fas fa-save"></i> Salva</button>
+                <button type="button" id="cancel-edit-dealer"><i class="fas fa-times"></i> Annulla</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="hero-section" id="add-car-section" th:if="${dealer != null}">
+        <div class="hero-content">
+            <h2>Aggiungi una Macchina</h2>
+            <form id="dealer-add-car-form" class="search-form">
+                <div class="input-field">
+                    <input type="text" id="dealer-car-name" placeholder="Nome Macchina" required>
+                </div>
+                <div class="input-field">
+                    <textarea id="dealer-car-description" placeholder="Descrizione"></textarea>
+                </div>
+                <div class="input-field">
+                    <input type="number" id="dealer-car-price" placeholder="Prezzo (€)" required step="0.01">
+                </div>
+                <button type="submit"><i class="fas fa-plus"></i> Aggiungi</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="products-section" th:if="${dealer != null}">
+        <h3>Macchine Aggiunte</h3>
+        <div id="dealer-added-cars" class="product-container">
+            <div th:if="${products.isEmpty()}">
+                <p>Nessuna macchina aggiunta.</p>
+            </div>
+            <div th:each="product : ${products}" class="product-card">
+                <p><strong>Nome:</strong> <span th:text="${product.name}"></span></p>
+                <p><strong>Descrizione:</strong> <span th:text="${product.description} ?: ''"></span></p>
+                <p><strong>Prezzo:</strong> <span th:text="${product.price} + ' €'"></span></p>
+                <a href="#" th:data-product-id="${product.id}" class="edit-product-link">Modifica</a>
+            </div>
+        </div>
+        <form id="edit-product-form" class="search-form" style="display: none;">
+            <input type="hidden" id="edit-product-id">
+            <div class="input-field">
+                <input type="text" id="edit-product-name" placeholder="Nome Macchina" required>
+            </div>
+            <div class="input-field">
+                <textarea id="edit-product-description" placeholder="Descrizione"></textarea>
+            </div>
+            <div class="input-field">
+                <input type="number" id="edit-product-price" placeholder="Prezzo (€)" required step="0.01">
+            </div>
+            <button type="submit"><i class="fas fa-save"></i> Salva</button>
+            <button type="button" id="cancel-edit-product"><i class="fas fa-times"></i> Annulla</button>
+        </form>
+    </section>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="/js/dealer_manage.js"></script>
+</body>
+</html>

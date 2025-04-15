@@ -33,17 +33,17 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
     List<String> findAllTransmissions();
 
     @Query("SELECT p FROM Product p WHERE " +
-           "(:category IS NULL OR p.category = :category) " +
-           "AND (:brand IS NULL OR p.brand = :brand) " +
-           "AND (:selectedModel IS NULL OR p.model = :selectedModel) " +
-           "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
-           "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
-           "AND (:minMileage IS NULL OR p.mileage >= :minMileage) " +
-           "AND (:maxMileage IS NULL OR p.mileage <= :maxMileage) " +
-           "AND (:minYear IS NULL OR p.year >= :minYear) " +
-           "AND (:maxYear IS NULL OR p.year <= :maxYear) " +
-           "AND (:fuelType IS NULL OR p.fuelType = :fuelType) " +
-           "AND (:transmission IS NULL OR p.transmission = :transmission)")
+            "(:category IS NULL OR p.category = :category) " +
+            "AND (:brand IS NULL OR p.brand = :brand) " +
+            "AND (:selectedModel IS NULL OR p.model = :selectedModel) " +
+            "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
+            "AND (:minMileage IS NULL OR p.mileage >= :minMileage) " +
+            "AND (:maxMileage IS NULL OR p.mileage <= :maxMileage) " +
+            "AND (:minYear IS NULL OR p.year >= :minYear) " +
+            "AND (:maxYear IS NULL OR p.year <= :maxYear) " +
+            "AND (:fuelType IS NULL OR p.fuelType = :fuelType) " +
+            "AND (:transmission IS NULL OR p.transmission = :transmission)")
     List<Product> findByFilters(@Param("category") String category,
                                 @Param("brand") String brand,
                                 @Param("selectedModel") String selectedModel,
@@ -55,4 +55,6 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
                                 @Param("maxYear") Integer maxYear,
                                 @Param("fuelType") String fuelType,
                                 @Param("transmission") String transmission);
+
+    List<Product> findBySellerId(Long sellerId); // Modificato da findByDealerId a findBySellerId
 }

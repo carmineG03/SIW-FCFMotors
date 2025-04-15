@@ -3,7 +3,7 @@ package it.uniroma3.siwprogetto;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "it.uniroma3.siwprogetto")
 public class SiwProgettoApplication {
 
 	public static void main(String[] args) {
