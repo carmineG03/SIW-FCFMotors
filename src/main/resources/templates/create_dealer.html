@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}" th:if="${_csrf != null}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" th:if="${_csrf != null}"/>
+    <title>Crea Concessionario</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/toast.css">
+</head>
+<body>
+<header class="header-transparent">
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img src="/image/logo1.png" alt="FCF Motors Logo" class="logo">
+            </div>
+        </a>
+    </div>
+    <div class="nav-container">
+        <a href="/account" class="back-button"><i class="fas fa-arrow-left"></i> Torna Indietro</a>
+    </div>
+</header>
+
+<main>
+    <section class="hero-section" id="dealership-creation-section">
+        <div class="hero-content">
+            <h2>Crea Concessionario</h2>
+            <p th:if="${errorMessage}" th:text="${errorMessage}" class="error-message"></p>
+            <form id="dealership-creation-form" class="search-form">
+                <div class="input-field">
+                    <input type="text" id="create-dealership-name" placeholder="Nome Concessionario" required>
+                </div>
+                <div class="input-field">
+                    <textarea id="create-dealership-description" placeholder="Descrizione"></textarea>
+                </div>
+                <div class="input-field">
+                    <input type="text" id="create-dealership-address" placeholder="Indirizzo">
+                </div>
+                <div class="input-field">
+                    <input type="text" id="create-dealership-contact" placeholder="Contatti">
+                </div>
+                <div class="input-field">
+                    <input type="text" id="create-dealership-imagePath" placeholder="URL Immagine">
+                </div>
+                <button type="submit"><i class="fas fa-save"></i> Salva</button>
+            </form>
+        </div>
+    </section>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="/js/dealer_create.js"></script>
+</body>
+</html>
