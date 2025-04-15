@@ -297,4 +297,12 @@ public class DealerController {
                     .body(Map.of("message", "Errore interno del server"));
         }
     }
+
+    @GetMapping("/findDealers")
+    public String getDealersPage(Model model) {
+
+        return "dealers";
+    }
+
+
 }
