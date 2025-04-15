@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.security.Principal;
-import java.util.Optional;
-
 import static it.uniroma3.siwprogetto.util.SecurityUtils.hasRole;
 
 @Controller

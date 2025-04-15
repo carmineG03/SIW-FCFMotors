@@ -2,7 +2,6 @@ package it.uniroma3.siwprogetto.controller;
 
 import it.uniroma3.siwprogetto.service.CartService;
 import it.uniroma3.siwprogetto.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -20,7 +19,6 @@ public class ProductsController {
     private final ProductService productService;
     private final CartService cartService;
 
-    @Autowired
     public ProductsController(ProductService productService, CartService cartService) {
         this.productService = productService;
         this.cartService = cartService;

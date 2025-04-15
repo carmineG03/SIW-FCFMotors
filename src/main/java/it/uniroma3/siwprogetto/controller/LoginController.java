@@ -18,7 +18,6 @@ public class LoginController {
 
     private final EmailService emailService;
 
-    @Autowired
     public LoginController(EmailService emailService) {
         this.emailService = emailService;
     }

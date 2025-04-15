@@ -26,9 +26,6 @@ public class WebSecurityConfig {
     private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final AuthenticationFailureHandler customAuthenticationFailureHandler;
     private final PasswordEncoder passwordEncoder;
-    private UserService userService;
-
-    @Autowired
     public WebSecurityConfig(CustomUserDetailsService customUserDetailsService,
                              AuthenticationSuccessHandler customAuthenticationSuccessHandler,
                              AuthenticationFailureHandler customAuthenticationFailureHandler,
@@ -94,6 +91,5 @@ public class WebSecurityConfig {
 
     @Autowired
     public void setUserService(UserService userService) {
-        this.userService = userService;
     }
 }

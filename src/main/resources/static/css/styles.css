@@ -1,6 +1,8 @@
+/* Import Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@200;300;400;500;600;700&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap');
 
+/* General Styles */
 * {
     margin: 0;
     padding: 0;
@@ -11,6 +13,16 @@
 body {
     background-color: #F5F6F5;
     color: #333333;
+}
+
+/* Margin for Main Sections */
+main,
+.products-page,
+.cart-section,
+.wrapper,
+.dealers-section,
+.maintenance-section {
+    margin-top: 75px;
 }
 
 /* Error Message */
@@ -221,7 +233,7 @@ header h2 {
     max-width: 600px;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 0, 0.3);
     border-radius: 8px;
     overflow: hidden;
     margin: 0 auto 20px;
@@ -504,73 +516,6 @@ header h2 {
     line-height: 1.5;
 }
 
-/* Footer */
-footer {
-    background-color: rgb(1, 10, 51);
-    color: #FFFFFF;
-    padding: 40px 20px;
-    text-align: center;
-    border-top: 1px solid #E5E5E5;
-}
-
-.footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-.footer-section {
-    flex: 1;
-    min-width: 200px;
-}
-
-.footer-section h4 {
-    font-size: 1.2rem;
-    color: #F5A623;
-    margin-bottom: 15px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.footer-section ul {
-    list-style: none;
-    padding: 0;
-}
-
-.footer-section ul li {
-    margin-bottom: 10px;
-}
-
-.footer-section ul li a {
-    color: #FFFFFF;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.3s ease;
-}
-
-.footer-section ul li a:hover {
-    color: #F5A623;
-}
-
-.footer-section p {
-    font-size: 0.9rem;
-    line-height: 1.5;
-}
-
-.footer-bottom {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    font-size: 0.9rem;
-}
-
-.footer-bottom p {
-    margin: 0;
-}
-
 /* Products Hero Section */
 .products-hero {
     position: relative;
@@ -613,7 +558,6 @@ footer {
     background-color: #F5F6F5;
 }
 
-/* Spinner di caricamento */
 .spinner {
     display: flex;
     justify-content: center;
@@ -627,7 +571,6 @@ footer {
     margin-right: 10px;
 }
 
-/* Filtro per categoria */
 .category-filter {
     margin-bottom: 15px;
     display: flex;
@@ -658,7 +601,6 @@ footer {
     outline: none;
 }
 
-/* Filtro per nome */
 .products-section .filter-bar {
     max-width: 600px;
     margin: 0 auto 30px;
@@ -729,7 +671,6 @@ footer {
     margin-bottom: 15px;
 }
 
-/* Gruppo di pulsanti */
 .button-group {
     display: flex;
     gap: 10px;
@@ -766,14 +707,12 @@ footer {
     background-color: #218838;
 }
 
-/* Stile per messaggio di ID non disponibile */
 .no-details {
     color: #666666;
     font-size: 14px;
     font-style: italic;
 }
 
-/* Toast di conferma */
 .toast {
     position: fixed;
     bottom: 20px;
@@ -792,7 +731,6 @@ footer {
     opacity: 1;
 }
 
-/* Back Button */
 .back-button {
     display: inline-flex;
     align-items: center;
@@ -813,196 +751,6 @@ footer {
 
 .back-button i {
     margin-right: 8px;
-}
-
-/* Wrapper */
-.wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: url('https://img.freepik.com/foto-gratuito/giovani-coppie-che-scelgono-un-automobile-in-una-stanza-di-manifestazione-di-automobile_1303-15122.jpg?t=st=1743712327~exp=1743715927~hmac=215eaaa79bdb1c7b04d5c5cc7ea517066a3f524daba123a5591c72dc6908162c&w=996') no-repeat center center;
-    background-size: cover;
-    padding-top: 60px;
-}
-
-.wrapper form {
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    padding: 40px;
-    max-width: 400px;
-    width: 100%;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.wrapper form h2 {
-    color: #FFFFFF;
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 30px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.input-field {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.input-field label {
-    color: #FFFFFF;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    width: 100%;
-    text-align: center;
-}
-
-.wrapper form .input-field input {
-    background: transparent !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    border: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-    padding: 10px 0;
-    font-size: 16px;
-    color: #FFFFFF;
-    outline: none;
-    transition: border-color 0.3s ease;
-    width: 80%;
-    text-align: center;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.input-field input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 14px;
-    text-align: center;
-}
-
-.wrapper form .input-field input:focus {
-    border-bottom-color: #FFFFFF;
-}
-
-.forget {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10px;
-    width: 100%;
-}
-
-.forget label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    color: #FFFFFF;
-    font-size: 14px;
-}
-
-.forget label p {
-    margin: 0;
-}
-
-.forget input[type="checkbox"] {
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 3px;
-    cursor: pointer;
-    position: relative;
-}
-
-.forget input[type="checkbox"]:checked {
-    background: #F5A623;
-    border-color: #F5A623;
-}
-
-.forget input[type="checkbox"]:checked::after {
-    content: '\f00c';
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    color: #FFFFFF;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 10px;
-}
-
-.forget a {
-    color: #F5A623;
-    font-size: 14px;
-    text-decoration: none;
-    margin-left: 10px;
-}
-
-.forget a:hover {
-    text-decoration: underline;
-}
-
-.wrapper form button {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 5px;
-    padding: 10px;
-    color: #FFFFFF;
-    font-size: 16px;
-    font-weight: 600;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.3s ease, border-color 0.3s ease;
-    width: 80%;
-    margin: 20px auto 0;
-}
-
-.wrapper form button:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: #FFFFFF;
-}
-
-.register {
-    margin-top: 20px;
-    color: #FFFFFF;
-    font-size: 14px;
-    text-align: center;
-}
-
-.register p {
-    margin: 0;
-}
-
-.register a {
-    color: #F5A623;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.register a:hover {
-    text-decoration: underline;
-}
-
-.wrapper .icon-button {
-    margin-top: 20px;
-    font-size: 24px;
-    color: #F5A623;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.wrapper .icon-button:hover {
-    color: #E59400;
 }
 
 /* Search Section */
@@ -1112,7 +860,6 @@ footer {
     transform: translateY(-2px);
 }
 
-/* Popup per i filtri */
 .filter-popup {
     display: none;
     position: fixed;
@@ -1130,7 +877,7 @@ footer {
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     padding: 30px;
     border-radius: 10px;
     max-width: 900px;
@@ -1411,7 +1158,206 @@ footer {
     background-color: #E59400;
 }
 
+/* Wrapper (Login, Register, Account Pages) */
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: url('https://img.freepik.com/foto-gratuito/giovani-coppie-che-scelgono-un-automobile-in-una-stanza-di-manifestazione-di-automobile_1303-15122.jpg?t=st=1743712327~exp=1743715927~hmac=215eaaa79bdb1c7b04d5c5cc7ea517066a3f524daba123a5591c72dc6908162c&w=996') no-repeat center center;
+    background-size: cover;
+    padding-top: 60px;
+}
+
+.wrapper form {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.wrapper form h2 {
+    color: #FFFFFF;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.input-field {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.input-field label {
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    width: 100%;
+    text-align: center;
+}
+
+.wrapper form .input-field input {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 10px 0;
+    font-size: 16px;
+    color: #FFFFFF;
+    outline: none;
+    transition: border-color 0.3s ease;
+    width: 80%;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.input-field input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    text-align: center;
+}
+
+.wrapper form .input-field input:focus {
+    border-bottom-color: #FFFFFF;
+}
+
+.forget {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.forget label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #FFFFFF;
+    font-size: 14px;
+}
+
+.forget label p {
+    margin: 0;
+}
+
+.forget input[type="checkbox"] {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+}
+
+.forget input[type="checkbox"]:checked {
+    background: #F5A623;
+    border-color: #F5A623;
+}
+
+.forget input[type="checkbox"]:checked::after {
+    content: '\f00c';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #FFFFFF;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+}
+
+.forget a {
+    color: #F5A623;
+    font-size: 14px;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+.forget a:hover {
+    text-decoration: underline;
+}
+
+.wrapper form button {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    padding: 10px;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    width: 80%;
+    margin: 20px auto 0;
+}
+
+.wrapper form button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #FFFFFF;
+}
+
+.register {
+    margin-top: 20px;
+    color: #FFFFFF;
+    font-size: 14px;
+    text-align: center;
+}
+
+.register p {
+    margin: 0;
+}
+
+.register a {
+    color: #F5A623;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.register a:hover {
+    text-decoration: underline;
+}
+
+.wrapper .icon-button {
+    margin-top: 20px;
+    font-size: 24px;
+    color: #F5A623;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.wrapper .icon-button:hover {
+    color: #E59400;
+}
+
 /* Account Page */
+.account-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1000px;
+    width: 90%;
+    gap: 20px;
+    margin: 0 auto;
+}
+
 .account-details-container {
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
@@ -1419,9 +1365,8 @@ footer {
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 10px;
     padding: 30px;
-    max-width: 500px;
-    width: 90%;
-    text-align: center;
+    width: 50%;
+    text-align: left;
     color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -1451,104 +1396,147 @@ footer {
     margin-bottom: 15px;
 }
 
+/* Contenitore delle azioni dell'account */
 .account-actions {
-    display: flex !important; /* Forzo il display flex */
-    flex-direction: row !important; /* Forzo l’allineamento orizzontale */
-    justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px; /* Spaziatura tra le scritte */
+    margin-top: 15px;
 }
 
+/* Animazioni definite */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes underlineReveal {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes scaleText {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes pulseOutline {
+    0%, 100% {
+        outline-offset: 1px;
+        outline-color: rgba(245, 166, 35, 0.5);
+    }
+    50% {
+        outline-offset: 2px;
+        outline-color: rgba(245, 166, 35, 0.8);
+    }
+}
+
+/* Stile per la scritta Modifica */
 .edit-button {
-    display: inline-block;
-    padding: 8px 16px;
-    background: linear-gradient(45deg, #F5A623, #E59400);
-    color: #FFFFFF;
+    font-size: clamp(0.rem, 1vw, 0.65rem); /* Dimensione molto piccola */
+    display: inline;
     text-decoration: none;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.2);
-    border: none;
-    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.edit-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
+    color: #007bff; /* Blu per Modifica */
+    font-weight: 500;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: none; /* Nessun sfondo */
+    border: none; /* Nessun bordo */
+    padding: 0; /* Nessun padding */
+    margin: 0; /* Nessun margine */
+    animation: fadeIn 0.5s ease-out forwards; /* Animazione iniziale */
+    transition: color 0.3s ease, transform 0.2s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .edit-button:hover {
-    background: linear-gradient(45deg, #E59400, #D68F1D);
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
-    transform: translateY(-2px);
-}
-
-.edit-button:hover::before {
-    left: 100%;
+    color: #0056b3; /* Blu più scuro su hover */
+    animation: scaleText 0.4s ease-in-out; /* Leggero ingrandimento del testo */
 }
 
 .edit-button:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    transform: scale(0.95); /* Feedback clic */
 }
 
-.logout-form {
-    display: inline-block;
-    background: none !important; /* Rimuovo qualsiasi sfondo */
-    backdrop-filter: none !important; /* Rimuovo l’effetto blur */
-    border: none !important; /* Rimuovo qualsiasi bordo */
-    padding: 0 !important; /* Rimuovo padding */
-    margin: 0 !important; /* Rimuovo margini */
+.edit-button:focus {
+    outline: 1px solid #F5A623; /* Contorno per accessibilità */
+    outline-offset: 1px;
+    animation: pulseOutline 0.8s ease-in-out infinite;
 }
 
+/* Stile per la scritta Esci */
 .logout-button {
-    padding: 8px 16px;
-    background: linear-gradient(45deg, #003087, #002066);
-    color: #FFFFFF;
-    border: none !important; /* Rimuovo qualsiasi bordo */
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    font-size: clamp(0.55rem, 1vw, 0.65rem); /* Dimensione molto piccola */
+    display: inline;
+    background: none; /* Nessun sfondo */
+    border: none; /* Nessun bordo */
+    padding: 0; /* Nessun padding */
+    margin: 0; /* Nessun margine */
+    color: #F5A623; /* Rosso per Esci */
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+    font-weight: 500;
+    text-transform: uppercase;
     position: relative;
-    overflow: hidden;
+    animation: fadeIn 0.5s ease-out forwards; /* Animazione iniziale */
+    transition: color 0.3s ease, transform 0.2s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.logout-button::before {
+.logout-button::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
+    bottom: -1px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: #F5A623; /* Linea rossa sotto il testo */
+    transition: width 0.3s ease;
+}
+
+.logout-button:hover::after {
+    animation: underlineReveal 0.3s ease forwards; /* Linea che appare su hover */
 }
 
 .logout-button:hover {
-    background: linear-gradient(45deg, #002066, #001A4D);
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
-    transform: translateY(-2px);
-}
-
-.logout-button:hover::before {
-    left: 100%;
+    color: #F5A623; /* Rosso più scuro su hover */
+    transform: translateY(-1px);
 }
 
 .logout-button:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    transform: scale(0.95); /* Feedback clic */
+}
+
+.logout-button:focus {
+    outline: 1px solid #F5A623; /* Contorno per accessibilità */
+    outline-offset: 1px;
+    animation: pulseOutline 0.8s ease-in-out infinite;
+}
+
+/* Contenitore del form di logout */
+.logout-form {
+    display: inline; /* Nessun blocco extra */
+    background: none !important; /* Forza la rimozione di qualsiasi sfondo */
+    backdrop-filter: none !important;
+    border: none !important; /* Forza la rimozione di qualsiasi bordo */
+    padding: 0 !important; /* Nessun padding */
+    margin: 0 !important; /* Nessun margine */
+    line-height: normal; /* Allineamento naturale del testo */
 }
 
 .edit-form-container {
@@ -1594,7 +1582,7 @@ footer {
 
 .form-actions {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 10px;
     margin-top: 20px;
 }
@@ -1631,19 +1619,195 @@ footer {
     background-color: #555555;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
+/* Subscriptions Container */
+.subscriptions-container {
+    background: rgba(0, 0, 0, 0.5); /* Sfondo semitrasparente */
+    backdrop-filter: blur(10px); /* Effetto blur */
+    -webkit-backdrop-filter: blur(10px); /* Supporto per Safari */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Bordo leggero */
+    border-radius: 10px; /* Angoli arrotondati */
+    padding: 30px;
+    width: 50%;
+    text-align: left;
+    color: #FFFFFF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombra per profondità */
+}
+
+/* Fallback per browser che non supportano backdrop-filter */
+@supports not (backdrop-filter: blur(10px)) {
+    .subscriptions-container {
+        background: rgba(0, 0, 0, 0.7); /* Sfondo più opaco come fallback */
+    }
+}
+
+.subscriptions-container h2 {
+    font-size: 2rem;
+    color: #F5A623;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.subscriptions-container h3 {
+    font-size: 1.5rem;
+    color: #FFFFFF;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.subscriptions-container p {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.subscriptions-container ul {
+    list-style: none;
+    padding: 0;
+}
+
+.subscriptions-container ul li {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.subscriptions-container ul li strong {
+    color: #F5A623;
+    font-weight: 600;
+}
+
+.subscribe-button {
+    display: inline-block;
+    padding: 8px 16px;
+    background: linear-gradient(45deg, #28A745, #218838);
+    color: #FFFFFF;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-left: 10px;
+}
+
+.subscribe-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.subscribe-button:hover {
+    background: linear-gradient(45deg, #218838, #1E7E34);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.subscribe-button:hover::before {
+    left: 100%;
+}
+
+.subscribe-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Footer */
+footer {
+    background-color: rgb(1, 10, 51); /* Sfondo blu scuro */
+    color: #FFFFFF;
+    padding: 40px 20px;
+    text-align: center;
+    border-top: 1px solid #E5E5E5;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-section h4 {
+    font-size: 1.2rem;
+    color: #F5A623;
+    margin-bottom: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section ul li a {
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.footer-section ul li a:hover {
+    color: #F5A623;
+}
+
+.footer-section p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.footer-bottom {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.9rem;
+}
+
+.footer-bottom p {
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
     /* Account Page */
-    .account-details-container {
-        max-width: 600px;
+    .account-container {
+        gap: 15px;
+    }
+
+    .account-details-container,
+    .subscriptions-container {
+        width: 50%;
         padding: 25px;
     }
 
-    .account-details-container h2 {
+    .account-details-container h2,
+    .subscriptions-container h2 {
         font-size: 1.8rem;
     }
 
-    .account-details p {
+    .account-details p,
+    .subscriptions-container p,
+    .subscriptions-container ul li {
         font-size: 0.95rem;
     }
 
@@ -1654,11 +1818,65 @@ footer {
     }
 
     .edit-button,
-    .logout-button,
-    .save-button,
-    .cancel-button {
+    .logout-button {
+        font-size: clamp(0.5rem, 1.1vw, 0.65rem);
+    }
+}
+
+@media (max-width: 1024px) {
+    /* Header */
+    .logo {
+        height: 50px;
+    }
+
+    .main-title {
+        font-size: 2.2rem;
+    }
+
+    .products-button,
+    .dealers-button {
+        font-size: 15px;
         padding: 7px 14px;
-        font-size: 0.9rem;
+    }
+
+    .title-container {
+        gap: 15px;
+    }
+
+    /* Hero Section */
+    .hero-content {
+        padding: 25px 40px;
+    }
+
+    .hero-content h2 {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    /* Brands, Categories, Why Choose Us */
+    .brands-container {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+
+    .category-item {
+        flex: 0 0 33.33%;
+    }
+
+    /* Account Page */
+    .edit-button,
+    .logout-button {
+        font-size: clamp(0.5rem, 1vw, 0.6rem);
+        line-height: 1.2;
+    }
+
+    .save-button,
+    .cancel-button,
+    .subscribe-button {
+        padding: 5px 12px;
+        font-size: 0.7rem;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
@@ -1669,6 +1887,25 @@ footer {
 }
 
 @media (max-width: 768px) {
+    /* Header */
+    .logo {
+        height: 40px;
+    }
+
+    .main-title {
+        font-size: 1.8rem;
+    }
+
+    .products-button,
+    .dealers-button {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+
+    .title-container {
+        gap: 10px;
+    }
+
     /* Hero Section */
     .hero-section {
         height: 70vh;
@@ -1732,25 +1969,6 @@ footer {
         padding: 15px;
     }
 
-    /* Header */
-    .logo {
-        height: 40px;
-    }
-
-    .main-title {
-        font-size: 1.8rem;
-    }
-
-    .products-button,
-    .dealers-button {
-        font-size: 14px;
-        padding: 6px 12px;
-    }
-
-    .title-container {
-        gap: 10px;
-    }
-
     /* Footer */
     .footer-content {
         flex-direction: column;
@@ -1774,35 +1992,54 @@ footer {
     }
 
     /* Account Page */
-    .account-details-container {
-        max-width: 90%;
-        padding: 20px;
+    .account-container {
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
     }
 
-    .account-details-container h2 {
-        font-size: 1.5rem;
+    .account-details-container,
+    .subscriptions-container {
+        width: 90%;
+        padding: clamp(15px, 5vw, 20px);
+        margin: 0 auto;
     }
 
-    .account-details p {
-        font-size: 0.9rem;
+    .account-details-container h2,
+    .subscriptions-container h2 {
+        font-size: clamp(1.3rem, 5vw, 1.5rem);
+    }
+
+    .subscriptions-container h3 {
+        font-size: clamp(1.1rem, 4vw, 1.3rem);
+    }
+
+    .account-details p,
+    .subscriptions-container p,
+    .subscriptions-container ul li {
+        font-size: clamp(0.85rem, 3.5vw, 0.9rem);
         margin-bottom: 8px;
     }
 
     .account-details p strong {
-        font-size: 0.9rem;
+        font-size: clamp(0.85rem, 3.5vw, 0.9rem);
     }
 
     .account-actions {
-        flex-direction: column !important; /* Impilati su mobile */
-        gap: 8px;
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
     }
 
     .edit-button,
     .logout-button {
-        width: 100%;
-        padding: 8px;
-        font-size: 0.85rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        font-size: clamp(0.5rem, 0.9vw, 0.6rem);
+    }
+
+    /* Animazioni più rapide su dispositivi mobili */
+    .edit-button:hover,
+    .logout-button:hover {
+        animation-duration: 0.3s;
     }
 
     .edit-form .form-group {
@@ -1810,77 +2047,123 @@ footer {
     }
 
     .edit-form .form-group label {
-        font-size: 0.8rem;
+        font-size: clamp(0.7rem, 3vw, 0.8rem);
     }
 
     .edit-form .form-group input,
     .edit-form .form-group textarea {
-        font-size: 0.9rem;
-        padding: 8px;
+        font-size: clamp(0.85rem, 3.5vw, 0.9rem);
+        padding: clamp(6px, 2vw, 8px);
     }
 
     .edit-form .form-group textarea {
-        min-height: 80px;
+        min-height: clamp(60px, 20vw, 80px);
     }
 
     .form-actions {
         flex-direction: column;
         gap: 8px;
+        align-items: stretch;
     }
 
     .save-button,
     .cancel-button {
         width: 100%;
-        padding: 8px;
-        font-size: 0.9rem;
+        padding: clamp(6px, 2vw, 8px);
+        font-size: clamp(0.85rem, 3.5vw, 0.9rem);
+    }
+
+    .subscribe-button {
+        width: 100%;
+        padding: clamp(6px, 2vw, 8px);
+        font-size: clamp(0.8rem, 3vw, 0.85rem);
+        margin-left: 0;
+        margin-top: 5px;
     }
 
     .wrapper {
-        padding-top: 75px;
-        padding-bottom: 20px;
+        padding-top: clamp(60px, 10vh, 75px);
+        padding-bottom: clamp(15px, 5vh, 20px);
     }
 }
 
 @media (max-width: 480px) {
+    /* Header */
+    .logo {
+        height: clamp(30px, 8vw, 35px);
+    }
+
+    .main-title {
+        font-size: clamp(1.2rem, 5vw, 1.5rem);
+    }
+
+    .products-button,
+    .dealers-button {
+        font-size: clamp(12px, 3.5vw, 13px);
+        padding: clamp(4px, 1.5vw, 5px) clamp(8px, 2.5vw, 10px);
+    }
+
+    /* Hero Section */
+    .hero-content {
+        padding: clamp(10px, 4vw, 15px);
+    }
+
+    .hero-content h2 {
+        font-size: clamp(1.5rem, 6vw, 1.8rem);
+    }
+
+    .hero-subtitle {
+        font-size: clamp(0.8rem, 3.5vw, 0.9rem);
+    }
+
     /* Account Page */
-    .account-details-container {
-        padding: 15px;
+    .account-details-container,
+    .subscriptions-container {
+        padding: clamp(10px, 4vw, 15px);
     }
 
-    .account-details-container h2 {
-        font-size: 1.3rem;
+    .account-details-container h2,
+    .subscriptions-container h2 {
+        font-size: clamp(1.1rem, 4.5vw, 1.3rem);
     }
 
-    .account-details p {
-        font-size: 0.85rem;
+    .subscriptions-container h3 {
+        font-size: clamp(1rem, 4vw, 1.2rem);
+    }
+
+    .account-details p,
+    .subscriptions-container p,
+    .subscriptions-container ul li {
+        font-size: clamp(0.8rem, 3.2vw, 0.85rem);
     }
 
     .edit-form .form-group label {
-        font-size: 0.75rem;
+        font-size: clamp(0.65rem, 2.8vw, 0.75rem);
     }
 
     .edit-form .form-group input,
     .edit-form .form-group textarea {
-        font-size: 0.85rem;
-        padding: 6px;
+        font-size: clamp(0.8rem, 3.2vw, 0.85rem);
+        padding: clamp(5px, 1.8vw, 6px);
     }
 
     .edit-button,
-    .logout-button,
+    .logout-button {
+        font-size: clamp(0.45rem, 0.8vw, 0.55rem);
+    }
+
     .save-button,
-    .cancel-button {
-        font-size: 0.8rem;
-        padding: 6px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    .cancel-button,
+    .subscribe-button {
+        font-size: clamp(0.6rem, 2.5vw, 0.65rem);
+        padding: clamp(3px, 1vw, 4px) clamp(8px, 2vw, 10px);
     }
 }
 
-/* Aggiungi margine superiore a tutte le sezioni principali */
-main,
-.products-page,
-.cart-section,
-.wrapper,
-.dealers-section,
-.maintenance-section {
-    margin-top: 75px;
+@media (max-width: 360px) {
+    /* Account Page */
+    .edit-button,
+    .logout-button {
+        font-size: clamp(0.4rem, 0.7vw, 0.5rem);
+    }
 }

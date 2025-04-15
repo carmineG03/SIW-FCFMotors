@@ -2,13 +2,57 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Trova Concessionario - FCF Motors</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Scopri tutti i concessionari FCF Motors. Trova il concessionario più vicino con informazioni su indirizzo, telefono, email e un link per raggiungerlo con il navigatore."/>
+    <meta name="keywords" content="concessionario auto, FCF Motors, elenco concessionari, auto nuove, auto usate, Milano"/>
+    <meta name="robots" content="index, follow"/>
+    <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+    <meta http-equiv="X-Frame-Options" content="DENY"/>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com;"/>
+    <!-- Open Graph -->
+    <meta property="og:title" content="Elenco Concessionari - FCF Motors"/>
+    <meta property="og:description" content="Scopri tutti i concessionari FCF Motors. Trova il concessionario più vicino con informazioni su indirizzo, telefono, email e un link per raggiungerlo con il navigatore."/>
+    <meta property="og:image" content="https://www.fcfmotors.com/image/logo1.png"/>
+    <meta property="og:url" content="https://www.fcfmotors.com/dealers"/>
+    <meta property="og:type" content="website"/>
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="Elenco Concessionari - FCF Motors"/>
+    <meta name="twitter:description" content="Scopri tutti i concessionari FCF Motors. Trova il concessionario più vicino con informazioni su indirizzo, telefono, email e un link per raggiungerlo con il navigatore."/>
+    <meta name="twitter:image" content="https://www.fcfmotors.com/image/logo1.png"/>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/image/favicon.png"/>
+    <!-- Preload CSS -->
+    <link rel="preload" href="/css/styles.css" as="style"/>
     <link rel="stylesheet" href="/css/styles.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Mapbox GL JS -->
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet"/>
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap">
+    <!-- Dati strutturati -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "FCF Motors",
+        "url": "https://www.fcfmotors.com",
+        "logo": "https://www.fcfmotors.com/image/logo1.png",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+39-123-456-7890",
+            "contactType": "customer service",
+            "email": "info@fcfmotors.com",
+            "areaServed": "IT"
+        },
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Via Auto, 123",
+            "addressLocality": "Milano",
+            "addressCountry": "IT"
+        }
+    }
+    </script>
+    <title>FCF Motors</title>
 </head>
+
 <body>
     <header id="main-header">
         <div class="header-left">
@@ -34,36 +78,53 @@
 
     <main>
         <section class="dealers-section">
-            <h2>Trova un Concessionario</h2>
-            <p class="section-subtitle">Inserisci il tuo codice postale o città per trovare i concessionari più vicini.</p>
-            <form id="dealer-search-form">
-                <div class="input-field">
-                    <input type="text" id="search-input" placeholder="Es. 20121 o Milano" required/>
+            <h2>Elenco Concessionari</h2>
+            <p class="section-subtitle">Scopri tutti i concessionari FCF Motors e trova quello più vicino a te.</p>
+            <div id="dealers-list" class="dealers-list">
+                <!-- Esempio di concessionario (sostituibile con dati dinamici da Thymeleaf) -->
+                <div class="dealer-item">
+                    <h3>FCF Motors Milano</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Via Auto, 123, 20121 Milano, Italia</p>
+                    <p><i class="fas fa-phone"></i> <a href="tel:+391234567890">+39 123 456 7890</a></p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:milano@fcfmotors.com">milano@fcfmotors.com</a></p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Via+Auto,+123,+20121+Milano,+Italia" class="navigate-button" target="_blank" rel="noopener noreferrer">
+                        <i class="fas fa-directions"></i> Raggiungi con il navigatore
+                    </a>
                 </div>
-                <button type="submit" class="search-button"><i class="fas fa-search"></i> Cerca</button>
-            </form>
-            <p id="search-error" class="error-message"></p>
-            <div id="map" class="map-container"></div>
-            <div id="dealers-list" class="dealers-list"></div>
+                <div class="dealer-item">
+                    <h3>FCF Motors Roma</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Via Roma, 456, 00184 Roma, Italia</p>
+                    <p><i class="fas fa-phone"></i> <a href="tel:+399876543210">+39 987 654 3210</a></p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:roma@fcfmotors.com">roma@fcfmotors.com</a></p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Via+Roma,+456,+00184+Roma,+Italia" class="navigate-button" target="_blank" rel="noopener noreferrer">
+                        <i class="fas fa-directions"></i> Raggiungi con il navigatore
+                    </a>
+                </div>
+                <!-- Aggiungi altri concessionari qui -->
+            </div>
         </section>
     </main>
+
+    <button id="back-to-top" class="back-to-top" aria-label="Torna in cima alla pagina"><i class="fas fa-chevron-up"></i></button>
 
     <footer>
         <div class="footer-content">
             <div class="footer-section">
                 <h4>Navigazione</h4>
                 <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/products">Trova Auto</a></li>
-                    <li><a href="/dealers">Concessionari</a></li>
-                    <li><a href="/cart">Carrello</a></li>
+                    <li><a href="/">Homepage</a></li>
+                    <li><a href="/products">Trova la tua auto</a></li>
+                    <li><a href="/dealers">Trova un concessionario</a></li>
+                    <li><a href="/cart">Visualizza carrello</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h4>Contatti</h4>
-                <p>Email: info@fcfmotors.com</p>
-                <p>Telefono: +39 123 456 7890</p>
-                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+                <address>
+                    <p>Email: <a href="mailto:info@fcfmotors.com">info@fcfmotors.com</a></p>
+                    <p>Telefono: <a href="tel:+391234567890">+39 123 456 7890</a></p>
+                    <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+                </address>
             </div>
             <div class="footer-section">
                 <h4>Informazioni</h4>

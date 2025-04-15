@@ -17,7 +17,7 @@
             <div class="title-container">
                 <h1 class="main-title">FCF MOTORS</h1>
                 <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-                <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Trova Concessionario</a>
+                <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
             </div>
         </div>
         <div class="nav-container">
@@ -29,57 +29,84 @@
     </header>
 
     <div class="wrapper">
-        <div class="account-details-container">
-            <h2>Informazioni Account</h2>
-            <div th:if="${!editMode}" class="account-details">
-                <p th:if="${error}" th:text="${error}" class="error-message"></p>
-                <p th:if="${user != null}"><strong>Username:</strong> <span th:text="${user.username}"></span></p>
-                <p th:if="${user != null}"><strong>Email:</strong> <span th:text="${user.email}"></span></p>
-                <p th:if="${accountInformation != null}"><strong>Nome:</strong> <span th:text="${accountInformation.firstName}"></span></p>
-                <p th:if="${accountInformation != null}"><strong>Cognome:</strong> <span th:text="${accountInformation.lastName}"></span></p>
-                <p th:if="${accountInformation != null}"><strong>Data di nascita:</strong> <span th:text="${accountInformation.birthDate}"></span></p>
-                <p th:if="${accountInformation != null}"><strong>Indirizzo:</strong> <span th:text="${accountInformation.address}"></span></p>
-                <p th:if="${accountInformation != null}"><strong>Numero di telefono:</strong> <span th:text="${accountInformation.phoneNumber}"></span></p>
-                <p th:if="${accountInformation != null}"><strong>Informazioni aggiuntive:</strong> <span th:text="${accountInformation.additionalInfo}"></span></p>
-                <div class="account-actions">
-                    <a th:href="@{/account/edit}" class="edit-button">Modifica</a>
-                    <form th:action="@{/logout}" method="post" class="logout-form">
-                        <button type="submit" class="logout-button">Esci</button>
+        <div class="account-container">
+            <!-- Blocco a sinistra: Informazioni account -->
+            <div class="account-details-container">
+                <h2>Informazioni Account</h2>
+                <div th:if="${!editMode}" class="account-details">
+                    <p th:if="${error}" th:text="${error}" class="error-message"></p>
+                    <p th:if="${user != null}"><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+                    <p th:if="${user != null}"><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+                    <p th:if="${accountInformation != null}"><strong>Nome:</strong> <span th:text="${accountInformation.firstName}"></span></p>
+                    <p th:if="${accountInformation != null}"><strong>Cognome:</strong> <span th:text="${accountInformation.lastName}"></span></p>
+                    <p th:if="${accountInformation != null}"><strong>Data di nascita:</strong> <span th:text="${accountInformation.birthDate}"></span></p>
+                    <p th:if="${accountInformation != null}"><strong>Indirizzo:</strong> <span th:text="${accountInformation.address}"></span></p>
+                    <p th:if="${accountInformation != null}"><strong>Numero di telefono:</strong> <span th:text="${accountInformation.phoneNumber}"></span></p>
+                    <div class="account-actions">
+                        <a th:href="@{/account/edit}" class="edit-button">Modifica</a>
+                        <form th:action="@{/logout}" method="post" class="logout-form">
+                            <button type="submit" class="logout-button">Esci</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div th:if="${editMode}" class="edit-form-container">
+                    <form th:action="@{/account}" method="post" th:object="${accountInformation}" class="edit-form">
+                        <div class="form-group">
+                            <label for="firstName">Nome:</label>
+                            <input type="text" id="firstName" th:field="*{firstName}" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Cognome:</label>
+                            <input type="text" id="lastName" th:field="*{lastName}" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="birthDate">Data di nascita:</label>
+                            <input type="date" id="birthDate" th:field="*{birthDate}" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Indirizzo:</label>
+                            <input type="text" id="address" th:field="*{address}" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber">Numero di telefono:</label>
+                            <input type="text" id="phoneNumber" th:field="*{phoneNumber}" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="additionalInfo">Informazioni aggiuntive:</label>
+                            <textarea id="additionalInfo" th:field="*{additionalInfo}"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="save-button">Salva</button>
+                            <a href="/account" class="cancel-button">Annulla</a>
+                        </div>
                     </form>
                 </div>
             </div>
 
-            <div th:if="${editMode}" class="edit-form-container">
-                <form th:action="@{/account}" method="post" th:object="${accountInformation}" class="edit-form">
-                    <div class="form-group">
-                        <label for="firstName">Nome:</label>
-                        <input type="text" id="firstName" th:field="*{firstName}" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName">Cognome:</label>
-                        <input type="text" id="lastName" th:field="*{lastName}" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="birthDate">Data di nascita:</label>
-                        <input type="date" id="birthDate" th:field="*{birthDate}" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="address">Indirizzo:</label>
-                        <input type="text" id="address" th:field="*{address}" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="phoneNumber">Numero di telefono:</label>
-                        <input type="text" id="phoneNumber" th:field="*{phoneNumber}" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="additionalInfo">Informazioni aggiuntive:</label>
-                        <textarea id="additionalInfo" th:field="*{additionalInfo}"></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="save-button">Salva</button>
-                        <a href="/account" class="cancel-button">Annulla</a>
-                    </div>
-                </form>
+            <!-- Blocco a destra: Abbonamenti -->
+            <div class="subscriptions-container">
+                <h2>Abbonamenti</h2>
+                <!-- Caso 1: Ci sono abbonamenti attivi -->
+                <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
+                    <h3>Abbonamenti Attivi</h3>
+                    <ul>
+                        <li th:each="subscription : ${activeSubscriptions}">
+                            <strong th:text="${subscription.name}"></strong> - Scade il: <span th:text="${subscription.expiryDate}"></span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Caso 2: Nessun abbonamento attivo -->
+                <div th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}" class="available-subscriptions">
+                    <h3>Nessun Abbonamento Attivo</h3>
+                    <p>Scopri i nostri abbonamenti disponibili:</p>
+                    <ul>
+                        <li th:each="subscription : ${availableSubscriptions}">
+                            <strong th:text="${subscription.name}"></strong> - <span th:text="${subscription.description}"></span>
+                            <a th:href="@{/subscribe(subscriptionId=${subscription.id})}" class="subscribe-button">Sottoscrivi</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

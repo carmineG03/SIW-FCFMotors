@@ -2,7 +2,6 @@ package it.uniroma3.siwprogetto.service;
 
 import it.uniroma3.siwprogetto.model.Product;
 import it.uniroma3.siwprogetto.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -13,7 +12,6 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    @Autowired
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
