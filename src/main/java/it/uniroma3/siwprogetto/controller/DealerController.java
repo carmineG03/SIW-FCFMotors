@@ -300,6 +300,7 @@ public class DealerController {
 
     @GetMapping("/dealers")
     public String showDealersPage(Model model) {
+    public String showDealersPage(Model model) {
         logger.info("Accessing /dealers page");
         try {
             List<Dealer> dealers = dealerService.findAll();
