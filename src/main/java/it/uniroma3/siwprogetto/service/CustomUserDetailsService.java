@@ -3,6 +3,7 @@ package it.uniroma3.siwprogetto.service;
 import it.uniroma3.siwprogetto.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Configuration
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 

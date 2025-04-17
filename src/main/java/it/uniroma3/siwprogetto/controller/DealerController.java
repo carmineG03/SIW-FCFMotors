@@ -196,10 +196,10 @@ public class DealerController {
         }
     }
 
-    @PostMapping("/api/products")
+    @PostMapping("/api/dealers/products")
     @ResponseBody
     public ResponseEntity<?> addProduct(@RequestBody Map<String, String> payload) {
-        logger.info("Received POST /rest/api/products with payload: {}", payload);
+        logger.info("Received POST /rest/api/dealers/products with payload: {}", payload);
         String name = payload.get("name");
         String description = payload.get("description");
         String priceStr = payload.get("price");
@@ -247,10 +247,10 @@ public class DealerController {
         }
     }
 
-    @PutMapping("/api/products/{productId}")
+    @PutMapping("/api/dealers/products/{productId}") // Modificato da /api/products/{productId}
     @ResponseBody
     public ResponseEntity<?> updateProduct(@PathVariable Long productId, @RequestBody Map<String, String> payload) {
-        logger.info("Received PUT /rest/api/products/{} with payload: {}", productId, payload);
+        logger.info("Received PUT /rest/api/dealers/products/{} with payload: {}", productId, payload);
         String name = payload.get("name");
         String description = payload.get("description");
         String priceStr = payload.get("price");
@@ -295,6 +295,20 @@ public class DealerController {
             logger.error("Unexpected error updating product: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Errore interno del server"));
+        }
+    }
+
+    @GetMapping("/dealers")
+    public String showDealersPage(Model model) {
+        logger.info("Accessing /dealers page");
+        try {
+            List<Dealer> dealers = dealerService.findAll();
+            model.addAttribute("dealers", dealers);
+            return "dealers";
+        } catch (Exception e) {
+            logger.error("Error loading dealers page: {}", e.getMessage(), e);
+            model.addAttribute("errorMessage", "Errore nel caricamento della pagina dei concessionari.");
+            return "dealers";
         }
     }
 }

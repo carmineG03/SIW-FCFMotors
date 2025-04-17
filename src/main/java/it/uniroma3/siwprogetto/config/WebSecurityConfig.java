@@ -26,10 +26,11 @@ public class WebSecurityConfig {
     private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final AuthenticationFailureHandler customAuthenticationFailureHandler;
     private final PasswordEncoder passwordEncoder;
+
     public WebSecurityConfig(CustomUserDetailsService customUserDetailsService,
-                             AuthenticationSuccessHandler customAuthenticationSuccessHandler,
-                             AuthenticationFailureHandler customAuthenticationFailureHandler,
-                             PasswordEncoder passwordEncoder) {
+                            AuthenticationSuccessHandler customAuthenticationSuccessHandler,
+                            AuthenticationFailureHandler customAuthenticationFailureHandler,
+                            PasswordEncoder passwordEncoder) {
         this.customUserDetailsService = customUserDetailsService;
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
@@ -40,12 +41,11 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/forgot-password", "/reset-password", "/index", "/login", "/register", "/products", "/css/**", "/image/**", "/js/**", "favicon.ico").permitAll()
+                        .requestMatchers("/", "/forgot-password", "/reset-password", "/index", "/login", "/register", "/products", "/dealers", "/css/**", "/image/**", "/js/**", "/favicon.ico").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login", "/register", "/forgot-password", "/reset-password").permitAll()
-                        .requestMatchers("/cart/**").permitAll() // Permetti tutte le richieste a /cart/**
-                        .requestMatchers(HttpMethod.POST, "/cart/**").permitAll() // Permetti esplicitamente le POST a /cart/**
+                        .requestMatchers("/cart/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/cart/**").permitAll()
                         .requestMatchers("/account").authenticated()
-                        //.requestMatchers("/manutenzione/**").hasAnyAuthority(SecurityConstants.ADMIN_ROLE)
                         .requestMatchers("/manutenzione/private").hasAnyAuthority(SecurityConstants.PRIVATE_ROLE)
                         .requestMatchers("/manutenzione/dealer").hasAuthority(SecurityConstants.DEALER_ROLE)
                         .anyRequest().authenticated()

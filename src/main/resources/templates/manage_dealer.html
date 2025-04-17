@@ -1,123 +1,244 @@
 <!DOCTYPE html>
-<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="_csrf" th:content="${_csrf.token}" th:if="${_csrf != null}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" th:if="${_csrf != null}"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Gestione Concessionario</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="/css/toast.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<header class="header-transparent">
-    <div class="header-left">
-        <a href="/" class="logo-link">
-            <div class="logo-container">
-                <img src="/image/logo1.png" alt="FCF Motors Logo" class="logo">
+    <header class="header-transparent">
+        <div class="header-left">
+            <a href="/" class="logo-link">
+                <div class="logo-container">
+                    <img src="/image/logo1.png" alt="Logo" class="logo">
+                </div>
+            </a>
+            <div class="title-container">
+                <h2 class="main-title">FCF MOTORS</h2>
+                <a th:href="@{/products}" class="products-button">
+                    <i class="fas fa-car"></i> Prodotti
+                </a>
+                <a th:href="@{/dealers}" class="dealers-button">
+                    <i class="fas fa-store"></i> Concessionari
+                </a>
             </div>
-        </a>
-    </div>
-    <div class="nav-container">
-        <a href="/account" class="back-button"><i class="fas fa-arrow-left"></i> Torna Indietro</a>
-    </div>
-</header>
-
-<main>
-    <!-- Debug: Mostra lo stato del dealer -->
-    <div style="display: none;">
-        <div th:if="${dealer != null}">
-            Debug: Dealer trovato - ID: <span th:text="${dealer.id}"></span>, Nome: <span th:text="${dealer.name}"></span>
         </div>
-        <div th:if="${dealer == null}">
-            Debug: Nessun dealer trovato per l'utente autenticato
+        <div class="nav-container">
+            <nav class="nav-bar">
+                <a th:href="@{/cart}" class="icon-button">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <a th:href="@{/account}" class="icon-button">
+                    <i class="fas fa-user"></i>
+                </a>
+            </nav>
         </div>
-    </div>
+    </header>
 
-    <section class="account-details-section" id="dealership-details" th:if="${dealer != null}">
-        <div class="account-details-container">
-            <h3>Dettagli Concessionario</h3>
-            <p th:if="${errorMessage}" th:text="${errorMessage}" class="error-message"></p>
-            <div id="display-dealer-details">
-                <p><strong>Nome:</strong> <span id="display-name" th:text="${dealer.name}"></span></p>
-                <p><strong>Descrizione:</strong> <span id="display-description" th:text="${dealer.description} ?: ''"></span></p>
-                <p><strong>Indirizzo:</strong> <span id="display-address" th:text="${dealer.address} ?: ''"></span></p>
-                <p><strong>Contatti:</strong> <span id="display-contact" th:text="${dealer.contact} ?: ''"></span></p>
-                <p><strong>Immagine:</strong> <span id="display-imagePath" th:text="${dealer.imagePath} ?: ''"></span></p>
-                <a href="#" id="edit-dealer-button" class="edit-link">Modifica</a>
+    <main>
+        <div class="two-column-container shared-background">
+            <!-- Colonna Dettagli Concessionario -->
+            <div class="dealer-details-column">
+                <div class="hero-content">
+                    <h2>Gestione Concessionario</h2>
+                    <div id="display-dealer-details" class="animated-section visible">
+                        <div class="input-field display-field">
+                            <label for="display-name"><i class="fas fa-store"></i> Nome Concessionario</label>
+                            <span id="display-name" th:text="${dealer.name}"></span>
+                        </div>
+                        <div class="input-field display-field">
+                            <label for="display-description"><i class="fas fa-file-alt"></i> Descrizione</label>
+                            <span id="display-description" th:text="${dealer.description} ?: ''"></span>
+                        </div>
+                        <div class="input-field display-field">
+                            <label for="display-address"><i class="fas fa-map-marker-alt"></i> Indirizzo</label>
+                            <span id="display-address" th:text="${dealer.address} ?: ''"></span>
+                        </div>
+                        <div class="input-field display-field">
+                            <label for="display-contact"><i class="fas fa-phone"></i> Contatti</label>
+                            <span id="display-contact" th:text="${dealer.contact} ?: ''"></span>
+                        </div>
+                        <div class="input-field display-field">
+                            <label for="dealer-image"><i class="fas fa-image"></i> Immagine Concessionario</label>
+                            <img id="dealer-image" class="dealer-image" th:src="${dealer.imagePath} ?: 'https://via.placeholder.com/300x200?text=Immagine+Non+Disponibile'" alt="Immagine Concessionario">
+                        </div>
+                        <div class="form-actions">
+                            <a href="#" id="edit-dealer-button" class="modern-button"><i class="fas fa-edit"></i> Modifica</a>
+                        </div>
+                    </div>
+                    <form id="dealership-form" class="modern-form" style="display: none;" aria-labelledby="dealership-form-title">
+                        <h2 id="dealership-form-title">Modifica Concessionario</h2>
+                        <div class="input-field">
+                            <label for="edit-dealership-name"><i class="fas fa-store"></i> Nome Concessionario</label>
+                            <input type="text" id="edit-dealership-name" placeholder="Inserisci il nome" th:value="${dealer.name}" required aria-required="true">
+                        </div>
+                        <div class="input-field">
+                            <label for="edit-dealership-description"><i class="fas fa-file-alt"></i> Descrizione</label>
+                            <textarea id="edit-dealership-description" rows="4" th:text="${dealer.description}"></textarea>
+                        </div>
+                        <div class="input-field">
+                            <label for="edit-dealership-address"><i class="fas fa-map-marker-alt"></i> Indirizzo</label>
+                            <input type="text" id="edit-dealership-address" placeholder="Inserisci l'indirizzo" th:value="${dealer.address}">
+                        </div>
+                        <div class="input-field">
+                            <label for="edit-dealership-contact"><i class="fas fa-phone"></i> Contatti</label>
+                            <input type="text" id="edit-dealership-contact" placeholder="Inserisci i contatti" th:value="${dealer.contact}">
+                        </div>
+                        <div class="input-field">
+                            <label for="edit-dealership-imagePath"><i class="fas fa-image"></i> URL Immagine</label>
+                            <input type="url" id="edit-dealership-imagePath" placeholder="Inserisci l'URL dell'immagine" th:value="${dealer.imagePath}">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva <span class="spinner"></span></button>
+                            <button type="button" id="cancel-edit-dealer" class="modern-button cancel-button"><i class="fas fa-times"></i> Annulla</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <form id="dealership-form" class="search-form" style="display: none;">
+
+            <!-- Colonna Aggiungi una Macchina -->
+            <div class="add-car-column">
+                <div class="hero-content">
+                    <h2>Aggiungi una Macchina</h2>
+                    <form id="dealer-add-car-form" class="modern-form" aria-labelledby="add-car-form-title">
+                        <h2 id="add-car-form-title" style="display: none;">Aggiungi Auto</h2>
+                        <div class="input-field">
+                            <label for="dealer-car-name"><i class="fas fa-car"></i> Nome Macchina</label>
+                            <input type="text" id="dealer-car-name" placeholder="Inserisci il nome" required aria-required="true">
+                        </div>
+                        <div class="input-field">
+                            <label for="dealer-car-description"><i class="fas fa-file-alt"></i> Descrizione</label>
+                            <textarea id="dealer-car-description" rows="4"></textarea>
+                        </div>
+                        <div class="input-field">
+                            <label for="dealer-car-price"><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
+                            <input type="number" id="dealer-car-price" required step="0.01" min="0.01" aria-required="true">
+                        </div>
+                        <div class="input-field">
+                            <label for="dealer-car-imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
+                            <input type="url" id="dealer-car-imageUrl" placeholder="Inserisci l'URL dell'immagine">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="modern-button"><i class="fas fa-plus"></i> Aggiungi <span class="spinner"></span></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sezione Macchine Aggiunte -->
+        <section id="dealer-added-cars" class="products-section animated-section">
+            <h3>Macchine Aggiunte</h3>
+            <div class="product-grid">
+                <div th:each="product : ${products}" class="product-card animated-card">
+                    <div class="product-image">
+                        <img th:src="${product.imageUrl} ?: 'https://via.placeholder.com/300x200?text=Auto+Immagine'" alt="Immagine Auto">
+                        <span class="product-badge"><i class="fas fa-car"></i></span>
+                    </div>
+                    <div class="product-info">
+                        <div class="info-row">
+                            <span class="label"><strong>Nome:</strong></span>
+                            <span class="value" th:text="${product.name}"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label"><strong>Descrizione:</strong></span>
+                            <span class="value" th:text="${product.description} ?: ''"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label"><strong>Prezzo:</strong></span>
+                            <span class="value" th:text="${product.price} + ' €'"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label"><strong>URL Immagine:</strong></span>
+                            <span class="value" th:text="${product.imageUrl} ?: 'Non specificato'"></span>
+                        </div>
+                        <div class="form-actions">
+                            <a href="#" th:attr="data-product-id=${product.id}" class="modern-button edit-product-link"><i class="fas fa-edit"></i> Modifica</a>
+                            <a href="#" th:attr="data-product-id=${product.id}" class="modern-button delete-product-link cancel-button"><i class="fas fa-trash"></i> Elimina</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${products.isEmpty()}" class="no-products">
+                <i class="fas fa-car no-products-icon"></i>
+                Nessuna macchina aggiunta
+            </div>
+            <div class="form-actions">
+                <a th:href="@{/dealers}" class="modern-button back-button"><i class="fas fa-arrow-left"></i> Torna ai concessionari</a>
+            </div>
+        </section>
+
+        <!-- Form per la modifica del prodotto -->
+        <div class="hero-content" style="display: none;">
+            <form id="edit-product-form" class="modern-form" style="display: none;" aria-labelledby="edit-product-form-title">
+                <h2 id="edit-product-form-title">Modifica Auto</h2>
+                <input type="hidden" id="edit-product-id">
                 <div class="input-field">
-                    <input type="text" id="edit-dealership-name" placeholder="Nome Concessionario" th:value="${dealer.name}" required>
+                    <label for="edit-product-name"><i class="fas fa-car"></i> Nome Macchina</label>
+                    <input type="text" id="edit-product-name" required aria-required="true">
                 </div>
                 <div class="input-field">
-                    <textarea id="edit-dealership-description" placeholder="Descrizione" th:text="${dealer.description}"></textarea>
+                    <label for="edit-product-description"><i class="fas fa-file-alt"></i> Descrizione</label>
+                    <textarea id="edit-product-description" rows="4"></textarea>
                 </div>
                 <div class="input-field">
-                    <input type="text" id="edit-dealership-address" placeholder="Indirizzo" th:value="${dealer.address}">
+                    <label for="edit-product-price"><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
+                    <input type="number" id="edit-product-price" required step="0.01" min="0.01" aria-required="true">
                 </div>
                 <div class="input-field">
-                    <input type="text" id="edit-dealership-contact" placeholder="Contatti" th:value="${dealer.contact}">
+                    <label for="edit-product-imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
+                    <input type="url" id="edit-product-imageUrl">
                 </div>
-                <div class="input-field">
-                    <input type="text" id="edit-dealership-imagePath" placeholder="URL Immagine" th:value="${dealer.imagePath}">
+                <div class="form-actions">
+                    <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva <span class="spinner"></span></button>
+                    <button type="button" id="cancel-edit-product" class="modern-button cancel-button"><i class="fas fa-times"></i> Annulla</button>
                 </div>
-                <button type="submit"><i class="fas fa-save"></i> Salva</button>
-                <button type="button" id="cancel-edit-dealer"><i class="fas fa-times"></i> Annulla</button>
             </form>
         </div>
-    </section>
 
-    <section class="hero-section" id="add-car-section" th:if="${dealer != null}">
-        <div class="hero-content">
-            <h2>Aggiungi una Macchina</h2>
-            <form id="dealer-add-car-form" class="search-form">
-                <div class="input-field">
-                    <input type="text" id="dealer-car-name" placeholder="Nome Macchina" required>
+        <!-- Toast -->
+        <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Link Utili</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Trova Auto</a></li>
+                    <li><a href="/dealers">Concessionari</a></li>
+                    <li><a href="/cart">Carrello</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contatti</h4>
+                <p>Email: info@fcfmotors.com</p>
+                <p>Telefono: +39 123 456 7890</p>
+                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+            </div>
+            <div class="footer-section">
+                <h4>Seguici</h4>
+                <div class="social-links">
+                    <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
                 </div>
-                <div class="input-field">
-                    <textarea id="dealer-car-description" placeholder="Descrizione"></textarea>
-                </div>
-                <div class="input-field">
-                    <input type="number" id="dealer-car-price" placeholder="Prezzo (€)" required step="0.01">
-                </div>
-                <button type="submit"><i class="fas fa-plus"></i> Aggiungi</button>
-            </form>
+            </div>
+            <div class="footer-section">
+                <h4>Informazioni</h4>
+                <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+            </div>
         </div>
-    </section>
-
-    <section class="products-section" th:if="${dealer != null}">
-        <h3>Macchine Aggiunte</h3>
-        <div id="dealer-added-cars" class="product-container">
-            <div th:if="${products.isEmpty()}">
-                <p>Nessuna macchina aggiunta.</p>
-            </div>
-            <div th:each="product : ${products}" class="product-card">
-                <p><strong>Nome:</strong> <span th:text="${product.name}"></span></p>
-                <p><strong>Descrizione:</strong> <span th:text="${product.description} ?: ''"></span></p>
-                <p><strong>Prezzo:</strong> <span th:text="${product.price} + ' €'"></span></p>
-                <a href="#" th:data-product-id="${product.id}" class="edit-product-link">Modifica</a>
-            </div>
+        <div class="footer-bottom">
+            <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
         </div>
-        <form id="edit-product-form" class="search-form" style="display: none;">
-            <input type="hidden" id="edit-product-id">
-            <div class="input-field">
-                <input type="text" id="edit-product-name" placeholder="Nome Macchina" required>
-            </div>
-            <div class="input-field">
-                <textarea id="edit-product-description" placeholder="Descrizione"></textarea>
-            </div>
-            <div class="input-field">
-                <input type="number" id="edit-product-price" placeholder="Prezzo (€)" required step="0.01">
-            </div>
-            <button type="submit"><i class="fas fa-save"></i> Salva</button>
-            <button type="button" id="cancel-edit-product"><i class="fas fa-times"></i> Annulla</button>
-        </form>
-    </section>
-</main>
+    </footer>
 
-<div class="toast" id="toast"></div>
-<script src="/js/dealer_manage.js"></script>
+    <script th:src="@{/js/dealer_manage.js}"></script>
 </body>
 </html>

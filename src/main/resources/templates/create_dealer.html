@@ -29,23 +29,28 @@
         <div class="hero-content">
             <h2>Crea Concessionario</h2>
             <p th:if="${errorMessage}" th:text="${errorMessage}" class="error-message"></p>
-            <form id="dealership-creation-form" class="search-form">
+            <form id="dealership-creation-form" class="modern-form">
                 <div class="input-field">
-                    <input type="text" id="create-dealership-name" placeholder="Nome Concessionario" required>
+                    <label for="create-dealership-name"><i class="fas fa-store"></i> Nome Concessionario</label>
+                    <input type="text" id="create-dealership-name"  required aria-required="true">
                 </div>
                 <div class="input-field">
-                    <textarea id="create-dealership-description" placeholder="Descrizione"></textarea>
+                    <label for="create-dealership-description"><i class="fas fa-file-alt"></i> Descrizione</label>
+                    <textarea id="create-dealership-description" rows="4"></textarea>
                 </div>
                 <div class="input-field">
-                    <input type="text" id="create-dealership-address" placeholder="Indirizzo">
+                    <label for="create-dealership-address"><i class="fas fa-map-marker-alt"></i> Indirizzo</label>
+                    <input type="text" id="create-dealership-address">
                 </div>
                 <div class="input-field">
-                    <input type="text" id="create-dealership-contact" placeholder="Contatti">
+                    <label for="create-dealership-contact"><i class="fas fa-phone"></i> Contatti</label>
+                    <input type="text" id="create-dealership-contact">
                 </div>
                 <div class="input-field">
-                    <input type="text" id="create-dealership-imagePath" placeholder="URL Immagine">
+                    <label for="create-dealership-imagePath"><i class="fas fa-image"></i> URL Immagine</label>
+                    <input type="url" id="create-dealership-imagePath">
                 </div>
-                <button type="submit"><i class="fas fa-save"></i> Salva</button>
+                <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva <span class="spinner" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span></button>
             </form>
         </div>
     </section>

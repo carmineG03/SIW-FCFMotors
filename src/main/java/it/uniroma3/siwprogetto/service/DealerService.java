@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,7 +88,6 @@ public class DealerService {
 
         Optional<Dealer> dealer = dealerRepository.findByOwnerUsername(username);
         if (dealer.isPresent()) {
-            //logger.info("Dealer found: id={}, name={}", dealer.get().getId(), dealer.getName());
             return dealer.get();
         } else {
             logger.warn("No dealer found for user '{}'", username);
@@ -119,8 +117,8 @@ public class DealerService {
             throw new IllegalStateException("Nessun concessionario trovato");
         }
 
-        product.setSeller(user); // Associa il prodotto all'utente
-        product.setSellerType("DEALER"); // Imposta il tipo di venditore come DEALER
+        product.setSeller(user);
+        product.setSellerType("DEALER");
         Product savedProduct = productRepository.save(product);
         logger.info("Product added: id={}, name={}, seller_id={}",
                 savedProduct.getId(), savedProduct.getName(), user.getId());
@@ -197,6 +195,11 @@ public class DealerService {
 
     public List<Dealer> findByLocation(String query) {
         logger.debug("Finding dealers with query: {}", query);
+        return dealerRepository.findAll();
+    }
+
+    public List<Dealer> findAll() {
+        logger.info("Retrieving all dealers");
         return dealerRepository.findAll();
     }
 }

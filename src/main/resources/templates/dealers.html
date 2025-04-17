@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -26,7 +26,7 @@
     <link rel="preload" href="/css/styles.css" as="style"/>
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap"/>
     <!-- Dati strutturati -->
     <script type="application/ld+json">
     {
@@ -69,8 +69,8 @@
         </div>
         <div class="nav-container">
             <div class="nav-bar">
-                <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
-                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
+                <a sec:authorize="!isAuthenticated()" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
+                <a sec:authorize="isAuthenticated()" href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
                 <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
             </div>
         </div>
@@ -80,27 +80,20 @@
         <section class="dealers-section">
             <h2>Elenco Concessionari</h2>
             <p class="section-subtitle">Scopri tutti i concessionari FCF Motors e trova quello più vicino a te.</p>
+            <p th:if="${errorMessage}" th:text="${errorMessage}" class="error-message"></p>
             <div id="dealers-list" class="dealers-list">
-                <!-- Esempio di concessionario (sostituibile con dati dinamici da Thymeleaf) -->
-                <div class="dealer-item">
-                    <h3>FCF Motors Milano</h3>
-                    <p><i class="fas fa-map-marker-alt"></i> Via Auto, 123, 20121 Milano, Italia</p>
-                    <p><i class="fas fa-phone"></i> <a href="tel:+391234567890">+39 123 456 7890</a></p>
-                    <p><i class="fas fa-envelope"></i> <a href="mailto:milano@fcfmotors.com">milano@fcfmotors.com</a></p>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Via+Auto,+123,+20121+Milano,+Italia" class="navigate-button" target="_blank" rel="noopener noreferrer">
+                <div th:if="${dealers.isEmpty()}">
+                    <p>Nessun concessionario disponibile al momento.</p>
+                </div>
+                <div th:each="dealer : ${dealers}" class="dealer-item">
+                    <h3 th:text="${dealer.name}">Concessionario</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> <span th:text="${dealer.address} ?: 'Indirizzo non disponibile'"></span></p>
+                    <p><i class="fas fa-phone"></i> <a th:href="'tel:' + ${dealer.contact}" th:text="${dealer.contact} ?: 'Contatto non disponibile'"></a></p>
+                    <p th:if="${dealer.contact}"><i class="fas fa-envelope"></i> <a th:href="'mailto:' + ${dealer.contact}" th:text="${dealer.contact}"></a></p>
+                    <a th:href="'https://www.google.com/maps/search/?api=1&query=' + ${dealer.address}" class="navigate-button" target="_blank" rel="noopener noreferrer">
                         <i class="fas fa-directions"></i> Raggiungi con il navigatore
                     </a>
                 </div>
-                <div class="dealer-item">
-                    <h3>FCF Motors Roma</h3>
-                    <p><i class="fas fa-map-marker-alt"></i> Via Roma, 456, 00184 Roma, Italia</p>
-                    <p><i class="fas fa-phone"></i> <a href="tel:+399876543210">+39 987 654 3210</a></p>
-                    <p><i class="fas fa-envelope"></i> <a href="mailto:roma@fcfmotors.com">roma@fcfmotors.com</a></p>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Via+Roma,+456,+00184+Roma,+Italia" class="navigate-button" target="_blank" rel="noopener noreferrer">
-                        <i class="fas fa-directions"></i> Raggiungi con il navigatore
-                    </a>
-                </div>
-                <!-- Aggiungi altri concessionari qui -->
             </div>
         </section>
     </main>
