@@ -202,4 +202,24 @@ public class DealerService {
         logger.info("Retrieving all dealers");
         return dealerRepository.findAll();
     }
+
+    public Product findProductById(Long id) {
+        logger.debug("Finding product by ID: {}", id);
+        return productRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Product not found: id={}", id);
+                    return new IllegalStateException("Prodotto non trovato");
+                });
+    }
+
+    public void deleteProduct(Long id) {
+        logger.debug("Deleting product: id={}", id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Product not found: id={}", id);
+                    return new IllegalStateException("Prodotto non trovato");
+                });
+        productRepository.delete(product);
+        logger.info("Product deleted: id={}", id);
+    }
 }

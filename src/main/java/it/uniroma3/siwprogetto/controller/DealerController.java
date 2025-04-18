@@ -203,6 +203,7 @@ public class DealerController {
         String name = payload.get("name");
         String description = payload.get("description");
         String priceStr = payload.get("price");
+        String imageUrl = payload.get("imageUrl");
         String trimmedName = (name != null) ? name.trim() : null;
 
         if (!StringUtils.hasText(trimmedName)) {
@@ -221,6 +222,7 @@ public class DealerController {
             product.setName(trimmedName);
             product.setDescription(StringUtils.hasText(description) ? description.trim() : null);
             product.setPrice(price);
+            product.setImageUrl(StringUtils.hasText(imageUrl) ? imageUrl.trim() : null);
 
             logger.info("Calling dealerService.addProduct for product: {}", product.getName());
             Product savedProduct = dealerService.addProduct(product);
@@ -231,9 +233,9 @@ public class DealerController {
             response.put("name", savedProduct.getName());
             response.put("description", savedProduct.getDescription() != null ? savedProduct.getDescription() : "");
             response.put("price", savedProduct.getPrice());
+            response.put("imageUrl", savedProduct.getImageUrl() != null ? savedProduct.getImageUrl() : "");
 
             return ResponseEntity.ok(response);
-
         } catch (NumberFormatException e) {
             logger.error("Invalid price format: {}", priceStr);
             return ResponseEntity.badRequest().body(Map.of("message", "Formato del prezzo non valido"));
@@ -247,6 +249,34 @@ public class DealerController {
         }
     }
 
+    @GetMapping("/api/products/{productId}")
+    @ResponseBody
+    public ResponseEntity<?> getProduct(@PathVariable Long productId) {
+        logger.info("Received GET /rest/api/products/{}", productId);
+        try {
+            Product product = dealerService.findProductById(productId);
+            if (product == null) {
+                logger.warn("Product not found: id={}", productId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "Prodotto non trovato"));
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", product.getId());
+            response.put("name", product.getName());
+            response.put("description", product.getDescription() != null ? product.getDescription() : "");
+            response.put("price", product.getPrice());
+            response.put("imageUrl", product.getImageUrl() != null ? product.getImageUrl() : "");
+
+            logger.info("Product retrieved successfully: id={}, name={}", product.getId(), product.getName());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error fetching product: id={}, error={}", productId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Errore interno del server"));
+        }
+    }
+
     @PutMapping("/api/products/{productId}")
     @ResponseBody
     public ResponseEntity<?> updateProduct(@PathVariable Long productId, @RequestBody Map<String, String> payload) {
@@ -254,6 +284,7 @@ public class DealerController {
         String name = payload.get("name");
         String description = payload.get("description");
         String priceStr = payload.get("price");
+        String imageUrl = payload.get("imageUrl");
         String trimmedName = (name != null) ? name.trim() : null;
 
         if (!StringUtils.hasText(trimmedName)) {
@@ -272,6 +303,7 @@ public class DealerController {
             product.setName(trimmedName);
             product.setDescription(StringUtils.hasText(description) ? description.trim() : null);
             product.setPrice(price);
+            product.setImageUrl(StringUtils.hasText(imageUrl) ? imageUrl.trim() : null);
 
             logger.info("Calling dealerService.updateProduct for product: id={}, name={}", productId, product.getName());
             Product updatedProduct = dealerService.updateProduct(productId, product);
@@ -282,9 +314,9 @@ public class DealerController {
             response.put("name", updatedProduct.getName());
             response.put("description", updatedProduct.getDescription() != null ? updatedProduct.getDescription() : "");
             response.put("price", updatedProduct.getPrice());
+            response.put("imageUrl", updatedProduct.getImageUrl() != null ? updatedProduct.getImageUrl() : "");
 
             return ResponseEntity.ok(response);
-
         } catch (NumberFormatException e) {
             logger.error("Invalid price format: {}", priceStr);
             return ResponseEntity.badRequest().body(Map.of("message", "Formato del prezzo non valido"));
@@ -298,7 +330,28 @@ public class DealerController {
         }
     }
 
-    // Nuovo mapping per /dealers
+    @DeleteMapping("/api/products/{productId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
+        logger.info("Received DELETE /rest/api/products/{}", productId);
+        try {
+            Product product = dealerService.findProductById(productId);
+            if (product == null) {
+                logger.warn("Product not found: id={}", productId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "Prodotto non trovato"));
+            }
+
+            dealerService.deleteProduct(productId);
+            logger.info("Product deleted successfully: id={}", productId);
+            return ResponseEntity.ok(Map.of("message", "Prodotto eliminato con successo"));
+        } catch (Exception e) {
+            logger.error("Error deleting product: id={}, error={}", productId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Errore interno del server"));
+        }
+    }
+
     @GetMapping("/dealers")
     public String showDealersPage(Model model) {
         logger.info("Accessing /dealers page");

@@ -177,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (addCarForm) {
         addCarForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            console.log('Form submitted, calling addCar'); // Debug log
             const submitButton = addCarForm.querySelector('button[type="submit"]');
             manageSpinner(submitButton, true);
 
@@ -330,8 +331,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleEditProductClick(e) {
         e.preventDefault();
         const productId = e.target.closest('a').getAttribute('data-product-id');
+        console.log('Edit productId:', productId); // Debug log
+        if (!productId || productId === 'undefined' || isNaN(productId)) {
+            showToast('ID prodotto non valido', 'error');
+            return;
+        }
+
         fetch(`/rest/api/products/${productId}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Errore nel caricamento del prodotto');
+                }
+                return response.json();
+            })
             .then(product => {
                 editProductForm.querySelector('#edit-product-id').value = product.id;
                 editProductForm.querySelector('#edit-product-name').value = product.name;
@@ -351,6 +363,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleDeleteProductClick(e) {
         e.preventDefault();
         const productId = e.target.closest('a').getAttribute('data-product-id');
+        console.log('Delete productId:', productId); // Debug log
+        if (!productId || productId === 'undefined' || isNaN(productId)) {
+            showToast('ID prodotto non valido', 'error');
+            return;
+        }
+
         if (confirm('Sei sicuro di voler eliminare questo prodotto?')) {
             deleteCar(productId);
         }
@@ -423,8 +441,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(errorData.message || "Errore nell'eliminazione dell'auto");
             }
 
+            // Remove the product card from the DOM
+            const productCard = document.querySelector(`.product-card a[data-product-id="${productId}"]`).closest('.product-card');
+            if (productCard) {
+                productCard.remove();
+            }
+
+            // Show "no products" message if no products remain
+            const productGrid = document.querySelector('#dealer-added-cars .product-grid');
+            if (productGrid.children.length === 0) {
+                const noProducts = productGrid.parentElement.querySelector('.no-products');
+                if (noProducts) {
+                    noProducts.style.display = 'block';
+                }
+            }
+
             showToast('Auto eliminata con successo!', 'success');
-            window.location.href = '/rest/dealers/manage';
         } catch (error) {
             console.error('Errore:', error);
             showToast(error.message || "Errore nell'eliminazione dell'auto", 'error');
