@@ -138,7 +138,7 @@ public class AccountController {
 
     @GetMapping("/manutenzione/private")
     public String manutenzionePrivate() {
-        return "manutenzione_private"; // Template per PRIVATE
+        return "add_car"; // Template per PRIVATE
     }
 
     @GetMapping("/manutenzione/dealer")

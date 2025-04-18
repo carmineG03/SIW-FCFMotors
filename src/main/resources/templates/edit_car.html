@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifica Macchina - Private</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- CSS locale -->
+    <link th:href="@{/css/styles.css}" href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<header class="header-transparent">
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img th:src="@{/image/logo1.png}" src="/image/logo1.png" alt="FCF Motors Logo" class="logo">
+            </div>
+        </a>
+    </div>
+    <div class="nav-container">
+        <a href="javascript:history.back()" class="back-button"><i class="fas fa-arrow-left"></i> Torna Indietro</a>
+    </div>
+</header>
+
+<section class="hero-section">
+    <div class="hero-content">
+        <h2>Modifica Macchina (Private)</h2>
+        <form th:action="@{/private/edit/{id}(id=${product.id})}" th:object="${product}" method="post" class="modern-form" id="edit-car-form">
+            <div class="input-field">
+                <label for="name"><i class="fas fa-car"></i> Nome Macchina</label>
+                <input type="text" id="name" th:field="*{name}" th:value="*{name}" placeholder="Nome Macchina" required>
+                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error"></span>
+            </div>
+            <div class="input-field">
+                <label for="description"><i class="fas fa-align-left"></i> Descrizione</label>
+                <textarea id="description" th:field="*{description}" th:value="*{description}" placeholder="Descrizione" required></textarea>
+                <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="error"></span>
+            </div>
+            <div class="input-field">
+                <label for="price"><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
+                <input type="number" id="price" th:field="*{price}" th:value="*{price}" placeholder="Prezzo (€)" step="0.01" required>
+                <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="error"></span>
+            </div>
+            <div class="input-field">
+                <label for="category"><i class="fas fa-tags"></i> Categoria</label>
+                <input type="text" id="category" th:field="*{category}" th:value="*{category}" placeholder="Categoria" required>
+                <span th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="error"></span>
+            </div>
+            <div class="input-field">
+                <label for="brand"><i class="fas fa-industry"></i> Marca</label>
+                <input type="text" id="brand" th:field="*{brand}" th:value="*{brand}" placeholder="Marca" required>
+                <span th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}" class="error"></span>
+            </div>
+            <div class="input-field">
+                <label for="model"><i class="fas fa-car-side"></i> Modello</label>
+                <input type="text" id="model" th:field="*{model}" th:value="*{model}" placeholder="Modello" required>
+                <span th:if="${#fields.hasErrors('model')}" th:errors="*{model}" class="error"></span>
+            </div>
+            <div class="input-field">
+                <label for="mileage"><i class="fas fa-tachometer-alt"></i> Chilometraggio</label>
+                <input type="number" id="mileage" th:field="*{mileage}" th:value="*{mileage}" placeholder="Chilometraggio" required>
+                <span th:if="${#fields.hasErrors('mileage')}" th:errors="*{mileage}" class="error"></span>
+            </div>
+            <div class="input-field">
+                <label for="year"><i class="fas fa-calendar-alt"></i> Anno</label>
+                <input type="number" id="year" th:field="*{year}" th:value="*{year}" placeholder="Anno" required>
+                <span th:if="${#fields.hasErrors('year')}" th:errors="*{year}" class="error"></span>
+            </div>
+            <div class="input-field">
+                <label for="fuelType"><i class="fas fa-gas-pump"></i> Tipo di carburante</label>
+                <input type="text" id="fuelType" th:field="*{fuelType}" th:value="*{fuelType}" placeholder="Tipo di carburante" required>
+                <span th:if="${#fields.hasErrors('fuelType')}" th:errors="*{fuelType}" class="error"></span>
+            </div>
+            <div class="input-field">
+                <label for="transmission"><i class="fas fa-cogs"></i> Trasmissione</label>
+                <input type="text" id="transmission" th:field="*{transmission}" th:value="*{transmission}" placeholder="Trasmissione" required>
+                <span th:if="${#fields.hasErrors('transmission')}" th:errors="*{transmission}" class="error"></span>
+            </div>
+            <div class="input-field">
+                <label for="imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
+                <input type="text" id="imageUrl" th:field="*{imageUrl}" th:value="*{imageUrl}" placeholder="https://example.com/image.jpg" required>
+                <span th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}" class="error"></span>
+            </div>
+            <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva Modifiche</button>
+        </form>
+        <div th:if="${param.error}">
+            <p class="error-message" th:text="${param.error == 'not_authorized'} ? 'Errore: Non autorizzato!' : 'Errore generico!'"></p>
+        </div>
+        <div th:if="${param.success}">
+            <p style="color: green;">Macchina modificata con successo!</p>
+        </div>
+    </div>
+</section>
+
+<div class="toast" id="toast">Macchina modificata con successo!</div>
+<script th:src="@{/js/maintenance_private.js}" src="/js/maintenance_private.js"></script>
+</body>
+</html>
