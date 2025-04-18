@@ -74,7 +74,7 @@
                         <h2 id="dealership-form-title">Modifica Concessionario</h2>
                         <div class="input-field">
                             <label for="edit-dealership-name"><i class="fas fa-store"></i> Nome Concessionario</label>
-                            <input type="text" id="edit-dealership-name" placeholder="Inserisci il nome" th:value="${dealer.name}" required aria-required="true">
+                            <input type="text" id="edit-dealership-name"  th:value="${dealer.name}" required aria-required="true">
                         </div>
                         <div class="input-field">
                             <label for="edit-dealership-description"><i class="fas fa-file-alt"></i> Descrizione</label>
@@ -82,15 +82,15 @@
                         </div>
                         <div class="input-field">
                             <label for="edit-dealership-address"><i class="fas fa-map-marker-alt"></i> Indirizzo</label>
-                            <input type="text" id="edit-dealership-address" placeholder="Inserisci l'indirizzo" th:value="${dealer.address}">
+                            <input type="text" id="edit-dealership-address"  th:value="${dealer.address}">
                         </div>
                         <div class="input-field">
                             <label for="edit-dealership-contact"><i class="fas fa-phone"></i> Contatti</label>
-                            <input type="text" id="edit-dealership-contact" placeholder="Inserisci i contatti" th:value="${dealer.contact}">
+                            <input type="text" id="edit-dealership-contact" th:value="${dealer.contact}">
                         </div>
                         <div class="input-field">
                             <label for="edit-dealership-imagePath"><i class="fas fa-image"></i> URL Immagine</label>
-                            <input type="url" id="edit-dealership-imagePath" placeholder="Inserisci l'URL dell'immagine" th:value="${dealer.imagePath}">
+                            <input type="url" id="edit-dealership-imagePath"  th:value="${dealer.imagePath}">
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva <span class="spinner"></span></button>
@@ -108,7 +108,7 @@
                         <h2 id="add-car-form-title" style="display: none;">Aggiungi Auto</h2>
                         <div class="input-field">
                             <label for="dealer-car-name"><i class="fas fa-car"></i> Nome Macchina</label>
-                            <input type="text" id="dealer-car-name" placeholder="Inserisci il nome" required aria-required="true">
+                            <input type="text" id="dealer-car-name"  required aria-required="true">
                         </div>
                         <div class="input-field">
                             <label for="dealer-car-description"><i class="fas fa-file-alt"></i> Descrizione</label>
@@ -120,7 +120,7 @@
                         </div>
                         <div class="input-field">
                             <label for="dealer-car-imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
-                            <input type="url" id="dealer-car-imageUrl" placeholder="Inserisci l'URL dell'immagine">
+                            <input type="url" id="dealer-car-imageUrl">
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="modern-button"><i class="fas fa-plus"></i> Aggiungi <span class="spinner"></span></button>

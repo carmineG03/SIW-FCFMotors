@@ -196,10 +196,10 @@ public class DealerController {
         }
     }
 
-    @PostMapping("/api/dealers/products")
+    @PostMapping("/api/products")
     @ResponseBody
     public ResponseEntity<?> addProduct(@RequestBody Map<String, String> payload) {
-        logger.info("Received POST /rest/api/dealers/products with payload: {}", payload);
+        logger.info("Received POST /rest/api/products with payload: {}", payload);
         String name = payload.get("name");
         String description = payload.get("description");
         String priceStr = payload.get("price");
@@ -247,10 +247,10 @@ public class DealerController {
         }
     }
 
-    @PutMapping("/api/dealers/products/{productId}") // Modificato da /api/products/{productId}
+    @PutMapping("/api/products/{productId}")
     @ResponseBody
     public ResponseEntity<?> updateProduct(@PathVariable Long productId, @RequestBody Map<String, String> payload) {
-        logger.info("Received PUT /rest/api/dealers/products/{} with payload: {}", productId, payload);
+        logger.info("Received PUT /rest/api/products/{} with payload: {}", productId, payload);
         String name = payload.get("name");
         String description = payload.get("description");
         String priceStr = payload.get("price");
@@ -298,8 +298,8 @@ public class DealerController {
         }
     }
 
+    // Nuovo mapping per /dealers
     @GetMapping("/dealers")
-    public String showDealersPage(Model model) {
     public String showDealersPage(Model model) {
         logger.info("Accessing /dealers page");
         try {

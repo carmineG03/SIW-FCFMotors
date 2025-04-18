@@ -11,8 +11,7 @@
 }
 
 body {
-    background-color: #F5F6F5;
-    color: #333333;
+    background-size: auto 100%;
 }
 
 /* Margin for Main Sections */
@@ -192,18 +191,115 @@ header h2 {
 /* Hero Section */
 .hero-section {
     position: relative;
-    min-height: calc(100vh - 75px); /* Altezza minima adattata per non sovrapporsi all'header */
+    min-height: calc(100vh - 75px);
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     color: #FFFFFF;
-    background: url('https://wallpapers.com/images/high/4k-car-3840-x-2160-background-yxcpysgkd61l40hf.webp') no-repeat center center;
+    background: url('/image/sfondosito.jpg') no-repeat center center, #333333; /* Fallback locale e colore */
     background-size: cover;
-    background-attachment: fixed; /* Effetto parallasse */
-    padding-top: 75px; /* Padding per evitare sovrapposizione con l'header */
-    margin-top: 0; /* Rimuovo il margine superiore, gestito dal main */
+    padding-top: 75px;
+    margin-top: 0;
+}
+
+/* Animazioni per la Hero Section */
+.hero-title {
+    animation: fadeIn 1s ease-in forwards;
+}
+
+.hero-subtitle {
+    animation: fadeIn 1.2s ease-in forwards;
+}
+
+
+.cta-button {
+    animation: fadeIn 1.4s ease-in forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Stile per il pulsante Sfoglia tutte le auto */
+.cta-button {
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    
+}
+
+.cta-button:hover {
+    background: linear-gradient(45deg, #E59400, #D68F1D);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cta-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.5);
+}
+
+/* Fallback per animazioni non supportate */
+@supports not (animation: fadeIn) {
+    .hero-title, .hero-subtitle, .cta-button {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive per la Hero Section */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 50vh !important;
+        padding: 20px 15px !important;
+    }
+    .hero-title {
+        font-size: 2rem !important;
+    }
+    .hero-subtitle {
+        font-size: 1rem !important;
+        max-width: 90% !important;
+    }
+    .input-field {
+        max-width: 300px !important;
+    }
+    .cta-button {
+        padding: 10px 20px !important;
+        font-size: 12px !important;
+    }
+    .search-button {
+        padding: 8px 15px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        min-height: 45vh !important;
+        padding: 15px 10px !important;
+    }
+    .hero-title {
+        font-size: 1.5rem !important;
+    }
+    .hero-subtitle {
+        font-size: 0.9rem !important;
+    }
+    .input-field {
+        max-width: 250px !important;
+    }
+    .cta-button {
+        padding: 8px 15px !important;
+        font-size: 11px !important;
+    }
+    .search-button {
+        padding: 6px 12px !important;
+    }
 }
 
 .hero-content {
@@ -329,6 +425,85 @@ header h2 {
 
 .modern-button .spinner {
     display: none;
+}
+
+/* Maintenance Button */
+.maintenance-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Spazio tra icona e testo */
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #F5A623, #E59400); /* Gradiente giallo-arancione coerente con il tema */
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 8px; /* Bordi arrotondati coerenti con .modern-button */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombra delicata */
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.maintenance-button i {
+    font-size: 18px; /* Icona leggermente più grande */
+}
+
+.maintenance-button:hover {
+    background: linear-gradient(45deg, #E59400, #D68F1D); /* Gradiente più scuro su hover */
+    transform: translateY(-2px); /* Leggero sollevamento */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Ombra più intensa */
+}
+
+.maintenance-button:active {
+    transform: translateY(0); /* Torna alla posizione originale */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Ombra ridotta */
+}
+
+.maintenance-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.5); /* Focus visibile per accessibilità */
+}
+
+/* Effetto di caricamento */
+.maintenance-button.loading::after {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 10px;
+    border: 2px solid #FFFFFF;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .maintenance-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+    .maintenance-button i {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .maintenance-button {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+    .maintenance-button i {
+        font-size: 14px;
+    }
 }
 
 /* Toast Styles */
