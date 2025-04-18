@@ -25,8 +25,64 @@
 
 <section class="hero-section">
     <div class="hero-content">
-        <h2>Modifica Macchina (Private)</h2>
-        <form th:action="@{/private/edit/{id}(id=${product.id})}" th:object="${product}" method="post" class="modern-form" id="edit-car-form">
+        <h2>Dettagli Macchina (Private)</h2>
+
+        <!-- Sezione dettagli -->
+        <div id="car-details" class="car-details">
+            <div class="detail-field">
+                <label><i class="fas fa-car"></i> Nome Macchina</label>
+                <p th:text="${product.name}"></p>
+            </div>
+            <div class="detail-field">
+                <label><i class="fas fa-align-left"></i> Descrizione</label>
+                <p th:text="${product.description}"></p>
+            </div>
+            <div class="detail-field">
+                <label><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
+                <p th:text="${product.price}"></p>
+            </div>
+            <div class="detail-field">
+                <label><i class="fas fa-tags"></i> Categoria</label>
+                <p th:text="${product.category}"></p>
+            </div>
+            <div class="detail-field">
+                <label><i class="fas fa-industry"></i> Marca</label>
+                <p th:text="${product.brand}"></p>
+            </div>
+            <div class="detail-field">
+                <label><i class="fas fa-car-side"></i> Modello</label>
+                <p th:text="${product.model}"></p>
+            </div>
+            <div class="detail-field">
+                <label><i class="fas fa-tachometer-alt"></i> Chilometraggio</label>
+                <p th:text="${product.mileage}"></p>
+            </div>
+            <div class="detail-field">
+                <label><i class="fas fa-calendar-alt"></i> Anno</label>
+                <p th:text="${product.year}"></p>
+            </div>
+            <div class="detail-field">
+                <label><i class="fas fa-gas-pump"></i> Tipo di carburante</label>
+                <p th:text="${product.fuelType}"></p>
+            </div>
+            <div class="detail-field">
+                <label><i class="fas fa-cogs"></i> Trasmissione</label>
+                <p th:text="${product.transmission}"></p>
+            </div>
+            <div class="detail-field">
+                <label><i class="fas fa-image"></i> Immagine</label>
+                <img th:src="${product.imageUrl} ?: '/image/default-car.jpg'" alt="Immagine Macchina" class="car-image">
+            </div>
+            <div class="button-group">
+                <button id="edit-button" class="modern-button"><i class="fas fa-edit"></i> Modifica</button>
+                <form th:action="@{/private/delete/{id}(id=${product.id})}" method="post" style="display: inline;">
+                    <button type="submit" class="modern-button danger" onclick="return confirm('Sei sicuro di voler eliminare questa macchina?');"><i class="fas fa-trash"></i> Elimina</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Form di modifica (nascosto inizialmente) -->
+        <form th:action="@{/private/edit/{id}(id=${product.id})}" th:object="${product}" method="post" class="modern-form" id="edit-car-form" style="display: none;">
             <div class="input-field">
                 <label for="name"><i class="fas fa-car"></i> Nome Macchina</label>
                 <input type="text" id="name" th:field="*{name}" th:value="*{name}" placeholder="Nome Macchina" required>
@@ -82,8 +138,13 @@
                 <input type="text" id="imageUrl" th:field="*{imageUrl}" th:value="*{imageUrl}" placeholder="https://example.com/image.jpg" required>
                 <span th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}" class="error"></span>
             </div>
-            <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva Modifiche</button>
+            <div class="button-group">
+                <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva Modifiche</button>
+                <button type="button" id="cancel-button" class="modern-button secondary"><i class="fas fa-times"></i> Annulla</button>
+            </div>
         </form>
+
+        <!-- Messaggi di feedback -->
         <div th:if="${param.error}">
             <p class="error-message" th:text="${param.error == 'not_authorized'} ? 'Errore: Non autorizzato!' : 'Errore generico!'"></p>
         </div>
@@ -93,7 +154,25 @@
     </div>
 </section>
 
-<div class="toast" id="toast">Macchina modificata con successo!</div>
+<div class="toast" id="toast"></div>
 <script th:src="@{/js/maintenance_private.js}" src="/js/maintenance_private.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const detailsSection = document.getElementById('car-details');
+        const editForm = document.getElementById('edit-car-form');
+        const editButton = document.getElementById('edit-button');
+        const cancelButton = document.getElementById('cancel-button');
+
+        editButton.addEventListener('click', function() {
+            detailsSection.style.display = 'none';
+            editForm.style.display = 'block';
+        });
+
+        cancelButton.addEventListener('click', function() {
+            editForm.style.display = 'none';
+            detailsSection.style.display = 'block';
+        });
+    });
+</script>
 </body>
 </html>

@@ -8,7 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -53,9 +57,8 @@ public class PrivateMaintenanceController {
 		product.setSeller(user);
 		product.setSellerType("PRIVATE");
 
-		// L'immagine è già un URL nel campo imageUrl, nessun file da gestire
 		if (product.getImageUrl() == null || product.getImageUrl().isEmpty()) {
-			product.setImageUrl("/image/default-car.jpg"); // URL di fallback se vuoto
+			product.setImageUrl("/image/default-car.jpg");
 		}
 
 		productRepository.save(product);
@@ -88,5 +91,19 @@ public class PrivateMaintenanceController {
 
 		productRepository.save(existingProduct);
 		return "redirect:/private/maintenance?success=car_updated";
+	}
+
+	@PostMapping("/delete/{id}")
+	public String deleteCar(@PathVariable Long id, Authentication authentication) {
+		User user = userService.findByUsername(authentication.getName());
+		Product product = productRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("Prodotto non trovato"));
+
+		if (!product.getSeller().getId().equals(user.getId())) {
+			return "redirect:/private/maintenance?error=not_authorized";
+		}
+
+		productRepository.delete(product);
+		return "redirect:/private/maintenance?success=car_deleted";
 	}
 }

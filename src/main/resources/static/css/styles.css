@@ -2937,3 +2937,118 @@ footer {
         width: 100%;
     }
 }
+
+/* Car Details - Visualizzazione dei dettagli */
+.car-details {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.detail-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-field label {
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.detail-field label i {
+    margin-right: 5px;
+}
+
+.detail-field p {
+    color: #FFFFFF;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    margin: 0;
+}
+
+/* Immagine della macchina */
+.car-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+/* Gruppo di pulsanti */
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* Pulsante danger (per eliminazione) */
+.modern-button.danger {
+    background: #D32F2F;
+    border: 1px solid #D32F2F;
+}
+
+.modern-button.danger:hover {
+    background: #B71C1C;
+    border-color: #B71C1C;
+}
+
+/* Pulsante secondario (per annulla) */
+.modern-button.secondary {
+    background: #757575;
+    border: 1px solid #757575;
+}
+
+.modern-button.secondary:hover {
+    background: #616161;
+    border-color: #616161;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .detail-field label {
+        font-size: 13px;
+    }
+
+    .detail-field p {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .car-image {
+        max-width: 100%;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .modern-button.danger,
+    .modern-button.secondary {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .detail-field label {
+        font-size: 12px;
+    }
+
+    .detail-field p {
+        font-size: 13px;
+        padding: 6px;
+    }
+
+    .modern-button.danger,
+    .modern-button.secondary {
+        padding: 8px;
+        font-size: 13px;
+    }
+}
