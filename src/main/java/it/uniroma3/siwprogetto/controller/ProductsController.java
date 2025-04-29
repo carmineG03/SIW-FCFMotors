@@ -36,11 +36,34 @@ public class ProductsController {
                                    @RequestParam(value = "minYear", required = false) Integer minYear,
                                    @RequestParam(value = "maxYear", required = false) Integer maxYear,
                                    @RequestParam(value = "fuelType", required = false) String fuelType,
-                                   @RequestParam(value = "transmission", required = false) String transmission) {
+                                   @RequestParam(value = "transmission", required = false) String transmission,
+                                   @RequestParam(value = "query", required = false) String query) {
+        // Normalizza i valori stringa
+        category = category != null && !category.trim().isEmpty() ? category.trim() : null;
+        brand = brand != null && !brand.trim().isEmpty() ? brand.trim() : null;
+        selectedModel = selectedModel != null && !selectedModel.trim().isEmpty() ? selectedModel.trim() : null;
+        fuelType = fuelType != null && !fuelType.trim().isEmpty() ? fuelType.trim() : null;
+        transmission = transmission != null && !transmission.trim().isEmpty() ? transmission.trim() : null;
+        query = query != null && !query.trim().isEmpty() ? query.trim() : null;
+
+        // Validazione dei parametri numerici
+        minPrice = minPrice != null && minPrice.compareTo(BigDecimal.ZERO) >= 0 ? minPrice : null;
+        maxPrice = maxPrice != null && maxPrice.compareTo(BigDecimal.ZERO) >= 0 ? maxPrice : null;
+        minMileage = minMileage != null && minMileage >= 0 ? minMileage : null;
+        maxMileage = maxMileage != null && maxMileage >= 0 ? maxMileage : null;
+        minYear = minYear != null && minYear >= 0 ? minYear : null;
+        maxYear = maxYear != null && maxYear >= 0 ? maxYear : null;
+
+        // Log dei parametri ricevuti
+        System.out.println("Parametri ricevuti: category=" + category + ", brand=" + brand + ", model=" + selectedModel +
+                ", minPrice=" + minPrice + ", maxPrice=" + maxPrice + ", minMileage=" + minMileage +
+                ", maxMileage=" + maxMileage + ", minYear=" + minYear + ", maxYear=" + maxYear +
+                ", fuelType=" + fuelType + ", transmission=" + transmission + ", query=" + query);
+
         // Recupera i prodotti con i filtri
         model.addAttribute("products", productService.findByFilters(category, brand, selectedModel,
                 minPrice, maxPrice, minMileage, maxMileage,
-                minYear, maxYear, fuelType, transmission));
+                minYear, maxYear, fuelType, transmission, query));
 
         // Aggiungi i valori per i dropdown
         model.addAttribute("categories", productService.findAllCategories());
@@ -48,6 +71,20 @@ public class ProductsController {
         model.addAttribute("models", brand != null ? productService.findModelsByBrand(brand) : null);
         model.addAttribute("fuelTypes", productService.findAllFuelTypes());
         model.addAttribute("transmissions", productService.findAllTransmissions());
+
+        // Aggiungi i valori dei filtri al modello per preservarli
+        model.addAttribute("category", category);
+        model.addAttribute("brand", brand);
+        model.addAttribute("selectedModel", selectedModel);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("minMileage", minMileage);
+        model.addAttribute("maxMileage", maxMileage);
+        model.addAttribute("minYear", minYear);
+        model.addAttribute("maxYear", maxYear);
+        model.addAttribute("fuelType", fuelType);
+        model.addAttribute("transmission", transmission);
+        model.addAttribute("query", query);
 
         // Aggiungi lo stato di autenticazione
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

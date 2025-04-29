@@ -5,27 +5,50 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "product")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, length = 255)
     private String name;
+
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String description;
+
+    @Column(nullable = false)
     private BigDecimal price;
+
+    @Column(length = 1000)
     private String imageUrl;
+
+    @Column(length = 100)
     private String category;
+
+    @Column(length = 100)
     private String brand;
+
+    @Column(length = 100)
     private String model;
+
     private Integer mileage;
     private Integer year;
+
+    @Column(length = 50)
     private String fuelType;
+
+    @Column(length = 50)
     private String transmission;
+
+    @Column(length = 50)
     private String sellerType;
 
     @ManyToOne
-    private User seller; // Cambiato da Dealer a User
+    private User seller;
 
     private boolean isFeatured;
+
     private LocalDateTime featuredUntil;
 
     public Product() {}
@@ -57,8 +80,8 @@ public class Product {
     public void setTransmission(String transmission) { this.transmission = transmission; }
     public String getSellerType() { return sellerType; }
     public void setSellerType(String sellerType) { this.sellerType = sellerType; }
-    public User getSeller() { return seller; } // Cambiato da getDealer a getSeller
-    public void setSeller(User seller) { this.seller = seller; } // Cambiato da setDealer a setSeller
+    public User getSeller() { return seller; }
+    public void setSeller(User seller) { this.seller = seller; }
     public boolean isFeatured() { return isFeatured; }
     public void setIsFeatured(boolean isFeatured) { this.isFeatured = isFeatured; }
     public LocalDateTime getFeaturedUntil() { return featuredUntil; }
