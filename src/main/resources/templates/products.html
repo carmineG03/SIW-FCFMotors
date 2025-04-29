@@ -124,22 +124,20 @@
 
     <section class="products-page">
         <div class="cars-grid">
-            <div th:if="${products != null and not #lists.isEmpty(products)}">
-                <div th:each="product : ${products}" class="car-item">
-                    <img th:src="${product.imageUrl}" th:alt="${product.name}"/>
-                    <h3 th:text="${product.name}"></h3>
-                    <p th:text="${product.description}"></p>
-                    <p th:text="'Categoria: ' + ${product.category}"></p>
-                    <p class="price" th:text="${#numbers.formatDecimal(product.price, 1, 2, 'COMMA')} + ' €'"></p>
-                    <div class="button-group">
-                        <div th:if="${product.sellerType == 'PRIVATE'}">
-                            <a th:href="@{'/contact-seller/' + ${product.id}}" class="button">Contatta il Venditore</a>
-                        </div>
-                        <div th:if="${product.sellerType == 'DEALER'}">
-                            <a th:href="@{'/request-quote/' + ${product.id}}" class="button">Richiedi Preventivo</a>
-                        </div>
-                        <a th:href="@{'/add-subscription/' + ${product.id}}" class="button">Aggiungi Abbonamento</a>
+            <div th:each="product : ${products}" th:if="${products != null and not #lists.isEmpty(products)}" class="car-item">
+                <img th:src="${product.imageUrl}" th:alt="${product.name}"/>
+                <h3 th:text="${product.name}"></h3>
+                <p th:text="${product.description}"></p>
+                <p th:text="'Categoria: ' + ${product.category}"></p>
+                <p class="price" th:text="${#numbers.formatDecimal(product.price, 1, 2, 'COMMA')} + ' €'"></p>
+                <div class="button-group">
+                    <div th:if="${product.sellerType == 'PRIVATE'}">
+                        <a th:href="@{'/contact-seller/' + ${product.id}}" class="button">Contatta il Venditore</a>
                     </div>
+                    <div th:if="${product.sellerType == 'DEALER'}">
+                        <a th:href="@{'/request-quote/' + ${product.id}}" class="button">Richiedi Preventivo</a>
+                    </div>
+                    <a th:href="@{'/add-subscription/' + ${product.id}}" class="button">Aggiungi Abbonamento</a>
                 </div>
             </div>
             <div th:if="${products == null or #lists.isEmpty(products)}" class="no-products">

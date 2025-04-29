@@ -191,14 +191,13 @@ header h2 {
 /* Hero Section */
 .hero-section {
     position: relative;
-    min-height: calc(100vh - 75px);
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     color: #FFFFFF;
-    background: url('/image/sfondosito.jpg') no-repeat center center, #333333; /* Fallback locale e colore */
+    background: url('/image/sfondosito1.jpg') no-repeat center center, #333333; /* Fallback locale e colore */
     background-size: cover;
     padding-top: 75px;
     margin-top: 0;
@@ -320,6 +319,263 @@ header h2 {
     font-family: 'Bungee Spice', sans-serif;
 }
 
+/* Stili specifici per la pagina Aggiungi Macchina */
+.add-car-page .hero-section {
+    position: relative;
+    min-height: calc(100vh - 75px);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #FFFFFF;
+    background: url('/image/aggiungi.jpg') no-repeat center center;
+    background-size: cover;
+    margin-top: 75px;
+}
+
+/* Overlay per migliorare la leggibilità */
+.add-car-page .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+}
+
+/* Contenitore del contenuto */
+.add-car-page .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 40px;
+    max-width: 1200px;
+    width: 90%;
+    background: none;
+}
+
+.add-car-page .hero-content h2 {
+    font-size: 3rem;
+    margin-bottom: 30px;
+    color: #F5A623;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    font-family: 'Bungee Spice', sans-serif;
+}
+
+/* Layout orizzontale per il form */
+.add-car-page .modern-form.horizontal-form {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.add-car-page .form-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    justify-items: stretch;
+    align-items: start;
+}
+
+.add-car-page .form-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.add-car-page .form-section h3 {
+    color: #F5A623;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    font-family: 'Bungee Spice', sans-serif;
+}
+
+.add-car-page .input-field {
+    flex: 1 1 250px; /* Aumentato leggermente per etichette più lunghe */
+    max-width: 300px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+/* Stili per gli input */
+.add-car-page .input-field input,
+.add-car-page .input-field textarea {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    font-size: 14px;
+    color: #FFFFFF;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.add-car-page .input-field input:focus,
+.add-car-page .input-field textarea:focus {
+    border-color: #F5A623;
+    box-shadow: 0 0 8px rgba(245, 166, 35, 0.3);
+}
+
+.add-car-page .input-field input::placeholder,
+.add-car-page .input-field textarea::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Etichette per gli input */
+.add-car-page .input-field label {
+    position: absolute;
+    top: 50%;
+    left: 15px; /* Ridotto per centrare meglio */
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    max-width: calc(100% - 30px); /* Limita la larghezza per evitare overflow */
+    white-space: nowrap; /* Evita che il testo si spezzi */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Aggiunge "..." se il testo è troppo lungo */
+}
+
+.add-car-page .input-field label i {
+    margin-right: 8px;
+    color: #F5A623;
+    flex-shrink: 0; /* L'icona non si ridimensiona */
+}
+
+.add-car-page .input-field input:focus + label,
+.add-car-page .input-field textarea:focus + label,
+.add-car-page .input-field input:not(:placeholder-shown) + label,
+.add-car-page .input-field textarea:not(:placeholder-shown) + label {
+    top: -10px;
+    left: 10px;
+    font-size: 12px;
+    color: #F5A623;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 2px 6px;
+    border-radius: 4px;
+    max-width: fit-content; /* Si adatta al contenuto quando spostato */
+}
+
+/* Pulsante di invio */
+.add-car-page .modern-button {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+    color: #FFFFFF;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.add-car-page .modern-button:hover {
+    background: linear-gradient(45deg, #E59400, #D68F1D);
+    transform: translateY(-2px);
+}
+
+/* Aggiornamento autocompletamento */
+.add-car-page .ui-autocomplete {
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 8px 0;
+    z-index: 1000;
+    font-family: 'Open Sans', sans-serif;
+    animation: slideIn 0.2s ease-out;
+}
+
+.add-car-page .ui-autocomplete .ui-menu-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    color: #333333;
+    font-size: 14px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.add-car-page .ui-autocomplete .ui-menu-item:hover,
+.add-car-page .ui-autocomplete .ui-menu-item.ui-state-active {
+    background-color: #F5A623;
+    color: #FFFFFF;
+}
+
+.add-car-page .ui-autocomplete::-webkit-scrollbar {
+    width: 8px;
+}
+
+.add-car-page .ui-autocomplete::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 8px;
+}
+
+.add-car-page .ui-autocomplete::-webkit-scrollbar-thumb {
+    background: #F5A623;
+    border-radius: 8px;
+}
+
+.add-car-page .ui-autocomplete::-webkit-scrollbar-thumb:hover {
+    background: #E59400;
+}
+
+/* Messaggi di errore e successo */
+.add-car-page .error-message {
+    color: #D32F2F;
+    font-size: 1rem;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.add-car-page .success-message {
+    color: #28A745;
+    font-size: 1rem;
+    margin: 10px 0;
+    text-align: center;
+}
+
+/* Responsività */
+@media (max-width: 768px) {
+    .add-car-page .form-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .add-car-page .input-field {
+        max-width: 100%;
+    }
+
+    .add-car-page .hero-content {
+        padding: 20px;
+    }
+
+    .add-car-page .hero-content h2 {
+        font-size: 2rem;
+    }
+
+    .add-car-page .ui-autocomplete {
+        max-height: 200px;
+        font-size: 13px;
+    }
+
+    .add-car-page .ui-autocomplete .ui-menu-item {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+}
+
 /* Modern Form Styles */
 .modern-form {
     display: flex;
@@ -329,37 +585,37 @@ header h2 {
 }
 
 .modern-form .input-field {
-    position: relative;
+    display: flex;
+    flex-direction: column;
     margin-bottom: 20px;
 }
 
 .modern-form .input-field label {
-    position: absolute;
-    top: 50%;
-    left: 15px;
-    transform: translateY(-50%);
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
     font-weight: 600;
-    transition: all 0.3s ease;
-    pointer-events: none;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .modern-form .input-field label i {
-    margin-right: 8px;
+    color: #F5A623;
+    flex-shrink: 0;
 }
 
 .modern-form .input-field input,
 .modern-form .input-field textarea {
     width: 100%;
-    padding: 15px 15px 15px 40px;
+    padding: 12px 12px 12px 40px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 14px;
     color: #FFFFFF;
     outline: none;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .modern-form .input-field textarea {
@@ -368,23 +624,87 @@ header h2 {
 }
 
 .modern-form .input-field input:focus,
-.modern-form .input-field textarea:focus,
-.modern-form .input-field input:not(:placeholder-shown),
-.modern-form .input-field textarea:not(:placeholder-shown) {
+.modern-form .input-field textarea:focus {
     border-color: #F5A623;
     box-shadow: 0 0 8px rgba(245, 166, 35, 0.3);
 }
 
-.modern-form .input-field input:focus + label,
-.modern-form .input-field textarea:focus + label,
-.modern-form .input-field input:not(:placeholder-shown) + label,
-.modern-form .input-field textarea:not(:placeholder-shown) + label {
-    top: -10px;
-    left: 10px;
+.modern-form .input-field input::placeholder,
+.modern-form .input-field textarea::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.modern-form .input-field .error-message {
+    color: #D32F2F;
     font-size: 12px;
-    color: #F5A623;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 0 5px;
+    margin-top: 5px;
+}
+
+/* Sovrascrivi gli stili specifici di .add-car-page per il form */
+.add-car-page .modern-form .input-field {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.add-car-page .modern-form .input-field label {
+    position: static;
+    transform: none;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+    white-space: normal;
+}
+
+.add-car-page .modern-form .input-field input,
+.add-car-page .modern-form .input-field textarea {
+    padding: 12px 12px 12px 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    font-size: 14px;
+    color: #FFFFFF;
+    min-height: 50px; /* Altezza uniforme per gli input */
+    box-sizing: border-box;
+}
+
+.add-car-page .modern-form .input-field textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.add-car-page .modern-form .input-field input:focus,
+.add-car-page .modern-form .input-field textarea:focus {
+    border-color: #F5A623;
+    box-shadow: 0 0 8px rgba(245, 166, 35, 0.3);
+}
+
+.add-car-page .modern-form .input-field input:focus + label,
+.add-car-page .modern-form .input-field textarea:focus + label,
+.add-car-page .modern-form .input-field input:not(:placeholder-shown) + label,
+.add-car-page .modern-form .input-field textarea:not(:placeholder-shown) + label {
+    top: unset;
+    left: unset;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    background: none;
+    padding: 0;
+    max-width: 100%;
+}
+
+/* Campo Descrizione occupa tutta la riga */
+.add-car-page .modern-form .input-field.description-field {
+    grid-column: 1 / -1;
+}
+
+/* Campo Prezzo Pagato per l'Aggiunta */
+.add-car-page .modern-form .input-field.fee-field {
+    grid-column: 1 / -1;
+    text-align: center;
 }
 
 .modern-button {
@@ -963,7 +1283,7 @@ header h2 {
     justify-content: center;
     text-align: center;
     color: #FFFFFF;
-    background: url('/image/car-lot-background.jpg') no-repeat center center;
+    background: url('/image/trovaauto.jpg') no-repeat center center;
     background-size: cover;
     padding-top: 75px;
 }
@@ -1173,72 +1493,178 @@ header h2 {
 /* Cars Grid */
 .cars-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(5, 1fr); /* 5 colonne per riga */
+    gap: 20px; /* Spazio tra gli elementi */
     padding: 20px;
+    background: rgba(0, 0, 0, 0.7); /* Sfondo scuro per contrasto */
 }
 
 .car-item {
-    border: 1px solid #E5E5E5;
-    border-radius: 12px;
-    padding: 15px;
-    text-align: center;
-    background-color: #FFFFFF;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.15); /* Sfondo chiaro semitrasparente per ogni elemento */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .car-item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .car-item img {
     width: 100%;
     height: 200px;
     object-fit: cover;
-    border-radius: 8px;
 }
 
 .car-item h3 {
-    margin: 10px 0;
-    font-size: 1.4rem;
-    color: #003087;
+    font-size: 1.2rem;
+    margin: 10px;
+    color: #F5A623; /* Colore arancione brillante per il titolo */
+    text-align: center;
     font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Ombra per migliorare la leggibilità */
 }
 
 .car-item p {
-    margin: 5px 0;
-    color: #666666;
+    margin: 5px 10px;
+    color: #FFFFFF; /* Testo bianco per contrasto */
+    font-size: 0.9rem;
+    line-height: 1.4;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Ombra per migliorare la leggibilità */
 }
 
-.price {
+.car-item .price {
+    font-size: 1.1rem;
     font-weight: bold;
-    color: #F5A623;
-    font-size: 1.3rem;
-}
-
-.button {
-    background-color: #F5A623;
-    color: #FFFFFF;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
+    color: #F5A623; /* Colore arancione per il prezzo */
+    margin: 10px;
     text-align: center;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Ombra per migliorare la leggibilità */
 }
 
-.button:hover {
-    background-color: #E59400;
+.car-item .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+}
+
+.car-item .button {
+    display: block;
+    text-align: center;
+    padding: 8px;
+    background: #F5A623;
+    color: #000; /* Testo nero sui pulsanti per contrasto */
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.car-item .button:hover {
+    background: #e69520;
 }
 
 .no-products {
     text-align: center;
     padding: 20px;
-    color: #666666;
+    color: #FFFFFF;
     font-size: 1.2rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    grid-column: 1 / -1; /* Occupa tutte le colonne */
+}
+
+/* Responsive per il layout a griglia */
+@media (max-width: 1200px) {
+    .cars-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 colonne su schermi più piccoli */
+    }
+}
+
+@media (max-width: 992px) {
+    .cars-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 colonne su schermi medi */
+    }
+
+    .car-item img {
+        height: 180px;
+    }
+
+    .car-item h3 {
+        font-size: 1.1rem;
+    }
+
+    .car-item p {
+        font-size: 0.85rem;
+    }
+
+    .car-item .price {
+        font-size: 1rem;
+    }
+
+    .car-item .button {
+        font-size: 0.85rem;
+        padding: 6px;
+    }
+}
+
+@media (max-width: 768px) {
+    .cars-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 colonne su schermi piccoli */
+    }
+
+    .car-item img {
+        height: 150px;
+    }
+
+    .car-item h3 {
+        font-size: 1rem;
+    }
+
+    .car-item p {
+        font-size: 0.8rem;
+    }
+
+    .car-item .price {
+        font-size: 0.95rem;
+    }
+
+    .car-item .button {
+        font-size: 0.8rem;
+        padding: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cars-grid {
+        grid-template-columns: 1fr; /* 1 colonna su schermi molto piccoli */
+    }
+
+    .car-item img {
+        height: 120px;
+    }
+
+    .car-item h3 {
+        font-size: 0.9rem;
+    }
+
+    .car-item p {
+        font-size: 0.75rem;
+    }
+
+    .car-item .price {
+        font-size: 0.9rem;
+    }
+
+    .car-item .button {
+        font-size: 0.75rem;
+        padding: 5px;
+    }
 }
 
 /* Dealers Section */
@@ -1357,7 +1783,7 @@ header h2 {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: url('https://img.freepik.com/foto-gratuito/giovani-coppie-che-scelgono-un-automobile-in-una-stanza-di-manifestazione-di-automobile_1303-15122.jpg?t=st=1743712327~exp=1743715927~hmac=215eaaa79bdb1c7b04d5c5cc7ea517066a3f524daba123a5591c72dc6908162c&w=996') no-repeat center center;
+    background: url('/image/account.jpg') no-repeat center center;
     background-size: cover;
     padding-top: 60px;
 }

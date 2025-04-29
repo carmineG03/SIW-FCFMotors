@@ -6,10 +6,12 @@
     <title>Aggiungi Macchina - Private</title>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- jQuery UI CSS -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <!-- CSS locale -->
     <link th:href="@{/css/styles.css}" href="/css/styles.css" rel="stylesheet">
 </head>
-<body>
+<body class="add-car-page">
 <header class="header-transparent">
     <div class="header-left">
         <a href="/" class="logo-link">
@@ -26,77 +28,108 @@
 <section class="hero-section">
     <div class="hero-content">
         <h2>Aggiungi una Macchina (Private)</h2>
-        <form th:action="@{/private/add}" th:object="${product}" method="post" class="modern-form" id="add-car-form">
-            <div class="input-field">
-                <label for="name"><i class="fas fa-car"></i> Nome Macchina</label>
-                <input type="text" id="name" th:field="*{name}" placeholder="Nome Macchina" required>
-                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error"></span>
+        <form th:action="@{/private/add}" th:object="${product}" method="post" class="modern-form horizontal-form" id="add-car-form">
+            <!-- Sezione 1: Informazioni di Base -->
+            <div class="form-section">
+                <h3>Informazioni di Base</h3>
+                <div class="form-row">
+                    <div class="input-field">
+                        <label for="brand"><i class="fas fa-industry"></i> Marca</label>
+                        <input type="text" id="brand" th:field="*{brand}" required>
+                        <span th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}" class="error-message"></span>
+                    </div>
+                    <div class="input-field">
+                        <label for="model"><i class="fas fa-car-side"></i> Modello</label>
+                        <input type="text" id="model" th:field="*{model}" required>
+                        <span th:if="${#fields.hasErrors('model')}" th:errors="*{model}" class="error-message"></span>
+                    </div>
+                    <div class="input-field category-field">
+                        <label for="category"><i class="fas fa-tags"></i> Cat.</label>
+                        <input type="text" id="category" th:field="*{category}" required>
+                        <span th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="error-message"></span>
+                    </div>
+                    <div class="input-field price-field">
+                        <label for="price"><i class="fas fa-euro-sign"></i> Prezzo</label>
+                        <input type="number" id="price" th:field="*{price}" required>
+                        <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="error-message"></span>
+                    </div>
+                </div>
             </div>
-            <div class="input-field">
-                <label for="description"><i class="fas fa-align-left"></i> Descrizione</label>
-                <textarea id="description" th:field="*{description}" placeholder="Descrizione" required></textarea>
-                <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="error"></span>
+
+            <!-- Sezione 2: Dettagli Tecnici -->
+            <div class="form-section">
+                <h3>Dettagli Tecnici</h3>
+                <div class="form-row">
+                    <div class="input-field">
+                        <label for="year"><i class="fas fa-calendar-alt"></i> Anno</label>
+                        <input type="text" id="year" th:field="*{year}" required>
+                        <span th:if="${#fields.hasErrors('year')}" th:errors="*{year}" class="error-message"></span>
+                    </div>
+                    <div class="input-field">
+                        <label for="mileage"><i class="fas fa-tachometer-alt"></i> Chilometraggio</label>
+                        <input type="number" id="mileage" th:field="*{mileage}" required>
+                        <span th:if="${#fields.hasErrors('mileage')}" th:errors="*{mileage}" class="error-message"></span>
+                    </div>
+                    <div class="input-field">
+                        <label for="fuelType"><i class="fas fa-gas-pump"></i> Tipo di carburante</label>
+                        <input type="text" id="fuelType" th:field="*{fuelType}" required>
+                        <span th:if="${#fields.hasErrors('fuelType')}" th:errors="*{fuelType}" class="error-message"></span>
+                    </div>
+                    <div class="input-field">
+                        <label for="transmission"><i class="fas fa-cogs"></i> Trasmissione</label>
+                        <input type="text" id="transmission" th:field="*{transmission}" required>
+                        <span th:if="${#fields.hasErrors('transmission')}" th:errors="*{transmission}" class="error-message"></span>
+                    </div>
+                </div>
             </div>
-            <div class="input-field">
-                <label for="price"><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
-                <input type="number" id="price" th:field="*{price}" placeholder="Prezzo (€)" step="0.01" required>
-                <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="error"></span>
+
+            <!-- Sezione 3: Descrizione -->
+            <div class="form-section">
+                <h3>Descrizione</h3>
+                <div class="form-row">
+                    <div class="input-field description-field">
+                        <label for="description"><i class="fas fa-align-left"></i> Descrizione</label>
+                        <textarea id="description" th:field="*{description}" required></textarea>
+                        <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="error-message"></span>
+                    </div>
+                </div>
             </div>
-            <div class="input-field">
-                <label for="category"><i class="fas fa-tags"></i> Categoria</label>
-                <input type="text" id="category" th:field="*{category}" placeholder="Categoria" required>
-                <span th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="error"></span>
+
+            <!-- Sezione 4: Immagine e Costo -->
+            <div class="form-section">
+                <h3>Immagine e Costo</h3>
+                <div class="form-row">
+                    <div class="input-field">
+                        <label for="imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
+                        <input type="text" id="imageUrl" th:field="*{imageUrl}" required>
+                        <span th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}" class="error-message"></span>
+                    </div>
+                    <div class="input-field fee-field">
+                        <p style="color: #FFFFFF;">Prezzo Pagato per l'Aggiunta: <span id="fee">10€</span></p>
+                    </div>
+                </div>
             </div>
-            <div class="input-field">
-                <label for="brand"><i class="fas fa-industry"></i> Marca</label>
-                <input type="text" id="brand" th:field="*{brand}" placeholder="Marca" required>
-                <span th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}" class="error"></span>
-            </div>
-            <div class="input-field">
-                <label for="model"><i class="fas fa-car-side"></i> Modello</label>
-                <input type="text" id="model" th:field="*{model}" placeholder="Modello" required>
-                <span th:if="${#fields.hasErrors('model')}" th:errors="*{model}" class="error"></span>
-            </div>
-            <div class="input-field">
-                <label for="mileage"><i class="fas fa-tachometer-alt"></i> Chilometraggio</label>
-                <input type="number" id="mileage" th:field="*{mileage}" placeholder="Chilometraggio" required>
-                <span th:if="${#fields.hasErrors('mileage')}" th:errors="*{mileage}" class="error"></span>
-            </div>
-            <div class="input-field">
-                <label for="year"><i class="fas fa-calendar-alt"></i> Anno</label>
-                <input type="number" id="year" th:field="*{year}" placeholder="Anno" required>
-                <span th:if="${#fields.hasErrors('year')}" th:errors="*{year}" class="error"></span>
-            </div>
-            <div class="input-field">
-                <label for="fuelType"><i class="fas fa-gas-pump"></i> Tipo di carburante</label>
-                <input type="text" id="fuelType" th:field="*{fuelType}" placeholder="Tipo di carburante" required>
-                <span th:if="${#fields.hasErrors('fuelType')}" th:errors="*{fuelType}" class="error"></span>
-            </div>
-            <div class="input-field">
-                <label for="transmission"><i class="fas fa-cogs"></i> Trasmissione</label>
-                <input type="text" id="transmission" th:field="*{transmission}" placeholder="Trasmissione" required>
-                <span th:if="${#fields.hasErrors('transmission')}" th:errors="*{transmission}" class="error"></span>
-            </div>
-            <div class="input-field">
-                <label for="imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
-                <input type="text" id="imageUrl" th:field="*{imageUrl}" placeholder="https://example.com/image.jpg" required>
-                <span th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}" class="error"></span>
-            </div>
-            <div class="input-field">
-                <p>Prezzo Pagato per l'Aggiunta: <span id="fee">10€</span></p>
-            </div>
+
             <button type="submit" class="modern-button"><i class="fas fa-plus"></i> Aggiungi</button>
         </form>
         <div th:if="${param.error}">
             <p class="error-message" th:text="${param.error == 'already_has_car'} ? 'Errore: Hai già una macchina associata!' : 'Errore: Non autorizzato!'"></p>
         </div>
         <div th:if="${param.success}">
-            <p style="color: green;">Macchina aggiunta con successo!</p>
+            <p class="success-message">Macchina aggiunta con successo!</p>
         </div>
     </div>
 </section>
 
 <div class="toast" id="toast">Macchina aggiunta con successo!</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- jQuery UI -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<!-- Script esistente -->
 <script th:src="@{/js/maintenance_private.js}" src="/js/maintenance_private.js"></script>
+<!-- Script per autocompletamento -->
+<script th:src="@{/js/autocomplete.js}" src="/js/autocomplete.js"></script>
 </body>
 </html>

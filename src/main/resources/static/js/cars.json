@@ -1,0 +1,59 @@
+{
+    "categories": [
+      "Berlina",
+      "SUV",
+      "Coupé",
+      "Station Wagon",
+      "Furgone",
+      "Cabrio",
+      "Monovolume",
+      "Sportiva"
+    ],
+    "brands": [
+      {
+        "name": "Alfa Romeo",
+        "models": ["Giulia", "Stelvio", "Tonale"]
+      },
+      {
+        "name": "Audi",
+        "models": ["A3", "A4", "Q5", "Q7"]
+      },
+      {
+        "name": "BMW",
+        "models": ["Serie 3", "Serie 5", "X3", "X5"]
+      },
+      {
+        "name": "Fiat",
+        "models": ["Panda", "500", "Tipo", "500X"]
+      },
+      {
+        "name": "Ford",
+        "models": ["Fiesta", "Focus", "Kuga", "Mustang"]
+      },
+      {
+        "name": "Mercedes-Benz",
+        "models": ["Classe A", "Classe C", "GLC", "GLE"]
+      },
+      {
+        "name": "Toyota",
+        "models": ["Yaris", "Corolla", "RAV4", "Prius"]
+      },
+      {
+        "name": "Volkswagen",
+        "models": ["Golf", "Polo", "Tiguan", "Passat"]
+      }
+    ],
+    "years": [
+      2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
+      2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+      2020, 2021, 2022, 2023, 2024, 2025
+    ],
+    "fuelTypes": [
+      "Benzina",
+      "Diesel",
+      "Ibrido",
+      "Elettrico",
+      "GPL",
+      "Metano"
+    ]
+  }
