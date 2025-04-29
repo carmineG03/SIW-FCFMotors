@@ -33,7 +33,7 @@ public class ProductService {
         return productRepository.findAllCategories();
     }
 
-    // Trova tutte le marche (modificato per restituire solo i nomi)
+    // Trova tutte le marche
     public List<String> findAllBrands() {
         return ((Collection<Product>) productRepository.findAll()).stream()
                 .map(Product::getBrand)
@@ -61,10 +61,18 @@ public class ProductService {
                                        BigDecimal minPrice, BigDecimal maxPrice,
                                        Integer minMileage, Integer maxMileage,
                                        Integer minYear, Integer maxYear,
-                                       String fuelType, String transmission) {
+                                       String fuelType, String transmission, String query) {
+        // Log dei filtri applicati
+        System.out.println("Filtri applicati: category=" + category + ", brand=" + brand + ", model=" + selectedModel +
+                ", minPrice=" + minPrice + ", maxPrice=" + maxPrice +
+                ", minMileage=" + minMileage + ", maxMileage=" + maxMileage +
+                ", minYear=" + minYear + ", maxYear=" + maxYear +
+                ", fuelType=" + fuelType + ", transmission=" + transmission +
+                ", query=" + query);
+
         return productRepository.findByFilters(category, brand, selectedModel,
                 minPrice, maxPrice, minMileage, maxMileage,
-                minYear, maxYear, fuelType, transmission);
+                minYear, maxYear, fuelType, transmission, query);
     }
 
     // Trova un prodotto per ID
@@ -72,7 +80,7 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
-    // Salva un prodotto (crea o aggiorna)
+    // Salva un prodotto
     public Product save(Product product) {
         return productRepository.save(product);
     }

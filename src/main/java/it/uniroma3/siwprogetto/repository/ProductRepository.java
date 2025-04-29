@@ -43,7 +43,8 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
             "AND (:minYear IS NULL OR p.year >= :minYear) " +
             "AND (:maxYear IS NULL OR p.year <= :maxYear) " +
             "AND (:fuelType IS NULL OR p.fuelType = :fuelType) " +
-            "AND (:transmission IS NULL OR p.transmission = :transmission)")
+            "AND (:transmission IS NULL OR p.transmission = :transmission) " +
+            "AND (:query IS NULL OR p.name LIKE CONCAT('%', CAST(:query AS STRING), '%') OR p.description LIKE CONCAT('%', CAST(:query AS STRING), '%'))")
     List<Product> findByFilters(@Param("category") String category,
                                 @Param("brand") String brand,
                                 @Param("selectedModel") String selectedModel,
@@ -54,7 +55,9 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
                                 @Param("minYear") Integer minYear,
                                 @Param("maxYear") Integer maxYear,
                                 @Param("fuelType") String fuelType,
-                                @Param("transmission") String transmission);
+                                @Param("transmission") String transmission,
+                                @Param("query") String query);
 
-    List<Product> findBySellerId(Long sellerId); // Modificato da findByDealerId a findBySellerId
+    @Query("SELECT p FROM Product p WHERE p.seller.id = :sellerId")
+    List<Product> findBySellerId(@Param("sellerId") Long sellerId);
 }
