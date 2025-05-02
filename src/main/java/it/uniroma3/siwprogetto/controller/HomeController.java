@@ -22,7 +22,7 @@ public class HomeController {
         model.addAttribute("isAuthenticated", isAuthenticated);
 
         // Aggiungi il conteggio del carrello
-        model.addAttribute("cartCount", cartService.getCartItems().size());
+        //model.addAttribute("cartCount", cartService.getCartItems().size());
 
         return "login";
     }
@@ -35,7 +35,7 @@ public class HomeController {
         model.addAttribute("isAuthenticated", isAuthenticated);
 
         // Aggiungi il conteggio del carrello
-        model.addAttribute("cartCount", cartService.getCartItems().size());
+        //model.addAttribute("cartCount", cartService.getCartItems().size());
 
         return "register";
     }

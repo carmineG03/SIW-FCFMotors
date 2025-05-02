@@ -47,6 +47,8 @@ public class Product {
     @ManyToOne
     private User seller;
 
+
+
     private boolean isFeatured;
 
     private LocalDateTime featuredUntil;

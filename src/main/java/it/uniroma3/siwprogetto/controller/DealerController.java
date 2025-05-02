@@ -2,6 +2,7 @@ package it.uniroma3.siwprogetto.controller;
 
 import it.uniroma3.siwprogetto.model.Dealer;
 import it.uniroma3.siwprogetto.model.Product;
+import it.uniroma3.siwprogetto.repository.DealerRepository;
 import it.uniroma3.siwprogetto.service.DealerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -27,6 +29,9 @@ public class DealerController {
 
     @Autowired
     private DealerService dealerService;
+
+    @Autowired
+    private DealerRepository dealerRepository;
 
     @PostMapping("/api/dealers")
     @ResponseBody
@@ -363,6 +368,28 @@ public class DealerController {
             logger.error("Error loading dealers page: {}", e.getMessage(), e);
             model.addAttribute("errorMessage", "Errore nel caricamento della pagina dei concessionari.");
             return "dealers";
+        }
+    }
+
+    @GetMapping("/manutenzione/dealer/delete_dealer/{id}")
+    public String deleteDealer(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+        logger.info("Received GET /rest/manutenzione/dealer/delete_dealer/{}", id);
+        try {
+            dealerService.deleteDealer(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Concessionario eliminato con successo.");
+            return "redirect:/rest/dealers/create";
+        } catch (IllegalArgumentException e) {
+            logger.warn("Error deleting dealer: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/rest/dealers/create";
+        } catch (IllegalStateException e) {
+            logger.error("State error deleting dealer: id={}, error={}", id, e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Impossibile eliminare il concessionario: " + e.getMessage());
+            return "redirect:/rest/dealers/create";
+        } catch (Exception e) {
+            logger.error("Unexpected error deleting dealer: id={}, error={}", id, e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Errore durante l'eliminazione del concessionario.");
+            return "redirect:/rest/dealers/create";
         }
     }
 }

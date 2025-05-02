@@ -1,10 +1,9 @@
 package it.uniroma3.siwprogetto.controller;
 
 import it.uniroma3.siwprogetto.model.CartItem;
-import it.uniroma3.siwprogetto.model.Product;
-import it.uniroma3.siwprogetto.repository.ProductRepository;
-import it.uniroma3.siwprogetto.repository.SubscriptionRepository;
+import it.uniroma3.siwprogetto.model.User;
 import it.uniroma3.siwprogetto.service.CartService;
+import it.uniroma3.siwprogetto.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import it.uniroma3.siwprogetto.model.Subscription;
 
 @Controller
 public class CartController {
@@ -26,49 +25,42 @@ public class CartController {
     private CartService cartService;
 
     @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private SubscriptionRepository subscriptionRepository;
+    private UserService userService;
 
     @GetMapping("/cart")
-    public String showCartPage(Model model) {
+    public String showCartPage(Model model, Principal principal) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal());
         model.addAttribute("isAuthenticated", isAuthenticated);
 
-        List<CartItem> cartItems = cartService.getCartItems();
-        model.addAttribute("cartItems", cartItems);
-        model.addAttribute("cartCount", cartItems.size());
-        model.addAttribute("subtotal", cartService.calculateSubtotal());
+        if (!isAuthenticated || principal == null) {
+            model.addAttribute("cartItems", List.of());
+            model.addAttribute("cartCount", 0);
+            model.addAttribute("subtotal", 0.0);
+        } else {
+            User user = userService.findByUsername(principal.getName());
+            List<CartItem> cartItems = cartService.getCartItems(user);
+            model.addAttribute("cartItems", cartItems);
+            model.addAttribute("cartCount", cartItems.size());
+            model.addAttribute("subtotal", cartService.calculateSubtotal(user));
+        }
 
         return "cart";
     }
 
-    @GetMapping("/add-subscription/{productId}")
-    public String showAddSubscriptionPage(@PathVariable Long productId, Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAuthenticated = auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal());
-        model.addAttribute("isAuthenticated", isAuthenticated);
-
-        Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new IllegalArgumentException("Prodotto non trovato"));
-        List<Subscription> subscriptions = subscriptionRepository.findAll();
-        List<CartItem> cartItems = cartService.getCartItems();
-
-        model.addAttribute("product", product);
-        model.addAttribute("subscriptions", subscriptions);
-        model.addAttribute("cartCount", cartItems.size());
-
-        return "add-subscription";
-    }
-
-    @PostMapping("/cart/add-subscription/{productId}")
+    @PostMapping("/cart/add-subscription")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> addSubscriptionToCart(@PathVariable Long productId, @RequestParam Long subscriptionId) {
+    public ResponseEntity<Map<String, Object>> addSubscriptionToCart(@RequestParam Long subscriptionId, Principal principal) {
         Map<String, Object> response = new HashMap<>();
         try {
-            cartService.addSubscriptionToCart(productId, subscriptionId);
+            if (principal == null) {
+                throw new IllegalArgumentException("Utente non autenticato");
+            }
+            User user = userService.findByUsername(principal.getName());
+            if (user == null) {
+                throw new IllegalArgumentException("Utente non trovato");
+            }
+            cartService.addSubscriptionToCart(subscriptionId, user);
             response.put("success", true);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -80,11 +72,18 @@ public class CartController {
 
     @PostMapping("/cart/update/{itemId}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> updateQuantity(@PathVariable Long itemId, @RequestBody Map<String, Integer> body) {
+    public ResponseEntity<Map<String, Object>> updateQuantity(@PathVariable Long itemId, @RequestBody Map<String, Integer> body, Principal principal) {
         Map<String, Object> response = new HashMap<>();
         try {
+            if (principal == null) {
+                throw new IllegalArgumentException("Utente non autenticato");
+            }
+            User user = userService.findByUsername(principal.getName());
+            if (user == null) {
+                throw new IllegalArgumentException("Utente non trovato");
+            }
             int quantity = body.get("quantity");
-            cartService.updateQuantity(itemId, quantity);
+            cartService.updateQuantity(itemId, quantity, user);
             response.put("success", true);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -96,10 +95,17 @@ public class CartController {
 
     @PostMapping("/cart/remove/{itemId}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> removeFromCart(@PathVariable Long itemId) {
+    public ResponseEntity<Map<String, Object>> removeFromCart(@PathVariable Long itemId, Principal principal) {
         Map<String, Object> response = new HashMap<>();
         try {
-            cartService.removeFromCart(itemId);
+            if (principal == null) {
+                throw new IllegalArgumentException("Utente non autenticato");
+            }
+            User user = userService.findByUsername(principal.getName());
+            if (user == null) {
+                throw new IllegalArgumentException("Utente non trovato");
+            }
+            cartService.removeFromCart(itemId, user);
             response.put("success", true);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -111,10 +117,17 @@ public class CartController {
 
     @PostMapping("/cart/checkout-subscriptions")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> checkoutSubscriptions() {
+    public ResponseEntity<Map<String, Object>> checkoutSubscriptions(Principal principal) {
         Map<String, Object> response = new HashMap<>();
         try {
-            cartService.checkoutSubscriptions();
+            if (principal == null) {
+                throw new IllegalArgumentException("Utente non autenticato");
+            }
+            User user = userService.findByUsername(principal.getName());
+            if (user == null) {
+                throw new IllegalArgumentException("Utente non trovato");
+            }
+            cartService.checkoutSubscriptions(user);
             response.put("success", true);
             return ResponseEntity.ok(response);
         } catch (Exception e) {

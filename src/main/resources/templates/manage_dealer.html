@@ -68,29 +68,32 @@
                     </div>
                     <div class="form-actions">
                         <a href="#" id="edit-dealer-button" class="modern-button"><i class="fas fa-edit"></i> Modifica</a>
+                        <a th:if="${dealer != null and dealer.id != null}" th:href="@{/rest/manutenzione/dealer/delete_dealer/{id}(id=${dealer.id})}" th:id="'delete-dealer-link-' + ${dealer.id}" class="modern-button cancel-button"><i class="fas fa-trash"></i> Elimina</a>
+                        <a th:unless="${dealer != null and dealer.id != null}" href="#" class="modern-button cancel-button disabled" onclick="alert('Impossibile eliminare: concessionario non valido'); return false;"><i class="fas fa-trash"></i> Elimina</a>
                     </div>
                 </div>
-                <form id="dealership-form" class="modern-form" style="display: none;" aria-labelledby="dealership-form-title">
+                <form id="dealership-form" class="modern-form" style="display: none;" aria-labelledby="dealership-form-title" th:action="@{/manutenzione/dealer/update_dealer}" method="post">
                     <h2 id="dealership-form-title">Modifica Concessionario</h2>
+                    <input type="hidden" name="id" th:value="${dealer.id}">
                     <div class="input-field">
                         <label for="edit-dealership-name"><i class="fas fa-store"></i> Nome Concessionario</label>
-                        <input type="text" id="edit-dealership-name" th:value="${dealer.name}" required aria-required="true">
+                        <input type="text" id="edit-dealership-name" name="name" th:value="${dealer.name}" required aria-required="true">
                     </div>
                     <div class="input-field">
                         <label for="edit-dealership-description"><i class="fas fa-file-alt"></i> Descrizione</label>
-                        <textarea id="edit-dealership-description" rows="4" th:text="${dealer.description}"></textarea>
+                        <textarea id="edit-dealership-description" name="description" rows="4" th:text="${dealer.description}"></textarea>
                     </div>
                     <div class="input-field">
                         <label for="edit-dealership-address"><i class="fas fa-map-marker-alt"></i> Indirizzo</label>
-                        <input type="text" id="edit-dealership-address" th:value="${dealer.address}">
+                        <input type="text" id="edit-dealership-address" name="address" th:value="${dealer.address}">
                     </div>
                     <div class="input-field">
                         <label for="edit-dealership-contact"><i class="fas fa-phone"></i> Contatti</label>
-                        <input type="text" id="edit-dealership-contact" th:value="${dealer.contact}">
+                        <input type="text" id="edit-dealership-contact" name="contact" th:value="${dealer.contact}">
                     </div>
                     <div class="input-field">
                         <label for="edit-dealership-imagePath"><i class="fas fa-image"></i> URL Immagine</label>
-                        <input type="url" id="edit-dealership-imagePath" th:value="${dealer.imagePath}">
+                        <input type="url" id="edit-dealership-imagePath" name="imagePath" th:value="${dealer.imagePath}">
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva <span class="spinner"></span></button>

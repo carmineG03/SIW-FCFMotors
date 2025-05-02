@@ -101,8 +101,14 @@
                 <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
                     <h3>Abbonamenti Attivi</h3>
                     <ul>
-                        <li th:each="subscription : ${activeSubscriptions}">
-                            <strong th:text="${subscription.name}"></strong> - Scade il: <span th:text="${subscription.expiryDate}"></span>
+                        <li th:each="userSubscription : ${activeSubscriptions}">
+                            <strong th:text="${userSubscription.subscription.name}"></strong> -
+                            Scade il: <span th:text="${userSubscription.expiryDate}"></span>
+                            <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
+                               class="cancel-subscription-button"
+                               onclick="return confirm('Sei sicuro di voler cancellare questo abbonamento? Il tuo ruolo tornerà a USER se non hai altri abbonamenti attivi.');">
+                                Cancella
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -112,12 +118,17 @@
                     <p>Scopri i nostri abbonamenti disponibili:</p>
                     <ul>
                         <li th:each="subscription : ${availableSubscriptions}">
-                            <strong th:text="${subscription.name}"></strong> - <span th:text="${subscription.description}"></span>
-                            <a th:href="@{/subscribe(subscriptionId=${subscription.id})}" class="subscribe-button">Sottoscrivi</a>
+                            <strong th:text="${subscription.name}"></strong> -
+                            <span th:text="${subscription.description}"></span>
+                            <form th:action="@{/subscribe}" method="post">
+                                <input type="hidden" name="subscriptionId" th:value="${subscription.id}"/>
+                                <button type="submit" class="subscribe-button">Sottoscrivi</button>
+                            </form>
                         </li>
                     </ul>
                 </div>
             </div>
+
         </div>
     </div>
 

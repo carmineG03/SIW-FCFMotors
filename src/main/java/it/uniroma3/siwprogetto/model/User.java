@@ -36,6 +36,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private Set<CartItem> cartItems;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserSubscription> subscriptions = new ArrayList<>();
+
     public User() {
     }
 
