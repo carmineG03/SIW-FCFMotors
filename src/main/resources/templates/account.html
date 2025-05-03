@@ -94,38 +94,40 @@
                 </div>
             </div>
 
-            <!-- Blocco a destra: Abbonamenti -->
             <div class="subscriptions-container">
                 <h2>Abbonamenti</h2>
                 <!-- Caso 1: Ci sono abbonamenti attivi -->
                 <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
-                    <h3>Abbonamenti Attivi</h3>
-                    <ul>
-                        <li th:each="userSubscription : ${activeSubscriptions}">
-                            <strong th:text="${userSubscription.subscription.name}"></strong> -
-                            Scade il: <span th:text="${userSubscription.expiryDate}"></span>
-                            <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
-                               class="cancel-subscription-button"
-                               onclick="return confirm('Sei sicuro di voler cancellare questo abbonamento? Il tuo ruolo tornerà a USER se non hai altri abbonamenti attivi.');">
-                                Cancella
-                            </a>
-                        </li>
-                    </ul>
+                    <h3>Abbonamento Attivo</h3>
+                    <div th:each="userSubscription : ${activeSubscriptions}">
+                        <p><strong th:text="${userSubscription.subscription.name}"></strong> - Scade il: <span th:text="${userSubscription.expiryDate}"></span></p>
+                        <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
+                           class="cancel-subscription-button"
+                           onclick="return confirm('Sei sicuro di voler cancellare questo abbonamento? Il tuo ruolo tornerà a USER se non hai altri abbonamenti attivi.');">
+                            Cancella
+                        </a>
+                    </div>
+                    <a href="/subscriptions" class="manage-subscriptions-button">Gestisci Abbonamenti</a>
                 </div>
                 <!-- Caso 2: Nessun abbonamento attivo -->
-                <div th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}" class="available-subscriptions">
-                    <h3>Nessun Abbonamento Attivo</h3>
-                    <p>Scopri i nostri abbonamenti disponibili:</p>
-                    <ul>
-                        <li th:each="subscription : ${availableSubscriptions}">
-                            <strong th:text="${subscription.name}"></strong> -
-                            <span th:text="${subscription.description}"></span>
-                            <form th:action="@{/subscribe}" method="post">
-                                <input type="hidden" name="subscriptionId" th:value="${subscription.id}"/>
-                                <button type="submit" class="subscribe-button">Sottoscrivi</button>
-                            </form>
-                        </li>
-                    </ul>
+                <div th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}" class="no-subscriptions">
+                    <p>Nessun abbonamento attivo.</p>
+                    <a href="/subscriptions" class="subscribe-button">Scopri Abbonamenti</a>
+                    <div th:if="${user.rolesString != null and user.rolesString.contains('USER')}">
+                        <p>Vuoi vendere la tua auto?</p>
+                        <form th:action="@{/account/become-private}" method="post">
+                            <button type="submit" class="become-private-button">Diventa Privato</button>
+                        </form>
+                    </div>
+                    <div th:if="${user.rolesString != null and user.rolesString.contains('PRIVATE')}">
+                        <p>Sei un utente privato. Vuoi tornare al ruolo USER?</p>
+                        <form th:action="@{/account/remove-private}" method="post">
+                            <button type="submit" class="remove-private-button"
+                                    onclick="return confirm('Sei sicuro di voler rimuovere il ruolo PRIVATO? Questo eliminerà anche l\'auto che hai messo in vendita.');">
+                                Rimuovi Ruolo Privato
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 

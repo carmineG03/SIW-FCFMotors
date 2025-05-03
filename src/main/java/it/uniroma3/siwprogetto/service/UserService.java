@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -161,5 +162,27 @@ public class UserService {
 
     public List<Subscription> getAvailableSubscriptions() {
         return subscriptionRepository.findAll();
+    }
+
+    public void updateUserRole(User user, String newRole) {
+        user.setRolesString(newRole);
+        userRepository.save(user);
+    }
+
+    public void removePrivateRoleAndCar(User user) {
+        // Verifica che l'utente abbia il ruolo PRIVATE
+        if (!user.getRolesString().contains("PRIVATE")) {
+            throw new IllegalStateException("L'utente non ha il ruolo PRIVATO.");
+        }
+
+        // Trova l'auto associata all'utente (assumiamo una sola auto per utente privato)
+        List<Product> car = productRepository.findBySeller(user);
+
+        // Cancella l'auto
+        productRepository.deleteAll(car);
+
+        // Aggiorna il ruolo a USER
+        user.setRolesString("USER");
+        userRepository.save(user);
     }
 }

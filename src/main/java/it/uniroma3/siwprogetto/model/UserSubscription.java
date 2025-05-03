@@ -18,6 +18,8 @@ public class UserSubscription {
 	private LocalDate startDate;
 	private LocalDate expiryDate;
 
+	private boolean active;
+
 	// Getters e Setters
 	public Long getId() { return id; }
 	public void setId(Long id) { this.id = id; }
@@ -29,4 +31,7 @@ public class UserSubscription {
 	public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
 	public LocalDate getExpiryDate() { return expiryDate; }
 	public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
+	public boolean isActive() { return active; }
+	public void setActive(boolean active) { this.active = active; }
+
 }

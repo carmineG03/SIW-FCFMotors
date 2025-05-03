@@ -2,16 +2,22 @@ package it.uniroma3.siwprogetto.controller;
 
 import it.uniroma3.siwprogetto.model.AccountInformation;
 import it.uniroma3.siwprogetto.model.User;
+import it.uniroma3.siwprogetto.model.UserSubscription;
 import it.uniroma3.siwprogetto.repository.AccountInformationRepository;
+import it.uniroma3.siwprogetto.repository.SubscriptionRepository;
+import it.uniroma3.siwprogetto.repository.UserRepository;
+import it.uniroma3.siwprogetto.repository.UserSubscriptionRepository;
 import it.uniroma3.siwprogetto.service.CartService;
 import it.uniroma3.siwprogetto.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 import static it.uniroma3.siwprogetto.util.SecurityUtils.hasRole;
 
@@ -26,6 +32,15 @@ public class AccountController {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserSubscriptionRepository userSubscriptionRepository;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
 
 
     @GetMapping("/account")
@@ -105,6 +120,76 @@ public class AccountController {
         accountInformationRepository.save(accountInformation);
         return "redirect:/account";
     }
+
+    @GetMapping("/subscriptions")
+    public String showSubscriptionsPage(Model model) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user == null) {
+            model.addAttribute("errorMessage", "Utente non trovato.");
+            return "subscriptions";
+        }
+
+        List<UserSubscription> activeSubscriptions = userSubscriptionRepository.findByUserAndActive(user, true);
+        model.addAttribute("user", user);
+        model.addAttribute("activeSubscriptions", activeSubscriptions);
+        model.addAttribute("availableSubscriptions", subscriptionRepository.findAll());
+        return "subscriptions";
+    }
+
+    @PostMapping("/account/become-private")
+    public String becomePrivate(Principal principal, Model model) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        User user = userService.findByUsername(principal.getName());
+        if (user == null) {
+            model.addAttribute("error", "Utente non trovato");
+            return "account";
+        }
+
+        // Verifica che l'utente abbia il ruolo USER e non abbia abbonamenti attivi
+        if (user.getRolesString().contains("USER") && userService.getActiveSubscriptions(user.getId()).isEmpty()) {
+            userService.updateUserRole(user, "PRIVATE");
+            return "redirect:/account?success=Ruolo aggiornato a PRIVATO. Ora puoi vendere la tua auto!";
+        } else {
+            model.addAttribute("error", "Non puoi diventare PRIVATO: hai già un abbonamento attivo o un ruolo diverso.");
+            return "account";
+        }
+    }
+
+    @PostMapping("/account/remove-private")
+    public String removePrivate(Principal principal, Model model) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        User user = userService.findByUsername(principal.getName());
+        if (user == null) {
+            model.addAttribute("error", "Utente non trovato");
+            return "account";
+        }
+
+        // Verifica che l'utente abbia il ruolo PRIVATE
+        if (user.getRolesString().contains("PRIVATE")) {
+            try {
+                userService.removePrivateRoleAndCar(user);
+                return "redirect:/account?success=Ruolo PRIVATO rimosso. L'auto in vendita è stata eliminata.";
+            } catch (IllegalStateException e) {
+                model.addAttribute("error", e.getMessage());
+                return "account";
+            }
+        } else {
+            model.addAttribute("error", "Non puoi rimuovere il ruolo PRIVATO: non hai questo ruolo.");
+            return "account";
+        }
+    }
+
+
+
 
     @PostMapping("/subscribe")
     public String subscribe(@RequestParam("subscriptionId") Long subscriptionId, Principal principal) {
