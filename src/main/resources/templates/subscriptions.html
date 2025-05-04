@@ -36,6 +36,11 @@
             class="maintenance-button">
         <i class="fas fa-cogs"></i> Manutenzione Dealer
     </button>
+    <button th:if="${user.rolesString != null and user.rolesString.contains('ADMIN')}"
+            onclick="window.location.href='/admin/maintenance'"
+            class="maintenance-button">
+        <i class="fas fa-shield-alt"></i> Manutenzione Admin
+    </button>
 </header>
 
 <div class="wrapper">
@@ -68,16 +73,27 @@
             <h3 th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}">Sottoscrivi un Abbonamento</h3>
             <h3 th:unless="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}">Abbonamenti Disponibili</h3>
             <p th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}">Scopri i nostri abbonamenti disponibili:</p>
-            <ul>
-                <li th:each="subscription : ${availableSubscriptions}">
-                    <strong th:text="${subscription.name}"></strong> -
-                    <span th:text="${subscription.description}"></span>
+            <div class="subscription-boxes">
+                <div th:each="subscription : ${availableSubscriptions}" class="subscription-box">
+                    <h4 th:text="${subscription.name}"></h4>
+                    <p th:text="${subscription.description}"></p>
+                    <p>
+                        Prezzo:
+                        <span th:if="${subscription.discount != null and subscription.discountExpiry != null and subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                            <s th:text="${subscription.price} + ' €'"></s>
+                            <span th:text="${subscription.price * (1 - subscription.discount / 100)} + ' €'"></span>
+                        </span>
+                        <span th:unless="${subscription.discount != null and subscription.discountExpiry != null and subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                            <span th:text="${subscription.price} + ' €'"></span>
+                        </span>
+                    </p>
                     <form th:action="@{/subscribe}" method="post">
+                        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
                         <input type="hidden" name="subscriptionId" th:value="${subscription.id}"/>
                         <button type="submit" class="subscribe-button">Sottoscrivi</button>
                     </form>
-                </li>
-            </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>

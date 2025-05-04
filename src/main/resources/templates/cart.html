@@ -13,6 +13,7 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            margin-top: 80px; /* Aggiunto per evitare sovrapposizione */
         }
         .cart-items {
             display: flex;
@@ -147,6 +148,15 @@
         .toast.show {
             display: block;
         }
+        .price-discounted {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .price-original {
+            text-decoration: line-through;
+            color: #666;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -184,7 +194,16 @@
             <div class="cart-item-details">
                 <h3 th:text="${item.subscription != null ? item.subscription.name : item.product.name}"></h3>
                 <p th:if="${item.subscription != null}" th:text="'Durata: ' + ${item.subscription.durationDays} + ' giorni'"></p>
-                <p th:if="${item.subscription != null}" th:text="'Prezzo: ' + ${item.subscription.price} + ' €'"></p>
+                <p th:if="${item.subscription != null}">
+                    Prezzo:
+                    <span th:if="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                        <span class="price-original" th:text="${item.subscription.price} + ' €'"></span>
+                        <span class="price-discounted" th:text="${item.subscription.price * (1 - item.subscription.discount / 100)} + ' €'"></span>
+                    </span>
+                    <span th:unless="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                        <span th:text="${item.subscription.price} + ' €'"></span>
+                    </span>
+                </p>
                 <p th:if="${item.product != null && item.subscription == null}" th:text="'Prezzo: ' + ${item.product.price} + ' €'"></p>
                 <div class="quantity-selector">
                     <label>Quantità:</label>

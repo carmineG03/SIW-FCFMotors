@@ -2,9 +2,11 @@ package it.uniroma3.siwprogetto.service;
 
 import it.uniroma3.siwprogetto.model.Dealer;
 import it.uniroma3.siwprogetto.model.Product;
+import it.uniroma3.siwprogetto.model.Subscription;
 import it.uniroma3.siwprogetto.model.User;
 import it.uniroma3.siwprogetto.repository.DealerRepository;
 import it.uniroma3.siwprogetto.repository.ProductRepository;
+import it.uniroma3.siwprogetto.repository.SubscriptionRepository;
 import it.uniroma3.siwprogetto.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +35,9 @@ public class AdminService {
 
 	@Autowired
 	private DealerService dealerService;
+
+	@Autowired
+	private SubscriptionRepository subscriptionRepository;
 
 	// Trova un prodotto per ID
 	@PreAuthorize("hasRole('ADMIN')")
@@ -197,5 +203,86 @@ public class AdminService {
 	@PreAuthorize("hasRole('ADMIN')")
 	public List<User> findAllUsers() {
 		return userRepository.findAll();
+	}
+
+	// Recupera tutti gli abbonamenti
+	@PreAuthorize("hasRole('ADMIN')")
+	public List<Subscription> findAllSubscriptions() {
+		return subscriptionRepository.findAll();
+	}
+
+	// Trova un abbonamento per ID
+	@PreAuthorize("hasRole('ADMIN')")
+	public Optional<Subscription> findSubscriptionById(Long id) {
+		return subscriptionRepository.findById(id);
+	}
+
+	// Aggiunge un nuovo abbonamento
+	@Transactional
+	@PreAuthorize("hasRole('ADMIN')")
+	public Subscription addSubscription(Subscription subscription) {
+		logger.debug("Admin adding subscription: name={}", subscription.getName());
+		Subscription savedSubscription = subscriptionRepository.save(subscription);
+		logger.info("Subscription added by admin: id={}, name={}", savedSubscription.getId(), savedSubscription.getName());
+		return savedSubscription;
+	}
+
+	// Modifica un abbonamento
+	@Transactional
+	@PreAuthorize("hasRole('ADMIN')")
+	public Subscription updateSubscription(Long subscriptionId, Subscription updatedSubscription) {
+		logger.debug("Admin updating subscription: id={}", subscriptionId);
+
+		Subscription subscription = subscriptionRepository.findById(subscriptionId)
+				.orElseThrow(() -> {
+					logger.error("Subscription not found: id={}", subscriptionId);
+					return new IllegalStateException("Abbonamento non trovato");
+				});
+
+		subscription.setName(updatedSubscription.getName());
+		subscription.setDescription(updatedSubscription.getDescription());
+		subscription.setPrice(updatedSubscription.getPrice());
+		subscription.setDiscount(updatedSubscription.getDiscount());
+		subscription.setDiscountExpiry(updatedSubscription.getDiscountExpiry());
+
+		Subscription savedSubscription = subscriptionRepository.save(subscription);
+		logger.info("Subscription updated by admin: id={}, name={}", savedSubscription.getId(), savedSubscription.getName());
+		return savedSubscription;
+	}
+
+	// Applica uno sconto a tempo
+	@Transactional
+	@PreAuthorize("hasRole('ADMIN')")
+	public Subscription applyDiscount(Long subscriptionId, Double discount, LocalDate discountExpiry) {
+		logger.debug("Admin applying discount to subscription: id={}, discount={}", subscriptionId, discount);
+
+		Subscription subscription = subscriptionRepository.findById(subscriptionId)
+				.orElseThrow(() -> {
+					logger.error("Subscription not found: id={}", subscriptionId);
+					return new IllegalStateException("Abbonamento non trovato");
+				});
+
+		subscription.setDiscount(discount);
+		subscription.setDiscountExpiry(discountExpiry);
+
+		Subscription savedSubscription = subscriptionRepository.save(subscription);
+		logger.info("Discount applied to subscription: id={}, discount={}%", savedSubscription.getId(), discount);
+		return savedSubscription;
+	}
+
+	// Rimuove un abbonamento
+	@Transactional
+	@PreAuthorize("hasRole('ADMIN')")
+	public void deleteSubscription(Long subscriptionId) {
+		logger.debug("Admin deleting subscription: id={}", subscriptionId);
+
+		Subscription subscription = subscriptionRepository.findById(subscriptionId)
+				.orElseThrow(() -> {
+					logger.error("Subscription not found: id={}", subscriptionId);
+					return new IllegalStateException("Abbonamento non trovato");
+				});
+
+		subscriptionRepository.delete(subscription);
+		logger.info("Subscription deleted by admin: id={}", subscriptionId);
 	}
 }

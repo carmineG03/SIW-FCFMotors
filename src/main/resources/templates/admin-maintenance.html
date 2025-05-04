@@ -156,6 +156,49 @@
                 <p>Nessun utente presente.</p>
             </div>
         </div>
+
+        <!-- Sezione 4: Gestione Abbonamenti -->
+        <div class="admin-section">
+            <h3>Gestione Abbonamenti</h3>
+            <a href="/admin/subscription/add" class="add-button"><i class="fas fa-plus"></i> Aggiungi Abbonamento</a>
+            <div th:if="${subscriptions != null and !#lists.isEmpty(subscriptions)}" class="subscriptions-list">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Descrizione</th>
+                        <th>Prezzo</th>
+                        <th>Sconto</th>
+                        <th>Scadenza Sconto</th>
+                        <th>Azioni</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="subscription : ${subscriptions}">
+                        <td th:text="${subscription.id}"></td>
+                        <td th:text="${subscription.name}"></td>
+                        <td th:text="${subscription.description}"></td>
+                        <td th:text="${subscription.price}"></td>
+                        <td th:text="${subscription.discount != null} ? ${subscription.discount + '%'} : '-'"></td>
+                        <td th:text="${subscription.discountExpiry != null} ? ${subscription.discountExpiry} : '-'"></td>
+                        <td>
+                            <a th:href="@{/admin/subscription/{id}/edit(id=${subscription.id})}" class="edit-button"><i class="fas fa-edit"></i> Modifica</a>
+                            <a th:href="@{/admin/subscription/{id}/discount(id=${subscription.id})}" class="discount-button"><i class="fas fa-tag"></i> Applica Sconto</a>
+                            <form th:action="@{/admin/subscription/{id}/delete(id=${subscription.id})}" method="post" style="display:inline;">
+                                <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                                <input type="hidden" name="id" th:value="${subscription.id}"/>
+                                <button type="submit" class="delete-button" onclick="return confirm('Sei sicuro di voler eliminare questo abbonamento?');"><i class="fas fa-trash"></i> Elimina</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${subscriptions == null or #lists.isEmpty(subscriptions)}">
+                <p>Nessun abbonamento presente.</p>
+            </div>
+        </div>
     </div>
 </div>
 

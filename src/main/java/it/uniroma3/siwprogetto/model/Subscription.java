@@ -2,6 +2,8 @@ package it.uniroma3.siwprogetto.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 public class Subscription {
     @Id
@@ -11,6 +13,8 @@ public class Subscription {
     private String description;
     private double price;
     private int durationDays;
+    private Double discount; // Percentuale di sconto (es. 20 per 20%)
+    private LocalDate discountExpiry;
 
     public Subscription() {}
 
@@ -25,4 +29,9 @@ public class Subscription {
     public void setPrice(double price) { this.price = price; }
     public int getDurationDays() { return durationDays; }
     public void setDurationDays(int durationDays) { this.durationDays = durationDays; }
+    public Double getDiscount() { return discount; }
+    public void setDiscount(Double discount) { this.discount = discount; }
+    public LocalDate getDiscountExpiry() { return discountExpiry; }
+    public void setDiscountExpiry(LocalDate discountExpiry) { this.discountExpiry = discountExpiry; }
+
 }

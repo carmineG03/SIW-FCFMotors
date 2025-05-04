@@ -2,6 +2,7 @@ package it.uniroma3.siwprogetto.controller;
 
 import it.uniroma3.siwprogetto.model.Dealer;
 import it.uniroma3.siwprogetto.model.Product;
+import it.uniroma3.siwprogetto.model.Subscription;
 import it.uniroma3.siwprogetto.model.User;
 import it.uniroma3.siwprogetto.service.AdminService;
 import it.uniroma3.siwprogetto.service.DealerService;
@@ -9,6 +10,7 @@ import it.uniroma3.siwprogetto.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import java.security.Principal;
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/admin")
@@ -43,6 +46,7 @@ public class AdminController {
 		model.addAttribute("products", adminService.findAllProducts());
 		model.addAttribute("dealers", adminService.findAllDealers());
 		model.addAttribute("users", adminService.findAllUsers());
+		model.addAttribute("subscriptions", adminService.findAllSubscriptions());
 		return "admin-maintenance";
 	}
 
@@ -170,6 +174,107 @@ public class AdminController {
 		} catch (Exception e) {
 			logger.error("Error deleting user: id={}", id, e);
 			model.addAttribute("errorMessage", "Errore durante l'eliminazione dell'utente");
+		}
+		return "redirect:/admin/maintenance";
+	}
+
+	// Mostra il form per aggiungere un nuovo abbonamento
+	@GetMapping("/subscription/add")
+	public String showAddSubscriptionForm(Model model) {
+		model.addAttribute("subscription", new Subscription());
+		return "admin-subscription-add";
+	}
+
+	// Aggiunge un nuovo abbonamento
+	@PostMapping("/subscription/add")
+	public String addSubscription( @ModelAttribute Subscription subscription, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+		if (result.hasErrors()) {
+			model.addAttribute("errorMessage", "Errore nei dati dell'abbonamento");
+			return "admin-subscription-add";
+		}
+		logger.debug("Adding subscription: name={}", subscription.getName());
+		try {
+			adminService.addSubscription(subscription);
+			redirectAttributes.addFlashAttribute("successMessage", "Abbonamento aggiunto con successo");
+		} catch (Exception e) {
+			logger.error("Error adding subscription", e);
+			model.addAttribute("errorMessage", "Errore durante l'aggiunta dell'abbonamento");
+			return "admin-subscription-add";
+		}
+		return "redirect:/admin/maintenance";
+	}
+
+	// Mostra il form di modifica di un abbonamento
+	@GetMapping("/subscription/{id}/edit")
+	public String showEditSubscriptionForm(@PathVariable Long id, Model model) {
+		Subscription subscription = adminService.findSubscriptionById(id)
+				.orElseThrow(() -> {
+					logger.error("Subscription not found: id={}", id);
+					return new IllegalStateException("Abbonamento non trovato");
+				});
+		model.addAttribute("subscription", subscription);
+		return "admin-subscription-edit";
+	}
+
+	// Modifica un abbonamento
+	@PostMapping("/subscription/{id}/update")
+	public String updateSubscription(@PathVariable Long id, @ModelAttribute Subscription updatedSubscription, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+		if (result.hasErrors()) {
+			model.addAttribute("errorMessage", "Errore nei dati dell'abbonamento");
+			return "admin-subscription-edit";
+		}
+		logger.debug("Updating subscription: id={}", id);
+		try {
+			adminService.updateSubscription(id, updatedSubscription);
+			redirectAttributes.addFlashAttribute("successMessage", "Abbonamento aggiornato con successo");
+		} catch (Exception e) {
+			logger.error("Error updating subscription: id={}", id, e);
+			model.addAttribute("errorMessage", "Errore durante l'aggiornamento dell'abbonamento");
+			return "admin-subscription-edit";
+		}
+		return "redirect:/admin/maintenance";
+	}
+
+	// Mostra il form per applicare uno sconto
+	@GetMapping("/subscription/{id}/discount")
+	public String showApplyDiscountForm(@PathVariable Long id, Model model) {
+		Subscription subscription = adminService.findSubscriptionById(id)
+				.orElseThrow(() -> {
+					logger.error("Subscription not found: id={}", id);
+					return new IllegalStateException("Abbonamento non trovato");
+				});
+		model.addAttribute("subscription", subscription);
+		return "admin-subscription-discount";
+	}
+
+	// Applica uno sconto a tempo
+	@PostMapping("/subscription/{id}/discount")
+	public String applyDiscount(@PathVariable Long id,
+								@RequestParam("discount") Double discount,
+								@RequestParam("discountExpiry") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate discountExpiry,
+								Model model, RedirectAttributes redirectAttributes) {
+		logger.debug("Applying discount to subscription: id={}, discount={}", id, discount);
+		try {
+			adminService.applyDiscount(id, discount, discountExpiry);
+			redirectAttributes.addFlashAttribute("successMessage", "Sconto applicato con successo");
+		} catch (Exception e) {
+			logger.error("Error applying discount to subscription: id={}", id, e);
+			model.addAttribute("errorMessage", "Errore durante l'applicazione dello sconto");
+			return "admin-subscription-discount";
+		}
+		return "redirect:/admin/maintenance";
+	}
+
+	// Elimina un abbonamento
+	@PostMapping("/subscription/{id}/delete")
+	public String deleteSubscription(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+		logger.debug("Deleting subscription: id={}", id);
+		try {
+			adminService.deleteSubscription(id);
+			redirectAttributes.addFlashAttribute("successMessage", "Abbonamento eliminato con successo");
+		} catch (Exception e) {
+			logger.error("Error deleting subscription: id={}", id, e);
+			redirectAttributes.addFlashAttribute("errorMessage", "Errore durante l'eliminazione dell'abbonamento");
 		}
 		return "redirect:/admin/maintenance";
 	}

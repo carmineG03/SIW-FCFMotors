@@ -200,7 +200,7 @@ header h2 {
     color: #FFFFFF;
     background: url('/image/sfondosito.jpg') no-repeat center center, #333333; /* Fallback locale e colore */
     background-size: cover;
-    padding-top: 75px;
+    padding-top: 80px;
     margin-top: 0;
 }
 
@@ -3053,87 +3053,85 @@ footer {
     }
 }
 
-.subscriptions-container {
-    background-color: #333; /* Colore di sfondo simile a quello dell'immagine */
-    color: #fff; /* Testo bianco per contrasto */
-    padding: 40px;
-    border-radius: 10px;
-    max-width: 1200px; /* Allargato per ospitare 3 box in una riga */
-    margin: 0 auto; /* Centrato */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.subscriptions-container h2,
-.subscriptions-container h3 {
-    color: #e67e22; /* Colore arancione per i titoli */
-}
-
-.subscriptions-container p {
-    color: #ccc; /* Testo grigio chiaro per il paragrafo */
-}
-
+/* Stili per il contenitore dei box degli abbonamenti */
 .subscription-boxes {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 colonne di larghezza uguale */
+    display: flex;
+    flex-wrap: wrap;
     gap: 20px;
-    justify-items: center;
+    justify-content: space-between; /* Distribuisce i box uniformemente */
+    max-width: 1200px; /* Limita la larghezza massima per controllare il layout */
+    margin: 0 auto; /* Centra il contenitore */
 }
 
+/* Stili per ogni box di abbonamento */
 .subscription-box {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 20px;
-    width: 100%; /* Occupa tutta la larghezza della colonna */
-    max-width: 300px; /* Limite massimo per la larghezza del box */
+    width: calc(33.33% - 14px); /* 33.33% per 3 box per riga, meno il gap */
     text-align: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+    transition: transform 0.2s;
+    box-sizing: border-box; /* Include padding e bordi nella larghezza */
 }
 
 .subscription-box:hover {
-    transform: scale(1.05);
+    transform: translateY(-5px);
 }
 
+/* Stili per il titolo del box */
 .subscription-box h4 {
     margin: 0 0 10px;
     font-size: 1.5em;
     color: #333;
 }
 
+/* Stili per la descrizione */
 .subscription-box p {
-    margin: 5px 0;
+    margin: 0 0 15px;
+    font-size: 1em;
     color: #666;
+    min-height: 60px; /* Assicura che i box abbiano altezza simile */
 }
 
-.subscription-box .price {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #e67e22;
-    margin: 10px 0;
-}
-
+/* Stili per il bottone di sottoscrizione */
 .subscribe-button {
-    background-color: #e67e22;
+    display: inline-block;
+    background-color: #28a745; /* Verde solido */
     color: white;
-    border: none;
     padding: 10px 20px;
     border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    text-decoration: none; /* Rimuove la sottolineatura del link */
+    font-size: 1em;
+    transition: background-color 0.3s;
 }
 
 .subscribe-button:hover {
-    background-color: #d35400;
+    background-color: #218838; /* Verde più scuro al passaggio del mouse */
+}
+
+/* Responsive per schermi più piccoli */
+@media (max-width: 900px) {
+    .subscription-box {
+        width: calc(50% - 10px); /* 2 box per riga su schermi medi */
+    }
+}
+
+@media (max-width: 600px) {
+    .subscription-box {
+        width: 100%; /* 1 box per riga su schermi piccoli */
+    }
 }
 
 /* Assicurati che il wrapper non aggiunga bordi o padding inutili */
 .wrapper {
-    max-width: 1400px; /* Allargato per ospitare il contenitore espanso */
+    max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
+    margin-top: 80px; /* Incrementato leggermente per sicurezza */
 }
-
+/* Assicuriamoci che il contenitore della manutenzione admin non si sovrapponga all'header */
 .admin-maintenance-container {
     background-color: #333;
     color: #fff;
@@ -3141,6 +3139,7 @@ footer {
     border-radius: 10px;
     max-width: 1200px;
     margin: 0 auto;
+    margin-top: 80px; /* Aggiunto per evitare la sovrapposizione con l'header */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
