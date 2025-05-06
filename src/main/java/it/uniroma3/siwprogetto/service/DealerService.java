@@ -6,6 +6,8 @@ import it.uniroma3.siwprogetto.model.User;
 import it.uniroma3.siwprogetto.repository.DealerRepository;
 import it.uniroma3.siwprogetto.repository.ProductRepository;
 import it.uniroma3.siwprogetto.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
 
 @Service
 public class DealerService {
@@ -29,6 +32,11 @@ public class DealerService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private EntityManager entityManager;
+
+
 
     @Transactional
     public Dealer saveDealer(Dealer dealer, boolean isUpdate) {
@@ -221,5 +229,34 @@ public class DealerService {
                 });
         productRepository.delete(product);
         logger.info("Product deleted: id={}", id);
+    }
+
+    @Transactional
+    public void deleteDealer(Long id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("ID del concessionario non valido.");
+        }
+        if (!dealerRepository.existsById(id)) {
+            throw new IllegalArgumentException("Concessionario non trovato con ID: " + id);
+        }
+
+        Dealer dealer = dealerRepository.findById(id).get();
+        List<Product> products = productRepository.findBySeller(dealer.getOwner());
+        if (!products.isEmpty()) {
+            productRepository.deleteAll(products);
+        }
+
+        try {
+            // Usa una query diretta
+            Query query = entityManager.createQuery("DELETE FROM Dealer d WHERE d.id = :id");
+            query.setParameter("id", id);
+            int deleted = query.executeUpdate();
+            dealerRepository.flush();
+            if (dealerRepository.existsById(id)) {
+                throw new IllegalStateException("Eliminazione non riuscita: il concessionario esiste ancora.");
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Errore durante l'eliminazione del concessionario.", e);
+        }
     }
 }

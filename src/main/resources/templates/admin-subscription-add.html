@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Aggiungi Abbonamento - FCF Motors</title>
+    <link rel="stylesheet" href="/css/styles.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<header id="main-header">
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
+            </div>
+        </a>
+        <div class="title-container">
+            <h1 class="main-title">FCF MOTORS</h1>
+            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
+            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+        </div>
+    </div>
+    <div class="nav-container">
+        <div class="nav-bar">
+            <a href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
+            <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
+        </div>
+    </div>
+</header>
+
+<div class="wrapper">
+    <div class="form-container">
+        <h2>Aggiungi Abbonamento</h2>
+        <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+        <form th:action="@{/admin/subscription/add}" th:object="${subscription}" method="post">
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+            <div class="form-group">
+                <label for="name">Nome</label>
+                <input type="text" id="name" th:field="*{name}" required/>
+            </div>
+            <div class="form-group">
+                <label for="description">Descrizione</label>
+                <textarea id="description" th:field="*{description}" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Prezzo (€)</label>
+                <input type="number" id="price" th:field="*{price}" step="0.01" required/>
+            </div>
+            <button type="submit" class="submit-button">Aggiungi</button>
+            <a href="/admin/maintenance" class="cancel-button">Annulla</a>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Navigazione</h4>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Trova Auto</a></li>
+                <li><a href="/dealers">Concessionari</a></li>
+                <li><a href="/cart">Carrello</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contatti</h4>
+            <p>Email: info@fcfmotors.com</p>
+            <p>Telefono: +39 123 456 7890</p>
+            <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+        </div>
+        <div class="footer-section">
+            <h4>Informazioni</h4>
+            <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+    </div>
+</footer>
+</body>
+</html>

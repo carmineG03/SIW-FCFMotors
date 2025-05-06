@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Manutenzione Admin - FCF Motors</title>
+    <link rel="stylesheet" href="/css/styles.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<header id="main-header">
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
+            </div>
+        </a>
+        <div class="title-container">
+            <h1 class="main-title">FCF MOTORS</h1>
+            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
+            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+        </div>
+    </div>
+    <div class="nav-container">
+        <div class="nav-bar">
+            <a href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
+            <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
+        </div>
+    </div>
+    <button th:if="${user.rolesString != null and user.rolesString.contains('PRIVATE')}"
+            onclick="window.location.href='/private/maintenance'"
+            class="maintenance-button">
+        <i class="fas fa-tools"></i> Manutenzione Private
+    </button>
+    <button th:if="${user.rolesString != null and user.rolesString.contains('DEALER')}"
+            onclick="window.location.href='/rest/manutenzione/dealer'"
+            class="maintenance-button">
+        <i class="fas fa-cogs"></i> Manutenzione Dealer
+    </button>
+    <button th:if="${user.rolesString != null and user.rolesString.contains('ADMIN')}"
+            onclick="window.location.href='/admin/maintenance'"
+            class="maintenance-button">
+        <i class="fas fa-shield-alt"></i> Manutenzione Admin
+    </button>
+</header>
+
+<div class="wrapper">
+    <div class="admin-maintenance-container">
+        <h2>Manutenzione Admin</h2>
+        <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+
+        <!-- Sezione 1: Gestione Auto -->
+        <div class="admin-section">
+            <h3>Gestione Auto</h3>
+            <div th:if="${products != null and !#lists.isEmpty(products)}" class="products-list">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Proprietario</th>
+                        <th>Tipo</th>
+                        <th>Azioni</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="product : ${products}">
+                        <td th:text="${product.id}"></td>
+                        <td th:text="${product.name}"></td>
+                        <td th:text="${product.seller?.username}"></td>
+                        <td th:text="${product.sellerType}"></td>
+                        <td>
+                            <a th:href="@{/admin/product/{id}/edit(id=${product.id})}" class="edit-button"><i class="fas fa-edit"></i> Modifica</a>
+                            <form th:action="@{/admin/product/{id}/delete(id=${product.id})}" method="post" style="display:inline;">
+                                <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                                <input type="hidden" name="id" th:value="${product.id}"/>
+                                <button type="submit" class="delete-button" onclick="return confirm('Sei sicuro di voler eliminare questo prodotto?');"><i class="fas fa-trash"></i> Elimina</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${products == null or #lists.isEmpty(products)}">
+                <p>Nessun prodotto presente.</p>
+            </div>
+        </div>
+
+        <!-- Sezione 2: Gestione Concessionari -->
+        <div class="admin-section">
+            <h3>Gestione Concessionari</h3>
+            <div th:if="${dealers != null and !#lists.isEmpty(dealers)}" class="dealers-list">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Indirizzo</th>
+                        <th>Azioni</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="dealer : ${dealers}">
+                        <td th:text="${dealer.id}"></td>
+                        <td th:text="${dealer.name}"></td>
+                        <td th:text="${dealer.address}"></td>
+                        <td>
+                            <a th:href="@{/admin/dealer/{id}/edit(id=${dealer.id})}" class="edit-button"><i class="fas fa-edit"></i> Modifica</a>
+                            <form th:action="@{/admin/dealer/{id}/delete(id=${dealer.id})}" method="post" style="display:inline;">
+                                <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                                <input type="hidden" name="id" th:value="${dealer.id}"/>
+                                <button type="submit" class="delete-button" onclick="return confirm('Sei sicuro di voler eliminare questo concessionario?');"><i class="fas fa-trash"></i> Elimina</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${dealers == null or #lists.isEmpty(dealers)}">
+                <p>Nessun concessionario presente.</p>
+            </div>
+        </div>
+
+        <!-- Sezione 3: Gestione Account Utenti -->
+        <div class="admin-section">
+            <h3>Gestione Account Utenti</h3>
+            <div th:if="${users != null and !#lists.isEmpty(users)}" class="users-list">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Ruoli</th>
+                        <th>Azioni</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.username}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.rolesString}"></td>
+                        <td>
+                            <form th:action="@{/admin/user/{id}/delete(id=${user.id})}" method="post" style="display:inline;">
+                                <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                                <input type="hidden" name="id" th:value="${user.id}"/>
+                                <button type="submit" class="delete-button" onclick="return confirm('Sei sicuro di voler eliminare questo utente?');"><i class="fas fa-trash"></i> Elimina</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${users == null or #lists.isEmpty(users)}">
+                <p>Nessun utente presente.</p>
+            </div>
+        </div>
+
+        <!-- Sezione 4: Gestione Abbonamenti -->
+        <div class="admin-section">
+            <h3>Gestione Abbonamenti</h3>
+            <a href="/admin/subscription/add" class="add-button"><i class="fas fa-plus"></i> Aggiungi Abbonamento</a>
+            <div th:if="${subscriptions != null and !#lists.isEmpty(subscriptions)}" class="subscriptions-list">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Descrizione</th>
+                        <th>Prezzo</th>
+                        <th>Sconto</th>
+                        <th>Scadenza Sconto</th>
+                        <th>Azioni</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="subscription : ${subscriptions}">
+                        <td th:text="${subscription.id}"></td>
+                        <td th:text="${subscription.name}"></td>
+                        <td th:text="${subscription.description}"></td>
+                        <td th:text="${subscription.price}"></td>
+                        <td th:text="${subscription.discount != null} ? ${subscription.discount + '%'} : '-'"></td>
+                        <td th:text="${subscription.discountExpiry != null} ? ${subscription.discountExpiry} : '-'"></td>
+                        <td>
+                            <a th:href="@{/admin/subscription/{id}/edit(id=${subscription.id})}" class="edit-button"><i class="fas fa-edit"></i> Modifica</a>
+                            <a th:href="@{/admin/subscription/{id}/discount(id=${subscription.id})}" class="discount-button"><i class="fas fa-tag"></i> Applica Sconto</a>
+                            <form th:action="@{/admin/subscription/{id}/delete(id=${subscription.id})}" method="post" style="display:inline;">
+                                <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                                <input type="hidden" name="id" th:value="${subscription.id}"/>
+                                <button type="submit" class="delete-button" onclick="return confirm('Sei sicuro di voler eliminare questo abbonamento?');"><i class="fas fa-trash"></i> Elimina</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${subscriptions == null or #lists.isEmpty(subscriptions)}">
+                <p>Nessun abbonamento presente.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Navigazione</h4>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Trova Auto</a></li>
+                <li><a href="/dealers">Concessionari</a></li>
+                <li><a href="/cart">Carrello</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contatti</h4>
+            <p>Email: info@fcfmotors.com</p>
+            <p>Telefono: +39 123 456 7890</p>
+            <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+        </div>
+        <div class="footer-section">
+            <h4>Informazioni</h4>
+            <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+    </div>
+</footer>
+</body>
+</html>

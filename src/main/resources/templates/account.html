@@ -7,26 +7,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <header id="main-header">
-        <div class="header-left">
-            <a href="/" class="logo-link">
-                <div class="logo-container">
-                    <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
-                </div>
-            </a>
-            <div class="title-container">
-                <h1 class="main-title">FCF MOTORS</h1>
-                <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-                <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+<header id="main-header">
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
             </div>
+        </a>
+        <div class="title-container">
+            <h1 class="main-title">FCF MOTORS</h1>
+            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
+            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
         </div>
-        <div class="nav-container">
-            <div class="nav-bar">
-                <a href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
-                <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
-            </div>
+    </div>
+    <div class="nav-container">
+        <div class="nav-bar">
+            <a href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
+            <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
         </div>
-        <button th:if="${user.rolesString != null and user.rolesString.contains('PRIVATE')}"
+    </div>
+    <button th:if="${user.rolesString != null and user.rolesString.contains('PRIVATE')}"
             onclick="window.location.href='/private/maintenance'"
             class="maintenance-button">
         <i class="fas fa-tools"></i> Manutenzione Private
@@ -36,116 +36,133 @@
             class="maintenance-button">
         <i class="fas fa-cogs"></i> Manutenzione Dealer
     </button>
-    </header>
+    <button th:if="${user.rolesString != null and user.rolesString.contains('ADMIN')}"
+            onclick="window.location.href='/admin/maintenance'"
+            class="maintenance-button">
+        <i class="fas fa-shield-alt"></i> Manutenzione Admin
+    </button>
+</header>
 
-    <div class="wrapper">
-        <div class="account-container">
-            <!-- Blocco a sinistra: Informazioni account -->
-            <div class="account-details-container">
-                <h2>Informazioni Account</h2>
-                <div th:if="${!editMode}" class="account-details">
-                    <p th:if="${error}" th:text="${error}" class="error-message"></p>
-                    <p th:if="${user != null}"><strong>Username:</strong> <span th:text="${user.username}"></span></p>
-                    <p th:if="${user != null}"><strong>Email:</strong> <span th:text="${user.email}"></span></p>
-                    <p th:if="${accountInformation != null}"><strong>Nome:</strong> <span th:text="${accountInformation.firstName}"></span></p>
-                    <p th:if="${accountInformation != null}"><strong>Cognome:</strong> <span th:text="${accountInformation.lastName}"></span></p>
-                    <p th:if="${accountInformation != null}"><strong>Data di nascita:</strong> <span th:text="${accountInformation.birthDate}"></span></p>
-                    <p th:if="${accountInformation != null}"><strong>Indirizzo:</strong> <span th:text="${accountInformation.address}"></span></p>
-                    <p th:if="${accountInformation != null}"><strong>Numero di telefono:</strong> <span th:text="${accountInformation.phoneNumber}"></span></p>
-                    <div class="account-actions">
-                        <a th:href="@{/account/edit}" class="edit-button">Modifica</a>
-                        <form th:action="@{/logout}" method="post" class="logout-form">
-                            <button type="submit" class="logout-button">Esci</button>
-                        </form>
-                    </div>
-                </div>
-
-                <div th:if="${editMode}" class="edit-form-container">
-                    <form th:action="@{/account}" method="post" th:object="${accountInformation}" class="edit-form">
-                        <div class="form-group">
-                            <label for="firstName">Nome:</label>
-                            <input type="text" id="firstName" th:field="*{firstName}" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="lastName">Cognome:</label>
-                            <input type="text" id="lastName" th:field="*{lastName}" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="birthDate">Data di nascita:</label>
-                            <input type="date" id="birthDate" th:field="*{birthDate}" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="address">Indirizzo:</label>
-                            <input type="text" id="address" th:field="*{address}" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="phoneNumber">Numero di telefono:</label>
-                            <input type="text" id="phoneNumber" th:field="*{phoneNumber}" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="additionalInfo">Informazioni aggiuntive:</label>
-                            <textarea id="additionalInfo" th:field="*{additionalInfo}"></textarea>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="save-button">Salva</button>
-                            <a href="/account" class="cancel-button">Annulla</a>
-                        </div>
+<div class="wrapper">
+    <div class="account-container">
+        <!-- Blocco a sinistra: Informazioni account -->
+        <div class="account-details-container">
+            <h2>Informazioni Account</h2>
+            <div th:if="${!editMode}" class="account-details">
+                <p th:if="${error}" th:text="${error}" class="error-message"></p>
+                <p th:if="${user != null}"><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+                <p th:if="${user != null}"><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+                <p th:if="${accountInformation != null}"><strong>Nome:</strong> <span th:text="${accountInformation.firstName}"></span></p>
+                <p th:if="${accountInformation != null}"><strong>Cognome:</strong> <span th:text="${accountInformation.lastName}"></span></p>
+                <p th:if="${accountInformation != null}"><strong>Data di nascita:</strong> <span th:text="${accountInformation.birthDate}"></span></p>
+                <p th:if="${accountInformation != null}"><strong>Indirizzo:</strong> <span th:text="${accountInformation.address}"></span></p>
+                <p th:if="${accountInformation != null}"><strong>Numero di telefono:</strong> <span th:text="${accountInformation.phoneNumber}"></span></p>
+                <div class="account-actions">
+                    <a th:href="@{/account/edit}" class="edit-button">Modifica</a>
+                    <form th:action="@{/logout}" method="post" class="logout-form">
+                        <button type="submit" class="logout-button">Esci</button>
                     </form>
                 </div>
             </div>
 
-            <!-- Blocco a destra: Abbonamenti -->
-            <div class="subscriptions-container">
-                <h2>Abbonamenti</h2>
-                <!-- Caso 1: Ci sono abbonamenti attivi -->
-                <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
-                    <h3>Abbonamenti Attivi</h3>
-                    <ul>
-                        <li th:each="subscription : ${activeSubscriptions}">
-                            <strong th:text="${subscription.name}"></strong> - Scade il: <span th:text="${subscription.expiryDate}"></span>
-                        </li>
-                    </ul>
+            <div th:if="${editMode}" class="edit-form-container">
+                <form th:action="@{/account}" method="post" th:object="${accountInformation}" class="edit-form">
+                    <div class="form-group">
+                        <label for="firstName">Nome:</label>
+                        <input type="text" id="firstName" th:field="*{firstName}" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Cognome:</label>
+                        <input type="text" id="lastName" th:field="*{lastName}" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="birthDate">Data di nascita:</label>
+                        <input type="date" id="birthDate" th:field="*{birthDate}" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Indirizzo:</label>
+                        <input type="text" id="address" th:field="*{address}" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumber">Numero di telefono:</label>
+                        <input type="text" id="phoneNumber" th:field="*{phoneNumber}" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="additionalInfo">Informazioni aggiuntive:</label>
+                        <textarea id="additionalInfo" th:field="*{additionalInfo}"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="save-button">Salva</button>
+                        <a href="/account" class="cancel-button">Annulla</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="subscriptions-container">
+            <h2>Abbonamenti</h2>
+            <!-- Caso 1: Ci sono abbonamenti attivi -->
+            <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
+                <h3>Abbonamento Attivo</h3>
+                <div th:each="userSubscription : ${activeSubscriptions}">
+                    <p><strong th:text="${userSubscription.subscription.name}"></strong> - Scade il: <span th:text="${userSubscription.expiryDate}"></span></p>
+                    <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
+                       class="cancel-subscription-button"
+                       onclick="return confirm('Sei sicuro di voler cancellare questo abbonamento? Il tuo ruolo tornerà a USER se non hai altri abbonamenti attivi.');">
+                        Cancella
+                    </a>
                 </div>
-                <!-- Caso 2: Nessun abbonamento attivo -->
-                <div th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}" class="available-subscriptions">
-                    <h3>Nessun Abbonamento Attivo</h3>
-                    <p>Scopri i nostri abbonamenti disponibili:</p>
-                    <ul>
-                        <li th:each="subscription : ${availableSubscriptions}">
-                            <strong th:text="${subscription.name}"></strong> - <span th:text="${subscription.description}"></span>
-                            <a th:href="@{/subscribe(subscriptionId=${subscription.id})}" class="subscribe-button">Sottoscrivi</a>
-                        </li>
-                    </ul>
+                <a href="/subscriptions" class="manage-subscriptions-button">Gestisci Abbonamenti</a>
+            </div>
+            <!-- Caso 2: Nessun abbonamento attivo -->
+            <div th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}" class="no-subscriptions">
+                <p>Nessun abbonamento attivo.</p>
+                <a href="/subscriptions" class="subscribe-button">Scopri Abbonamenti</a>
+                <div th:if="${user.rolesString != null and user.rolesString.contains('USER')}">
+                    <p>Vuoi vendere la tua auto?</p>
+                    <form th:action="@{/account/become-private}" method="post">
+                        <button type="submit" class="become-private-button">Diventa Privato</button>
+                    </form>
+                </div>
+                <div th:if="${user.rolesString != null and user.rolesString.contains('PRIVATE')}">
+                    <p>Sei un utente privato. Vuoi tornare al ruolo USER?</p>
+                    <form th:action="@{/account/remove-private}" method="post">
+                        <button type="submit" class="remove-private-button"
+                                onclick="return confirm('Sei sicuro di voler rimuovere il ruolo PRIVATO? Questo eliminerà anche l\'auto che hai messo in vendita.');">
+                            Rimuovi Ruolo Privato
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>Navigazione</h4>
-                <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/products">Trova Auto</a></li>
-                    <li><a href="/dealers">Concessionari</a></li>
-                    <li><a href="/cart">Carrello</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Contatti</h4>
-                <p>Email: info@fcfmotors.com</p>
-                <p>Telefono: +39 123 456 7890</p>
-                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
-            </div>
-            <div class="footer-section">
-                <h4>Informazioni</h4>
-                <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
-            </div>
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Navigazione</h4>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Trova Auto</a></li>
+                <li><a href="/dealers">Concessionari</a></li>
+                <li><a href="/cart">Carrello</a></li>
+            </ul>
         </div>
-        <div class="footer-bottom">
-            <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+        <div class="footer-section">
+            <h4>Contatti</h4>
+            <p>Email: info@fcfmotors.com</p>
+            <p>Telefono: +39 123 456 7890</p>
+            <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
         </div>
-    </footer>
+        <div class="footer-section">
+            <h4>Informazioni</h4>
+            <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+    </div>
+</footer>
 </body>
 </html>

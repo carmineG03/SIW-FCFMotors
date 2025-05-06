@@ -1,17 +1,40 @@
 package it.uniroma3.siwprogetto.service;
 
+import it.uniroma3.siwprogetto.model.Product;
+import it.uniroma3.siwprogetto.model.Subscription;
 import it.uniroma3.siwprogetto.model.User;
-import it.uniroma3.siwprogetto.repository.UserRepository;
+import it.uniroma3.siwprogetto.model.UserSubscription;
+import it.uniroma3.siwprogetto.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
+
+    @Autowired
+    private UserSubscriptionRepository userSubscriptionRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private DealerRepository dealerRepository;
+
+    @Autowired
+    private DealerService dealerService;
 
     public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
@@ -81,5 +104,85 @@ public class UserService {
         } else {
             throw new RuntimeException("Token non valido o scaduto");
         }
+    }
+
+    public void subscribeUserToDealer(Long userId, Long subscriptionId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
+        Subscription subscription = subscriptionRepository.findById(subscriptionId)
+                .orElseThrow(() -> new IllegalArgumentException("Abbonamento non trovato"));
+
+        // Cambia il ruolo a DEALER
+        user.setRolesString("DEALER");
+
+        // Crea una nuova sottoscrizione attiva
+        UserSubscription userSubscription = new UserSubscription();
+        userSubscription.setUser(user);
+        userSubscription.setSubscription(subscription);
+        userSubscription.setStartDate(LocalDate.now());
+        userSubscription.setExpiryDate(LocalDate.now().plusDays(subscription.getDurationDays()));
+
+        // Salva le modifiche
+        userSubscriptionRepository.save(userSubscription);
+        userRepository.save(user);
+    }
+
+    public void cancelSubscription(Long userSubscriptionId, Long userId) {
+        UserSubscription userSubscription = userSubscriptionRepository.findById(userSubscriptionId)
+                .orElseThrow(() -> new IllegalArgumentException("Abbonamento non trovato"));
+
+        if (!userSubscription.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("Non autorizzato a cancellare questo abbonamento");
+        }
+
+        // Cancella l'abbonamento
+        userSubscriptionRepository.delete(userSubscription);
+
+        // Aggiorna il ruolo dell'utente a USER
+        User user = userSubscription.getUser();
+        user.setRolesString("USER");
+        userRepository.save(user);
+
+        dealerRepository.findByOwner(user).ifPresent(dealer -> {
+            try {
+                dealerService.deleteDealer(dealer.getId());
+            } catch (IllegalArgumentException ignored) {
+                // Ignora l'eccezione se il dealer non esiste
+            }
+        });
+
+        // Cancella tutti i prodotti creati dall'utente con ruolo DEALER
+        List<Product> products = productRepository.findBySeller(user);
+        productRepository.deleteAll(products);
+    }
+
+    public List<UserSubscription> getActiveSubscriptions(Long userId) {
+        return userSubscriptionRepository.findByUserId(userId);
+    }
+
+    public List<Subscription> getAvailableSubscriptions() {
+        return subscriptionRepository.findAll();
+    }
+
+    public void updateUserRole(User user, String newRole) {
+        user.setRolesString(newRole);
+        userRepository.save(user);
+    }
+
+    public void removePrivateRoleAndCar(User user) {
+        // Verifica che l'utente abbia il ruolo PRIVATE
+        if (!user.getRolesString().contains("PRIVATE")) {
+            throw new IllegalStateException("L'utente non ha il ruolo PRIVATO.");
+        }
+
+        // Trova l'auto associata all'utente (assumiamo una sola auto per utente privato)
+        List<Product> car = productRepository.findBySeller(user);
+
+        // Cancella l'auto
+        productRepository.deleteAll(car);
+
+        // Aggiorna il ruolo a USER
+        user.setRolesString("USER");
+        userRepository.save(user);
     }
 }

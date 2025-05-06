@@ -13,6 +13,7 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            margin-top: 80px; /* Aggiunto per evitare sovrapposizione */
         }
         .cart-items {
             display: flex;
@@ -147,80 +148,207 @@
         .toast.show {
             display: block;
         }
+        .price-discounted {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .price-original {
+            text-decoration: line-through;
+            color: #666;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-left">
-            <a href="/" class="logo-link">
-                <div class="logo-container">
-                    <img src="/image/logo1.png" alt="Logo" class="logo">
-                </div>
-                <div class="title-container">
-                    <h1 class="main-title">FCF MOTORS</h1>
-                </div>
+<header>
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img src="/image/logo1.png" alt="Logo" class="logo">
+            </div>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
+            </div>
+        </a>
+    </div>
+    <div class="nav-container">
+        <nav class="nav-bar">
+            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
+            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+            <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i></a>
+            <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-sign-in-alt"></i></a>
+            <a href="/cart" class="icon-button cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}"></span>
             </a>
-        </div>
-        <div class="nav-container">
-            <nav class="nav-bar">
-                <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-                <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
-                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i></a>
-                <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-sign-in-alt"></i></a>
-                <a href="/cart" class="icon-button cart-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}"></span>
-                </a>
-            </nav>
-        </div>
-    </header>
+        </nav>
+    </div>
+</header>
 
-    <section class="cart-section">
-        <h2>Il tuo Carrello</h2>
-        <div class="cart-items">
-            <div th:each="item : ${cartItems}" class="cart-item">
-                <img th:src="${item.product.imageUrl}" th:alt="${item.product.name}"/>
-                <div class="cart-item-details">
-                    <h3 th:text="${item.product.name}"></h3>
-                    <p th:text="'Abbonamento: ' + ${item.subscription.name}"></p>
-                    <p th:text="'Durata: ' + ${item.subscription.durationDays} + ' giorni'"></p>
-                    <p th:text="'Prezzo: ' + ${item.subscription.price} + ' €'"></p>
-                    <div class="quantity-selector">
-                        <label>Quantità:</label>
-                        <select class="quantity" th:data-item-id="${item.id}">
-                            <option th:each="i : ${#numbers.sequence(1, 10)}" 
-                                    th:value="${i}" 
-                                    th:selected="${i == item.quantity}" 
-                                    th:text="${i}">
-                            </option>
-                        </select>
-                    </div>
-                    <button class="remove-button" th:data-item-id="${item.id}">Rimuovi</button>
+<section class="cart-section">
+    <h2>Il tuo Carrello</h2>
+    <div class="cart-items">
+        <div th:each="item : ${cartItems}" class="cart-item">
+            <img th:if="${item.product != null}" th:src="${item.product.imageUrl}" th:alt="${item.product.name}"/>
+            <img th:if="${item.product == null}" src="/images/subscription-placeholder.png" alt="Abbonamento"/>
+            <div class="cart-item-details">
+                <h3 th:text="${item.subscription != null ? item.subscription.name : item.product.name}"></h3>
+                <p th:if="${item.subscription != null}" th:text="'Durata: ' + ${item.subscription.durationDays} + ' giorni'"></p>
+                <p th:if="${item.subscription != null}">
+                    Prezzo:
+                    <span th:if="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                        <span class="price-original" th:text="${item.subscription.price} + ' €'"></span>
+                        <span class="price-discounted" th:text="${item.subscription.price * (1 - item.subscription.discount / 100)} + ' €'"></span>
+                    </span>
+                    <span th:unless="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                        <span th:text="${item.subscription.price} + ' €'"></span>
+                    </span>
+                </p>
+                <p th:if="${item.product != null && item.subscription == null}" th:text="'Prezzo: ' + ${item.product.price} + ' €'"></p>
+                <div class="quantity-selector">
+                    <label>Quantità:</label>
+                    <select class="quantity" th:data-item-id="${item.id}">
+                        <option th:each="i : ${#numbers.sequence(1, 10)}"
+                                th:value="${i}"
+                                th:selected="${i == item.quantity}"
+                                th:text="${i}">
+                        </option>
+                    </select>
                 </div>
-            </div>
-            <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}">
-                <p>Il carrello è vuoto.</p>
+                <button class="remove-button" th:data-item-id="${item.id}">Rimuovi</button>
             </div>
         </div>
-
-        <div class="cart-summary">
-            <p id="subtotal">Subtotale: <span th:text="${#numbers.formatDecimal(subtotal, 1, 2, 'COMMA')} + ' €'"></span></p>
-            <button class="checkout-button" th:disabled="${cartItems == null or #lists.isEmpty(cartItems)}">Procedi al Checkout</button>
-        </div>
-    </section>
-
-    <div id="checkoutModal" class="modal">
-        <div class="modal-content">
-            <h2>Conferma Checkout</h2>
-            <p>Totale: <span id="modalTotal"></span></p>
-            <p>Sei sicuro di voler procedere con l'acquisto degli abbonamenti?</p>
-            <button class="confirm-button">Conferma</button>
-            <button class="cancel-button">Annulla</button>
+        <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}">
+            <p>Il carrello è vuoto.</p>
         </div>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <div class="cart-summary">
+        <p id="subtotal">Subtotale: <span th:text="${#numbers.formatDecimal(subtotal, 1, 2, 'COMMA')} + ' €'"></span></p>
+        <button class="checkout-button" th:disabled="${cartItems == null or #lists.isEmpty(cartItems)}">Procedi al Checkout</button>
+    </div>
+</section>
 
-    <script src="/js/cart.js"></script>
+<div id="checkoutModal" class="modal">
+    <div class="modal-content">
+        <h2>Conferma Checkout</h2>
+        <p>Totale: <span id="modalTotal"></span></p>
+        <p>Sei sicuro di voler procedere con l'acquisto?</p>
+        <button class="confirm-button">Conferma</button>
+        <button class="cancel-button">Annulla</button>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const quantities = document.querySelectorAll('.quantity');
+        const removeButtons = document.querySelectorAll('.remove-button');
+        const checkoutButton = document.querySelector('.checkout-button');
+        const checkoutModal = document.getElementById('checkoutModal');
+        const confirmButton = document.querySelector('.confirm-button');
+        const cancelButton = document.querySelector('.cancel-button');
+        const modalTotal = document.getElementById('modalTotal');
+        const token = document.querySelector('meta[name="_csrf"]').content;
+        const header = document.querySelector('meta[name="_csrf_header"]').content;
+
+        quantities.forEach(select => {
+            select.addEventListener('change', () => {
+                const itemId = select.getAttribute('data-item-id');
+                const quantity = select.value;
+
+                fetch(`/cart/update/${itemId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [header]: token
+                    },
+                    body: JSON.stringify({ quantity: parseInt(quantity) })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            showToast('Errore durante l\'aggiornamento della quantità');
+                        }
+                    })
+                    .catch(() => showToast('Errore durante l\'aggiornamento della quantità'));
+            });
+        });
+
+        removeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const itemId = button.getAttribute('data-item-id');
+
+                fetch(`/cart/remove/${itemId}`, {
+                    method: 'POST',
+                    headers: {
+                        [header]: token
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            showToast('Errore durante la rimozione dell\'articolo');
+                        }
+                    })
+                    .catch(() => showToast('Errore durante la rimozione dell\'articolo'));
+            });
+        });
+
+        checkoutButton.addEventListener('click', () => {
+            modalTotal.textContent = document.querySelector('#subtotal span').textContent;
+            checkoutModal.style.display = 'flex';
+        });
+
+        confirmButton.addEventListener('click', () => {
+            fetch('/cart/checkout-subscriptions', {
+                method: 'POST',
+                headers: {
+                    [header]: token
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Checkout completato con successo!');
+                        setTimeout(() => {
+                            window.location.href = '/account';
+                        }, 2000);
+                    } else {
+                        showToast('Errore durante il checkout');
+                    }
+                    checkoutModal.style.display = 'none';
+                })
+                .catch(() => {
+                    showToast('Errore durante il checkout');
+                    checkoutModal.style.display = 'none';
+                });
+        });
+
+        cancelButton.addEventListener('click', () => {
+            checkoutModal.style.display = 'none';
+        });
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Mostra un messaggio di successo se presente nell'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success')) {
+            showToast('Abbonamento aggiunto al carrello!');
+        }
+    });
+</script>
 </body>
 </html>

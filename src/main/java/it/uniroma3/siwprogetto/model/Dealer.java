@@ -20,7 +20,7 @@
         private String imagePath;
 
         @OneToOne
-        @JsonManagedReference
+        @JoinColumn(name = "owner_id")
         private User owner;
 
         public Dealer() {

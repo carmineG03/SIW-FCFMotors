@@ -137,7 +137,7 @@
                     <div th:if="${product.sellerType == 'DEALER'}">
                         <a th:href="@{'/request-quote/' + ${product.id}}" class="button">Richiedi Preventivo</a>
                     </div>
-                    <a th:href="@{'/add-subscription/' + ${product.id}}" class="button">Aggiungi Abbonamento</a>
+                    <!-- Pulsante "Aggiungi Abbonamento" rimosso -->
                 </div>
             </div>
             <div th:if="${products == null or #lists.isEmpty(products)}" class="no-products">

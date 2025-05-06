@@ -2,17 +2,23 @@ package it.uniroma3.siwprogetto.controller;
 
 import it.uniroma3.siwprogetto.model.AccountInformation;
 import it.uniroma3.siwprogetto.model.User;
+import it.uniroma3.siwprogetto.model.UserSubscription;
 import it.uniroma3.siwprogetto.repository.AccountInformationRepository;
+import it.uniroma3.siwprogetto.repository.SubscriptionRepository;
+import it.uniroma3.siwprogetto.repository.UserRepository;
+import it.uniroma3.siwprogetto.repository.UserSubscriptionRepository;
+import it.uniroma3.siwprogetto.service.CartService;
 import it.uniroma3.siwprogetto.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
+
 import static it.uniroma3.siwprogetto.util.SecurityUtils.hasRole;
 
 @Controller
@@ -24,13 +30,25 @@ public class AccountController {
     @Autowired
     private AccountInformationRepository accountInformationRepository;
 
+    @Autowired
+    private CartService cartService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserSubscriptionRepository userSubscriptionRepository;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
+
+
     @GetMapping("/account")
     public String showAccount(Model model, Principal principal) {
         if (principal == null) {
             return "redirect:/login";
         }
 
-        // 1) Trova l'utente loggato
         User user = userService.findByUsername(principal.getName());
         if (user == null) {
             model.addAttribute("error", "User not found");
@@ -39,11 +57,13 @@ public class AccountController {
             return "account";
         }
 
-        // 2) Cerca l'AccountInformation in base allo user_id
         AccountInformation accountInformation = accountInformationRepository
                 .findByUserId(user.getId())
                 .orElse(new AccountInformation());
 
+        // Aggiungi abbonamenti attivi e disponibili
+        model.addAttribute("activeSubscriptions", userService.getActiveSubscriptions(user.getId()));
+        model.addAttribute("availableSubscriptions", userService.getAvailableSubscriptions());
         model.addAttribute("accountInformation", accountInformation);
         model.addAttribute("user", user);
         model.addAttribute("editMode", false);
@@ -75,43 +95,138 @@ public class AccountController {
     }
 
     @PostMapping("/account")
-    public String saveAccountInformation(@ModelAttribute AccountInformation formAI,
-                                         Principal principal) {
+    public String saveAccountInformation(@ModelAttribute AccountInformation formAI, Principal principal) {
         if (principal == null) {
             return "redirect:/login";
         }
 
-        // 1) Trova l'utente loggato
         User user = userService.findByUsername(principal.getName());
         if (user == null) {
             return "redirect:/login";
         }
 
-        // 2) Recupera (o crea) l'AccountInformation associato
         AccountInformation accountInformation = accountInformationRepository
                 .findByUserId(user.getId())
                 .orElse(new AccountInformation());
 
-        // 3) Aggiorna i campi dal form
         accountInformation.setFirstName(formAI.getFirstName());
         accountInformation.setLastName(formAI.getLastName());
         accountInformation.setBirthDate(formAI.getBirthDate());
         accountInformation.setAddress(formAI.getAddress());
         accountInformation.setPhoneNumber(formAI.getPhoneNumber());
         accountInformation.setAdditionalInfo(formAI.getAdditionalInfo());
-
-        // 4) Collega l'utente esistente (il FK user_id)
         accountInformation.setUser(user);
 
-        // 5) Salva (insert o update a seconda che abbia già ID)
         accountInformationRepository.save(accountInformation);
-
         return "redirect:/account";
+    }
+
+    @GetMapping("/subscriptions")
+    public String showSubscriptionsPage(Model model) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user == null) {
+            model.addAttribute("errorMessage", "Utente non trovato.");
+            return "subscriptions";
+        }
+
+        List<UserSubscription> activeSubscriptions = userSubscriptionRepository.findByUserAndActive(user, true);
+        model.addAttribute("user", user);
+        model.addAttribute("activeSubscriptions", activeSubscriptions);
+        model.addAttribute("availableSubscriptions", subscriptionRepository.findAll());
+        return "subscriptions";
+    }
+
+    @PostMapping("/account/become-private")
+    public String becomePrivate(Principal principal, Model model) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        User user = userService.findByUsername(principal.getName());
+        if (user == null) {
+            model.addAttribute("error", "Utente non trovato");
+            return "account";
+        }
+
+        // Verifica che l'utente abbia il ruolo USER e non abbia abbonamenti attivi
+        if (user.getRolesString().contains("USER") && userService.getActiveSubscriptions(user.getId()).isEmpty()) {
+            userService.updateUserRole(user, "PRIVATE");
+            return "redirect:/account?success=Ruolo aggiornato a PRIVATO. Ora puoi vendere la tua auto!";
+        } else {
+            model.addAttribute("error", "Non puoi diventare PRIVATO: hai già un abbonamento attivo o un ruolo diverso.");
+            return "account";
+        }
+    }
+
+    @PostMapping("/account/remove-private")
+    public String removePrivate(Principal principal, Model model) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        User user = userService.findByUsername(principal.getName());
+        if (user == null) {
+            model.addAttribute("error", "Utente non trovato");
+            return "account";
+        }
+
+        // Verifica che l'utente abbia il ruolo PRIVATE
+        if (user.getRolesString().contains("PRIVATE")) {
+            try {
+                userService.removePrivateRoleAndCar(user);
+                return "redirect:/account?success=Ruolo PRIVATO rimosso. L'auto in vendita è stata eliminata.";
+            } catch (IllegalStateException e) {
+                model.addAttribute("error", e.getMessage());
+                return "account";
+            }
+        } else {
+            model.addAttribute("error", "Non puoi rimuovere il ruolo PRIVATO: non hai questo ruolo.");
+            return "account";
+        }
+    }
+
+
+
+
+    @PostMapping("/subscribe")
+    public String subscribe(@RequestParam("subscriptionId") Long subscriptionId, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        User user = userService.findByUsername(principal.getName());
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        cartService.addSubscriptionToCart(subscriptionId, user);
+        return "redirect:/cart?success=true";
+    }
+
+    @GetMapping("/cancel-subscription")
+    public String cancelSubscription(@RequestParam("userSubscriptionId") Long userSubscriptionId, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        User user = userService.findByUsername(principal.getName());
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            userService.cancelSubscription(userSubscriptionId, user.getId());
+            return "redirect:/account?success=true";
+        } catch (IllegalArgumentException e) {
+            return "redirect:/account?error=" + e.getMessage();
+        }
     }
 
     @GetMapping("/")
     public String index(Model model, Principal principal) {
-        // Se l'utente è autenticato
         if (principal != null) {
             User user = userService.findByUsername(principal.getName());
             if (user != null) {
@@ -138,11 +253,11 @@ public class AccountController {
 
     @GetMapping("/manutenzione/private")
     public String manutenzionePrivate() {
-        return "add_car"; // Template per PRIVATE
+        return "add_car";
     }
 
     @GetMapping("/manutenzione/dealer")
     public String manutenzioneDealer() {
-        return "manutenzione_dealer"; // Template per DEALER
+        return "manutenzione_dealer";
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @Secured("ROLE_ADMIN")
-@RequestMapping("/manutenzione/admin")
+@RequestMapping("/m")
 public class MaintenanceController {
 
     private final ProductRepository productRepository;
@@ -20,7 +20,7 @@ public class MaintenanceController {
         this.productRepository = productRepository;
     }
 
-    @GetMapping
+    /*@GetMapping
     public String showMaintenancePage(Model model) {
         model.addAttribute("products", productRepository.findAll());
         model.addAttribute("productForm", new Product());
@@ -48,5 +48,5 @@ public class MaintenanceController {
         // Non includere l'ID nel form di modifica, usiamo quello già passato nel Path
         productRepository.save(product);
         return "redirect:/manutenzione";
-    }
+    }*/
 }

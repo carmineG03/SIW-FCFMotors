@@ -92,7 +92,7 @@ public class ProductsController {
         model.addAttribute("isAuthenticated", isAuthenticated);
 
         // Aggiungi il conteggio del carrello
-        model.addAttribute("cartCount", cartService.getCartItems().size());
+        //model.addAttribute("cartCount", cartService.getCartItems().size());
 
         return "products";
     }

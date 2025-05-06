@@ -1,6 +1,7 @@
 package it.uniroma3.siwprogetto.repository;
 
 import it.uniroma3.siwprogetto.model.Product;
+import it.uniroma3.siwprogetto.model.User;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -60,4 +61,6 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p WHERE p.seller.id = :sellerId")
     List<Product> findBySellerId(@Param("sellerId") Long sellerId);
+
+	List<Product> findBySeller(User user);
 }
