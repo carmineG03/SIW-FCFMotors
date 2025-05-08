@@ -62,6 +62,17 @@
                     <form th:action="@{/logout}" method="post" class="logout-form">
                         <button type="submit" class="logout-button">Esci</button>
                     </form>
+                    <!-- Aggiunta del pulsante per cancellare l'account -->
+                    <form th:action="@{/account/delete}" method="post" class="delete-account-form">
+                        <div class="form-group">
+                            <label for="password">Conferma Password:</label>
+                            <input type="password" id="password" name="password" required />
+                        </div>
+                        <button type="submit" class="delete-account-button"
+                                onclick="return confirm('Sei sicuro di voler cancellare il tuo account? Questa azione è irreversibile e eliminerà tutte le informazioni associate.');">
+                            Cancella Account
+                        </button>
+                    </form>
                 </div>
             </div>
 

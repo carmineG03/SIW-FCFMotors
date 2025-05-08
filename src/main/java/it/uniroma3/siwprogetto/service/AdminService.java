@@ -244,6 +244,7 @@ public class AdminService {
 		subscription.setPrice(updatedSubscription.getPrice());
 		subscription.setDiscount(updatedSubscription.getDiscount());
 		subscription.setDiscountExpiry(updatedSubscription.getDiscountExpiry());
+		subscription.setDurationDays(updatedSubscription.getDurationDays());
 
 		Subscription savedSubscription = subscriptionRepository.save(subscription);
 		logger.info("Subscription updated by admin: id={}, name={}", savedSubscription.getId(), savedSubscription.getName());

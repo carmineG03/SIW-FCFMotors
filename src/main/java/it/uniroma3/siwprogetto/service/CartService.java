@@ -33,6 +33,9 @@ public class CartService {
     private UserRepository userRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private UserSubscriptionRepository userSubscriptionRepository;
 
     public List<CartItem> getCartItems(User user) {
@@ -92,17 +95,8 @@ public class CartService {
         List<CartItem> items = cartItemRepository.findByUser(user);
         for (CartItem item : items) {
             if (item.getSubscription() != null) {
-                // Attiva l'abbonamento
-                UserSubscription userSubscription = new UserSubscription();
-                userSubscription.setUser(user);
-                userSubscription.setSubscription(item.getSubscription());
-                userSubscription.setStartDate(LocalDate.now());
-                userSubscription.setExpiryDate(LocalDate.now().plusDays(item.getSubscription().getDurationDays()));
-                userSubscriptionRepository.save(userSubscription);
-
-                // Cambia il ruolo a DEALER
-                user.setRolesString("DEALER");
-                userRepository.save(user);
+                // Chiama il metodo di UserService per attivare l'abbonamento
+                userService.subscribeUserToDealer(user.getId(), item.getSubscription().getId());
             }
             // Gestisci prodotti, se presenti
             if (item.getProduct() != null && item.getSubscription() != null) {
@@ -112,6 +106,8 @@ public class CartService {
                 productRepository.save(product);
             }
         }
+
+
         // Svuota il carrello dell'utente
         cartItemRepository.deleteAll(items);
     }

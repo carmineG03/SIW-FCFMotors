@@ -21,4 +21,7 @@ public class HttpSession {
         throw new UnsupportedOperationException("Unimplemented method 'setAttribute'");
     }
 
+    public void invalidate() {
+
+    }
 }

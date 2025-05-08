@@ -9,9 +9,13 @@ import it.uniroma3.siwprogetto.repository.UserRepository;
 import it.uniroma3.siwprogetto.repository.UserSubscriptionRepository;
 import it.uniroma3.siwprogetto.service.CartService;
 import it.uniroma3.siwprogetto.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +27,7 @@ import static it.uniroma3.siwprogetto.util.SecurityUtils.hasRole;
 
 @Controller
 public class AccountController {
+
 
     @Autowired
     private UserService userService;
@@ -259,5 +264,29 @@ public class AccountController {
     @GetMapping("/manutenzione/dealer")
     public String manutenzioneDealer() {
         return "manutenzione_dealer";
+    }
+
+    @PostMapping("/account/delete")
+    public String deleteAccount(Principal principal, @RequestParam String password, Model model,
+                                HttpServletRequest request, HttpServletResponse response) {
+        if (principal == null || principal.getName() == null) {
+            model.addAttribute("error", "Utente non autenticato");
+            return "account";
+        }
+
+        String username = principal.getName();
+        try {
+            User user = userService.findByUsername(username);
+            userService.deleteUser(user, password); // Verifica password e cancella
+            // Esegue il logout
+            new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
+            return "redirect:/login?accountDeleted"; // Reindirizza alla pagina di login con parametro
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage()); // Password errata
+            return "account";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", "Utente non trovato o errore durante la cancellazione");
+            return "account";
+        }
     }
 }

@@ -128,4 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.checkout-button')?.addEventListener('click', openCheckoutModal);
     document.querySelector('.cancel-button')?.addEventListener('click', closeCheckoutModal);
     document.querySelector('.confirm-button')?.addEventListener('click', confirmCheckout);
+
+    document.getElementById('checkout-form').addEventListener('submit', function(event) {
+        const confirmButton = document.getElementById('confirm-button');
+        confirmButton.disabled = true; // Disabilita il pulsante
+        confirmButton.innerText = 'Elaborazione...'; // Feedback visivo
+    });
 });

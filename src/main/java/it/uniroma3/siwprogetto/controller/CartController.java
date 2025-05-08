@@ -127,6 +127,8 @@ public class CartController {
             if (user == null) {
                 throw new IllegalArgumentException("Utente non trovato");
             }
+
+
             cartService.checkoutSubscriptions(user);
             response.put("success", true);
             return ResponseEntity.ok(response);
