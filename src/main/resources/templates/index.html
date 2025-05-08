@@ -8,173 +8,171 @@
 </head>
 
 <body style="background: url('https://wallpapers.com/images/high/4k-car-3840-x-2160-background-yxcpysgkd61l40hf.webp') no-repeat center center fixed; background-size: cover;">
-<header id="main-header">
-    <div class="header-left">
-        <a href="/" class="logo-link">
-            <div class="logo-container">
-                <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
-            </div>
-        </a>
-        <div class="title-container">
-            <h1 class="main-title">FCF MOTORS</h1>
-            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
-        </div>
-    </div>
-    <div class="nav-container">
-        <div class="nav-bar">
-            <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
-            <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i> <span th:text="${user.username}"></span></a>
-            <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
-        </div>
-    </div>
-</header>
-
-<main>
-    <section class="hero-section" style="background: rgba(0, 0, 0, 0.5); min-height: 60vh; padding: 40px 20px; display: flex; align-items: center; justify-content: center;">
-        <div class="hero-content" style="text-align: center; max-width: 800px;">
-            <h2 class="hero-title" style="font-size: 3rem; color: #F5A623; font-family: 'Bungee Spice', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); margin-bottom: 15px;">Scopri la tua auto ideale oggi!</h2>
-            <p class="hero-subtitle" style="font-size: 1.2rem; color: #FFFFFF; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); line-height: 1.5; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">Esplora migliaia di auto nuove e usate, trova il modello perfetto per te.</p>
-            <!-- Modified search form to match the products page -->
-            <form class="search-form" th:action="@{/products}" method="get" onsubmit="return validateSearch()" style="margin-bottom: 15px;">
-                <div class="input-field">
-                    <input type="text" name="query" id="search-input" placeholder="Cerca marca, modello o categoria..." required/>
+    <header id="main-header">
+        <div class="header-left">
+            <a href="/" class="logo-link">
+                <div class="logo-container">
+                    <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
                 </div>
-                <button type="submit" class="search-button" aria-label="Cerca auto">
-                    <i class="fas fa-search"></i> Cerca
-                </button>
-            </form>
-            <a href="/products" class="cta-button"
-               style="background: linear-gradient(45deg, #F5A623, #E59400); color: #FFFFFF; border: none; border-radius: 8px; padding: 12px 25px; font-size: 14px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); cursor: pointer;"
-               aria-label="Sfoglia tutte le auto disponibili">
-                Sfoglia tutte le auto
             </a>
-        </div>
-    </section>
-
-    <section class="brands-section">
-        <h3>Marche più popolari</h3>
-        <div class="brands-container">
-            <!-- Modified brand links to redirect to /products with a brand filter -->
-            <a th:href="@{/products(brand='Alfa Romeo')}" class="brand-item">
-                <img th:src="@{/image/alfa-romeo-logo.png}" alt="Alfa Romeo"/>
-                <p>Alfa Romeo</p>
-            </a>
-            <a th:href="@{/products(brand='Audi')}" class="brand-item">
-                <img th:src="@{/image/audi-logo.png}" alt="Audi"/>
-                <p>Audi</p>
-            </a>
-            <a th:href="@{/products(brand='BMW')}" class="brand-item">
-                <img th:src="@{/image/bmw-logo.png}" alt="BMW"/>
-                <p>BMW</p>
-            </a>
-            <a th:href="@{/products(brand='Fiat')}" class="brand-item">
-                <img th:src="@{/image/fiat-logo.png}" alt="Fiat"/>
-                <p>Fiat</p>
-            </a>
-            <a th:href="@{/products(brand='Mercedes-Benz')}" class="brand-item">
-                <img th:src="@{/image/mercedes-benz-logo.png}" alt="Mercedes-Benz"/>
-                <p>Mercedes-Benz</p>
-            </a>
-            <a th:href="@{/products(brand='Toyota')}" class="brand-item">
-                <img th:src="@{/image/toyota-logo.png}" alt="Toyota"/>
-                <p>Toyota</p>
-            </a>
-        </div>
-        <a href="/products" class="all-brands-link">Scopri tutte le marche <i class="fas fa-chevron-right"></i></a>
-    </section>
-
-    <section class="categories-section">
-        <h3>Esplora le nostre categorie</h3>
-        <div class="carousel-container">
-            <button id="prev-btn" class="carousel-btn"><i class="fas fa-chevron-left"></i></button>
-            <div class="carousel" id="carousel">
-                <div class="category-item" data-category="Berlina">
-                    <img src="https://img.freepik.com/free-vector/sedan-car-concept-illustration_114360-13223.jpg?t=st=1744709194~exp=1744712794~hmac=0bc4d3dba17c5d0a02564a1af4c8c819caf63bda9215b214e886fe1f62787fb9&w=996" alt="Berlina"/>
-                    <p>Berlina</p>
-                </div>
-                <div class="category-item" data-category="City Car">
-                    <img src="https://img.freepik.com/free-vector/driving-concept-illustration_114360-27111.jpg?t=st=1744710027~exp=1744713627~hmac=22134eb5a172a2b6ea4233d8eb06ef5650438091860dde903538e4eae0aed665&w=996" alt="City Car"/>
-                    <p>City Car</p>
-                </div>
-                <div class="category-item" data-category="SUV">
-                    <img src="https://img.freepik.com/free-vector/suv-car-concept-illustration_114360-12267.jpg?t=st=1744708782~exp=1744712382~hmac=3f6efecceb43b66a1e8efaa8025dc112eb2d95143b7cc96b2841eb7718e2f2d6&w=996" alt="SUV"/>
-                    <p>SUV</p>
-                </div>
-                <div class="category-item" data-category="Station Wagon">
-                    <img src="https://images.unsplash.com/photo-1616788494707-ec28f08d05a1" alt="Station Wagon"/>
-                    <p>Station Wagon</p>
-                </div>
-                <div class="category-item" data-category="Sportiva">
-                    <img src="https://img.freepik.com/free-vector/sports-car-concept-illustration_114360-13217.jpg?t=st=1744708847~exp=1744712447~hmac=aac0d613886cfa6602ff70a2d0f7af908336e645b2d3e12241817899d50662fb&w=996" alt="Sportiva"/>
-                    <p>Sportiva</p>
-                </div>
-                <div class="category-item" data-category="Monovolume">
-                    <img src="https://images.unsplash.com/photo-1590650046871-92c887180603" alt="Monovolume"/>
-                    <p>Monovolume</p>
-                </div>
-            </div>
-            <button id="next-btn" class="carousel-btn"><i class="fas fa-chevron-right"></i></button>
-        </div>
-    </section>
-
-    <section class="why-choose-us">
-        <h3>Perché scegliere FCF Motors?</h3>
-        <div class="features-container">
-            <div class="feature-item">
-                <i class="fas fa-car"></i>
-                <h4>Vasta selezione</h4>
-                <p>Trova auto di ogni marca e modello, nuove o usate, tutte in un unico posto.</p>
-            </div>
-            <div class="feature-item">
-                <i class="fas fa-handshake"></i>
-                <h4>Acquisto sicuro</h4>
-                <p>Garanzie certificate e supporto dedicato per un’esperienza senza pensieri.</p>
-            </div>
-            <div class="feature-item">
-                <i class="fas fa-map-marker-alt"></i>
-                <h4>Concessionari vicini</h4>
-                <p>Collabora con i migliori concessionari nella tua zona.</p>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
+                <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
+                <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
             </div>
         </div>
-    </section>
-</main>
-
-<footer>
-    <div class="footer-content">
-        <div class="footer-section">
-            <h4>Link Utili</h4>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/products">Trova Auto</a></li>
-                <li><a href="/dealers">Concessionari</a></li>
-                <li><a href="/cart">Carrello</a></li>
-            </ul>
-        </div>
-        <div class="footer-section">
-            <h4>Contatti</h4>
-            <p>Email: info@fcfmotors.com</p>
-            <p>Telefono: +39 123 456 7890</p>
-            <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
-        </div>
-        <div class="footer-section">
-            <h4>Seguici</h4>
-            <div class="social-links">
-                <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-                <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+        <div class="nav-container">
+            <div class="nav-bar">
+                <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
+                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
+                <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
             </div>
         </div>
-        <div class="footer-section">
-            <h4>Informazioni</h4>
-            <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
-    </div>
-</footer>
+    </header>
 
-<script src="/js/homepage.js" defer></script>
+    <main>
+        <section class="hero-section" style="background: rgba(0, 0, 0, 0.5); min-height: 60vh; padding: 40px 20px; display: flex; align-items: center; justify-content: center;">
+            <div class="hero-content" style="text-align: center; max-width: 800px;">
+                <h2 class="hero-title" style="font-size: 3rem; color: #F5A623; font-family: 'Bungee Spice', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); margin-bottom: 15px;">Scopri la tua auto ideale oggi!</h2>
+                <p class="hero-subtitle" style="font-size: 1.2rem; color: #FFFFFF; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); line-height: 1.5; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">Esplora migliaia di auto nuove e usate, trova il modello perfetto per te.</p>
+                <form class="search-form" action="/search" method="get" onsubmit="return validateSearch()" style="margin-bottom: 15px;">
+                    <div class="input-field">
+                        <input type="text" name="query" id="search-input" placeholder="Cerca marca, modello o categoria..." required/>
+                    </div>
+                    <button type="submit" class="search-button" aria-label="Cerca auto">
+                        <i class="fas fa-search"></i> Cerca
+                    </button>
+                </form>
+                <a href="/products" class="cta-button" 
+                   style="background: linear-gradient(45deg, #F5A623, #E59400); color: #FFFFFF; border: none; border-radius: 8px; padding: 12px 25px; font-size: 14px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); cursor: pointer;" 
+                   aria-label="Sfoglia tutte le auto disponibili">
+                    Sfoglia tutte le auto
+                </a>
+            </div>
+        </section>
+
+        <section class="brands-section">
+            <h3>Marche più popolari</h3>
+            <div class="brands-container">
+                <a href="/brand/Alfa Romeo" class="brand-item">
+                    <img th:src="@{/image/alfa-romeo-logo.png}" alt="Alfa Romeo"/>
+                    <p>Alfa Romeo</p>
+                </a>
+                <a href="/brand/Audi" class="brand-item">
+                    <img th:src="@{/image/audi-logo.png}" alt="Audi"/>
+                    <p>Audi</p>
+                </a>
+                <a href="/brand/BMW" class="brand-item">
+                    <img th:src="@{/image/bmw-logo.png}" alt="BMW"/>
+                    <p>BMW</p>
+                </a>
+                <a href="/brand/Fiat" class="brand-item">
+                    <img th:src="@{/image/fiat-logo.png}" alt="Fiat"/>
+                    <p>Fiat</p>
+                </a>
+                <a href="/brand/Mercedes-Benz" class="brand-item">
+                    <img th:src="@{/image/mercedes-benz-logo.png}" alt="Mercedes-Benz"/>
+                    <p>Mercedes-Benz</p>
+                </a>
+                <a href="/brand/Toyota" class="brand-item">
+                    <img th:src="@{/image/toyota-logo.png}" alt="Toyota"/>
+                    <p>Toyota</p>
+                </a>
+            </div>
+            <a href="/products" class="all-brands-link">Scopri tutte le marche <i class="fas fa-chevron-right"></i></a>
+        </section>
+
+        <section class="categories-section">
+            <h3>Esplora le nostre categorie</h3>
+            <div class="carousel-container">
+                <button id="prev-btn" class="carousel-btn"><i class="fas fa-chevron-left"></i></button>
+                <div class="carousel" id="carousel">
+                    <div class="category-item" data-category="Berlina">
+                        <img src="https://img.freepik.com/free-vector/sedan-car-concept-illustration_114360-13223.jpg?t=st=1744709194~exp=1744712794~hmac=0bc4d3dba17c5d0a02564a1af4c8c819caf63bda9215b214e886fe1f62787fb9&w=996" alt="Berlina"/>
+                        <p>Berlina</p>
+                    </div>
+                    <div class="category-item" data-category="City Car">
+                        <img src="https://img.freepik.com/free-vector/driving-concept-illustration_114360-27111.jpg?t=st=1744710027~exp=1744713627~hmac=22134eb5a172a2b6ea4233d8eb06ef5650438091860dde903538e4eae0aed665&w=996" alt="City Car"/>
+                        <p>City Car</p>
+                    </div>
+                    <div class="category-item" data-category="SUV">
+                        <img src="https://img.freepik.com/free-vector/suv-car-concept-illustration_114360-12267.jpg?t=st=1744708782~exp=1744712382~hmac=3f6efecceb43b66a1e8efaa8025dc112eb2d95143b7cc96b2841eb7718e2f2d6&w=996" alt="SUV"/>
+                        <p>SUV</p>
+                    </div>
+                    <div class="category-item" data-category="Station Wagon">
+                        <img src="https://images.unsplash.com/photo-1616788494707-ec28f08d05a1" alt="Station Wagon"/>
+                        <p>Station Wagon</p>
+                    </div>
+                    <div class="category-item" data-category="Sportiva">
+                        <img src="https://img.freepik.com/free-vector/sports-car-concept-illustration_114360-13217.jpg?t=st=1744708847~exp=1744712447~hmac=aac0d613886cfa6602ff70a2d0f7af908336e645b2d3e12241817899d50662fb&w=996" alt="Sportiva"/>
+                        <p>Sportiva</p>
+                    </div>
+                    <div class="category-item" data-category="Monovolume">
+                        <img src="https://images.unsplash.com/photo-1590650046871-92c887180603" alt="Monovolume"/>
+                        <p>Monovolume</p>
+                    </div>
+                </div>
+                <button id="next-btn" class="carousel-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <section class="why-choose-us">
+            <h3>Perché scegliere FCF Motors?</h3>
+            <div class="features-container">
+                <div class="feature-item">
+                    <i class="fas fa-car"></i>
+                    <h4>Vasta selezione</h4>
+                    <p>Trova auto di ogni marca e modello, nuove o usate, tutte in un unico posto.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-handshake"></i>
+                    <h4>Acquisto sicuro</h4>
+                    <p>Garanzie certificate e supporto dedicato per un’esperienza senza pensieri.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h4>Concessionari vicini</h4>
+                    <p>Collabora con i migliori concessionari nella tua zona.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Link Utili</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Trova Auto</a></li>
+                    <li><a href="/dealers">Concessionari</a></li>
+                    <li><a href="/cart">Carrello</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contatti</h4>
+                <p>Email: info@fcfmotors.com</p>
+                <p>Telefono: +39 123 456 7890</p>
+                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+            </div>
+            <div class="footer-section">
+                <h4>Seguici</h4>
+                <div class="social-links">
+                    <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Informazioni</h4>
+                <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+
+    <script src="/js/homepage.js" defer></script>
 </body>
 </html>
