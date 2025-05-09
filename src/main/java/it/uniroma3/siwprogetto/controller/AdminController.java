@@ -187,9 +187,9 @@ public class AdminController {
 
 	// Aggiunge un nuovo abbonamento
 	@PostMapping("/subscription/add")
-	public String addSubscription( @ModelAttribute Subscription subscription, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
-		if (result.hasErrors()) {
-			model.addAttribute("errorMessage", "Errore nei dati dell'abbonamento");
+	public String addSubscription(@ModelAttribute Subscription subscription, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+		if (result.hasErrors() ||  subscription.getDurationDays() <= 0) {
+			model.addAttribute("errorMessage", "Errore nei dati dell'abbonamento. La durata deve essere maggiore di 0 giorni.");
 			return "admin-subscription-add";
 		}
 		logger.debug("Adding subscription: name={}", subscription.getName());
@@ -219,8 +219,8 @@ public class AdminController {
 	// Modifica un abbonamento
 	@PostMapping("/subscription/{id}/update")
 	public String updateSubscription(@PathVariable Long id, @ModelAttribute Subscription updatedSubscription, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
-		if (result.hasErrors()) {
-			model.addAttribute("errorMessage", "Errore nei dati dell'abbonamento");
+		if (result.hasErrors()  || updatedSubscription.getDurationDays() <= 0) {
+			model.addAttribute("errorMessage", "Errore nei dati dell'abbonamento. La durata deve essere maggiore di 0 giorni.");
 			return "admin-subscription-edit";
 		}
 		logger.debug("Updating subscription: id={}", id);

@@ -5,6 +5,7 @@ import it.uniroma3.siwprogetto.model.Subscription;
 import it.uniroma3.siwprogetto.model.User;
 import it.uniroma3.siwprogetto.model.UserSubscription;
 import it.uniroma3.siwprogetto.repository.*;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final EmailService emailService;
 
 
     @Autowired
@@ -36,9 +38,13 @@ public class UserService {
     @Autowired
     private DealerService dealerService;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    @Autowired
+    private AccountInformationRepository accountInformationRepository;
+
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.emailService = emailService;
     }
 
     public void save(User user) {
@@ -58,16 +64,24 @@ public class UserService {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setRolesString("USER");
         userRepository.save(user);
+
+        // Invia mail di benvenuto
+        try {
+            emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
+        } catch (MessagingException e) {
+            // Log dell'errore, ma non interrompere la registrazione
+            System.err.println("Errore durante l'invio della mail di benvenuto: " + e.getMessage());
+        }
     }
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("Utente non trovato con username: " + username));
+                .orElseThrow(() -> new RuntimeException("Utente non trovato con username: " + username));
     }
 
     public User getUser(Long id) {
         return userRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Utente non trovato con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Utente non trovato con ID: " + id));
     }
 
     public User saveUser(User user) {
@@ -76,12 +90,12 @@ public class UserService {
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Utente non trovato con email: " + email));
+                .orElseThrow(() -> new RuntimeException("Utente non trovato con email: " + email));
     }
 
     public String generateResetToken(String email) {
         User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Utente non trovato con email: " + email));
+                .orElseThrow(() -> new RuntimeException("Utente non trovato con email: " + email));
         String token = UUID.randomUUID().toString();
         user.setResetToken(token);
         user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
@@ -125,6 +139,19 @@ public class UserService {
         // Salva le modifiche
         userSubscriptionRepository.save(userSubscription);
         userRepository.save(user);
+
+        // Invia mail di conferma sottoscrizione
+        try {
+            emailService.sendSubscriptionConfirmationEmail(
+                    user.getEmail(),
+                    user.getUsername(),
+                    subscription.getName(),
+                    userSubscription.getStartDate(),
+                    userSubscription.getExpiryDate()
+            );
+        } catch (MessagingException e) {
+            System.err.println("Errore durante l'invio della mail di conferma sottoscrizione: " + e.getMessage());
+        }
     }
 
     public void cancelSubscription(Long userSubscriptionId, Long userId) {
@@ -133,6 +160,17 @@ public class UserService {
 
         if (!userSubscription.getUser().getId().equals(userId)) {
             throw new IllegalArgumentException("Non autorizzato a cancellare questo abbonamento");
+        }
+
+        // Invia mail di conferma cancellazione abbonamento
+        try {
+            emailService.sendSubscriptionCancellationEmail(
+                    userSubscription.getUser().getEmail(),
+                    userSubscription.getUser().getUsername(),
+                    userSubscription.getSubscription().getName()
+            );
+        } catch (MessagingException e) {
+            System.err.println("Errore durante l'invio della mail di cancellazione abbonamento: " + e.getMessage());
         }
 
         // Cancella l'abbonamento
@@ -185,4 +223,34 @@ public class UserService {
         user.setRolesString("USER");
         userRepository.save(user);
     }
+
+    public void deleteUser(User user, String password) {
+        if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("Password non corretta");
+        }
+
+        // Invia mail di conferma cancellazione
+        try {
+            emailService.sendAccountDeletionEmail(user.getEmail(), user.getUsername());
+        } catch (MessagingException e) {
+            System.err.println("Errore durante l'invio della mail di cancellazione: " + e.getMessage());
+        }
+
+        // Cancella le informazioni aggiuntive
+        accountInformationRepository.findByUser(user).ifPresent(accountInformationRepository::delete);
+
+        // Resto del codice come sopra
+        List<UserSubscription> subscriptions = userSubscriptionRepository.findByUserId(user.getId());
+        userSubscriptionRepository.deleteAll(subscriptions);
+        List<Product> products = productRepository.findBySeller(user);
+        productRepository.deleteAll(products);
+        dealerRepository.findByOwner(user).ifPresent(dealer -> {
+            try {
+                dealerService.deleteDealer(dealer.getId());
+            } catch (IllegalArgumentException ignored) {
+            }
+        });
+        userRepository.delete(user);
+    }
+
 }

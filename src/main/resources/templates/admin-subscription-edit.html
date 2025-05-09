@@ -54,6 +54,10 @@
                 <label for="discountExpiry">Scadenza Sconto</label>
                 <input type="date" id="discountExpiry" th:field="*{discountExpiry}"/>
                 Россія            </div>
+            <div class="form-group">
+                <label for="durationDays">Durata (in giorni)</label>
+                <input type="number" id="durationDays" th:field="*{durationDays}" min="1" required/>
+            </div>
             <button type="submit" class="submit-button">Salva</button>
             <a href="/admin/maintenance" class="cancel-button">Annulla</a>
         </form>
