@@ -5,6 +5,7 @@
     <title>FCF Motors</title>
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
 </head>
 
 <body style="background: url('/image/sfondosito1.jpg') no-repeat center center fixed; background-size: cover;">
@@ -74,9 +75,9 @@
                     <img th:src="@{/image/mercedes-benz-logo.png}" alt="Mercedes-Benz"/>
                     <p>Mercedes-Benz</p>
                 </a>
-                <a href="/brand/Toyota" class="brand-item">
-                    <img th:src="@{/image/toyota-logo.png}" alt="Toyota"/>
-                    <p>Toyota</p>
+                <a href="/brand/Volkswagen" class="brand-item">
+                    <img th:src="@{/image/volkswagen-logo.png}" alt="Toyota"/>
+                    <p>Volkswagen</p>
                 </a>
             </div>
             <a href="/products" class="all-brands-link">Scopri tutte le marche <i class="fas fa-chevron-right"></i></a>
@@ -85,34 +86,31 @@
         <section class="categories-section">
             <h3>Esplora le nostre categorie</h3>
             <div class="carousel-container">
-                <button id="prev-btn" class="carousel-btn"><i class="fas fa-chevron-left"></i></button>
-                <div class="carousel" id="carousel">
-                    <div class="category-item" data-category="Berlina">
-                        <img src="https://img.freepik.com/free-vector/sedan-car-concept-illustration_114360-13223.jpg?t=st=1744709194~exp=1744712794~hmac=0bc4d3dba17c5d0a02564a1af4c8c819caf63bda9215b214e886fe1f62787fb9&w=996" alt="Berlina"/>
+                <div class="carousel">
+                    <a href="/category/Berlina" class="category-item" style="background-image: url('/image/berlina.png');">
                         <p>Berlina</p>
-                    </div>
-                    <div class="category-item" data-category="City Car">
-                        <img src="https://img.freepik.com/free-vector/driving-concept-illustration_114360-27111.jpg?t=st=1744710027~exp=1744713627~hmac=22134eb5a172a2b6ea4233d8eb06ef5650438091860dde903538e4eae0aed665&w=996" alt="City Car"/>
+                    </a>
+                    <a href="/category/City Car" class="category-item" style="background-image: url('/image/citycar.png');">
                         <p>City Car</p>
-                    </div>
-                    <div class="category-item" data-category="SUV">
-                        <img src="https://img.freepik.com/free-vector/suv-car-concept-illustration_114360-12267.jpg?t=st=1744708782~exp=1744712382~hmac=3f6efecceb43b66a1e8efaa8025dc112eb2d95143b7cc96b2841eb7718e2f2d6&w=996" alt="SUV"/>
+                    </a>
+                    <a href="/category/SUV" class="category-item" style="background-image: url('/image/suv.png');">
                         <p>SUV</p>
-                    </div>
-                    <div class="category-item" data-category="Station Wagon">
-                        <img src="https://images.unsplash.com/photo-1616788494707-ec28f08d05a1" alt="Station Wagon"/>
-                        <p>Station Wagon</p>
-                    </div>
-                    <div class="category-item" data-category="Sportiva">
-                        <img src="https://img.freepik.com/free-vector/sports-car-concept-illustration_114360-13217.jpg?t=st=1744708847~exp=1744712447~hmac=aac0d613886cfa6602ff70a2d0f7af908336e645b2d3e12241817899d50662fb&w=996" alt="Sportiva"/>
+                    </a>
+                    <a href="/category/Sportiva" class="category-item" style="background-image: url('/image/sportiva.png');">
                         <p>Sportiva</p>
-                    </div>
-                    <div class="category-item" data-category="Monovolume">
-                        <img src="https://images.unsplash.com/photo-1590650046871-92c887180603" alt="Monovolume"/>
-                        <p>Monovolume</p>
-                    </div>
+                    </a>
+                    <a href="/category/Station Wagon" class="category-item" style="background-image: url('/image/stationwagon.png');">
+                        <p>Station Wagon</p>
+                    </a>
+                    <a href="/category/Elettrica" class="category-item" style="background-image: url('/image/el.png');">
+                        <p>Elettrica</p>
+                    </a>
                 </div>
-                <button id="next-btn" class="carousel-btn"><i class="fas fa-chevron-right"></i></button>
+                <div class="carousel-nav">
+                    <button class="carousel-btn prev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn next"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="dots"></div>
             </div>
         </section>
 
@@ -174,5 +172,6 @@
     </footer>
 
     <script src="/js/homepage.js" defer></script>
+
 </body>
 </html>

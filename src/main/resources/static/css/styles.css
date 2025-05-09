@@ -16,7 +16,6 @@ body {
 
 /* Margin for Main Sections */
 main,
-.products-page,
 .cart-section,
 .wrapper,
 .dealers-section,
@@ -188,6 +187,159 @@ header h2 {
     color: #E59400;
 }
 
+/* Stile per la sezione categories-section */
+.categories-section {
+    background-color: #faf1e0; /* Sfondo bianco */
+    padding: 40px 0;
+    margin: 0;
+}
+
+/* Centra il titolo */
+.categories-section h3 {
+    text-align: center;
+    margin: 0 auto 20px auto;
+    color: rgb(0, 48, 135);
+    font-size: 2rem;
+}
+
+
+/* Stile per il carosello */
+.carousel-container {
+    position: relative;
+    max-width: 1300px;
+    border-radius: 10px;
+    height: 250px;
+    margin: 50px auto;
+    overflow: hidden;
+    padding: 0 20px;
+    background: #faf1e0; /* Sfondo bianco con trasparenza */
+}
+
+.carousel {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+}
+
+.category-item {
+    flex: 0 0 calc(88% / 3); /* Default: 3 elementi per slide */
+    margin: 25px;
+    width: 100%;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    border-color: #E59400;
+    display: flex;
+    align-items: flex-end;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+    
+}
+
+.category-item:hover {
+    transform: scale(1.05);
+}
+
+.category-item p {
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    margin: 0;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    font-weight: 600;
+}
+
+/* Pulsanti di navigazione */
+.carousel-nav {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    transform: translateY(-50%);
+}
+
+.carousel-btn {
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.carousel-btn:hover {
+    background: #F5A623;
+}
+
+.carousel-btn.prev {
+    margin-left: 10px;
+}
+
+.carousel-btn.next {
+    margin-right: 10px;
+}
+
+/* Pallini di navigazione */
+.dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background: #ccc;
+    border-radius: 50%;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.dot.active {
+    background: #F5A623;
+}
+
+/* Responsività */
+@media (max-width: 768px) {
+    .category-item {
+        flex: 0 0 calc(100% / 2); /* 2 elementi per slide */
+    }
+}
+
+@media (max-width: 480px) {
+    .category-item {
+        flex: 0 0 100%; /* 1 elemento per slide */
+    }
+}
+
+/* Stile per il toast */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    color: #fff;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
 /* Hero Section */
 .hero-section {
     position: relative;
@@ -196,11 +348,66 @@ header h2 {
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: #FFFFFF;
+    color: #faf1e0;
     background: url('/image/sfondosito1.jpg') no-repeat center center, #333333; /* Fallback locale e colore */
     background-size: cover;
     padding-top: 80px;
     margin-top: 0;
+}
+
+.hero-section .search-form {
+    display: flex;
+    align-items: center;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 0 auto; /* Centra orizzontalmente */
+}
+
+.hero-section .search-form .input-field {
+    flex-grow: 1; /* L'input occupa lo spazio disponibile */
+    margin: 0;
+}
+
+.hero-section .search-form .input-field input {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    text-align: center; /* Centra il testo digitato */
+}
+
+.hero-section .search-form .input-field input::placeholder {
+    text-align: center; /* Centra il placeholder */
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.hero-section .search-button {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+    color: #FFFFFF;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 0 8px 8px 0; /* Bordi arrotondati solo a destra */
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.hero-section .search-button:hover {
+    background: linear-gradient(45deg, #E59400, #D68F1D);
+    transform: translateY(-2px);
 }
 
 /* Animazioni per la Hero Section */
@@ -308,6 +515,9 @@ header h2 {
     max-width: 700px;
     width: 90%;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .hero-content h2 {
@@ -859,7 +1069,7 @@ header h2 {
 .brands-section {
     padding: 60px 20px;
     text-align: center;
-    background-color: #FFFFFF;
+    background-color: #faf1e0;
 }
 
 .brands-section h3 {
@@ -873,6 +1083,7 @@ header h2 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 20px;
+    color:white;
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -882,6 +1093,7 @@ header h2 {
     flex-direction: column;
     align-items: center;
     text-decoration: none;
+    color:white;
     padding: 15px;
     border-radius: 8px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -897,6 +1109,7 @@ header h2 {
     height: 100px;
     object-fit: contain;
     margin-bottom: 10px;
+    
 }
 
 .brand-item p {
@@ -924,110 +1137,13 @@ header h2 {
     margin-left: 8px;
 }
 
-/* Categories Section */
-.categories-section {
-    padding: 60px 20px;
-    text-align: center;
-    background-color: #F5F6F5;
-}
 
-.categories-section h3 {
-    font-size: 2rem;
-    margin-bottom: 30px;
-    color: #003087;
-    font-weight: 600;
-}
-
-.carousel-container {
-    position: relative;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 50px;
-}
-
-.carousel {
-    display: flex;
-    overflow: hidden;
-    width: 100%;
-}
-
-.category-item {
-    flex: 0 0 25%;
-    text-align: center;
-    background: #FFFFFF;
-    border-radius: 8px;
-    padding: 15px;
-    margin-right: 20px;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.category-item:last-child {
-    margin-right: 0;
-}
-
-.category-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.category-item img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
-
-.category-item p {
-    font-size: 1.1rem;
-    color: #003087;
-    font-weight: 600;
-}
-
-.carousel-btn {
-    background: #F5A623;
-    border: none;
-    padding: 10px;
-    font-size: 18px;
-    color: #FFFFFF;
-    cursor: pointer;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s ease;
-}
-
-.carousel-btn:hover {
-    background: #E59400;
-}
-
-.carousel-btn:disabled {
-    background: #666666;
-    cursor: not-allowed;
-}
-
-#prev-btn {
-    left: 10px;
-}
-
-#next-btn {
-    right: 10px;
-}
 
 /* Why Choose Us Section */
 .why-choose-us {
     padding: 60px 20px;
     text-align: center;
-    background-color: #FFFFFF;
+    background-color: #faf1e0;
 }
 
 .why-choose-us h3 {
@@ -1321,6 +1437,7 @@ header h2 {
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     overflow: hidden;
+    justify-content: center;
 }
 
 .search-form .input-field {
@@ -1340,6 +1457,7 @@ header h2 {
 }
 
 .search-form input::placeholder {
+    text-align: center; /* Centra il placeholder */
     color: rgba(255, 255, 255, 0.7);
 }
 
@@ -1492,17 +1610,20 @@ header h2 {
 
 /* Cars Grid */
 .cars-grid {
+    margin:0;
+    margin-top: 0; /* Rimuove margini superiori */
+    padding-top: 0; /* Rimuove padding superiore */
     display: grid;
-    grid-template-columns: repeat(5, 1fr); /* 5 colonne per riga */
-    gap: 20px; /* Spazio tra gli elementi */
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
     padding: 20px;
-    background: rgba(0, 0, 0, 0.7); /* Sfondo scuro per contrasto */
+    background: radial-gradient(circle, #e06200, #003087);
 }
 
 .car-item {
     display: flex;
     flex-direction: column;
-    background: rgba(255, 255, 255, 0.15); /* Sfondo chiaro semitrasparente per ogni elemento */
+    background: #00206654; /* Sfondo chiaro semitrasparente per ogni elemento */
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -1667,114 +1788,154 @@ header h2 {
     }
 }
 
-/* Dealers Section */
+/* Stili per la sezione dei concessionari */
 .dealers-section {
-    padding: 40px 20px;
-    text-align: center;
-    background-color: #F5F6F5;
-}
-
-.dealers-section h2 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    color: #003087;
-    font-weight: 700;
-}
-
-.section-subtitle {
-    font-size: 1.2rem;
-    color: #666666;
-    margin-bottom: 30px;
-}
-
-.dealers-section .search-form {
-    max-width: 500px;
-    margin: 0 auto 20px;
-}
-
-.dealers-section .input-field input {
-    background: #FFFFFF;
-    color: #333333;
-    border: 1px solid #666666;
-    border-radius: 4px 0 0 4px;
-    padding: 12px;
-}
-
-.dealers-section .input-field input::placeholder {
-    color: #666666;
-}
-
-.dealers-section .search-button {
-    border-radius: 0 4px 4px 0;
-}
-
-.map-container {
-    width: 100%;
-    height: 500px;
-    max-width: 1200px;
-    margin: 0 auto 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    position: relative;
-    z-index: 1;
-}
-
-.dealers-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+    padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-.dealer-item {
-    background-color: #FFFFFF;
-    border: 1px solid #E5E5E5;
-    border-radius: 8px;
-    padding: 20px;
-    text-align: left;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.dealers-section h2 {
+    text-align: center;
+    margin-bottom: 10px;
 }
 
-.dealer-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.section-subtitle {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.search-form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.search-form input {
+    padding: 10px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    font-size: 16px;
+}
+
+.search-form button {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-left: none;
+    background-color: #F5A623;
+    color: white;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.search-form button:hover {
+    background-color: #e69500;
+}
+
+.error-message {
+    color: red;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.dealers-list {
+    margin-top: 20px;
+}
+
+.dealer-item {
+    background: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.dealer-item img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
 }
 
 .dealer-item h3 {
-    font-size: 1.3rem;
-    color: #003087;
-    margin-bottom: 10px;
-    font-weight: 600;
+    margin: 0 0 10px;
+    color: #333;
 }
 
 .dealer-item p {
-    font-size: 1rem;
-    color: #666666;
-    margin-bottom: 10px;
-    line-height: 1.5;
+    margin: 5px 0;
+    color: #666;
 }
 
-.dealer-item p i {
-    margin-right: 8px;
-    color: #F5A623;
-}
-
-.dealer-item a {
+.navigate-button {
     display: inline-block;
+    margin-top: 10px;
     padding: 8px 16px;
     background-color: #F5A623;
-    color: #FFFFFF;
+    color: white;
     text-decoration: none;
-    border-radius: 5px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
+    border-radius: 4px;
 }
 
-.dealer-item a:hover {
-    background-color: #E59400;
+.navigate-button:hover {
+    background-color: #e69500;
+}
+
+/* Stili per la mappa */
+#map {
+    width: 100%;
+    height: 400px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+/* Stili per i popup di Leaflet */
+.leaflet-popup-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.leaflet-popup-content h3 {
+    margin: 0 0 10px;
+    color: #333;
+}
+
+.leaflet-popup-content p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.leaflet-popup-content a {
+    color: #F5A623;
+    text-decoration: none;
+}
+
+.leaflet-popup-content a:hover {
+    text-decoration: underline;
+}
+
+/* Stili per il pulsante "Torna in cima" */
+.back-to-top {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #F5A623;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.back-to-top:hover {
+    background-color: #e69500;
 }
 
 /* Wrapper (Login, Register, Account Pages) */
@@ -1788,28 +1949,29 @@ header h2 {
     padding-top: 60px;
 }
 
-.wrapper form {
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+.wrapper .auth-form {
+    border: 2px solid #F5A623;
     border-radius: 10px;
-    padding: 40px;
+    padding: 30px;
+    background: rgba(0, 0, 0, 0.8);
     max-width: 400px;
-    width: 100%;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    width: 90%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: flex; /* Aggiunto */
+    flex-direction: column; /* Aggiunto */
+    align-items: center; /* Centra orizzontalmente tutti i figli */
 }
 
 .wrapper form h2 {
-    color: #FFFFFF;
+    color: #F5A623;
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 30px;
     text-transform: uppercase;
     letter-spacing: 2px;
+    text-align: center;
+    font-family: "Bungee Spice", sans-serif;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .input-field {
@@ -1915,8 +2077,8 @@ header h2 {
 }
 
 .wrapper form button {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: linear-gradient(45deg, #F5A623, #E59400);
+    border: none;
     border-radius: 5px;
     padding: 10px;
     color: #FFFFFF;
@@ -1924,15 +2086,32 @@ header h2 {
     font-weight: 600;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background 0.3s ease, border-color 0.3s ease;
+    transition: background 0.3s ease, transform 0.2s ease;
     width: 80%;
     margin: 20px auto 0;
 }
 
-.wrapper form button:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: #FFFFFF;
+/* Testo "Already have an account?" e link "Login" */
+.login {
+    margin-top: 20px;
+    color: #FFFFFF; /* Già bianco */
+    font-size: 14px;
+    text-align: center;
 }
+
+.login a{
+    color: #F5A623;
+    text-decoration: none;
+    font-weight: 600;
+
+}
+
+.wrapper form button:hover {
+    background: linear-gradient(45deg, #E59400, #D68F1D);
+    transform: translateY(-2px);
+}
+
+
 
 .register {
     margin-top: 20px;
@@ -1943,6 +2122,7 @@ header h2 {
 
 .register p {
     margin: 0;
+    
 }
 
 .register a {
@@ -1956,7 +2136,9 @@ header h2 {
 }
 
 .wrapper .icon-button {
-    margin-top: 20px;
+    position: absolute;
+    top: 20px;
+    left: 20px;
     font-size: 24px;
     color: #F5A623;
     text-decoration: none;
@@ -1966,7 +2148,6 @@ header h2 {
 .wrapper .icon-button:hover {
     color: #E59400;
 }
-
 /* Account Page */
 .account-container {
     display: flex;
@@ -2100,7 +2281,7 @@ header h2 {
 
 /* Stile per la scritta Esci */
 .logout-button {
-    font-size: clamp(0.55rem, 1vw, 0.65rem); /* Dimensione molto piccola */
+    font-size: clamp(0.8rem, 1.5vw, 1rem); /* Dimensione molto piccola */
     display: inline;
     background: none; /* Nessun sfondo */
     border: none; /* Nessun bordo */
@@ -2240,103 +2421,315 @@ header h2 {
 
 /* Subscriptions Container */
 .subscriptions-container {
-    background: rgba(0, 0, 0, 0.5); /* Sfondo semitrasparente */
+    background: rgba(0, 0, 0, 0.7); /* Sfondo scuro con maggiore opacità per coerenza con il tema */
     backdrop-filter: blur(10px); /* Effetto blur */
     -webkit-backdrop-filter: blur(10px); /* Supporto per Safari */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Bordo leggero */
-    border-radius: 10px; /* Angoli arrotondati */
-    padding: 30px;
-    width: 50%;
-    text-align: left;
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Bordo leggero */
+    border-radius: 12px; /* Angoli più arrotondati */
+    padding: 40px; /* Più spaziatura interna */
+    max-width: 1200px; /* Limite massimo per schermi grandi */
+    margin: 80px auto; /* Centrato con margine superiore per evitare sovrapposizione con l'header */
     color: #FFFFFF;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombra per profondità */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); /* Ombra più pronunciata */
 }
 
 /* Fallback per browser che non supportano backdrop-filter */
 @supports not (backdrop-filter: blur(10px)) {
     .subscriptions-container {
-        background: rgba(0, 0, 0, 0.7); /* Sfondo più opaco come fallback */
+        background: rgba(0, 0, 0, 0.8); /* Sfondo più opaco come fallback */
     }
 }
 
 .subscriptions-container h2 {
-    font-size: 2rem;
-    color: #F5A623;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    margin-bottom: 20px;
-    font-weight: 700;
+    font-family: 'Bungee Spice', sans-serif; /* Font coerente con il tema */
+    font-size: 2.5rem;
+    color: #F5A623; /* Arancione del brand */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Ombra per leggibilità */
+    margin-bottom: 30px;
+    text-align: center;
 }
 
 .subscriptions-container h3 {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: #FFFFFF;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     font-weight: 600;
+    text-transform: uppercase;
 }
 
-.subscriptions-container p {
-    font-size: 1rem;
-    margin-bottom: 15px;
-    line-height: 1.5;
+/* Messaggi Flash */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    text-align: center;
+    color: #FFFFFF;
 }
 
-.subscriptions-container ul {
+.alert-success {
+    background: linear-gradient(45deg, #28A745, #218838); /* Verde coerente con il tema */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.alert-danger {
+    background: linear-gradient(45deg, #D32F2F, #B71C1C); /* Rosso coerente */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Abbonamenti Attivi */
+.active-subscriptions ul {
     list-style: none;
     padding: 0;
 }
 
-.subscriptions-container ul li {
-    font-size: 1rem;
-    margin-bottom: 10px;
-    line-height: 1.5;
+.active-subscriptions li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1); /* Sfondo chiaro per contrasto */
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.subscriptions-container ul li strong {
-    color: #F5A623;
-    font-weight: 600;
-}
-
-.subscribe-button {
-    display: inline-block;
-    padding: 8px 16px;
-    background: linear-gradient(45deg, #28A745, #218838);
-    color: #FFFFFF;
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.2);
-    border: none;
-    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    margin-left: 10px;
-}
-
-.subscribe-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
-}
-
-.subscribe-button:hover {
-    background: linear-gradient(45deg, #218838, #1E7E34);
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+.active-subscriptions li:hover {
+    background: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
 }
 
-.subscribe-button:hover::before {
-    left: 100%;
+.active-subscriptions li strong {
+    color: #F5A623; /* Arancione per il nome dell'abbonamento */
+    font-weight: 600;
 }
 
-.subscribe-button:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+.active-subscriptions li span {
+    color: #FFFFFF;
+    font-size: 1rem;
+}
+
+.cancel-subscription-button {
+    background: linear-gradient(45deg, #D32F2F, #B71C1C); /* Rosso per il pulsante di cancellazione */
+    color: #FFFFFF;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.cancel-subscription-button:hover {
+    background: linear-gradient(45deg, #B71C1C, #9A0007);
+    transform: translateY(-2px);
+}
+
+/* Abbonamenti Disponibili - Layout Orizzontale */
+.available-subscriptions {
+    overflow-x: auto; /* Abilita lo scorrimento orizzontale */
+    padding-bottom: 10px; /* Spazio per evitare che lo scorrimento tagli i contenuti */
+    text-align: center;
+}
+
+.available-subscriptions p {
+    font-size: 1rem;
+    color: #CCCCCC; /* Grigio chiaro per il testo descrittivo */
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.subscription-boxes {
+    display: flex; /* Usa flexbox per disporre i box in orizzontale */
+    flex-wrap: nowrap; /* Impedisce il wrapping, mantenendo i box su una singola riga */
+    gap: 20px; /* Spazio tra i box */
+    overflow-x: auto; /* Abilita lo scorrimento orizzontale */
+    padding-bottom: 10px; /* Spazio per lo scorrimento */
+    scrollbar-width: thin; /* Per Firefox: scrollbar più sottile */
+    scrollbar-color: #F5A623 rgba(255, 255, 255, 0.2); /* Colore della scrollbar per Firefox */
+    justify-content: center; /* Centra i box orizzontalmente quando non occupano tutto lo spazio */
+    padding-left: 10px; /* Piccolo padding per evitare che i box siano troppo vicini al bordo */
+    padding-right: 10px; /* Padding simmetrico */
+}
+
+/* Stile della scrollbar per Chrome, Edge, Safari */
+.subscription-boxes::-webkit-scrollbar {
+    height: 8px; /* Altezza della scrollbar orizzontale */
+}
+
+.subscription-boxes::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1); /* Sfondo della track */
+    border-radius: 4px;
+}
+
+.subscription-boxes::-webkit-scrollbar-thumb {
+    background: #F5A623; /* Colore arancione del brand */
+    border-radius: 4px;
+}
+
+.subscription-boxes::-webkit-scrollbar-thumb:hover {
+    background: #E59400; /* Arancione più scuro al passaggio del mouse */
+}
+
+.subscription-box {
+    flex: 0 0 300px; /* Larghezza fissa per ogni box, non si espande */
+    background: rgba(255, 255, 255, 0.1); /* Sfondo semitrasparente */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Bordo leggero */
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.subscription-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.subscription-box h4 {
+    font-family: 'Bungee Spice', sans-serif;
+    font-size: 1.6rem;
+    color: #ffffff; /* Arancione del brand */
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.subscription-box p {
+    font-size: 0.95rem;
+    color: #F5A623;
+    margin-bottom: 20px;
+    min-height: 60px; /* Uniforma l’altezza delle descrizioni */
+}
+
+.subscription-box p s {
+    color: #999999; /* Prezzo originale barrato */
+    margin-right: 10px;
+}
+
+.subscription-box p span {
+    color: #ffffff; /* Prezzo scontato in arancione */
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .subscriptions-container {
+        padding: 30px;
+        margin: 75px auto;
+    }
+
+    .subscriptions-container h2 {
+        font-size: 2.2rem;
+    }
+
+    .subscriptions-container h3 {
+        font-size: 1.6rem;
+    }
+
+    .subscription-box {
+        flex: 0 0 280px; /* Riduci leggermente la larghezza */
+        padding: 20px;
+    }
+
+    .subscription-box h4 {
+        font-size: 1.4rem;
+    }
+
+    .subscription-box p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .subscriptions-container {
+        padding: 20px;
+        width: 90%;
+    }
+
+    .subscriptions-container h2 {
+        font-size: 1.8rem;
+    }
+
+    .subscriptions-container h3 {
+        font-size: 1.4rem;
+    }
+
+    .active-subscriptions li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .cancel-subscription-button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .subscription-box {
+        flex: 0 0 260px; /* Ulteriore riduzione per schermi più piccoli */
+        padding: 15px;
+    }
+
+    .subscription-box h4 {
+        font-size: 1.3rem;
+    }
+
+    .subscription-box p {
+        font-size: 0.85rem;
+        min-height: 50px;
+    }
+
+    .subscribe-button {
+        width: 100%;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .subscriptions-container {
+        padding: 15px;
+        margin: 75px auto;
+    }
+
+    .subscriptions-container h2 {
+        font-size: 1.5rem;
+    }
+
+    .subscriptions-container h3 {
+        font-size: 1.2rem;
+    }
+
+    .active-subscriptions li {
+        font-size: 0.9rem;
+    }
+
+    .subscription-box {
+        flex: 0 0 240px; /* Ancora più piccolo per mobile */
+        padding: 10px;
+    }
+
+    .subscription-box h4 {
+        font-size: 1.2rem;
+    }
+
+    .subscription-box p {
+        font-size: 0.8rem;
+        min-height: 40px;
+    }
+
+    .subscribe-button {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    .alert {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
 }
 
 /* Footer */
@@ -2549,6 +2942,8 @@ footer {
 
     /* Hero Section */
     .hero-section {
+        margin-top: 0; /* Rimuove margini superiori */
+        padding-top: 0; /* Rimuove padding superiore */
         height: 70vh;
         background-attachment: scroll; /* Disabilita parallasse su mobile */
     }
@@ -2586,6 +2981,8 @@ footer {
     .why-choose-us {
         padding: 40px 15px;
     }
+
+    
 
     .brands-container {
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -3489,18 +3886,7 @@ footer {
     margin: 0 auto; /* Centra il contenitore */
 }
 
-/* Stili per ogni box di abbonamento */
-.subscription-box {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    width: calc(33.33% - 14px); /* 33.33% per 3 box per riga, meno il gap */
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
-    box-sizing: border-box; /* Include padding e bordi nella larghezza */
-}
+
 
 .subscription-box:hover {
     transform: translateY(-5px);
@@ -3513,13 +3899,6 @@ footer {
     color: #333;
 }
 
-/* Stili per la descrizione */
-.subscription-box p {
-    margin: 0 0 15px;
-    font-size: 1em;
-    color: #666;
-    min-height: 60px; /* Assicura che i box abbiano altezza simile */
-}
 
 /* Stili per il bottone di sottoscrizione */
 .subscribe-button {

@@ -6,9 +6,6 @@
     <meta name="description" content="Scopri tutti i concessionari FCF Motors. Trova il concessionario più vicino con informazioni su indirizzo, telefono, email e un link per raggiungerlo con il navigatore."/>
     <meta name="keywords" content="concessionario auto, FCF Motors, elenco concessionari, auto nuove, auto usate, Milano"/>
     <meta name="robots" content="index, follow"/>
-    <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
-    <meta http-equiv="X-Frame-Options" content="DENY"/>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com;"/>
     <!-- Open Graph -->
     <meta property="og:title" content="Elenco Concessionari - FCF Motors"/>
     <meta property="og:description" content="Scopri tutti i concessionari FCF Motors. Trova il concessionario più vicino con informazioni su indirizzo, telefono, email e un link per raggiungerlo con il navigatore."/>
@@ -27,6 +24,13 @@
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap"/>
+    <!-- Leaflet CSS e JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet MarkerCluster CSS e JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <!-- Dati strutturati -->
     <script type="application/ld+json">
     {
@@ -50,7 +54,7 @@
         }
     }
     </script>
-    <title>FCF Motors</title>
+    <title>FCF Motors - Concessionari</title>
 </head>
 
 <body>
@@ -80,17 +84,43 @@
         <section class="dealers-section">
             <h2>Elenco Concessionari</h2>
             <p class="section-subtitle">Scopri tutti i concessionari FCF Motors e trova quello più vicino a te.</p>
+            <!-- Form di ricerca -->
+            <form id="dealer-search-form" class="search-form">
+                <input type="text" id="search-input" placeholder="Inserisci CAP o città (es. 20121, Milano)" aria-label="Cerca concessionari per CAP o città"/>
+                <button type="submit"><i class="fas fa-search"></i> Cerca</button>
+            </form>
+            <div id="loading-indicator" style="display: none; text-align: center; padding: 10px;">
+                <i class="fas fa-spinner fa-spin"></i> Caricamento...
+            </div>
+            <p id="search-error" class="error-message" style="display: none;" aria-live="polite"></p>
+            <!-- Contenitore per la mappa -->
+            <div id="map" style="width: 100%; height: 400px;"></div>
             <p th:if="${errorMessage}" th:text="${errorMessage}" class="error-message"></p>
             <div id="dealers-list" class="dealers-list">
-                <div th:if="${dealers.isEmpty()}">
+                <div th:if="${dealers == null or dealers.isEmpty()}">
                     <p>Nessun concessionario disponibile al momento.</p>
                 </div>
                 <div th:each="dealer : ${dealers}" class="dealer-item">
-                    <h3 th:text="${dealer.name}">Concessionario</h3>
+                    <div th:if="${dealer.imagePath}">
+                        <img th:src="${dealer.imagePath}" th:alt="${dealer.name} + ' immagine'" style="width: 100%; height: auto; border-radius: 5px; margin-bottom: 10px;"/>
+                    </div>
+                    <h3 th:text="${dealer.name} ?: 'Nome non disponibile'">Concessionario</h3>
+                    <p th:text="${dealer.description} ?: 'Nessuna descrizione disponibile'"></p>
                     <p><i class="fas fa-map-marker-alt"></i> <span th:text="${dealer.address} ?: 'Indirizzo non disponibile'"></span></p>
-                    <p><i class="fas fa-phone"></i> <a th:href="'tel:' + ${dealer.contact}" th:text="${dealer.contact} ?: 'Contatto non disponibile'"></a></p>
-                    <p th:if="${dealer.contact}"><i class="fas fa-envelope"></i> <a th:href="'mailto:' + ${dealer.contact}" th:text="${dealer.contact}"></a></p>
-                    <a th:href="'https://www.google.com/maps/search/?api=1&query=' + ${dealer.address}" class="navigate-button" target="_blank" rel="noopener noreferrer">
+                    <p th:if="${dealer.contact != null}">
+                        <i class="fas fa-phone"></i> 
+                        <a th:href="'tel:' + ${dealer.contact}" th:text="${dealer.contact} ?: 'Contatto non disponibile'"></a>
+                    </p>
+                    <p th:unless="${dealer.contact != null}">
+                        <i class="fas fa-phone"></i> Contatto non disponibile
+                    </p>
+                    <p th:if="${dealer.contact != null}">
+                        <i class="fas fa-envelope"></i> 
+                        <a th:href="'mailto:' + ${dealer.contact}" th:text="${dealer.contact}"></a>
+                    </p>
+                    <a th:if="${dealer.address != null}" 
+                       th:href="'https://www.google.com/maps/search/?api=1&query=' + ${#strings.replace(dealer.address, ' ', '+')}" 
+                       class="navigate-button" target="_blank" rel="noopener noreferrer">
                         <i class="fas fa-directions"></i> Raggiungi con il navigatore
                     </a>
                 </div>
@@ -129,6 +159,17 @@
         </div>
     </footer>
 
+    <!-- Fallback per JavaScript disabilitato -->
+    <noscript>
+        <p style="color: red; text-align: center; padding: 20px;">
+            JavaScript è disabilitato. Abilita JavaScript per visualizzare la mappa e cercare i concessionari.
+        </p>
+    </noscript>
+
+    <!-- Inietta i dati dei concessionari -->
+    <script nonce="abc123" th:inline="javascript">
+        var dealers = /*[[${dealers}]]*/ [];
+    </script>
     <script src="/js/dealers.js" defer></script>
 </body>
 </html>

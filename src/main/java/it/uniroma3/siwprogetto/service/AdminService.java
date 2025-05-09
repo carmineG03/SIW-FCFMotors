@@ -34,9 +34,6 @@ public class AdminService {
 	private DealerRepository dealerRepository;
 
 	@Autowired
-	private DealerService dealerService;
-
-	@Autowired
 	private SubscriptionRepository subscriptionRepository;
 
 	// Trova un prodotto per ID
@@ -190,7 +187,7 @@ public class AdminService {
 	// Recupera tutti i prodotti
 	@PreAuthorize("hasRole('ADMIN')")
 	public List<Product> findAllProducts() {
-		return productRepository.findAll();
+		return (List<Product>) productRepository.findAll();
 	}
 
 	// Recupera tutti i concessionari

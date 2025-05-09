@@ -11,13 +11,19 @@ import jakarta.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
 
 @Service
 public class DealerService {
@@ -36,7 +42,7 @@ public class DealerService {
     @Autowired
     private EntityManager entityManager;
 
-
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Transactional
     public Dealer saveDealer(Dealer dealer, boolean isUpdate) {
@@ -54,6 +60,50 @@ public class DealerService {
                     logger.error("Utente non trovato: {}", username);
                     return new IllegalStateException("Utente non trovato: " + username);
                 });
+
+        // Geocodifica l'indirizzo solo se necessario
+        boolean needsGeocoding = dealer.getAddress() != null && !dealer.getAddress().isEmpty();
+        if (isUpdate && needsGeocoding) {
+            Optional<Dealer> existingDealer = dealerRepository.findByOwnerUsername(username);
+            if (existingDealer.isPresent() && dealer.getAddress().equals(existingDealer.get().getAddress())) {
+                needsGeocoding = false; // Indirizzo invariato, salta la geocodifica
+            }
+        }
+
+        if (needsGeocoding) {
+            try {
+                String address = dealer.getAddress();
+                String url = "https://nominatim.openstreetmap.org/search?format=json&q=" +
+                             URLEncoder.encode(address, StandardCharsets.UTF_8) + "&countrycodes=IT&limit=1";
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("User-Agent", "FCFMotors/1.0 (info@fcfmotors.com)");
+                HttpEntity<String> entity = new HttpEntity<>(headers);
+
+                List<Map<String, Object>> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class).getBody();
+
+                if (response != null && !response.isEmpty()) {
+                    Map<String, Object> result = response.get(0);
+                    dealer.setLat(Double.parseDouble(result.get("lat").toString()));
+                    dealer.setLng(Double.parseDouble(result.get("lon").toString()));
+                    logger.info("Geocoded address: {} -> lat={}, lng={}", dealer.getAddress(), dealer.getLat(), dealer.getLng());
+                } else {
+                    logger.warn("No coordinates found for address: {}", dealer.getAddress());
+                    dealer.setLat(41.9028); // Roma, fallback
+                    dealer.setLng(12.4964);
+                }
+
+                // Rispetta il limite di 1 richiesta al secondo
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                logger.error("Error during geocoding for address: {}", dealer.getAddress(), e);
+                dealer.setLat(41.9028); // Roma, fallback
+                dealer.setLng(12.4964);
+            }
+        } else if (!needsGeocoding) {
+            logger.warn("No valid address provided for dealer: {}", dealer.getName());
+            dealer.setLat(41.9028); // Roma, fallback
+            dealer.setLng(12.4964);
+        }
 
         Optional<Dealer> existingDealer = dealerRepository.findByOwnerUsername(username);
         if (isUpdate && existingDealer.isPresent()) {
@@ -83,6 +133,59 @@ public class DealerService {
             logger.error("Invalid state: isUpdate=true but no dealer exists for user '{}'", username);
             throw new IllegalStateException("Nessun concessionario trovato per la modifica");
         }
+    }
+
+    // Metodo per geocodificare tutti i concessionari con coordinate mancanti
+    @Transactional
+    public void geocodeAllDealers() {
+        List<Dealer> dealers = dealerRepository.findByMissingCoordinates();
+        if (dealers.isEmpty()) {
+            logger.info("Nessun concessionario da geocodificare.");
+            return;
+        }
+
+        for (Dealer dealer : dealers) {
+            try {
+                String address = dealer.getAddress();
+                if (address == null || address.trim().isEmpty()) {
+                    logger.warn("Indirizzo non valido per concessionario: {}", dealer.getName());
+                    dealer.setLat(41.9028); // Roma, fallback
+                    dealer.setLng(12.4964);
+                    dealerRepository.save(dealer);
+                    continue;
+                }
+
+                String url = "https://nominatim.openstreetmap.org/search?format=json&q=" +
+                             URLEncoder.encode(address, StandardCharsets.UTF_8) + "&countrycodes=IT&limit=1";
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("User-Agent", "FCFMotors/1.0 (info@fcfmotors.com)");
+                HttpEntity<String> entity = new HttpEntity<>(headers);
+
+                List<Map<String, Object>> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class).getBody();
+
+                if (response != null && !response.isEmpty()) {
+                    Map<String, Object> result = response.get(0);
+                    dealer.setLat(Double.parseDouble(result.get("lat").toString()));
+                    dealer.setLng(Double.parseDouble(result.get("lon").toString()));
+                    logger.info("Geocoded address: {} -> lat={}, lng={}", dealer.getAddress(), dealer.getLat(), dealer.getLng());
+                } else {
+                    logger.warn("No coordinates found for address: {}", dealer.getAddress());
+                    dealer.setLat(41.9028); // Roma, fallback
+                    dealer.setLng(12.4964);
+                }
+
+                dealerRepository.save(dealer);
+
+                // Rispetta il limite di 1 richiesta al secondo
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                logger.error("Errore durante il geocoding per concessionario: {}", dealer.getName(), e);
+                dealer.setLat(41.9028); // Roma, fallback
+                dealer.setLng(12.4964);
+                dealerRepository.save(dealer);
+            }
+        }
+        logger.info("Geocoding completato per {} concessionari.", dealers.size());
     }
 
     public Dealer findByOwner() {
@@ -203,12 +306,26 @@ public class DealerService {
 
     public List<Dealer> findByLocation(String query) {
         logger.debug("Finding dealers with query: {}", query);
-        return dealerRepository.findAll();
+        if (query == null || query.trim().isEmpty()) {
+            return dealerRepository.findAll();
+        }
+        return dealerRepository.findByAddressContainingIgnoreCase(query);
     }
 
     public List<Dealer> findAll() {
         logger.info("Retrieving all dealers");
-        return dealerRepository.findAll();
+        List<Dealer> dealers = dealerRepository.findAll();
+        logger.info("Trovati {} concessionari.", dealers.size());
+        for (Dealer dealer : dealers) {
+            logger.debug("Dealer: id={}, name={}, lat={}, lng={}",
+                    dealer.getId(), dealer.getName(), dealer.getLat(), dealer.getLng());
+            if (dealer.getLat() == null || dealer.getLng() == null) {
+                dealer.setLat(41.9028); // Roma, fallback
+                dealer.setLng(12.4964);
+                logger.debug("Impostate coordinate predefinite per dealer: {}", dealer.getId());
+            }
+        }
+        return dealers;
     }
 
     public Product findProductById(Long id) {
@@ -247,10 +364,8 @@ public class DealerService {
         }
 
         try {
-            // Usa una query diretta
             Query query = entityManager.createQuery("DELETE FROM Dealer d WHERE d.id = :id");
             query.setParameter("id", id);
-            int deleted = query.executeUpdate();
             dealerRepository.flush();
             if (dealerRepository.existsById(id)) {
                 throw new IllegalStateException("Eliminazione non riuscita: il concessionario esiste ancora.");
