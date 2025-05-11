@@ -203,6 +203,7 @@ header h2 {
 }
 
 
+
 /* Stile per il carosello */
 .carousel-container {
     position: relative;
@@ -2518,6 +2519,7 @@ header h2 {
     font-size: 0.9rem;
     font-weight: 600;
     transition: background 0.3s ease, transform 0.2s ease;
+
 }
 
 .cancel-subscription-button:hover {
@@ -4011,3 +4013,60 @@ footer {
 .delete-button i {
     margin-right: 5px;
 }
+
+/* Stile per il badge "In Evidenza" */
+.highlight-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ffd700;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/* Stile opzionale per evidenziare il box dell'auto */
+.car-item.highlighted {
+    border: 2px solid #ffd700;
+    background-color: #fffde7;
+}
+
+/* Assicura che l'immagine sia posizionata correttamente */
+.car-image-container {
+    position: relative;
+    width: 100%;
+}
+
+.car-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Stile per il pulsante "Rimuovi Filtri" */
+.remove-filters-button {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-left: 10px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s;
+}
+
+.remove-filters-button:hover {
+    background-color: #c82333;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+

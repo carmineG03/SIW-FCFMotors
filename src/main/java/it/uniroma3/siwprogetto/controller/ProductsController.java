@@ -1,16 +1,27 @@
 package it.uniroma3.siwprogetto.controller;
 
+import it.uniroma3.siwprogetto.model.Dealer;
+import it.uniroma3.siwprogetto.model.Product;
+import it.uniroma3.siwprogetto.model.QuoteRequest;
+import it.uniroma3.siwprogetto.model.User;
+import it.uniroma3.siwprogetto.repository.DealerRepository;
+import it.uniroma3.siwprogetto.repository.QuoteRequestRepository;
+import it.uniroma3.siwprogetto.repository.UserRepository;
 import it.uniroma3.siwprogetto.service.CartService;
+import it.uniroma3.siwprogetto.service.DealerService;
 import it.uniroma3.siwprogetto.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
 
 @Controller
 @RequestMapping("/products")
@@ -18,6 +29,15 @@ public class ProductsController {
 
     private final ProductService productService;
     private final CartService cartService;
+
+    @Autowired
+    private QuoteRequestRepository quoteRequestRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private DealerService dealerService;
 
     public ProductsController(ProductService productService, CartService cartService) {
         this.productService = productService;
@@ -60,10 +80,23 @@ public class ProductsController {
                 ", maxMileage=" + maxMileage + ", minYear=" + minYear + ", maxYear=" + maxYear +
                 ", fuelType=" + fuelType + ", transmission=" + transmission + ", query=" + query);
 
-        // Recupera i prodotti con i filtri
+        /* Recupera i prodotti con i filtri
         model.addAttribute("products", productService.findByFilters(category, brand, selectedModel,
                 minPrice, maxPrice, minMileage, maxMileage,
-                minYear, maxYear, fuelType, transmission, query));
+                minYear, maxYear, fuelType, transmission, query));*/
+
+        // Recupera i prodotti con i filtri
+        List<Product> products = productService.findByFilters(category, brand, selectedModel,
+                minPrice, maxPrice, minMileage, maxMileage,
+                minYear, maxYear, fuelType, transmission, query);
+
+        // Ordina i prodotti: quelli in evidenza per primi
+        products.sort(Comparator.comparing(Product::isFeaturedActive, Comparator.reverseOrder())
+                .thenComparing(Product::isFeatured, Comparator.reverseOrder())
+                .thenComparing(Product::getName));
+
+        // Aggiungi i prodotti ordinati al modello
+        model.addAttribute("products", products);
 
         // Aggiungi i valori per i dropdown
         model.addAttribute("categories", productService.findAllCategories());
@@ -91,9 +124,75 @@ public class ProductsController {
         boolean isAuthenticated = auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal());
         model.addAttribute("isAuthenticated", isAuthenticated);
 
-        // Aggiungi il conteggio del carrello
-        //model.addAttribute("cartCount", cartService.getCartItems().size());
-
         return "products";
     }
+
+    @GetMapping("/search")
+    public String searchProducts(@RequestParam("query") String query) {
+        // Reindirizza a /products con il parametro query
+        return "redirect:/products?query=" + query;
+    }
+
+    @GetMapping("/brand/{brand}")
+    public String getBrand(@PathVariable String brand) {
+        // Reindirizza a /products con il parametro brand
+        return "redirect:/products?brand=" + brand;
+    }
+
+    @PostMapping("/request-quote/{productId}")
+    public String requestQuote(@PathVariable Long productId, Authentication authentication, RedirectAttributes redirectAttributes) {
+        if (authentication == null || "anonymousUser".equals(authentication.getName())) {
+            redirectAttributes.addFlashAttribute("error", "Devi essere loggato per richiedere un preventivo.");
+            return "redirect:/login";
+        }
+
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalStateException("Utente non trovato"));
+
+        Product product = productService.findById(productId)
+                .orElseThrow(() -> new IllegalStateException("Prodotto non trovato"));
+
+        // Verifica che il prodotto abbia un venditore
+        User seller = product.getSeller();
+        if (seller == null) {
+            redirectAttributes.addFlashAttribute("error", "Nessun venditore associato al prodotto.");
+            return "redirect:/products";
+        }
+
+        // Verifica che il venditore sia un dealer
+        if (!"DEALER".equalsIgnoreCase(product.getSellerType())) {
+            redirectAttributes.addFlashAttribute("error", "Le richieste di preventivo sono disponibili solo per i prodotti venduti da dealer.");
+            return "redirect:/products";
+        }
+
+        // Recupera il Dealer associato al seller
+        Dealer dealer = dealerService.findByOwnerUsername(seller.getUsername());
+        if (dealer == null) {
+            redirectAttributes.addFlashAttribute("error", "Nessun dealer associato al venditore.");
+            return "redirect:/products";
+        }
+
+        // Verifica se l'utente ha già una richiesta in sospeso per questo prodotto
+        if (quoteRequestRepository.existsByUserIdAndProductIdAndStatus(user.getId(), productId, "PENDING")) {
+            redirectAttributes.addFlashAttribute("error", "Hai già una richiesta di preventivo in sospeso per questo prodotto. Attendi una risposta prima di inviarne un'altra.");
+            return "redirect:/products";
+        }
+
+
+        QuoteRequest quoteRequest = new QuoteRequest();
+        quoteRequest.setProduct(product);
+        quoteRequest.setUser(user);
+        quoteRequest.setDealer(dealer);
+        quoteRequest.setUserEmail(user.getEmail());
+        quoteRequest.setRequestDate(LocalDateTime.now());
+        quoteRequest.setStatus("PENDING");
+
+        quoteRequestRepository.save(quoteRequest);
+
+        redirectAttributes.addFlashAttribute("success", "Richiesta di preventivo inviata con successo!");
+        return "redirect:/products";
+    }
+
+
 }

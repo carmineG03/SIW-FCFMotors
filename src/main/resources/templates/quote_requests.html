@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Richieste di Preventivo - FCF Motors</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .quote-request-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .quote-request-card .info-row {
+            margin-bottom: 10px;
+        }
+        .quote-request-card .info-row .label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .quote-request-card .form-actions {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<header class="header-transparent">
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img src="/image/logo1.png" alt="Logo" class="logo">
+            </div>
+        </a>
+        <div class="title-container">
+            <h2 class="main-title">FCF MOTORS</h2>
+            <a th:href="@{/products}" class="products-button">
+                <i class="fas fa-car"></i> Prodotti
+            </a>
+            <a th:href="@{/dealers}" class="dealers-button">
+                <i class="fas fa-store"></i> Concessionari
+            </a>
+        </div>
+    </div>
+    <div class="nav-container">
+        <nav class="nav-bar">
+            <a th:href="@{/cart}" class="icon-button">
+                <i class="fas fa-shopping-cart"></i>
+            </a>
+            <a th:href="@{/account}" class="icon-button">
+                <i class="fas fa-user"></i>
+            </a>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <section class="hero-content animated-section visible">
+        <h2>Richieste di Preventivo</h2>
+        <div th:if="${quoteRequests != null and not #lists.isEmpty(quoteRequests)}">
+            <div th:each="request : ${quoteRequests}" class="quote-request-card">
+                <div class="info-row">
+                    <span class="label">Prodotto:</span>
+                    <span th:text="${request.product.name}"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Richiesto da:</span>
+                    <span th:text="${request.userEmail}"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Data Richiesta:</span>
+                    <span th:text="${#temporals.format(request.requestDate, 'dd/MM/yyyy HH:mm')}"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Stato:</span>
+                    <span th:text="${request.status}"></span>
+                </div>
+                <div class="form-actions">
+                    <form th:action="@{'/rest/dealer/quote-requests/respond/' + ${request.id}}" method="post" class="respond-quote-form">
+                        <div class="input-field">
+                            <label for="responseMessage">Messaggio di Risposta</label>
+                            <textarea id="responseMessage" name="responseMessage" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="modern-button"><i class="fas fa-envelope"></i> Invia Risposta</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div th:if="${quoteRequests == null or #lists.isEmpty(quoteRequests)}" class="no-products">
+            <i class="fas fa-envelope no-products-icon"></i>
+            Nessuna richiesta di preventivo trovata.
+        </div>
+        <div class="form-actions">
+            <a th:href="@{'/rest/dealers/manage'}" class="modern-button back-button"><i class="fas fa-arrow-left"></i> Torna alla Gestione Concessionario</a>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Link Utili</h4>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Trova Auto</a></li>
+                <li><a href="/dealers">Concessionari</a></li>
+                <li><a href="/cart">Carrello</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contatti</h4>
+            <p>Email: info@fcfmotors.com</p>
+            <p>Telefono: +39 123 456 7890</p>
+            <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+        </div>
+        <div class="footer-section">
+            <h4>Seguici</h4>
+            <div class="social-links">
+                <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h4>Informazioni</h4>
+            <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+    </div>
+</footer>
+</body>
+</html>

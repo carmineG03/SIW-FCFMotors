@@ -5,7 +5,6 @@
     <title>FCF Motors</title>
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
 </head>
 
 <body style="background: url('https://wallpapers.com/images/high/4k-car-3840-x-2160-background-yxcpysgkd61l40hf.webp') no-repeat center center fixed; background-size: cover;">
@@ -25,7 +24,7 @@
         <div class="nav-container">
             <div class="nav-bar">
                 <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
-                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
+                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i> <span th:text="${user.username}"></span></a>
                 <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
             </div>
         </div>
@@ -36,7 +35,7 @@
             <div class="hero-content" style="text-align: center; max-width: 800px;">
                 <h2 class="hero-title" style="font-size: 3rem; color: #F5A623; font-family: 'Bungee Spice', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); margin-bottom: 15px;">Scopri la tua auto ideale oggi!</h2>
                 <p class="hero-subtitle" style="font-size: 1.2rem; color: #FFFFFF; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); line-height: 1.5; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">Esplora migliaia di auto nuove e usate, trova il modello perfetto per te.</p>
-                <form class="search-form" action="/search" method="get" onsubmit="return validateSearch()" style="margin-bottom: 15px;">
+                <form class="search-form" action="/products/search" method="get" onsubmit="return validateSearch()" style="margin-bottom: 15px;">
                     <div class="input-field">
                         <input type="text" name="query" id="search-input" placeholder="Cerca marca, modello o categoria..." required/>
                     </div>
@@ -55,29 +54,29 @@
         <section class="brands-section">
             <h3>Marche più popolari</h3>
             <div class="brands-container">
-                <a href="/brand/Alfa Romeo" class="brand-item">
+                <a href="/products/brand/Alfa Romeo" class="brand-item">
                     <img th:src="@{/image/alfa-romeo-logo.png}" alt="Alfa Romeo"/>
                     <p>Alfa Romeo</p>
                 </a>
-                <a href="/brand/Audi" class="brand-item">
+                <a href="/products/brand/Audi" class="brand-item">
                     <img th:src="@{/image/audi-logo.png}" alt="Audi"/>
                     <p>Audi</p>
                 </a>
-                <a href="/brand/BMW" class="brand-item">
+                <a href="/products/brand/BMW" class="brand-item">
                     <img th:src="@{/image/bmw-logo.png}" alt="BMW"/>
                     <p>BMW</p>
                 </a>
-                <a href="/brand/Fiat" class="brand-item">
+                <a href="/products/brand/Fiat" class="brand-item">
                     <img th:src="@{/image/fiat-logo.png}" alt="Fiat"/>
                     <p>Fiat</p>
                 </a>
-                <a href="/brand/Mercedes-Benz" class="brand-item">
+                <a href="/products/brand/Mercedes-Benz" class="brand-item">
                     <img th:src="@{/image/mercedes-benz-logo.png}" alt="Mercedes-Benz"/>
                     <p>Mercedes-Benz</p>
                 </a>
-                <a href="/brand/Volkswagen" class="brand-item">
-                    <img th:src="@{/image/volkswagen-logo.png}" alt="Toyota"/>
-                    <p>Volkswagen</p>
+                <a href="/products/brand/Toyota" class="brand-item">
+                    <img th:src="@{/image/toyota-logo.png}" alt="Toyota"/>
+                    <p>Toyota</p>
                 </a>
             </div>
             <a href="/products" class="all-brands-link">Scopri tutte le marche <i class="fas fa-chevron-right"></i></a>
@@ -87,22 +86,22 @@
             <h3>Esplora le nostre categorie</h3>
             <div class="carousel-container">
                 <div class="carousel">
-                    <a href="/category/Berlina" class="category-item" style="background-image: url('/image/berlina.png');">
+                    <a href="/products/brand/Berlina" class="category-item" style="background-image: url('/image/berlina.png');">
                         <p>Berlina</p>
                     </a>
-                    <a href="/category/City Car" class="category-item" style="background-image: url('/image/citycar.png');">
+                    <a href="/products/brand/City Car" class="category-item" style="background-image: url('/image/citycar.png');">
                         <p>City Car</p>
                     </a>
-                    <a href="/category/SUV" class="category-item" style="background-image: url('/image/suv.png');">
+                    <a href="/products/brand/SUV" class="category-item" style="background-image: url('/image/suv.png');">
                         <p>SUV</p>
                     </a>
-                    <a href="/category/Sportiva" class="category-item" style="background-image: url('/image/sportiva.png');">
+                    <a href="/products/brand/Sportiva" class="category-item" style="background-image: url('/image/sportiva.png');">
                         <p>Sportiva</p>
                     </a>
-                    <a href="/category/Station Wagon" class="category-item" style="background-image: url('/image/stationwagon.png');">
+                    <a href="/products/brand/Station Wagon" class="category-item" style="background-image: url('/image/stationwagon.png');">
                         <p>Station Wagon</p>
                     </a>
-                    <a href="/category/Elettrica" class="category-item" style="background-image: url('/image/el.png');">
+                    <a href="/products/brand/Elettrica" class="category-item" style="background-image: url('/image/el.png');">
                         <p>Elettrica</p>
                     </a>
                 </div>
@@ -172,6 +171,5 @@
     </footer>
 
     <script src="/js/homepage.js" defer></script>
-
 </body>
 </html>

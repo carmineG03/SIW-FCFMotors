@@ -63,4 +63,13 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
     List<Product> findBySellerId(@Param("sellerId") Long sellerId);
 
 	List<Product> findBySeller(User user);
+
+    // New method to find active highlighted products
+    @Query("SELECT p FROM Product p WHERE p.isFeatured = true AND (p.featuredUntil IS NULL OR p.featuredUntil > CURRENT_TIMESTAMP) ORDER BY p.featuredUntil DESC")
+    List<Product> findActiveHighlightedProducts();
+
+    // New method to find products with priority for highlighted ones
+    @Query("SELECT p FROM Product p ORDER BY CASE WHEN p.isFeatured = true AND (p.featuredUntil IS NULL OR p.featuredUntil > CURRENT_TIMESTAMP) THEN 0 ELSE 1 END, p.id DESC")
+    List<Product> findAllOrderedByHighlight();
+
 }
