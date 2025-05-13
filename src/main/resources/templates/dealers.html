@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="description" content="Scopri tutti i concessionari FCF Motors. Trova il concessionario più vicino con informazioni su indirizzo, telefono, email e un link per raggiungerlo con il navigatore."/>
+    <meta name="description" content="Scopri tutti i concessionari FCF Motors. Trova il concessionario più vicino con informazioni su indirizzo, telefono e email."/>
     <meta name="keywords" content="concessionario auto, FCF Motors, elenco concessionari, auto nuove, auto usate, Milano"/>
     <meta name="robots" content="index, follow"/>
     <!-- Open Graph -->
     <meta property="og:title" content="Elenco Concessionari - FCF Motors"/>
-    <meta property="og:description" content="Scopri tutti i concessionari FCF Motors. Trova il concessionario più vicino con informazioni su indirizzo, telefono, email e un link per raggiungerlo con il navigatore."/>
+    <meta property="og:description" content="Scopri tutti i concessionari FCF Motors. Trova il concessionario più vicino con informazioni su indirizzo, telefono e email."/>
     <meta property="og:image" content="https://www.fcfmotors.com/image/logo1.png"/>
     <meta property="og:url" content="https://www.fcfmotors.com/dealers"/>
     <meta property="og:type" content="website"/>
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image"/>
     <meta name="twitter:title" content="Elenco Concessionari - FCF Motors"/>
-    <meta name="twitter:description" content="Scopri tutti i concessionari FCF Motors. Trova il concessionario più vicino con informazioni su indirizzo, telefono, email e un link per raggiungerlo con il navigatore."/>
+    <meta name="twitter:description" content="Scopri tutti i concessionari FCF Motors. Trova il concessionario più vicino con informazioni su indirizzo, telefono e email."/>
     <meta name="twitter:image" content="https://www.fcfmotors.com/image/logo1.png"/>
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/image/favicon.png"/>
@@ -24,152 +24,122 @@
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap"/>
-    <!-- Leaflet CSS e JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Leaflet MarkerCluster CSS e JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
-    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <!-- Dati strutturati -->
     <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "FCF Motors",
-        "url": "https://www.fcfmotors.com",
-        "logo": "https://www.fcfmotors.com/image/logo1.png",
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "telephone": "+39-123-456-7890",
-            "contactType": "customer service",
-            "email": "info@fcfmotors.com",
-            "areaServed": "IT"
-        },
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "Via Auto, 123",
-            "addressLocality": "Milano",
-            "addressCountry": "IT"
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "FCF Motors",
+            "url": "https://www.fcfmotors.com",
+            "logo": "https://www.fcfmotors.com/image/logo1.png",
+            "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+39-123-456-7890",
+                "contactType": "customer service",
+                "email": "info@fcfmotors.com",
+                "areaServed": "IT"
+            },
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Via Auto, 123",
+                "addressLocality": "Milano",
+                "addressCountry": "IT"
+            }
         }
-    }
     </script>
     <title>FCF Motors - Concessionari</title>
 </head>
 
 <body>
-    <header id="main-header">
-        <div class="header-left">
-            <a href="/" class="logo-link">
-                <div class="logo-container">
-                    <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
+<header id="main-header">
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
+            </div>
+        </a>
+        <div class="title-container">
+            <h1 class="main-title">FCF MOTORS</h1>
+            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
+            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Trova Concessionario</a>
+        </div>
+    </div>
+    <div class="nav-container">
+        <div class="nav-bar">
+            <a sec:authorize="!isAuthenticated()" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
+            <a sec:authorize="isAuthenticated()" href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
+            <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="dealers-section">
+        <h2>Elenco Concessionari</h2>
+        <p class="section-subtitle">Scopri tutti i concessionari FCF Motors e trova quello più vicino a te.</p>
+        <p th:if="${errorMessage != null}" th:text="${errorMessage}" class="error-message"></p>
+        <div id="dealers-list" class="dealers-list">
+            <div th:if="${dealers == null or dealers.isEmpty()}">
+                <p>Nessun concessionario disponibile al momento.</p>
+            </div>
+            <div th:each="dealer : ${dealers}" class="dealer-item">
+                <div th:if="${dealer.imagePath != null}">
+                    <img th:src="@{${dealer.imagePath}}" th:alt="${dealer.name != null ? dealer.name + ' immagine' : 'Immagine concessionario'}" style="width: 100%; height: auto; border-radius: 5px; margin-bottom: 10px;"/>
                 </div>
-            </a>
-            <div class="title-container">
-                <h1 class="main-title">FCF MOTORS</h1>
-                <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-                <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Trova Concessionario</a>
+                <h3 th:text="${dealer.name != null ? dealer.name : 'Nome non disponibile'}">Concessionario</h3>
+                <p th:text="${dealer.description != null ? dealer.description : 'Nessuna descrizione disponibile'}"></p>
+                <p><i class="fas fa-map-marker-alt"></i> <span th:text="${dealer.address != null ? dealer.address : 'Indirizzo non disponibile'}"></span></p>
+                <p th:if="${dealer.contact != null}">
+                    <i class="fas fa-phone"></i>
+                    <a th:href="'tel:' + ${dealer.contact}" th:text="${dealer.contact != null ? dealer.contact : 'Contatto non disponibile'}"></a>
+                </p>
+                <p th:unless="${dealer.contact != null}">
+                    <i class="fas fa-phone"></i> Contatto non disponibile
+                </p>
+                <p th:if="${dealer.contact != null}">
+                    <i class="fas fa-envelope"></i>
+                    <a th:href="'mailto:' + ${dealer.contact}" th:text="${dealer.contact != null ? dealer.contact : 'Email non disponibile'}"></a>
+                </p>
+                <a th:if="${dealer.address != null}"
+                   th:href="${dealer.address != null ? 'https://www.google.com/maps/search/?api=1&query=' + (dealer.address != null ? dealer.address.replace(' ', '+') : '') : '#'}"
+                   class="navigate-button" target="_blank" rel="noopener noreferrer">
+                    <i class="fas fa-directions"></i> Raggiungi con il navigatore
+                </a>
             </div>
         </div>
-        <div class="nav-container">
-            <div class="nav-bar">
-                <a sec:authorize="!isAuthenticated()" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
-                <a sec:authorize="isAuthenticated()" href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
-                <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
-            </div>
+    </section>
+</main>
+
+<button id="back-to-top" class="back-to-top" aria-label="Torna in cima alla pagina"><i class="fas fa-chevron-up"></i></button>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Navigazione</h4>
+            <ul>
+                <li><a href="/">Homepage</a></li>
+                <li><a href="/products">Trova la tua auto</a></li>
+                <li><a href="/dealers">Trova un concessionario</a></li>
+                <li><a href="/cart">Visualizza carrello</a></li>
+            </ul>
         </div>
-    </header>
-
-    <main>
-        <section class="dealers-section">
-            <h2>Elenco Concessionari</h2>
-            <p class="section-subtitle">Scopri tutti i concessionari FCF Motors e trova quello più vicino a te.</p>
-            <!-- Form di ricerca -->
-            <form id="dealer-search-form" class="search-form">
-                <input type="text" id="search-input" placeholder="Inserisci CAP o città (es. 20121, Milano)" aria-label="Cerca concessionari per CAP o città"/>
-                <button type="submit"><i class="fas fa-search"></i> Cerca</button>
-            </form>
-            <div id="loading-indicator" style="display: none; text-align: center; padding: 10px;">
-                <i class="fas fa-spinner fa-spin"></i> Caricamento...
-            </div>
-            <p id="search-error" class="error-message" style="display: none;" aria-live="polite"></p>
-            <!-- Contenitore per la mappa -->
-            <div id="map" style="width: 100%; height: 400px;"></div>
-            <p th:if="${errorMessage}" th:text="${errorMessage}" class="error-message"></p>
-            <div id="dealers-list" class="dealers-list">
-                <div th:if="${dealers == null or dealers.isEmpty()}">
-                    <p>Nessun concessionario disponibile al momento.</p>
-                </div>
-                <div th:each="dealer : ${dealers}" class="dealer-item">
-                    <div th:if="${dealer.imagePath}">
-                        <img th:src="${dealer.imagePath}" th:alt="${dealer.name} + ' immagine'" style="width: 100%; height: auto; border-radius: 5px; margin-bottom: 10px;"/>
-                    </div>
-                    <h3 th:text="${dealer.name} ?: 'Nome non disponibile'">Concessionario</h3>
-                    <p th:text="${dealer.description} ?: 'Nessuna descrizione disponibile'"></p>
-                    <p><i class="fas fa-map-marker-alt"></i> <span th:text="${dealer.address} ?: 'Indirizzo non disponibile'"></span></p>
-                    <p th:if="${dealer.contact != null}">
-                        <i class="fas fa-phone"></i> 
-                        <a th:href="'tel:' + ${dealer.contact}" th:text="${dealer.contact} ?: 'Contatto non disponibile'"></a>
-                    </p>
-                    <p th:unless="${dealer.contact != null}">
-                        <i class="fas fa-phone"></i> Contatto non disponibile
-                    </p>
-                    <p th:if="${dealer.contact != null}">
-                        <i class="fas fa-envelope"></i> 
-                        <a th:href="'mailto:' + ${dealer.contact}" th:text="${dealer.contact}"></a>
-                    </p>
-                    <a th:if="${dealer.address != null}" 
-                       th:href="'https://www.google.com/maps/search/?api=1&query=' + ${#strings.replace(dealer.address, ' ', '+')}" 
-                       class="navigate-button" target="_blank" rel="noopener noreferrer">
-                        <i class="fas fa-directions"></i> Raggiungi con il navigatore
-                    </a>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <button id="back-to-top" class="back-to-top" aria-label="Torna in cima alla pagina"><i class="fas fa-chevron-up"></i></button>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>Navigazione</h4>
-                <ul>
-                    <li><a href="/">Homepage</a></li>
-                    <li><a href="/products">Trova la tua auto</a></li>
-                    <li><a href="/dealers">Trova un concessionario</a></li>
-                    <li><a href="/cart">Visualizza carrello</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Contatti</h4>
-                <address>
-                    <p>Email: <a href="mailto:info@fcfmotors.com">info@fcfmotors.com</a></p>
-                    <p>Telefono: <a href="tel:+391234567890">+39 123 456 7890</a></p>
-                    <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
-                </address>
-            </div>
-            <div class="footer-section">
-                <h4>Informazioni</h4>
-                <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
-            </div>
+        <div class="footer-section">
+            <h4>Contatti</h4>
+            <address>
+                <p>Email: <a href="mailto:info@fcfmotors.com">info@fcfmotors.com</a></p>
+                <p>Telefono: <a href="tel:+391234567890">+39 123 456 7890</a></p>
+                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+            </address>
         </div>
-        <div class="footer-bottom">
-            <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+        <div class="footer-section">
+            <h4>Informazioni</h4>
+            <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
         </div>
-    </footer>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+    </div>
+</footer>
 
-    <!-- Fallback per JavaScript disabilitato -->
-    <noscript>
-        <p style="color: red; text-align: center; padding: 20px;">
-            JavaScript è disabilitato. Abilita JavaScript per visualizzare la mappa e cercare i concessionari.
-        </p>
-    </noscript>
-
-    <!-- Inietta i dati dei concessionari -->
-    <script nonce="abc123" th:inline="javascript">
-        var dealers = /*[[${dealers}]]*/ [];
-    </script>
-    <script src="/js/dealers.js" defer></script>
 </body>
 </html>

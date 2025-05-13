@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/manutenzione")
@@ -34,4 +35,11 @@ public class ProductController {
 
         return "maintenance";
     }
+
+    @GetMapping("/search")
+    public String searchProducts(@RequestParam("query") String query) {
+        // Reindirizza a /manutenzione/prodotti con il parametro query
+        return "redirect:/manutenzione/prodotti?query=" + query;
+    }
+
 }

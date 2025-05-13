@@ -10,204 +10,219 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <header>
-        <div class="header-left">
-            <a href="/" class="logo-link">
-                <div class="logo-container">
-                    <img src="/image/logo1.png" alt="Logo" class="logo">
-                </div>
-                <div class="title-container">
-                    <h1 class="main-title">FCF MOTORS</h1>
-                </div>
-            </a>
-        </div>
-        <div class="nav-container">
-            <nav class="nav-bar">
-                <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-                <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
-                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i></a>
-                <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-sign-in-alt"></i></a>
-                <a href="/cart" class="icon-button cart-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}"></span>
-                </a>
-            </nav>
-        </div>
-    </header>
-
-    <section class="search-section">
-        <div class="search-content">
-            <h2>Trova Auto</h2>
-            <div class="search-filter-group">
-                <form class="search-form" action="/search" method="get" onsubmit="return validateSearch()">
-                    <div class="input-field">
-                        <input type="text" name="query" id="search-input" placeholder="Cerca auto..." required/>
-                    </div>
-                    <button type="submit" class="search-button">
-                        <i class="fas fa-search"></i> Cerca
-                    </button>
-                </form>
-                <button class="filter-button" onclick="openFilterPopup()">Filtra</button>
+<header>
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img src="/image/logo1.png" alt="Logo" class="logo">
             </div>
-        </div>
-    </section>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
+            </div>
+        </a>
+    </div>
+    <div class="nav-container">
+        <nav class="nav-bar">
+            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
+            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+            <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i></a>
+            <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-sign-in-alt"></i></a>
+            <a href="/cart" class="icon-button cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}"></span>
+            </a>
+        </nav>
+    </div>
+</header>
 
-    <!-- Popup per i filtri -->
-    <div id="filterPopup" class="filter-popup">
-        <div class="filter-popup-content">
-            <span class="close-popup" onclick="closeFilterPopup()">×</span>
-            <h3>Filtra Auto</h3>
-            <form th:action="@{/products}" method="get" class="filters-popup">
-                <div class="filter-group">
-                    <label for="category">Categoria</label>
-                    <select id="category" name="category">
-                        <option value="">Tutte</option>
-                        <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
-                    </select>
+<section class="search-section">
+    <div class="search-content">
+        <h2>Trova Auto</h2>
+
+        <div class="search-filter-group">
+            <form class="search-form" action="/products/search" method="get" onsubmit="return validateSearch()">
+                <div class="input-field">
+                    <input type="text" name="query" id="search-input" placeholder="Cerca auto..." required/>
                 </div>
-                <div class="filter-group">
-                    <label for="brand">Marca</label>
-                    <select id="brand" name="brand">
-                        <option value="">Tutte</option>
-                        <option th:each="b : ${brands}" th:value="${b}" th:text="${b}"></option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="model">Modello</label>
-                    <select id="model" name="model">
-                        <option value="">Tutti</option>
-                        <option th:each="m : ${models}" th:value="${m}" th:text="${m}"></option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="minPrice">Prezzo Min (€)</label>
-                    <input type="number" id="minPrice" name="minPrice" step="0.01"/>
-                </div>
-                <div class="filter-group">
-                    <label for="maxPrice">Prezzo Max (€)</label>
-                    <input type="number" id="maxPrice" name="maxPrice" step="0.01"/>
-                </div>
-                <div class="filter-group">
-                    <label for="minMileage">Chilometraggio Min</label>
-                    <input type="number" id="minMileage" name="minMileage"/>
-                </div>
-                <div class="filter-group">
-                    <label for="maxMileage">Chilometraggio Max</label>
-                    <input type="number" id="maxMileage" name="maxMileage"/>
-                </div>
-                <div class="filter-group">
-                    <label for="minYear">Anno Min</label>
-                    <input type="number" id="minYear" name="minYear"/>
-                </div>
-                <div class="filter-group">
-                    <label for="maxYear">Anno Max</label>
-                    <input type="number" id="maxYear" name="maxYear"/>
-                </div>
-                <div class="filter-group">
-                    <label for="fuelType">Carburante</label>
-                    <select id="fuelType" name="fuelType">
-                        <option value="">Tutti</option>
-                        <option th:each="fuel : ${fuelTypes}" th:value="${fuel}" th:text="${fuel}"></option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="transmission">Trasmissione</label>
-                    <select id="transmission" name="transmission">
-                        <option value="">Tutte</option>
-                        <option th:each="trans : ${transmissions}" th:value="${trans}" th:text="${trans}"></option>
-                    </select>
-                </div>
-                <button type="submit" class="apply-button">Applica</button>
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i> Cerca
+                </button>
             </form>
+            <button class="filter-button" onclick="openFilterPopup()">Filtra</button>
+            <!-- Pulsante "Rimuovi Filtri" visibile solo se almeno un filtro è attivo -->
+            <a th:if="${category != null or brand != null or selectedModel != null or minPrice != null or maxPrice != null or minMileage != null or maxMileage != null or minYear != null or maxYear != null or fuelType != null or transmission != null or query != null}"
+               href="/products" class="remove-filters-button">Rimuovi Filtri</a>
         </div>
     </div>
+</section>
 
-    <section class="products-page">
-        <div class="cars-grid">
-            <div th:each="product : ${products}" th:if="${products != null and not #lists.isEmpty(products)}" class="car-item">
-                <img th:src="${product.imageUrl}" th:alt="${product.name}"/>
-                <h3 th:text="${product.name}"></h3>
-                <p th:text="${product.description}"></p>
-                <p th:text="'Categoria: ' + ${product.category}"></p>
-                <p class="price" th:text="${#numbers.formatDecimal(product.price, 1, 2, 'COMMA')} + ' €'"></p>
-                <div class="button-group">
-                    <div th:if="${product.sellerType == 'PRIVATE'}">
-                        <a th:href="@{'/contact-seller/' + ${product.id}}" class="button">Contatta il Venditore</a>
-                    </div>
-                    <div th:if="${product.sellerType == 'DEALER'}">
-                        <a th:href="@{'/request-quote/' + ${product.id}}" class="button">Richiedi Preventivo</a>
-                    </div>
-                    <!-- Pulsante "Aggiungi Abbonamento" rimosso -->
+<!-- Popup per i filtri -->
+<div id="filterPopup" class="filter-popup">
+    <div class="filter-popup-content">
+        <span class="close-popup" onclick="closeFilterPopup()">×</span>
+        <h3>Filtra Auto</h3>
+        <form th:action="@{/products}" method="get" class="filters-popup">
+            <div class="filter-group">
+                <label for="category">Categoria</label>
+                <select id="category" name="category">
+                    <option value="">Tutte</option>
+                    <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}" th:selected="${cat == category}"></option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="brand">Marca</label>
+                <select id="brand" name="brand">
+                    <option value="">Tutte</option>
+                    <option th:each="b : ${brands}" th:value="${b}" th:text="${b}" th:selected="${b == brand}"></option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="model">Modello</label>
+                <select id="model" name="model">
+                    <option value="">Tutti</option>
+                    <option th:each="m : ${models}" th:value="${m}" th:text="${m}" th:selected="${m == selectedModel}"></option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="minPrice">Prezzo Min (€)</label>
+                <input type="number" id="minPrice" name="minPrice" step="0.01" th:value="${minPrice}"/>
+            </div>
+            <div class="filter-group">
+                <label for="maxPrice">Prezzo Max (€)</label>
+                <input type="number" id="maxPrice" name="maxPrice" step="0.01" th:value="${maxPrice}"/>
+            </div>
+            <div class="filter-group">
+                <label for="minMileage">Chilometraggio Min</label>
+                <input type="number" id="minMileage" name="minMileage" th:value="${minMileage}"/>
+            </div>
+            <div class="filter-group">
+                <label for="maxMileage">Chilometraggio Max</label>
+                <input type="number" id="maxMileage" name="maxMileage" th:value="${maxMileage}"/>
+            </div>
+            <div class="filter-group">
+                <label for="minYear">Anno Min</label>
+                <input type="number" id="minYear" name="minYear" th:value="${minYear}"/>
+            </div>
+            <div class="filter-group">
+                <label for="maxYear">Anno Max</label>
+                <input type="number" id="maxYear" name="maxYear" th:value="${maxYear}"/>
+            </div>
+            <div class="filter-group">
+                <label for="fuelType">Carburante</label>
+                <select id="fuelType" name="fuelType">
+                    <option value="">Tutti</option>
+                    <option th:each="fuel : ${fuelTypes}" th:value="${fuel}" th:text="${fuel}" th:selected="${fuel == fuelType}"></option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="transmission">Trasmissione</label>
+                <select id="transmission" name="transmission">
+                    <option value="">Tutte</option>
+                    <option th:each="trans : ${transmissions}" th:value="${trans}" th:text="${trans}" th:selected="${trans == transmission}"></option>
+                </select>
+            </div>
+            <button type="submit" class="apply-button">Applica</button>
+        </form>
+    </div>
+</div>
+
+<section class="products-page">
+    <div class="cars-grid">
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <div th:each="product : ${products}" th:if="${products != null and not #lists.isEmpty(products)}" class="car-item" th:classappend="${product.isFeatured and product.isFeaturedActive} ? 'highlighted'">
+            <div class="car-image-container">
+                <img th:src="${product.imageUrl} ?: 'https://via.placeholder.com/300x200?text=Immagine+Non+Disponibile'" th:alt="${product.name}"/>
+                <span th:if="${product.isFeatured and product.isFeaturedActive}" class="highlight-badge">In Evidenza</span>
+            </div>
+            <h3 th:text="${product.name}"></h3>
+            <p th:text="${product.description}"></p>
+            <p th:text="'Categoria: ' + ${product.category}"></p>
+            <p class="price" th:text="${#numbers.formatDecimal(product.price, 1, 2, 'COMMA')} + ' €'"></p>
+            <div class="button-group">
+                <div th:if="${product.sellerType == 'PRIVATE'}">
+                    <a th:href="@{'/contact-seller/' + ${product.id}}" class="button">Contatta il Venditore</a>
+                </div>
+                <div th:if="${product.sellerType == 'DEALER'}">
+                    <th:block th:if="${isAuthenticated}">
+                        <form th:action="@{'/products/request-quote/' + ${product.id}}" method="post" class="quote-request-form">
+                            <input type="hidden" name="productId" th:value="${product.id}"/>
+                            <button type="submit" class="button">Richiedi Preventivo</button>
+                        </form>
+                    </th:block>
+                    <th:block th:unless="${isAuthenticated}">
+                        <a href="/login" class="button">Accedi per Richiedere Preventivo</a>
+                    </th:block>
                 </div>
             </div>
-            <div th:if="${products == null or #lists.isEmpty(products)}" class="no-products">
-                Nessun prodotto trovato.
+        </div>
+        <div th:if="${products == null or #lists.isEmpty(products)}" class="no-products">
+            Nessun prodotto trovato.
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Link Utili</h4>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Trova Auto</a></li>
+                <li><a href="/dealers">Concessionari</a></li>
+                <li><a href="/cart">Carrello</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contatti</h4>
+            <p>Email: info@fcfmotors.com</p>
+            <p>Telefono: +39 123 456 7890</p>
+            <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+        </div>
+        <div class="footer-section">
+            <h4>Seguici</h4>
+            <div class="social-links">
+                <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
             </div>
         </div>
-    </section>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>Link Utili</h4>
-                <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/products">Trova Auto</a></li>
-                    <li><a href="/dealers">Concessionari</a></li>
-                    <li><a href="/cart">Carrello</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Contatti</h4>
-                <p>Email: info@fcfmotors.com</p>
-                <p>Telefono: +39 123 456 7890</p>
-                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
-            </div>
-            <div class="footer-section">
-                <h4>Seguici</h4>
-                <div class="social-links">
-                    <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-                    <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h4>Informazioni</h4>
-                <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
-            </div>
+        <div class="footer-section">
+            <h4>Informazioni</h4>
+            <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
         </div>
-        <div class="footer-bottom">
-            <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
-        </div>
-    </footer>
-    <script>
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-    </script>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+    </div>
+</footer>
+<script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+</script>
 
-    <script>
-        function validateSearch() {
-            const searchInput = document.getElementById('search-input').value.trim();
-            if (searchInput === '') {
-                alert('Inserisci un termine di ricerca.');
-                return false;
-            }
-            return true;
+<script>
+    function validateSearch() {
+        const searchInput = document.getElementById('search-input').value.trim();
+        if (searchInput === '') {
+            alert('Inserisci un termine di ricerca.');
+            return false;
         }
+        return true;
+    }
 
-        function openFilterPopup() {
-            document.getElementById('filterPopup').style.display = 'flex';
-        }
+    function openFilterPopup() {
+        document.getElementById('filterPopup').style.display = 'flex';
+    }
 
-        function closeFilterPopup() {
-            document.getElementById('filterPopup').style.display = 'none';
-        }
+    function closeFilterPopup() {
+        document.getElementById('filterPopup').style.display = 'none';
+    }
 
-        window.onclick = function(event) {
-            const popup = document.getElementById('filterPopup');
-            if (event.target === popup) {
-                popup.style.display = 'none';
-            }
+    window.onclick = function(event) {
+        const popup = document.getElementById('filterPopup');
+        if (event.target === popup) {
+            popup.style.display = 'none';
         }
-    </script>
+    }
+</script>
 </body>
 </html>

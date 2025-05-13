@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -62,13 +63,24 @@ public class ProductService {
                                        Integer minMileage, Integer maxMileage,
                                        Integer minYear, Integer maxYear,
                                        String fuelType, String transmission, String query) {
-        // Log dei filtri applicati
         System.out.println("Filtri applicati: category=" + category + ", brand=" + brand + ", model=" + selectedModel +
                 ", minPrice=" + minPrice + ", maxPrice=" + maxPrice +
                 ", minMileage=" + minMileage + ", maxMileage=" + maxMileage +
                 ", minYear=" + minYear + ", maxYear=" + maxYear +
                 ", fuelType=" + fuelType + ", transmission=" + transmission +
                 ", query=" + query);
+
+        // Se solo query è specificato, cerca in brand, model, category, name e description
+        if (query != null && !query.trim().isEmpty() &&
+                category == null && brand == null && selectedModel == null &&
+                minPrice == null && maxPrice == null && minMileage == null && maxMileage == null &&
+                minYear == null && maxYear == null && fuelType == null && transmission == null) {
+            List<Product> results = productRepository.findByFilters(null, null, null, null, null, null, null, null, null, null, null, query);
+            results.addAll(productRepository.findByFilters(query, null, null, null, null, null, null, null, null, null, null, null));
+            results.addAll(productRepository.findByFilters(null, query, null, null, null, null, null, null, null, null, null, null));
+            results.addAll(productRepository.findByFilters(null, null, query, null, null, null, null, null, null, null, null, null));
+            return results.stream().distinct().collect(Collectors.toList());
+        }
 
         return productRepository.findByFilters(category, brand, selectedModel,
                 minPrice, maxPrice, minMileage, maxMileage,
@@ -94,4 +106,8 @@ public class ProductService {
     public List<Product> findBySellerId(Long sellerId) {
         return productRepository.findBySellerId(sellerId);
     }
+
+
+
+
 }

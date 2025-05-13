@@ -1,6 +1,7 @@
 package it.uniroma3.siwprogetto.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +28,7 @@ public class User implements UserDetails {
     private AccountInformation accountInformation;
 
     @OneToMany(mappedBy = "seller")
+    @JsonIgnore
     private Set<Product> products;
 
     @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)

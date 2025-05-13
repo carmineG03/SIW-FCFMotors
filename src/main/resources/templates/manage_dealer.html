@@ -8,6 +8,84 @@
     <title>Gestione Concessionario</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        /* Highlighted product styling */
+        .product-card.highlighted {
+            border: 2px solid #ffd700;
+            background-color: #fffde7;
+        }
+        .highlight-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ffd700;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .invalid {
+            border-color: red !important;
+            animation: shake 0.3s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .spinner {
+            display: none;
+            margin-left: 5px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner.active {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #FFFFFF;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: white;
+            z-index: 1000;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .toast.success {
+            background-color: #28a745;
+        }
+        .toast.error {
+            background-color: #dc3545;
+        }
+        .animated-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        .animated-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .product-card {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .product-card.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
 </head>
 <body>
 <header class="header-transparent">
@@ -68,11 +146,12 @@
                     </div>
                     <div class="form-actions">
                         <a href="#" id="edit-dealer-button" class="modern-button"><i class="fas fa-edit"></i> Modifica</a>
+                        <a th:href="@{'/rest/dealer/quote-requests/' + ${dealer.id}}" class="modern-button"><i class="fas fa-envelope"></i> Visualizza Richieste di Preventivo</a>
                         <a th:if="${dealer != null and dealer.id != null}" th:href="@{/rest/manutenzione/dealer/delete_dealer/{id}(id=${dealer.id})}" th:id="'delete-dealer-link-' + ${dealer.id}" class="modern-button cancel-button"><i class="fas fa-trash"></i> Elimina</a>
                         <a th:unless="${dealer != null and dealer.id != null}" href="#" class="modern-button cancel-button disabled" onclick="alert('Impossibile eliminare: concessionario non valido'); return false;"><i class="fas fa-trash"></i> Elimina</a>
                     </div>
                 </div>
-                <form id="dealership-form" class="modern-form" style="display: none;" aria-labelledby="dealership-form-title" th:action="@{/manutenzione/dealer/update_dealer}" method="post">
+                <form id="dealership-form" class="modern-form" style="display: none;" aria-labelledby="dealership-form-title" th:action="@{/rest/api/dealers}" method="post">
                     <h2 id="dealership-form-title">Modifica Concessionario</h2>
                     <input type="hidden" name="id" th:value="${dealer.id}">
                     <div class="input-field">
@@ -107,23 +186,24 @@
         <div class="add-car-column">
             <div class="hero-content">
                 <h2>Aggiungi una Macchina</h2>
-                <form id="dealer-add-car-form" class="modern-form" aria-labelledby="add-car-form-title">
+                <form id="dealer-add-car-form" class="modern-form" th:action="@{/rest/api/products}" method="post" aria-labelledby="add-car-form-title">
+                    <input type="hidden" name="dealerId" th:value="${dealer.id}">
                     <h2 id="add-car-form-title" style="display: none;">Aggiungi Auto</h2>
                     <div class="input-field">
                         <label for="dealer-car-name"><i class="fas fa-car"></i> Nome Macchina</label>
-                        <input type="text" id="dealer-car-name" required aria-required="true">
+                        <input type="text" id="dealer-car-name" name="name" required aria-required="true">
                     </div>
                     <div class="input-field">
                         <label for="dealer-car-description"><i class="fas fa-file-alt"></i> Descrizione</label>
-                        <textarea id="dealer-car-description" rows="4"></textarea>
+                        <textarea id="dealer-car-description" name="description" rows="4"></textarea>
                     </div>
                     <div class="input-field">
                         <label for="dealer-car-price"><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
-                        <input type="number" id="dealer-car-price" required step="0.01" min="0.01" aria-required="true">
+                        <input type="number" id="dealer-car-price" name="price" required step="0.01" min="0.01" aria-required="true">
                     </div>
                     <div class="input-field">
                         <label for="dealer-car-imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
-                        <input type="url" id="dealer-car-imageUrl">
+                        <input type="url" id="dealer-car-imageUrl" name="imageUrl">
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="modern-button"><i class="fas fa-plus"></i> Aggiungi <span class="spinner"></span></button>
@@ -137,10 +217,11 @@
     <section id="dealer-added-cars" class="products-section animated-section">
         <h3>Macchine Aggiunte</h3>
         <div class="product-grid">
-            <div th:each="product : ${products}" class="product-card animated-card">
+            <div th:each="product : ${products}" th:classappend="${product.isFeatured and product.isFeaturedActive} ? 'product-card animated-card highlighted' : 'product-card animated-card'">
                 <div class="product-image">
                     <img th:src="${product.imageUrl} ?: 'https://via.placeholder.com/300x200?text=Auto+Immagine'" alt="Immagine Auto">
                     <span class="product-badge"><i class="fas fa-car"></i></span>
+                    <span th:if="${product.isFeatured and product.isFeaturedActive}" class="highlight-badge">In Evidenza</span>
                 </div>
                 <div class="product-info">
                     <div class="info-row">
@@ -156,12 +237,18 @@
                         <span class="value" th:text="${product.price} + ' €'"></span>
                     </div>
                     <div class="info-row">
-                        <span class="label"><strong>URL Immagine:</strong></span>
-                        <span class="value" th:text="${product.imageUrl} ?: 'Non specificato'"></span>
+                        <span class="label"><strong>In Evidenza:</strong></span>
+                        <span class="value" th:text="${product.isFeatured and product.isFeaturedActive} ? 'Sì' : 'No'"></span>
+                    </div>
+                    <div class="info-row" th:if="${product.isFeatured and product.isFeaturedActive}">
+                        <span class="label"><strong>Scadenza Evidenza:</strong></span>
+                        <span class="value" th:text="${product.featuredUntil} ?: '-'"></span>
                     </div>
                     <div class="form-actions">
                         <a href="#" th:attr="data-product-id=${product.id}" class="modern-button edit-product-link"><i class="fas fa-edit"></i> Modifica</a>
                         <a href="#" th:attr="data-product-id=${product.id}" class="modern-button delete-product-link cancel-button"><i class="fas fa-trash"></i> Elimina</a>
+                        <a href="#" th:attr="data-product-id=${product.id}" class="modern-button highlight-product-link" th:if="${!product.isFeatured or !product.isFeaturedActive}"><i class="fas fa-star"></i> Metti in Evidenza</a>
+                        <a href="#" th:attr="data-product-id=${product.id}" class="modern-button remove-highlight-product-link cancel-button" th:if="${product.isFeatured and product.isFeaturedActive}"><i class="fas fa-star"></i> Rimuovi Evidenza</a>
                     </div>
                 </div>
             </div>
@@ -195,6 +282,14 @@
             <div class="input-field">
                 <label for="edit-product-imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
                 <input type="url" id="edit-product-imageUrl">
+            </div>
+            <div class="input-field">
+                <label for="edit-product-highlighted"><i class="fas fa-star"></i> Metti in Evidenza</label>
+                <input type="checkbox" id="edit-product-highlighted" name="highlighted">
+            </div>
+            <div class="input-field" id="edit-highlight-duration-field" style="display: none;">
+                <label for="edit-product-highlight-duration"><i class="fas fa-clock"></i> Durata Evidenza (giorni)</label>
+                <input type="number" id="edit-product-highlight-duration" name="highlightDuration" min="1" step="1">
             </div>
             <div class="form-actions">
                 <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva <span class="spinner"></span></button>

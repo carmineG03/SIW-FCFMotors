@@ -1,484 +1,610 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const placeholder = 'https://via.placeholder.com/300x200?text=Immagine+Non+Disponibile';
-
-    // Funzione per validare gli URL
-    function isValidUrl(string) {
-        try {
-            new URL(string);
-            return true;
-        } catch (_) {
-            return false;
-        }
-    }
-
-    // Funzione per gestire lo spinner
-    function manageSpinner(submitButton, show) {
-        const spinner = submitButton.querySelector('.spinner') || document.createElement('span');
-        spinner.className = 'spinner';
-        spinner.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        if (!submitButton.contains(spinner)) submitButton.appendChild(spinner);
-        spinner.classList.toggle('active', show);
-        submitButton.disabled = show;
-    }
-
-    // Funzione per evidenziare i campi non validi
-    function highlightInvalidField(field) {
-        field.classList.add('invalid');
-        setTimeout(() => {
-            field.classList.remove('invalid');
-        }, 3000);
-    }
-
-    // Funzione per gestire gli errori di caricamento delle immagini
-    function setupImageErrorHandling() {
-        document.querySelectorAll('.product-image img, .dealer-image').forEach(img => {
-            img.onerror = () => {
-                img.src = placeholder;
-            };
-        });
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    const addCarForm = document.getElementById('dealer-add-car-form');
+    const editProductForm = document.getElementById('edit-product-form');
+    const toast = document.getElementById('toast');
+    const highlightedCheckbox = document.getElementById('dealer-car-highlighted');
+    const featureDurationField = document.getElementById('edit-feature-duration-field');
 
     // Funzione per mostrare il toast
     function showToast(message, type) {
-        const toast = document.getElementById('toast');
+        if (!toast) {
+            console.error('Elemento toast non trovato nel DOM');
+            return;
+        }
         toast.textContent = message;
-        toast.className = `toast ${type} show`;
-        toast.setAttribute('aria-label', message);
-        toast.style.display = 'block';
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(20px)';
-        setTimeout(() => {
-            toast.style.opacity = '1';
-            toast.style.transform = 'translateY(0)';
-        }, 10);
-
+        toast.className = `toast ${type}`;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
         setTimeout(() => {
             toast.style.opacity = '0';
             toast.style.transform = 'translateY(20px)';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 300);
         }, 3000);
     }
 
-    // Funzione per gestire la transizione tra form e visualizzazione
-    function toggleFormVisibility(showForm, formId, displayId) {
-        const form = document.getElementById(formId);
-        const display = document.getElementById(displayId);
-        if (showForm) {
-            display.style.opacity = '0';
-            setTimeout(() => {
-                display.style.display = 'none';
-                form.style.display = 'block';
-                setTimeout(() => {
-                    form.style.opacity = '1';
-                }, 10);
-            }, 300);
+    // Debug: Verifica che il form esista
+    if (!addCarForm) {
+        console.error('Form #dealer-add-car-form non trovato nel DOM');
+        showToast('Errore: Form per aggiungere auto non trovato.', 'error');
+        return;
+    }
+
+    // Gestione dell'invio del form per aggiungere un'auto
+    addCarForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const nameInput = document.getElementById('dealer-car-name');
+        const priceInput = document.getElementById('dealer-car-price');
+        const descriptionInput = document.getElementById('dealer-car-description');
+        const imageUrlInput = document.getElementById('dealer-car-imageUrl');
+        const highlightedInput = document.getElementById('dealer-car-highlighted');
+        const featureDurationInput = document.getElementById('edit-product-feature-duration');
+        const dealerIdInput = addCarForm.querySelector('input[name="dealerId"]');
+        const spinner = addCarForm.querySelector('.spinner');
+
+        if (!nameInput || !priceInput || !spinner || !dealerIdInput) {
+            console.error('Uno o più elementi del form non sono stati trovati:', { nameInput, priceInput, spinner, dealerIdInput });
+            showToast('Errore: Elementi del form non trovati.', 'error');
+            return;
+        }
+
+        const name = nameInput.value.trim();
+        const price = parseFloat(priceInput.value);
+        const description = descriptionInput ? descriptionInput.value.trim() : '';
+        const imageUrl = imageUrlInput ? imageUrlInput.value.trim() : '';
+        const highlighted = highlightedInput ? highlightedInput.checked : false;
+        const featureDuration = featureDurationInput && highlighted ? parseInt(featureDurationInput.value) || 0 : 0;
+        const dealerId = dealerIdInput.value;
+
+        let isValid = true;
+
+        if (!name) {
+            nameInput.classList.add('invalid');
+            isValid = false;
         } else {
-            form.style.opacity = '0';
-            setTimeout(() => {
-                form.style.display = 'none';
-                display.style.display = 'block';
-                setTimeout(() => {
-                    display.style.opacity = '1';
-                }, 10);
-            }, 300);
+            nameInput.classList.remove('invalid');
         }
-    }
 
-    // Gestione del form di modifica del concessionario
-    const editForm = document.querySelector('#dealership-form');
-    if (editForm) {
-        editForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitButton = editForm.querySelector('button[type="submit"]');
-            manageSpinner(submitButton, true);
+        if (!price || price <= 0) {
+            priceInput.classList.add('invalid');
+            isValid = false;
+        } else {
+            priceInput.classList.remove('invalid');
+        }
 
-            const name = editForm.querySelector('#edit-dealership-name').value.trim();
-            const imagePath = editForm.querySelector('#edit-dealership-imagePath').value.trim();
+        if (!isValid) {
+            showToast('Compila tutti i campi obbligatori correttamente.', 'error');
+            return;
+        }
 
-            if (!name) {
-                showToast('Il nome del concessionario è obbligatorio!', 'error');
-                highlightInvalidField(editForm.querySelector('#edit-dealership-name'));
-                manageSpinner(submitButton, false);
-                return;
-            }
-
-            if (imagePath && !isValidUrl(imagePath)) {
-                showToast('URL immagine non valido!', 'error');
-                highlightInvalidField(editForm.querySelector('#edit-dealership-imagePath'));
-                manageSpinner(submitButton, false);
-                return;
-            }
-
-            await saveDealer(editForm, false);
-            manageSpinner(submitButton, false);
-        });
-    }
-
-    // Gestione del pulsante Modifica Concessionario
-    const editDealerButton = document.querySelector('#edit-dealer-button');
-    if (editDealerButton) {
-        editDealerButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            toggleFormVisibility(true, 'dealership-form', 'display-dealer-details');
-        });
-    }
-
-    // Gestione del pulsante Annulla Modifica Concessionario
-    const cancelEditDealerButton = document.querySelector('#cancel-edit-dealer');
-    if (cancelEditDealerButton) {
-        cancelEditDealerButton.addEventListener('click', () => {
-            toggleFormVisibility(false, 'dealership-form', 'display-dealer-details');
-        });
-    }
-
-    // Funzione per salvare il concessionario
-    async function saveDealer(form, isCreation) {
-        const data = {
-            name: form.querySelector('#edit-dealership-name').value.trim(),
-            description: form.querySelector('#edit-dealership-description').value.trim(),
-            address: form.querySelector('#edit-dealership-address').value.trim(),
-            contact: form.querySelector('#edit-dealership-contact').value.trim(),
-            imagePath: form.querySelector('#edit-dealership-imagePath').value.trim() || null,
-            isUpdate: 'true'
+        const carData = {
+            dealerId: dealerId,
+            name: name,
+            description: description,
+            price: price,
+            imageUrl: imageUrl,
+            highlighted: highlighted,
+            featureDuration: featureDuration
         };
 
-        try {
-            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-            if (!csrfToken) {
-                throw new Error('Token CSRF mancante');
-            }
-
-            const response = await fetch('/rest/api/dealers', {
-                method: isCreation ? 'POST' : 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Errore nel salvataggio del concessionario');
-            }
-
-            showToast('Concessionario salvato con successo!', 'success');
-            window.location.href = '/rest/dealers/manage';
-        } catch (error) {
-            console.error('Errore:', error);
-            showToast(error.message || 'Errore nel salvataggio del concessionario', 'error');
+        spinner.classList.add('active');
+        const submitButton = addCarForm.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = true;
         }
-    }
-
-    // Gestione del form di aggiunta auto
-    const addCarForm = document.querySelector('#dealer-add-car-form');
-    if (addCarForm) {
-        addCarForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            console.log('Form submitted, calling addCar'); // Debug log
-            const submitButton = addCarForm.querySelector('button[type="submit"]');
-            manageSpinner(submitButton, true);
-
-            const name = addCarForm.querySelector('#dealer-car-name').value.trim();
-            const price = addCarForm.querySelector('#dealer-car-price').value;
-            const imageUrl = addCarForm.querySelector('#dealer-car-imageUrl').value.trim();
-
-            if (!name) {
-                showToast('Il nome dell\'auto è obbligatorio!', 'error');
-                highlightInvalidField(addCarForm.querySelector('#dealer-car-name'));
-                manageSpinner(submitButton, false);
-                return;
-            }
-
-            if (!price || parseFloat(price) <= 0) {
-                showToast('Il prezzo deve essere maggiore di zero!', 'error');
-                highlightInvalidField(addCarForm.querySelector('#dealer-car-price'));
-                manageSpinner(submitButton, false);
-                return;
-            }
-
-            if (imageUrl && !isValidUrl(imageUrl)) {
-                showToast('URL immagine non valido!', 'error');
-                highlightInvalidField(addCarForm.querySelector('#dealer-car-imageUrl'));
-                manageSpinner(submitButton, false);
-                return;
-            }
-
-            await addCar(addCarForm);
-            manageSpinner(submitButton, false);
-        });
-    }
-
-    // Funzione per aggiungere un'auto
-    async function addCar(form) {
-        const data = {
-            name: form.querySelector('#dealer-car-name').value.trim(),
-            description: form.querySelector('#dealer-car-description').value.trim(),
-            price: parseFloat(form.querySelector('#dealer-car-price').value).toFixed(2),
-            imageUrl: form.querySelector('#dealer-car-imageUrl').value.trim() || null
-        };
 
         try {
-            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-            if (!csrfToken) {
-                throw new Error('Token CSRF mancante');
-            }
-
-            const response = await fetch('/rest/api/products', {
+            const response = await fetch(addCarForm.action, {
                 method: 'POST',
+                body: JSON.stringify(carData),
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                body: JSON.stringify(data)
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                }
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Errore nell'aggiunta dell'auto");
-            }
-
-            const result = await response.json();
-            const productGrid = document.querySelector('#dealer-added-cars .product-grid');
-            const newCard = document.createElement('div');
-            newCard.className = 'product-card animated-card';
-            newCard.innerHTML = `
-                <div class="product-image">
-                    <img src="${result.imageUrl || placeholder}" alt="Immagine Auto">
-                    <span class="product-badge"><i class="fas fa-car"></i></span>
-                </div>
-                <div class="product-info">
-                    <div class="info-row"><span class="label"><strong>Nome:</strong></span><span class="value">${result.name}</span></div>
-                    <div class="info-row"><span class="label"><strong>Descrizione:</strong></span><span class="value">${result.description || ''}</span></div>
-                    <div class="info-row"><span class="label"><strong>Prezzo:</strong></span><span class="value">${result.price} €</span></div>
-                    <div class="info-row"><span class="label"><strong>URL Immagine:</strong></span><span class="value">${result.imageUrl || 'Non specificato'}</span></div>
-                    <div class="form-actions">
-                        <a href="#" data-product-id="${result.id}" class="modern-button edit-product-link"><i class="fas fa-edit"></i> Modifica</a>
-                        <a href="#" data-product-id="${result.id}" class="modern-button delete-product-link cancel-button"><i class="fas fa-trash"></i> Elimina</a>
-                    </div>
-                </div>
-            `;
-            productGrid.appendChild(newCard);
-            showToast('Auto aggiunta con successo!', 'success');
-            form.reset();
-            setupImageErrorHandling();
-
-            // Aggiungi event listener per i nuovi pulsanti
-            newCard.querySelector('.edit-product-link').addEventListener('click', handleEditProductClick);
-            newCard.querySelector('.delete-product-link').addEventListener('click', handleDeleteProductClick);
-
-            // Rimuovi il messaggio "Nessuna macchina aggiunta" se presente
-            const noProducts = productGrid.parentElement.querySelector('.no-products');
-            if (noProducts) {
-                noProducts.style.display = 'none';
+            if (response.ok) {
+                showToast('Auto aggiunta con successo!', 'success');
+                addCarForm.reset();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else if (response.status === 404) {
+                showToast('Errore: Endpoint per aggiungere auto non trovato (404). Contatta l\'amministratore.', 'error');
+            } else if (response.status === 415) {
+                showToast('Errore: Formato dei dati non supportato (415). Contatta l\'amministratore.', 'error');
+            } else {
+                const errorText = await response.text();
+                showToast('Errore durante l\'aggiunta dell\'auto: ' + errorText, 'error');
             }
         } catch (error) {
-            console.error('Errore:', error);
-            showToast(error.message || "Errore nell'aggiunta dell'auto", 'error');
+            console.error('Errore di rete:', error);
+            showToast('Errore di rete: ' + error.message, 'error');
+        } finally {
+            spinner.classList.remove('active');
+            if (submitButton) {
+                submitButton.disabled = false;
+            }
         }
+    });
+
+    // Gestione della visibilità del campo "Durata Evidenza" nel form di aggiunta
+    if (highlightedCheckbox && featureDurationField) {
+        highlightedCheckbox.addEventListener('change', function() {
+            featureDurationField.style.display = this.checked ? 'block' : 'none';
+        });
+    } else {
+        console.warn('Elementi per la gestione della durata evidenza non trovati:', { highlightedCheckbox, featureDurationField });
     }
 
-    // Gestione del form di modifica prodotto
-    const editProductForm = document.querySelector('#edit-product-form');
-    if (editProductForm) {
-        editProductForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitButton = editProductForm.querySelector('button[type="submit"]');
-            manageSpinner(submitButton, true);
+    // Gestione del pulsante "Modifica Concessionario"
+    const editDealerButton = document.getElementById('edit-dealer-button');
+    const displayDealerDetails = document.getElementById('display-dealer-details');
+    const dealershipForm = document.getElementById('dealership-form');
+    const cancelEditDealerButton = document.getElementById('cancel-edit-dealer');
 
-            const name = editProductForm.querySelector('#edit-product-name').value.trim();
-            const price = editProductForm.querySelector('#edit-product-price').value;
-            const imageUrl = editProductForm.querySelector('#edit-product-imageUrl').value.trim();
+    if (editDealerButton && displayDealerDetails && dealershipForm && cancelEditDealerButton) {
+        editDealerButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            displayDealerDetails.style.display = 'none';
+            dealershipForm.style.display = 'block';
+        });
+
+        cancelEditDealerButton.addEventListener('click', function() {
+            displayDealerDetails.style.display = 'block';
+            dealershipForm.style.display = 'none';
+        });
+    }
+
+    // Gestione dell'invio del form di modifica del concessionario
+    if (dealershipForm) {
+        dealershipForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            console.log('Form di modifica concessionario inviato'); // Debug
+
+            const idInput = dealershipForm.querySelector('input[name="id"]');
+            const nameInput = document.getElementById('edit-dealership-name');
+            const descriptionInput = document.getElementById('edit-dealership-description');
+            const addressInput = document.getElementById('edit-dealership-address');
+            const contactInput = document.getElementById('edit-dealership-contact');
+            const imagePathInput = document.getElementById('edit-dealership-imagePath');
+
+            if (!idInput || !nameInput) {
+                console.error('Campi del form di modifica concessionario non trovati');
+                showToast('Errore: Campi del form di modifica concessionario non trovati.', 'error');
+                return;
+            }
+
+            const id = idInput.value;
+            const name = nameInput.value.trim();
+            const description = descriptionInput ? descriptionInput.value.trim() : '';
+            const address = addressInput ? addressInput.value.trim() : '';
+            const contact = contactInput ? contactInput.value.trim() : '';
+            const imagePath = imagePathInput ? imagePathInput.value.trim() : '';
+
+            let isValid = true;
 
             if (!name) {
-                showToast('Il nome dell\'auto è obbligatorio!', 'error');
-                highlightInvalidField(editProductForm.querySelector('#edit-product-name'));
-                manageSpinner(submitButton, false);
+                nameInput.classList.add('invalid');
+                isValid = false;
+                console.log('Validazione fallita: Nome concessionario non valido');
+            } else {
+                nameInput.classList.remove('invalid');
+            }
+
+            if (!isValid) {
+                showToast('Compila tutti i campi obbligatori correttamente.', 'error');
                 return;
             }
 
-            if (!price || parseFloat(price) <= 0) {
-                showToast('Il prezzo deve essere maggiore di zero!', 'error');
-                highlightInvalidField(editProductForm.querySelector('#edit-product-price'));
-                manageSpinner(submitButton, false);
-                return;
+            const dealerData = {
+                id: id,
+                name: name,
+                description: description,
+                address: address,
+                contact: contact,
+                imagePath: imagePath,
+                isUpdate: "true" // Aggiunto il flag isUpdate
+            };
+
+            console.log('Dati del form di modifica concessionario:', dealerData); // Debug
+
+            const spinner = dealershipForm.querySelector('.spinner');
+            if (spinner) {
+                spinner.classList.add('active');
             }
 
-            if (imageUrl && !isValidUrl(imageUrl)) {
-                showToast('URL immagine non valido!', 'error');
-                highlightInvalidField(editProductForm.querySelector('#edit-product-imageUrl'));
-                manageSpinner(submitButton, false);
-                return;
+            const submitButton = dealershipForm.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.disabled = true;
             }
 
-            await updateCar(editProductForm);
-            manageSpinner(submitButton, false);
-        });
-    }
-
-    // Gestione del pulsante Annulla Modifica Prodotto
-    const cancelEditProductButton = document.querySelector('#cancel-edit-product');
-    if (cancelEditProductButton) {
-        cancelEditProductButton.addEventListener('click', () => {
-            toggleFormVisibility(false, 'edit-product-form', 'dealer-added-cars');
-            editProductForm.closest('.hero-content').style.display = 'none';
-        });
-    }
-
-    // Funzione per gestire il click su Modifica Prodotto
-    function handleEditProductClick(e) {
-        e.preventDefault();
-        const productId = e.target.closest('a').getAttribute('data-product-id');
-        console.log('Edit productId:', productId); // Debug log
-        if (!productId || productId === 'undefined' || isNaN(productId)) {
-            showToast('ID prodotto non valido', 'error');
-            return;
-        }
-
-        fetch(`/rest/api/products/${productId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Errore nel caricamento del prodotto');
-                }
-                return response.json();
-            })
-            .then(product => {
-                editProductForm.querySelector('#edit-product-id').value = product.id;
-                editProductForm.querySelector('#edit-product-name').value = product.name;
-                editProductForm.querySelector('#edit-product-description').value = product.description || '';
-                editProductForm.querySelector('#edit-product-price').value = product.price;
-                editProductForm.querySelector('#edit-product-imageUrl').value = product.imageUrl || '';
-                toggleFormVisibility(true, 'edit-product-form', 'dealer-added-cars');
-                editProductForm.closest('.hero-content').style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Errore:', error);
-                showToast('Errore nel caricamento dei dati del prodotto', 'error');
-            });
-    }
-
-    // Funzione per gestire il click su Elimina Prodotto
-    function handleDeleteProductClick(e) {
-        e.preventDefault();
-        const productId = e.target.closest('a').getAttribute('data-product-id');
-        console.log('Delete productId:', productId); // Debug log
-        if (!productId || productId === 'undefined' || isNaN(productId)) {
-            showToast('ID prodotto non valido', 'error');
-            return;
-        }
-
-        if (confirm('Sei sicuro di voler eliminare questo prodotto?')) {
-            deleteCar(productId);
-        }
-    }
-
-    // Aggiungi event listener per i pulsanti di modifica ed eliminazione
-    document.querySelectorAll('.edit-product-link').forEach(link => {
-        link.addEventListener('click', handleEditProductClick);
-    });
-
-    document.querySelectorAll('.delete-product-link').forEach(link => {
-        link.addEventListener('click', handleDeleteProductClick);
-    });
-
-    // Funzione per aggiornare un'auto
-    async function updateCar(form) {
-        const data = {
-            id: form.querySelector('#edit-product-id').value,
-            name: form.querySelector('#edit-product-name').value.trim(),
-            description: form.querySelector('#edit-product-description').value.trim(),
-            price: parseFloat(form.querySelector('#edit-product-price').value).toFixed(2),
-            imageUrl: form.querySelector('#edit-product-imageUrl').value.trim() || null
-        };
-
-        try {
-            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-            if (!csrfToken) {
-                throw new Error('Token CSRF mancante');
-            }
-
-            const response = await fetch(`/rest/api/products/${data.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Errore nell'aggiornamento dell'auto");
-            }
-
-            showToast('Auto aggiornata con successo!', 'success');
-            window.location.href = '/rest/dealers/manage';
-        } catch (error) {
-            console.error('Errore:', error);
-            showToast(error.message || "Errore nell'aggiornamento dell'auto", 'error');
-        }
-    }
-
-    // Funzione per eliminare un'auto
-    async function deleteCar(productId) {
-        try {
-            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-            if (!csrfToken) {
-                throw new Error('Token CSRF mancante');
-            }
-
-            const response = await fetch(`/rest/api/products/${productId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                }
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Errore nell'eliminazione dell'auto");
-            }
-
-            // Remove the product card from the DOM
-            const productCard = document.querySelector(`.product-card a[data-product-id="${productId}"]`).closest('.product-card');
-            if (productCard) {
-                productCard.remove();
-            }
-
-            // Show "no products" message if no products remain
-            const productGrid = document.querySelector('#dealer-added-cars .product-grid');
-            if (productGrid.children.length === 0) {
-                const noProducts = productGrid.parentElement.querySelector('.no-products');
-                if (noProducts) {
-                    noProducts.style.display = 'block';
-                }
-            }
-
-            showToast('Auto eliminata con successo!', 'success');
-        } catch (error) {
-            console.error('Errore:', error);
-            showToast(error.message || "Errore nell'eliminazione dell'auto", 'error');
-        }
-    }
-
-    // Animazioni delle sezioni
-    const sections = document.querySelectorAll('.animated-section');
-    sections.forEach((section, index) => {
-        setTimeout(() => {
-            section.classList.add('visible');
-            if (section.classList.contains('products-section')) {
-                const cards = section.querySelectorAll('.product-card');
-                cards.forEach((card, cardIndex) => {
-                    setTimeout(() => {
-                        card.classList.add('visible');
-                    }, cardIndex * 100);
+            try {
+                console.log('Invio richiesta POST a /rest/api/dealers'); // Debug
+                const response = await fetch(`/rest/api/dealers`, {
+                    method: 'POST',
+                    body: JSON.stringify(dealerData),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                    }
                 });
+
+                console.log('Risposta ricevuta:', response.status, response.statusText); // Debug
+
+                if (response.ok) {
+                    const responseData = await response.json();
+                    showToast(responseData.message || 'Concessionario modificato con successo!', 'success');
+                    dealershipForm.style.display = 'none';
+                    document.getElementById('display-dealer-details').style.display = 'block';
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    const errorData = await response.json();
+                    console.error('Errore dal server:', errorData);
+                    showToast(errorData.message || 'Errore durante la modifica del concessionario.', 'error');
+                }
+            } catch (error) {
+                console.error('Errore di rete:', error);
+                showToast('Errore di rete: ' + error.message, 'error');
+            } finally {
+                if (spinner) {
+                    spinner.classList.remove('active');
+                }
+                if (submitButton) {
+                    submitButton.disabled = false;
+                }
             }
-        }, index * 200);
+        });
+    }
+
+    // Gestione del form di modifica del prodotto
+    const cancelEditProductButton = document.getElementById('cancel-edit-product');
+    const editProductLinks = document.querySelectorAll('.edit-product-link');
+    const deleteProductLinks = document.querySelectorAll('.delete-product-link');
+    const highlightProductLinks = document.querySelectorAll('.highlight-product-link');
+    const removeHighlightProductLinks = document.querySelectorAll('.remove-highlight-product-link');
+
+    // Funzione per popolare il form di modifica con i dati del prodotto
+    async function populateEditForm(productId) {
+        try {
+            const response = await fetch(`/rest/api/products/${productId}`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                }
+            });
+
+            if (response.ok) {
+                const product = await response.json();
+                document.getElementById('edit-product-id').value = product.id || '';
+                document.getElementById('edit-product-name').value = product.name || '';
+                document.getElementById('edit-product-description').value = product.description || '';
+                document.getElementById('edit-product-price').value = product.price || '';
+                document.getElementById('edit-product-imageUrl').value = product.imageUrl || '';
+                document.getElementById('edit-product-highlighted').checked = product.highlighted || false;
+                const editHighlightDurationField = document.getElementById('edit-highlight-duration-field');
+                if (editHighlightDurationField) {
+                    editHighlightDurationField.style.display = product.highlighted ? 'block' : 'none';
+                }
+                document.getElementById('edit-product-highlight-duration').value = product.featureDuration || '';
+            } else {
+                showToast('Errore durante il recupero dei dati del prodotto.', 'error');
+            }
+        } catch (error) {
+            console.error('Errore di rete:', error);
+            showToast('Errore di rete: ' + error.message, 'error');
+        }
+    }
+
+    // Gestione del click su "Modifica"
+    if (editProductLinks && editProductForm && cancelEditProductButton) {
+        editProductLinks.forEach(link => {
+            link.addEventListener('click', async function(event) {
+                event.preventDefault();
+                const productId = this.getAttribute('data-product-id');
+                console.log('Cliccato "Modifica" per il prodotto con ID:', productId); // Debug
+                try {
+                    await populateEditForm(productId);
+                    // Rendi visibile il contenitore genitore
+                    const heroContent = editProductForm.closest('.hero-content');
+                    if (heroContent) {
+                        heroContent.style.display = 'block';
+                    } else {
+                        console.warn('Contenitore .hero-content non trovato');
+                    }
+                    // Rendi visibile il form
+                    editProductForm.style.display = 'block';
+                    console.log('Form #edit-product-form reso visibile'); // Debug
+
+                    // Listener per il pulsante "Salva" (debug)
+                    const submitButton = editProductForm.querySelector('button[type="submit"]');
+                    if (submitButton) {
+                        submitButton.addEventListener('click', function(e) {
+                            console.log('Pulsante "Salva" cliccato nel form di modifica'); // Debug
+                        });
+                    } else {
+                        console.error('Pulsante "Salva" non trovato nel form #edit-product-form');
+                    }
+
+                    // Listener globale per i click nel form (debug)
+                    editProductForm.addEventListener('click', function(e) {
+                        console.log('Click rilevato nel form #edit-product-form, target:', e.target); // Debug
+                    });
+                } catch (error) {
+                    console.error('Errore durante il popolamento del form di modifica:', error);
+                    showToast('Errore durante il caricamento del form di modifica.', 'error');
+                }
+            });
+        });
+
+        cancelEditProductButton.addEventListener('click', function() {
+            console.log('Cliccato "Annulla" nel form di modifica'); // Debug
+            editProductForm.style.display = 'none';
+            const heroContent = editProductForm.closest('.hero-content');
+            if (heroContent) {
+                heroContent.style.display = 'none';
+            } else {
+                console.warn('Contenitore .hero-content non trovato');
+            }
+            editProductForm.reset();
+        });
+    }
+
+    // Gestione dell'invio del form di modifica
+    if (editProductForm) {
+        console.log('Form #edit-product-form trovato nel DOM'); // Debug
+        editProductForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            console.log('Form di modifica inviato'); // Debug
+
+            const productIdInput = document.getElementById('edit-product-id');
+            const nameInput = document.getElementById('edit-product-name');
+            const priceInput = document.getElementById('edit-product-price');
+            const descriptionInput = document.getElementById('edit-product-description');
+            const imageUrlInput = document.getElementById('edit-product-imageUrl');
+            const highlightedInput = document.getElementById('edit-product-highlighted');
+            const featureDurationInput = document.getElementById('edit-product-highlight-duration');
+
+            if (!productIdInput || !nameInput || !priceInput) {
+                console.error('Campi del form di modifica non trovati:', { productIdInput, nameInput, priceInput });
+                showToast('Errore: Campi del form di modifica non trovati.', 'error');
+                return;
+            }
+
+            const productId = productIdInput.value;
+            const name = nameInput.value.trim();
+            const price = parseFloat(priceInput.value);
+            const description = descriptionInput ? descriptionInput.value.trim() : '';
+            const imageUrl = imageUrlInput ? imageUrlInput.value.trim() : '';
+            const highlighted = highlightedInput ? highlightedInput.checked : false;
+            const featureDuration = highlighted && featureDurationInput ? parseInt(featureDurationInput.value) || 0 : 0;
+
+            console.log('Dati del form di modifica:', { productId, name, price, description, imageUrl, highlighted, featureDuration }); // Debug
+
+            let isValid = true;
+
+            if (!name) {
+                nameInput.classList.add('invalid');
+                isValid = false;
+                console.log('Validazione fallita: Nome non valido');
+            } else {
+                nameInput.classList.remove('invalid');
+            }
+
+            if (isNaN(price) || price <= 0) {
+                priceInput.classList.add('invalid');
+                isValid = false;
+                console.log('Validazione fallita: Prezzo non valido');
+            } else {
+                priceInput.classList.remove('invalid');
+            }
+
+            if (!isValid) {
+                showToast('Compila tutti i campi obbligatori correttamente.', 'error');
+                return;
+            }
+
+            const productData = {
+                id: productId,
+                name: name,
+                description: description,
+                price: price,
+                imageUrl: imageUrl,
+                highlighted: highlighted,
+                featureDuration: featureDuration
+            };
+
+            const spinner = editProductForm.querySelector('.spinner');
+            if (spinner) {
+                spinner.classList.add('active');
+            } else {
+                console.warn('Spinner non trovato nel form di modifica');
+            }
+
+            const submitButton = editProductForm.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.disabled = true;
+            }
+
+            try {
+                console.log('Invio richiesta PUT a /rest/api/products/' + productId); // Debug
+                const response = await fetch(`/rest/api/products/${productId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(productData),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                    }
+                });
+
+                console.log('Risposta ricevuta:', response.status, response.statusText); // Debug
+
+                if (response.ok) {
+                    const responseData = await response.json();
+                    showToast(responseData.message || 'Auto modificata con successo!', 'success');
+                    editProductForm.style.display = 'none';
+                    const heroContent = editProductForm.closest('.hero-content');
+                    if (heroContent) {
+                        heroContent.style.display = 'none';
+                    } else {
+                        console.warn('Contenitore .hero-content non trovato');
+                    }
+                    editProductForm.reset();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    const errorData = await response.json();
+                    console.error('Errore dal server:', errorData);
+                    showToast(errorData.message || 'Errore durante la modifica dell\'auto.', 'error');
+                }
+            } catch (error) {
+                console.error('Errore di rete:', error);
+                showToast('Errore di rete: ' + error.message, 'error');
+            } finally {
+                if (spinner) {
+                    spinner.classList.remove('active');
+                }
+                if (submitButton) {
+                    submitButton.disabled = false;
+                }
+            }
+        });
+    } else {
+        console.error('Form #edit-product-form non trovato nel DOM'); // Debug
+    }
+
+    // Gestione del click su "Elimina"
+    if (deleteProductLinks) {
+        deleteProductLinks.forEach(link => {
+            link.addEventListener('click', async function(event) {
+                event.preventDefault();
+                const productId = this.getAttribute('data-product-id');
+                const confirmDelete = confirm('Sei sicuro di voler eliminare questo prodotto?');
+                if (!confirmDelete) return;
+
+                try {
+                    const response = await fetch(`/rest/api/products/${productId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                        }
+                    });
+
+                    if (response.ok) {
+                        showToast('Auto eliminata con successo!', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        const errorText = await response.text();
+                        showToast('Errore durante l\'eliminazione dell\'auto: ' + errorText, 'error');
+                    }
+                } catch (error) {
+                    console.error('Errore di rete:', error);
+                    showToast('Errore di rete: ' + error.message, 'error');
+                }
+            });
+        });
+    }
+
+    // Gestione del click su "Metti in Evidenza"
+    if (highlightProductLinks) {
+        highlightProductLinks.forEach(link => {
+            link.addEventListener('click', async function(event) {
+                event.preventDefault();
+                const productId = this.getAttribute('data-product-id');
+
+                const durationInput = prompt('Inserisci la durata in giorni per l\'evidenza (es. 7):');
+                const duration = parseInt(durationInput);
+
+                console.log('Durata inserita:', durationInput, 'Parsata:', duration); // Debug
+
+                if (isNaN(duration) || duration <= 0) {
+                    showToast('Inserisci una durata valida (numero di giorni maggiore di 0).', 'error');
+                    return;
+                }
+
+                const highlightData = {
+                    duration: duration.toString()
+                };
+
+                console.log('Dati inviati per l\'evidenza:', highlightData); // Debug
+
+                try {
+                    const response = await fetch(`/rest/api/products/${productId}/highlight`, {
+                        method: 'POST',
+                        body: JSON.stringify(highlightData),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                        }
+                    });
+
+                    console.log('Risposta ricevuta:', response.status, response.statusText); // Debug
+
+                    if (response.ok) {
+                        const responseData = await response.json();
+                        showToast(responseData.message || 'Auto messa in evidenza con successo!', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        const errorData = await response.json();
+                        console.error('Errore dal server:', errorData);
+                        showToast(errorData.message || 'Errore durante la messa in evidenza.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Errore di rete:', error);
+                    showToast('Errore di rete: ' + error.message, 'error');
+                }
+            });
+        });
+    }
+
+// Gestione del click su "Rimuovi Evidenza"
+    if (removeHighlightProductLinks) {
+        removeHighlightProductLinks.forEach(link => {
+            link.addEventListener('click', async function(event) {
+                event.preventDefault();
+                const productId = this.getAttribute('data-product-id');
+
+                try {
+                    const response = await fetch(`/rest/api/products/${productId}/remove-highlight`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                        }
+                    });
+
+                    if (response.ok) {
+                        showToast('Evidenza rimossa con successo!', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        const errorText = await response.text();
+                        showToast('Errore durante la rimozione dell\'evidenza: ' + errorText, 'error');
+                    }
+                } catch (error) {
+                    console.error('Errore di rete:', error);
+                    showToast('Errore di rete: ' + error.message, 'error');
+                }
+            });
+        });
+    }
+
+// Animazioni per le sezioni e le card
+    const animatedSections = document.querySelectorAll('.animated-section');
+    animatedSections.forEach(section => {
+        section.classList.add('visible');
     });
 
-    // Inizializza la gestione degli errori delle immagini
-    setupImageErrorHandling();
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach((card, index) => {
+        setTimeout(() => {
+            card.classList.add('visible');
+        }, index * 100);
+    });
 });

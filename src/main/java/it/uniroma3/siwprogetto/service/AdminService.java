@@ -109,8 +109,6 @@ public class AdminService {
 		dealer.setAddress(updatedDealer.getAddress());
 		dealer.setContact(updatedDealer.getContact());
 		dealer.setImagePath(updatedDealer.getImagePath());
-		dealer.setLat(updatedDealer.getLat());
-		dealer.setLng(updatedDealer.getLng());
 
 		Dealer savedDealer = dealerRepository.save(dealer);
 		logger.info("Dealer updated by admin: id={}, name={}", savedDealer.getId(), savedDealer.getName());
