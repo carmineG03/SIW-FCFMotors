@@ -135,58 +135,7 @@ public class DealerService {
         }
     }
 
-    // Metodo per geocodificare tutti i concessionari con coordinate mancanti
-    @Transactional
-    public void geocodeAllDealers() {
-        List<Dealer> dealers = dealerRepository.findByMissingCoordinates();
-        if (dealers.isEmpty()) {
-            logger.info("Nessun concessionario da geocodificare.");
-            return;
-        }
-
-        for (Dealer dealer : dealers) {
-            try {
-                String address = dealer.getAddress();
-                if (address == null || address.trim().isEmpty()) {
-                    logger.warn("Indirizzo non valido per concessionario: {}", dealer.getName());
-                    dealer.setLat(41.9028); // Roma, fallback
-                    dealer.setLng(12.4964);
-                    dealerRepository.save(dealer);
-                    continue;
-                }
-
-                String url = "https://nominatim.openstreetmap.org/search?format=json&q=" +
-                             URLEncoder.encode(address, StandardCharsets.UTF_8) + "&countrycodes=IT&limit=1";
-                HttpHeaders headers = new HttpHeaders();
-                headers.set("User-Agent", "FCFMotors/1.0 (info@fcfmotors.com)");
-                HttpEntity<String> entity = new HttpEntity<>(headers);
-
-                List<Map<String, Object>> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class).getBody();
-
-                if (response != null && !response.isEmpty()) {
-                    Map<String, Object> result = response.get(0);
-                    dealer.setLat(Double.parseDouble(result.get("lat").toString()));
-                    dealer.setLng(Double.parseDouble(result.get("lon").toString()));
-                    logger.info("Geocoded address: {} -> lat={}, lng={}", dealer.getAddress(), dealer.getLat(), dealer.getLng());
-                } else {
-                    logger.warn("No coordinates found for address: {}", dealer.getAddress());
-                    dealer.setLat(41.9028); // Roma, fallback
-                    dealer.setLng(12.4964);
-                }
-
-                dealerRepository.save(dealer);
-
-                // Rispetta il limite di 1 richiesta al secondo
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                logger.error("Errore durante il geocoding per concessionario: {}", dealer.getName(), e);
-                dealer.setLat(41.9028); // Roma, fallback
-                dealer.setLng(12.4964);
-                dealerRepository.save(dealer);
-            }
-        }
-        logger.info("Geocoding completato per {} concessionari.", dealers.size());
-    }
+   
 
     public Dealer findByOwner() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
