@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 
 import static it.uniroma3.siwprogetto.util.SecurityUtils.hasRole;
@@ -271,21 +272,38 @@ public class AccountController {
                                 HttpServletRequest request, HttpServletResponse response) {
         if (principal == null || principal.getName() == null) {
             model.addAttribute("error", "Utente non autenticato");
+            model.addAttribute("accountInformation", new AccountInformation());
+            model.addAttribute("editMode", false);
+            model.addAttribute("activeSubscriptions", Collections.emptyList());
+            model.addAttribute("availableSubscriptions", subscriptionRepository.findAll());
             return "account";
         }
 
         String username = principal.getName();
         try {
             User user = userService.findByUsername(username);
-            userService.deleteUser(user, password); // Verifica password e cancella
-            // Esegue il logout
+            if (user == null) {
+                throw new RuntimeException("Utente non trovato");
+            }
+            userService.deleteUser(user, password);
             new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-            return "redirect:/login?accountDeleted"; // Reindirizza alla pagina di login con parametro
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage()); // Password errata
-            return "account";
+            return "redirect:/login?accountDeleted";
         } catch (RuntimeException e) {
-            model.addAttribute("error", "Utente non trovato o errore durante la cancellazione");
+            User user = userService.findByUsername(username);
+            if (user != null) {
+                model.addAttribute("user", user);
+                model.addAttribute("accountInformation", accountInformationRepository
+                        .findByUserId(user.getId())
+                        .orElse(new AccountInformation()));
+                model.addAttribute("activeSubscriptions", userService.getActiveSubscriptions(user.getId()));
+                model.addAttribute("availableSubscriptions", userService.getAvailableSubscriptions());
+            } else {
+                model.addAttribute("accountInformation", new AccountInformation());
+                model.addAttribute("activeSubscriptions", Collections.emptyList());
+                model.addAttribute("availableSubscriptions", subscriptionRepository.findAll());
+            }
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("editMode", false);
             return "account";
         }
     }

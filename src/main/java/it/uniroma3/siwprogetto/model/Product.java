@@ -48,7 +48,6 @@ public class Product {
     private User seller;
 
 
-
     private boolean isFeatured;
 
     private LocalDateTime featuredUntil;
@@ -88,4 +87,7 @@ public class Product {
     public void setIsFeatured(boolean isFeatured) { this.isFeatured = isFeatured; }
     public LocalDateTime getFeaturedUntil() { return featuredUntil; }
     public void setFeaturedUntil(LocalDateTime featuredUntil) { this.featuredUntil = featuredUntil; }
+    public boolean isFeaturedActive() {
+        return isFeatured && (featuredUntil == null || LocalDateTime.now().isBefore(featuredUntil));
+    }
 }

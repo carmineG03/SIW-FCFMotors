@@ -2,13 +2,17 @@ package it.uniroma3.siwprogetto.controller;
 
 import it.uniroma3.siwprogetto.model.Dealer;
 import it.uniroma3.siwprogetto.model.Product;
+import it.uniroma3.siwprogetto.model.QuoteRequest;
 import it.uniroma3.siwprogetto.repository.DealerRepository;
+import it.uniroma3.siwprogetto.repository.QuoteRequestRepository;
 import it.uniroma3.siwprogetto.service.DealerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +37,14 @@ public class DealerController {
 
     @Autowired
     private DealerRepository dealerRepository;
+
+    @Autowired
+    private QuoteRequestRepository quoteRequestRepository;
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+
 
     @PostMapping("/api/dealers")
     @ResponseBody
@@ -70,8 +83,6 @@ public class DealerController {
             response.put("address", savedDealer.getAddress() != null ? savedDealer.getAddress() : "");
             response.put("contact", savedDealer.getContact() != null ? savedDealer.getContact() : "");
             response.put("imagePath", savedDealer.getImagePath() != null ? savedDealer.getImagePath() : "");
-            response.put("lat", savedDealer.getLat() != null ? savedDealer.getLat() : 0.0);
-            response.put("lng", savedDealer.getLng() != null ? savedDealer.getLng() : 0.0);
 
             return ResponseEntity.ok(response);
 
@@ -102,8 +113,6 @@ public class DealerController {
                 dealerMap.put("address", dealer.getAddress() != null ? dealer.getAddress() : "");
                 dealerMap.put("contact", dealer.getContact() != null ? dealer.getContact() : "");
                 dealerMap.put("imagePath", dealer.getImagePath() != null ? dealer.getImagePath() : "");
-                dealerMap.put("lat", dealer.getLat() != null ? dealer.getLat() : 0.0);
-                dealerMap.put("lng", dealer.getLng() != null ? dealer.getLng() : 0.0);
                 return dealerMap;
             }).toList();
             logger.info("Returning {} dealers", response.size());
@@ -204,11 +213,14 @@ public class DealerController {
     @PostMapping("/api/products")
     @ResponseBody
     public ResponseEntity<?> addProduct(@RequestBody Map<String, String> payload) {
-        logger.info("Received POST /rest/api/products with payload: {}", payload);
+        logger.info("Received POST /rest/api/products for product: {}", payload.get("name"));
         String name = payload.get("name");
         String description = payload.get("description");
         String priceStr = payload.get("price");
         String imageUrl = payload.get("imageUrl");
+        String isFeaturedStr = payload.get("isFeatured");
+        String featuredUntilStr = payload.get("featuredUntil");
+
         String trimmedName = (name != null) ? name.trim() : null;
 
         if (!StringUtils.hasText(trimmedName)) {
@@ -221,6 +233,11 @@ public class DealerController {
             return ResponseEntity.badRequest().body(Map.of("message", "Il prezzo del prodotto è obbligatorio"));
         }
 
+        if (!priceStr.matches("\\d+(\\.\\d{1,2})?")) {
+            logger.warn("Invalid price format: {}", priceStr);
+            return ResponseEntity.badRequest().body(Map.of("message", "Il prezzo deve essere un numero valido (es. 20000.00)"));
+        }
+
         try {
             BigDecimal price = new BigDecimal(priceStr);
             Product product = new Product();
@@ -229,9 +246,22 @@ public class DealerController {
             product.setPrice(price);
             product.setImageUrl(StringUtils.hasText(imageUrl) ? imageUrl.trim() : null);
 
+            boolean highlighted = StringUtils.hasText(isFeaturedStr) ? Boolean.parseBoolean(isFeaturedStr) : false;
+            product.setIsFeatured(highlighted);
+            if (highlighted && StringUtils.hasText(featuredUntilStr)) {
+                int highlightDuration = Integer.parseInt(featuredUntilStr);
+                if (highlightDuration <= 0) {
+                    logger.warn("Invalid highlight duration: {}", featuredUntilStr);
+                    return ResponseEntity.badRequest().body(Map.of("message", "La durata deve essere positiva"));
+                }
+                product.setFeaturedUntil(LocalDateTime.now().plusDays(highlightDuration));
+            }
+
             logger.info("Calling dealerService.addProduct for product: {}", product.getName());
+            long startTime = System.currentTimeMillis();
             Product savedProduct = dealerService.addProduct(product);
-            logger.info("Product added successfully: id={}, name={}", savedProduct.getId(), savedProduct.getName());
+            logger.info("Product added successfully: id={}, name={}, took {} ms",
+                    savedProduct.getId(), savedProduct.getName(), System.currentTimeMillis() - startTime);
 
             Map<String, Object> response = new HashMap<>();
             response.put("id", savedProduct.getId());
@@ -239,11 +269,13 @@ public class DealerController {
             response.put("description", savedProduct.getDescription() != null ? savedProduct.getDescription() : "");
             response.put("price", savedProduct.getPrice());
             response.put("imageUrl", savedProduct.getImageUrl() != null ? savedProduct.getImageUrl() : "");
+            response.put("highlighted", savedProduct.isFeatured());
+            response.put("highlightExpiration", savedProduct.getFeaturedUntil() != null ? savedProduct.getFeaturedUntil().toString() : null);
 
             return ResponseEntity.ok(response);
         } catch (NumberFormatException e) {
-            logger.error("Invalid price format: {}", priceStr);
-            return ResponseEntity.badRequest().body(Map.of("message", "Formato del prezzo non valido"));
+            logger.error("Invalid price or highlight duration format: price={}, duration={}", priceStr, featuredUntilStr);
+            return ResponseEntity.badRequest().body(Map.of("message", "Formato del prezzo o della durata non valido"));
         } catch (IllegalStateException e) {
             logger.error("State error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
@@ -290,6 +322,9 @@ public class DealerController {
         String description = payload.get("description");
         String priceStr = payload.get("price");
         String imageUrl = payload.get("imageUrl");
+        String highlightedStr = payload.get("highlighted");
+        String highlightDurationStr = payload.get("highlightDuration");
+
         String trimmedName = (name != null) ? name.trim() : null;
 
         if (!StringUtils.hasText(trimmedName)) {
@@ -310,6 +345,15 @@ public class DealerController {
             product.setPrice(price);
             product.setImageUrl(StringUtils.hasText(imageUrl) ? imageUrl.trim() : null);
 
+            boolean highlighted = Boolean.parseBoolean(highlightedStr);
+            product.setIsFeatured(highlighted);
+            if (highlighted && StringUtils.hasText(highlightDurationStr)) {
+                int highlightDuration = Integer.parseInt(highlightDurationStr);
+                product.setFeaturedUntil(LocalDateTime.now().plusDays(highlightDuration));
+            } else if (!highlighted) {
+                product.setFeaturedUntil(null);
+            }
+
             logger.info("Calling dealerService.updateProduct for product: id={}, name={}", productId, product.getName());
             Product updatedProduct = dealerService.updateProduct(productId, product);
             logger.info("Product updated successfully: id={}, name={}", updatedProduct.getId(), updatedProduct.getName());
@@ -320,11 +364,13 @@ public class DealerController {
             response.put("description", updatedProduct.getDescription() != null ? updatedProduct.getDescription() : "");
             response.put("price", updatedProduct.getPrice());
             response.put("imageUrl", updatedProduct.getImageUrl() != null ? updatedProduct.getImageUrl() : "");
+            response.put("highlighted", updatedProduct.isFeatured());
+            response.put("highlightExpiration", updatedProduct.getFeaturedUntil() != null ? updatedProduct.getFeaturedUntil().toString() : null);
 
             return ResponseEntity.ok(response);
         } catch (NumberFormatException e) {
-            logger.error("Invalid price format: {}", priceStr);
-            return ResponseEntity.badRequest().body(Map.of("message", "Formato del prezzo non valido"));
+            logger.error("Invalid price or highlight duration format: price={}, duration={}", priceStr, highlightDurationStr);
+            return ResponseEntity.badRequest().body(Map.of("message", "Formato del prezzo o della durata non valido"));
         } catch (IllegalStateException e) {
             logger.error("State error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
@@ -392,4 +438,144 @@ public class DealerController {
             return "redirect:/rest/dealers/create";
         }
     }
+
+    @PostMapping("/api/products/{productId}/highlight")
+    @ResponseBody
+    public ResponseEntity<?> highlightProduct(@PathVariable Long productId, @RequestBody Map<String, String> payload) {
+        logger.info("Received POST /rest/api/products/{}/highlight with payload: {}", productId, payload);
+        String durationStr = payload.get("duration");
+
+        if (!StringUtils.hasText(durationStr)) {
+            logger.warn("Validation failed: Highlight duration is missing or empty");
+            return ResponseEntity.badRequest().body(Map.of("message", "La durata dell'evidenza è obbligatoria"));
+        }
+
+        try {
+            int duration = Integer.parseInt(durationStr);
+            if (duration <= 0) {
+                logger.warn("Validation failed: Highlight duration must be positive");
+                return ResponseEntity.badRequest().body(Map.of("message", "La durata deve essere un numero positivo"));
+            }
+
+            Product highlightedProduct = dealerService.highlightProduct(productId, duration);
+            logger.info("Product highlighted successfully: id={}, name={}", highlightedProduct.getId(), highlightedProduct.getName());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", highlightedProduct.getId());
+            response.put("name", highlightedProduct.getName());
+            response.put("highlighted", highlightedProduct.isFeatured());
+            response.put("highlightExpiration", highlightedProduct.getFeaturedUntil() != null ? highlightedProduct.getFeaturedUntil().toString() : null);
+
+            return ResponseEntity.ok(response);
+        } catch (NumberFormatException e) {
+            logger.error("Invalid duration format: {}", durationStr);
+            return ResponseEntity.badRequest().body(Map.of("message", "Formato della durata non valido"));
+        } catch (IllegalStateException e) {
+            logger.error("State error: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error highlighting product: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Errore interno del server"));
+        }
+    }
+
+    @PostMapping("/api/products/{productId}/remove-highlight")
+    @ResponseBody
+    public ResponseEntity<?> removeHighlight(@PathVariable Long productId) {
+        logger.info("Received POST /rest/api/products/{}/remove-highlight", productId);
+        try {
+            Product updatedProduct = dealerService.removeHighlight(productId);
+            logger.info("Highlight removed successfully: id={}, name={}", updatedProduct.getId(), updatedProduct.getName());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", updatedProduct.getId());
+            response.put("name", updatedProduct.getName());
+            response.put("highlighted", updatedProduct.isFeatured());
+            response.put("highlightExpiration", updatedProduct.getFeaturedUntil() != null ? updatedProduct.getFeaturedUntil().toString() : null);
+
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            logger.error("State error: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error removing highlight: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Errore interno del server"));
+        }
+    }
+
+    @GetMapping("/dealer/quote-requests/{dealerId}")
+    public String viewQuoteRequests(@PathVariable Long dealerId, Model model) {
+        logger.info("Accessing quote requests for dealer ID: {}", dealerId);
+        try {
+            // Verifica che il dealer esista
+            Dealer dealer = dealerRepository.findById(dealerId)
+                    .orElseThrow(() -> new IllegalStateException("Dealer non trovato"));
+
+            // Verifica che l'utente autenticato sia il proprietario del dealer
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            Dealer authenticatedDealer = dealerService.findByOwner();
+            if (authenticatedDealer == null || !authenticatedDealer.getId().equals(dealerId)) {
+                model.addAttribute("errorMessage", "Accesso non autorizzato.");
+                return "redirect:/rest/dealers/manage";
+            }
+
+            List<QuoteRequest> quoteRequests = quoteRequestRepository.findByDealerId(dealerId);
+            model.addAttribute("quoteRequests", quoteRequests);
+            model.addAttribute("dealerId", dealerId);
+            return "quote_requests";
+        } catch (IllegalStateException e) {
+            logger.error("Error loading quote requests for dealer ID {}: {}", dealerId, e.getMessage(), e);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "redirect:/rest/dealers/manage";
+        } catch (Exception e) {
+            logger.error("Unexpected error loading quote requests for dealer ID {}: {}", dealerId, e.getMessage(), e);
+            model.addAttribute("errorMessage", "Errore nel caricamento delle richieste di preventivo.");
+            return "redirect:/rest/dealers/manage";
+        }
+    }
+
+    @PostMapping("/dealer/quote-requests/respond/{requestId}")
+    public String respondToQuoteRequest(@PathVariable Long requestId, @RequestParam String responseMessage, RedirectAttributes redirectAttributes) {
+		logger.info("Responding to quote request ID: {}", requestId);
+		QuoteRequest quoteRequest = new QuoteRequest();
+		try {
+			quoteRequest = quoteRequestRepository.findById(requestId)
+					.orElseThrow(() -> new IllegalStateException("Richiesta di preventivo non trovata"));
+
+			// Verifica che l'utente autenticato sia il proprietario del dealer
+			String username = SecurityContextHolder.getContext().getAuthentication().getName();
+			Dealer authenticatedDealer = dealerService.findByOwner();
+			if (authenticatedDealer == null || !authenticatedDealer.getId().equals(quoteRequest.getDealer().getId())) {
+				redirectAttributes.addFlashAttribute("errorMessage", "Accesso non autorizzato.");
+				return "redirect:/rest/dealers/manage";
+			}
+
+			// Invia email all'utente
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setTo(quoteRequest.getUserEmail());
+			message.setSubject("Risposta alla tua richiesta di preventivo - FCF Motors");
+			message.setText("Gentile cliente,\n\nAbbiamo ricevuto la tua richiesta di preventivo per il prodotto: " +
+					quoteRequest.getProduct().getName() + ".\n\nRisposta:\n" + responseMessage +
+					"\n\nGrazie per aver scelto FCF Motors!\nIl team FCF Motors");
+			message.setFrom("info@fcfmotors.com");
+			mailSender.send(message);
+
+			// Aggiorna lo stato della richiesta
+			quoteRequest.setStatus("RESPONDED");
+			quoteRequestRepository.save(quoteRequest);
+
+			redirectAttributes.addFlashAttribute("successMessage", "Risposta inviata con successo!");
+			return "redirect:/rest/dealer/quote-requests/" + quoteRequest.getDealer().getId();
+		} catch (IllegalStateException e) {
+			logger.error("Error responding to quote request: {}", e.getMessage());
+			redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+			return "redirect:/rest/dealer/quote-requests/" + quoteRequest.getDealer().getId();
+		} catch (Exception e) {
+			logger.error("Unexpected error responding to quote request: {}", e.getMessage(), e);
+			redirectAttributes.addFlashAttribute("errorMessage", "Errore durante l'invio della risposta.");
+			return "redirect:/rest/dealer/quote-requests/" + quoteRequest.getDealer().getId();
+		}
+	}
 }

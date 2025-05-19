@@ -9,4 +9,8 @@ public interface UserSubscriptionRepository extends JpaRepository<UserSubscripti
 	List<UserSubscription> findByUserId(Long userId);
 
 	List<UserSubscription> findByUserAndActive(User user, boolean b);
+
+	List<UserSubscription> findByActive(boolean active);
+
+	void deleteById(Long id);
 }

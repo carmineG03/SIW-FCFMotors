@@ -34,9 +34,6 @@ public class AdminService {
 	private DealerRepository dealerRepository;
 
 	@Autowired
-	private DealerService dealerService;
-
-	@Autowired
 	private SubscriptionRepository subscriptionRepository;
 
 	// Trova un prodotto per ID
@@ -112,8 +109,6 @@ public class AdminService {
 		dealer.setAddress(updatedDealer.getAddress());
 		dealer.setContact(updatedDealer.getContact());
 		dealer.setImagePath(updatedDealer.getImagePath());
-		dealer.setLat(updatedDealer.getLat());
-		dealer.setLng(updatedDealer.getLng());
 
 		Dealer savedDealer = dealerRepository.save(dealer);
 		logger.info("Dealer updated by admin: id={}, name={}", savedDealer.getId(), savedDealer.getName());
@@ -190,7 +185,7 @@ public class AdminService {
 	// Recupera tutti i prodotti
 	@PreAuthorize("hasRole('ADMIN')")
 	public List<Product> findAllProducts() {
-		return productRepository.findAll();
+		return (List<Product>) productRepository.findAll();
 	}
 
 	// Recupera tutti i concessionari
