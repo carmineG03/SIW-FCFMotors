@@ -1,7 +1,6 @@
     package it.uniroma3.siwprogetto.model;
 
     import jakarta.persistence.*;
-    import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 
     @Entity
@@ -14,7 +13,8 @@
 
         private String description;
         private String address;
-        private String contact;
+        private String phone;
+        private String email;
         private String imagePath;
 
         @OneToOne
@@ -31,8 +31,10 @@
         public void setDescription(String description) { this.description = description; }
         public String getAddress() { return address; }
         public void setAddress(String address) { this.address = address; }
-        public String getContact() { return contact; }
-        public void setContact(String contact) { this.contact = contact; }
+        public String getPhone() { return phone; }
+        public void setPhone(String phone) { this.phone = phone; }
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
         public String getImagePath() { return imagePath; }
         public void setImagePath(String imagePath) { this.imagePath = imagePath; }
         public User getOwner() { return owner; }

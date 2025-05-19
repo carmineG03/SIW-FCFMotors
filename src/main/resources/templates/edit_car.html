@@ -3,75 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifica Macchina - Private</title>
+    <title>Modifica Macchina</title>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- CSS locale -->
     <link th:href="@{/css/styles.css}" href="/css/styles.css" rel="stylesheet">
 </head>
 <body>
-<header class="header-transparent">
+<header id="main-header">
     <div class="header-left">
         <a href="/" class="logo-link">
             <div class="logo-container">
-                <img th:src="@{/image/logo1.png}" src="/image/logo1.png" alt="FCF Motors Logo" class="logo">
+                <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
             </div>
         </a>
+        <div class="title-container">
+            <h1 class="main-title">FCF MOTORS</h1>
+            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
+            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+        </div>
     </div>
     <div class="nav-container">
-        <a href="javascript:history.back()" class="back-button"><i class="fas fa-arrow-left"></i> Torna Indietro</a>
+        <div class="nav-bar">
+            <a th:if="${isAuthenticated != null and !isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
+            <a th:if="${isAuthenticated != null and isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i> <span th:text="${user != null ? user.username : 'Account'}"></span></a>
+            <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
+        </div>
     </div>
 </header>
 
-<section class="hero-section">
+<section class="hero-section private-edit-hero">
     <div class="hero-content">
-        <h2>Dettagli Macchina (Private)</h2>
+        <h2>Dettagli Macchina</h2>
 
         <!-- Sezione dettagli -->
         <div id="car-details" class="car-details">
             <div class="detail-field">
-                <label><i class="fas fa-car"></i> Nome Macchina</label>
-                <p th:text="${product.name}"></p>
+                <label><i class="fas fa-car"></i> Macchina</label>
+                <p th:text="${product != null ? product.brand + ' ' + product.model : 'N/A'}"></p>
             </div>
             <div class="detail-field">
                 <label><i class="fas fa-align-left"></i> Descrizione</label>
-                <p th:text="${product.description}"></p>
+                <p th:text="${product != null ? product.description : 'N/A'}"></p>
             </div>
             <div class="detail-field">
                 <label><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
-                <p th:text="${product.price}"></p>
+                <p th:text="${product != null ? product.price : 'N/A'}"></p>
             </div>
             <div class="detail-field">
                 <label><i class="fas fa-tags"></i> Categoria</label>
-                <p th:text="${product.category}"></p>
+                <p th:text="${product != null ? product.category : 'N/A'}"></p>
             </div>
             <div class="detail-field">
                 <label><i class="fas fa-industry"></i> Marca</label>
-                <p th:text="${product.brand}"></p>
+                <p th:text="${product != null ? product.brand : 'N/A'}"></p>
             </div>
             <div class="detail-field">
                 <label><i class="fas fa-car-side"></i> Modello</label>
-                <p th:text="${product.model}"></p>
+                <p th:text="${product != null ? product.model : 'N/A'}"></p>
             </div>
             <div class="detail-field">
                 <label><i class="fas fa-tachometer-alt"></i> Chilometraggio</label>
-                <p th:text="${product.mileage}"></p>
+                <p th:text="${product != null ? product.mileage : 'N/A'}"></p>
             </div>
             <div class="detail-field">
                 <label><i class="fas fa-calendar-alt"></i> Anno</label>
-                <p th:text="${product.year}"></p>
+                <p th:text="${product != null ? product.year : 'N/A'}"></p>
             </div>
             <div class="detail-field">
                 <label><i class="fas fa-gas-pump"></i> Tipo di carburante</label>
-                <p th:text="${product.fuelType}"></p>
+                <p th:text="${product != null ? product.fuelType : 'N/A'}"></p>
             </div>
             <div class="detail-field">
                 <label><i class="fas fa-cogs"></i> Trasmissione</label>
-                <p th:text="${product.transmission}"></p>
+                <p th:text="${product != null ? product.transmission : 'N/A'}"></p>
             </div>
             <div class="detail-field">
                 <label><i class="fas fa-image"></i> Immagine</label>
-                <img th:src="${product.imageUrl} ?: '/image/default-car.jpg'" alt="Immagine Macchina" class="car-image">
+                <img th:src="${product != null and product.imageUrl != null ? product.imageUrl : '/image/default-car.jpg'}" alt="Immagine Macchina" class="car-image">
             </div>
             <div class="button-group">
                 <button id="edit-button" class="modern-button"><i class="fas fa-edit"></i> Modifica</button>
@@ -84,9 +93,14 @@
         <!-- Form di modifica (nascosto inizialmente) -->
         <form th:action="@{/private/edit/{id}(id=${product.id})}" th:object="${product}" method="post" class="modern-form" id="edit-car-form" style="display: none;">
             <div class="input-field">
-                <label for="name"><i class="fas fa-car"></i> Nome Macchina</label>
-                <input type="text" id="name" th:field="*{name}" th:value="*{name}" placeholder="Nome Macchina" required>
-                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error"></span>
+                <label for="brand"><i class="fas fa-industry"></i> Marca</label>
+                <input type="text" id="brand" th:field="*{brand}" th:value="*{brand}" placeholder="Marca" required>
+                <span th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}" class="error"></span>
+            </div>
+            <div class="input-field">
+                <label for="model"><i class="fas fa-car-side"></i> Modello</label>
+                <input type="text" id="model" th:field="*{model}" th:value="*{model}" placeholder="Modello" required>
+                <span th:if="${#fields.hasErrors('model')}" th:errors="*{model}" class="error"></span>
             </div>
             <div class="input-field">
                 <label for="description"><i class="fas fa-align-left"></i> Descrizione</label>
@@ -102,16 +116,6 @@
                 <label for="category"><i class="fas fa-tags"></i> Categoria</label>
                 <input type="text" id="category" th:field="*{category}" th:value="*{category}" placeholder="Categoria" required>
                 <span th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="error"></span>
-            </div>
-            <div class="input-field">
-                <label for="brand"><i class="fas fa-industry"></i> Marca</label>
-                <input type="text" id="brand" th:field="*{brand}" th:value="*{brand}" placeholder="Marca" required>
-                <span th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}" class="error"></span>
-            </div>
-            <div class="input-field">
-                <label for="model"><i class="fas fa-car-side"></i> Modello</label>
-                <input type="text" id="model" th:field="*{model}" th:value="*{model}" placeholder="Modello" required>
-                <span th:if="${#fields.hasErrors('model')}" th:errors="*{model}" class="error"></span>
             </div>
             <div class="input-field">
                 <label for="mileage"><i class="fas fa-tachometer-alt"></i> Chilometraggio</label>

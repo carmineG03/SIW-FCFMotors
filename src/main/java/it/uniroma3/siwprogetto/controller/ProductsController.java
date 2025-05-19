@@ -64,7 +64,7 @@ public class ProductsController {
         selectedModel = selectedModel != null && !selectedModel.trim().isEmpty() ? selectedModel.trim() : null;
         fuelType = fuelType != null && !fuelType.trim().isEmpty() ? fuelType.trim() : null;
         transmission = transmission != null && !transmission.trim().isEmpty() ? transmission.trim() : null;
-        query = query != null && !query.trim().isEmpty() ? query.trim() : null;
+        query = query != null && !category.trim().isEmpty() ? query.trim() : null;
 
         // Validazione dei parametri numerici
         minPrice = minPrice != null && minPrice.compareTo(BigDecimal.ZERO) >= 0 ? minPrice : null;
@@ -80,11 +80,6 @@ public class ProductsController {
                 ", maxMileage=" + maxMileage + ", minYear=" + minYear + ", maxYear=" + maxYear +
                 ", fuelType=" + fuelType + ", transmission=" + transmission + ", query=" + query);
 
-        /* Recupera i prodotti con i filtri
-        model.addAttribute("products", productService.findByFilters(category, brand, selectedModel,
-                minPrice, maxPrice, minMileage, maxMileage,
-                minYear, maxYear, fuelType, transmission, query));*/
-
         // Recupera i prodotti con i filtri
         List<Product> products = productService.findByFilters(category, brand, selectedModel,
                 minPrice, maxPrice, minMileage, maxMileage,
@@ -93,7 +88,7 @@ public class ProductsController {
         // Ordina i prodotti: quelli in evidenza per primi
         products.sort(Comparator.comparing(Product::isFeaturedActive, Comparator.reverseOrder())
                 .thenComparing(Product::isFeatured, Comparator.reverseOrder())
-                .thenComparing(Product::getName));
+                .thenComparing(Product::getModel, Comparator.nullsLast(String::compareTo)));
 
         // Aggiungi i prodotti ordinati al modello
         model.addAttribute("products", products);
@@ -179,7 +174,6 @@ public class ProductsController {
             return "redirect:/products";
         }
 
-
         QuoteRequest quoteRequest = new QuoteRequest();
         quoteRequest.setProduct(product);
         quoteRequest.setUser(user);
@@ -193,6 +187,4 @@ public class ProductsController {
         redirectAttributes.addFlashAttribute("success", "Richiesta di preventivo inviata con successo!");
         return "redirect:/products";
     }
-
-
 }
