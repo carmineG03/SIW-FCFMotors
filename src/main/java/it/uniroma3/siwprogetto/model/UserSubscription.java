@@ -33,5 +33,8 @@ public class UserSubscription {
 	public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
 	public boolean isActive() { return active; }
 	public void setActive(boolean active) { this.active = active; }
-
+	// Method to check if the subscription is expired
+	public boolean isExpired() {
+		return expiryDate != null && LocalDate.now().isAfter(expiryDate);
+	}
 }

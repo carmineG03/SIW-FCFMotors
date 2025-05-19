@@ -1,6 +1,7 @@
 package it.uniroma3.siwprogetto.repository;
 
 import it.uniroma3.siwprogetto.model.QuoteRequest;
+import it.uniroma3.siwprogetto.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,4 +14,6 @@ public interface QuoteRequestRepository extends JpaRepository<QuoteRequest, Long
 
 
 	boolean existsByUserIdAndProductIdAndStatus(Long userId, Long productId, String status);
+
+	List<QuoteRequest> findByUserId(Long id);
 }

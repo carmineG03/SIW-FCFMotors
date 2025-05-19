@@ -72,4 +72,5 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
     @Query("SELECT p FROM Product p ORDER BY CASE WHEN p.isFeatured = true AND (p.featuredUntil IS NULL OR p.featuredUntil > CURRENT_TIMESTAMP) THEN 0 ELSE 1 END, p.id DESC")
     List<Product> findAllOrderedByHighlight();
 
+    void deleteById(Long id);
 }
