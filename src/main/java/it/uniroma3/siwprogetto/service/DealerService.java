@@ -11,12 +11,18 @@ import jakarta.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -36,6 +42,8 @@ public class DealerService {
     @Autowired
     private EntityManager entityManager;
 
+    private final RestTemplate restTemplate = new RestTemplate();
+
     @Transactional
     public Dealer saveDealer(Dealer dealer, boolean isUpdate) {
         logger.info("Saving dealer: name={}, isUpdate={}", dealer.getName(), isUpdate);
@@ -53,6 +61,50 @@ public class DealerService {
                     return new IllegalStateException("Utente non trovato: " + username);
                 });
 
+        // Geocodifica l'indirizzo solo se necessario
+        boolean needsGeocoding = dealer.getAddress() != null && !dealer.getAddress().isEmpty();
+        if (isUpdate && needsGeocoding) {
+            Optional<Dealer> existingDealer = dealerRepository.findByOwnerUsername(username);
+            if (existingDealer.isPresent() && dealer.getAddress().equals(existingDealer.get().getAddress())) {
+                needsGeocoding = false; // Indirizzo invariato, salta la geocodifica
+            }
+        }
+
+        if (needsGeocoding) {
+            try {
+                String address = dealer.getAddress();
+                String url = "https://nominatim.openstreetmap.org/search?format=json&q=" +
+                             URLEncoder.encode(address, StandardCharsets.UTF_8) + "&countrycodes=IT&limit=1";
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("User-Agent", "FCFMotors/1.0 (info@fcfmotors.com)");
+                HttpEntity<String> entity = new HttpEntity<>(headers);
+
+                List<Map<String, Object>> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class).getBody();
+
+                if (response != null && !response.isEmpty()) {
+                    Map<String, Object> result = response.get(0);
+                    dealer.setLat(Double.parseDouble(result.get("lat").toString()));
+                    dealer.setLng(Double.parseDouble(result.get("lon").toString()));
+                    logger.info("Geocoded address: {} -> lat={}, lng={}", dealer.getAddress(), dealer.getLat(), dealer.getLng());
+                } else {
+                    logger.warn("No coordinates found for address: {}", dealer.getAddress());
+                    dealer.setLat(41.9028); // Roma, fallback
+                    dealer.setLng(12.4964);
+                }
+
+                // Rispetta il limite di 1 richiesta al secondo
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                logger.error("Error during geocoding for address: {}", dealer.getAddress(), e);
+                dealer.setLat(41.9028); // Roma, fallback
+                dealer.setLng(12.4964);
+            }
+        } else if (!needsGeocoding) {
+            logger.warn("No valid address provided for dealer: {}", dealer.getName());
+            dealer.setLat(41.9028); // Roma, fallback
+            dealer.setLng(12.4964);
+        }
+
         Optional<Dealer> existingDealer = dealerRepository.findByOwnerUsername(username);
         if (isUpdate && existingDealer.isPresent()) {
             logger.debug("Updating existing dealer: id={}", existingDealer.get().getId());
@@ -62,6 +114,8 @@ public class DealerService {
             toUpdate.setAddress(dealer.getAddress());
             toUpdate.setContact(dealer.getContact());
             toUpdate.setImagePath(dealer.getImagePath());
+            toUpdate.setLat(dealer.getLat());
+            toUpdate.setLng(dealer.getLng());
             Dealer savedDealer = dealerRepository.save(toUpdate);
             logger.info("Dealer updated: id={}, name={}", savedDealer.getId(), savedDealer.getName());
             return savedDealer;
@@ -81,6 +135,8 @@ public class DealerService {
         }
     }
 
+   
+
     public Dealer findByOwner() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         logger.debug("Finding dealer for user: {}", username);
@@ -99,23 +155,6 @@ public class DealerService {
         }
     }
 
-    // Nuovo metodo per trovare il Dealer tramite l'username di un User
-    public Dealer findByOwnerUsername(String username) {
-        logger.debug("Finding dealer for username: {}", username);
-        if (username == null) {
-            logger.warn("Username is null");
-            return null;
-        }
-
-        Optional<Dealer> dealer = dealerRepository.findByOwnerUsername(username);
-        if (dealer.isPresent()) {
-            return dealer.get();
-        } else {
-            logger.warn("No dealer found for username '{}'", username);
-            return null;
-        }
-    }
-
     @Transactional
     public Product addProduct(Product product) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -126,17 +165,13 @@ public class DealerService {
             throw new IllegalStateException("Utente non autenticato");
         }
 
-        long startTime = System.currentTimeMillis();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> {
                     logger.error("Utente non trovato: {}", username);
                     return new IllegalStateException("Utente non trovato: " + username);
                 });
-        logger.debug("User lookup took {} ms", System.currentTimeMillis() - startTime);
 
-        startTime = System.currentTimeMillis();
         Dealer dealer = findByOwner();
-        logger.debug("Dealer lookup took {} ms", System.currentTimeMillis() - startTime);
         if (dealer == null) {
             logger.error("No dealer found for user '{}'", username);
             throw new IllegalStateException("Nessun concessionario trovato");
@@ -144,14 +179,9 @@ public class DealerService {
 
         product.setSeller(user);
         product.setSellerType("DEALER");
-        return saveProductInTransaction(product);
-    }
-
-    @Transactional
-	protected Product saveProductInTransaction(Product product) {
-        long startTime = System.currentTimeMillis();
         Product savedProduct = productRepository.save(product);
-        logger.info("Product save took {} ms", System.currentTimeMillis() - startTime);
+        logger.info("Product added: id={}, name={}, seller_id={}",
+                savedProduct.getId(), savedProduct.getName(), user.getId());
         return savedProduct;
     }
 
@@ -191,9 +221,6 @@ public class DealerService {
         product.setName(updatedProduct.getName());
         product.setDescription(updatedProduct.getDescription());
         product.setPrice(updatedProduct.getPrice());
-        product.setImageUrl(updatedProduct.getImageUrl());
-        product.setIsFeatured(updatedProduct.isFeatured());
-        product.setFeaturedUntil(updatedProduct.getFeaturedUntil());
         Product savedProduct = productRepository.save(product);
         logger.info("Product updated: id={}, name={}, seller_id={}",
                 savedProduct.getId(), savedProduct.getName(), user.getId());
@@ -221,7 +248,7 @@ public class DealerService {
             return List.of();
         }
 
-        List<Product> products = productRepository.findAllOrderedByHighlight();
+        List<Product> products = productRepository.findBySellerId(user.getId());
         logger.info("Found {} products for user: id={}", products.size(), user.getId());
         return products;
     }
@@ -238,6 +265,15 @@ public class DealerService {
         logger.info("Retrieving all dealers");
         List<Dealer> dealers = dealerRepository.findAll();
         logger.info("Trovati {} concessionari.", dealers.size());
+        for (Dealer dealer : dealers) {
+            logger.debug("Dealer: id={}, name={}, lat={}, lng={}",
+                    dealer.getId(), dealer.getName(), dealer.getLat(), dealer.getLng());
+            if (dealer.getLat() == null || dealer.getLng() == null) {
+                dealer.setLat(41.9028); // Roma, fallback
+                dealer.setLng(12.4964);
+                logger.debug("Impostate coordinate predefinite per dealer: {}", dealer.getId());
+            }
+        }
         return dealers;
     }
 
@@ -270,9 +306,7 @@ public class DealerService {
             throw new IllegalArgumentException("Concessionario non trovato con ID: " + id);
         }
 
-        Dealer dealer = dealerRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Concessionario non trovato con ID: " + id));
-
+        Dealer dealer = dealerRepository.findById(id).get();
         List<Product> products = productRepository.findBySeller(dealer.getOwner());
         if (!products.isEmpty()) {
             productRepository.deleteAll(products);
@@ -281,84 +315,12 @@ public class DealerService {
         try {
             Query query = entityManager.createQuery("DELETE FROM Dealer d WHERE d.id = :id");
             query.setParameter("id", id);
-            query.executeUpdate();
-            entityManager.flush();
-
+            dealerRepository.flush();
             if (dealerRepository.existsById(id)) {
                 throw new IllegalStateException("Eliminazione non riuscita: il concessionario esiste ancora.");
             }
         } catch (Exception e) {
             throw new IllegalStateException("Errore durante l'eliminazione del concessionario.", e);
         }
-    }
-
-    @Transactional
-    public Product highlightProduct(Long productId, int durationDays) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        logger.debug("Highlighting product: id={}, user={}, duration={} days", productId, username, durationDays);
-
-        if (username == null || "anonymousUser".equals(username)) {
-            logger.error("No authenticated user found");
-            throw new IllegalStateException("Utente non autenticato");
-        }
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> {
-                    logger.error("Utente non trovato: {}", username);
-                    return new IllegalStateException("Utente non trovato: " + username);
-                });
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> {
-                    logger.error("Product not found: id={}", productId);
-                    return new IllegalStateException("Prodotto non trovato");
-                });
-
-        if (!product.getSeller().getId().equals(user.getId())) {
-            logger.error("Product does not belong to user: product_id={}, user_id={}", productId, user.getId());
-            throw new IllegalStateException("Il prodotto non appartiene a questo utente");
-        }
-
-        product.setIsFeatured(true);
-        product.setFeaturedUntil(LocalDateTime.now().plusDays(durationDays));
-        Product savedProduct = productRepository.save(product);
-        logger.info("Product highlighted: id={}, name={}, expiration={}",
-                savedProduct.getId(), savedProduct.getName(), savedProduct.getFeaturedUntil());
-        return savedProduct;
-    }
-
-    @Transactional
-    public Product removeHighlight(Long productId) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        logger.debug("Removing highlight from product: id={}, user={}", productId, username);
-
-        if (username == null || "anonymousUser".equals(username)) {
-            logger.error("No authenticated user found");
-            throw new IllegalStateException("Utente non autenticato");
-        }
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> {
-                    logger.error("Utente non trovato: {}", username);
-                    return new IllegalStateException("Utente non trovato: " + username);
-                });
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> {
-                    logger.error("Product not found: id={}", productId);
-                    return new IllegalStateException("Prodotto non trovato");
-                });
-
-        if (!product.getSeller().getId().equals(user.getId())) {
-            logger.error("Product does not belong to user: product_id={}, user_id={}", productId, user.getId());
-            throw new IllegalStateException("Il prodotto non appartiene a questo utente");
-        }
-
-        product.setIsFeatured(false);
-        product.setFeaturedUntil(null);
-        Product savedProduct = productRepository.save(product);
-        logger.info("Highlight removed from product: id={}, name={}",
-                savedProduct.getId(), savedProduct.getName());
-        return savedProduct;
     }
 }
