@@ -88,7 +88,7 @@
     </style>
 </head>
 <body>
-<header class="header-transparent">
+<header>
     <div class="header-left">
         <a href="/" class="logo-link">
             <div class="logo-container">
@@ -137,8 +137,12 @@
                         <span id="display-address" th:text="${dealer.address} ?: ''"></span>
                     </div>
                     <div class="input-field display-field">
-                        <label for="display-contact"><i class="fas fa-phone"></i> Contatti</label>
-                        <span id="display-contact" th:text="${dealer.contact} ?: ''"></span>
+                        <label for="display-phone"><i class="fas fa-phone"></i> Telefono</label>
+                        <span id="display-phone" th:text="${dealer.phone} ?: ''"></span>
+                    </div>
+                    <div class="input-field display-field">
+                        <label for="display-email"><i class="fas fa-envelope"></i> Email</label>
+                        <span id="display-email" th:text="${dealer.email} ?: ''"></span>
                     </div>
                     <div class="input-field display-field">
                         <label for="dealer-image"><i class="fas fa-image"></i> Immagine Concessionario</label>
@@ -167,8 +171,12 @@
                         <input type="text" id="edit-dealership-address" name="address" th:value="${dealer.address}">
                     </div>
                     <div class="input-field">
-                        <label for="edit-dealership-contact"><i class="fas fa-phone"></i> Contatti</label>
-                        <input type="text" id="edit-dealership-contact" name="contact" th:value="${dealer.contact}">
+                        <label for="edit-dealership-phone"><i class="fas fa-phone"></i> Telefono</label>
+                        <input type="tel" id="edit-dealership-phone" name="phone" th:value="${dealer.phone}" pattern="\+?[0-9\s\-]{6,15}" title="Inserisci un numero di telefono valido (es. +39 123 456 7890)">
+                    </div>
+                    <div class="input-field">
+                        <label for="edit-dealership-email"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="edit-dealership-email" name="email" th:value="${dealer.email}" title="Inserisci un indirizzo email valido">
                     </div>
                     <div class="input-field">
                         <label for="edit-dealership-imagePath"><i class="fas fa-image"></i> URL Immagine</label>
@@ -189,10 +197,6 @@
                 <form id="dealer-add-car-form" class="modern-form" th:action="@{/rest/api/products}" method="post" aria-labelledby="add-car-form-title">
                     <input type="hidden" name="dealerId" th:value="${dealer.id}">
                     <h2 id="add-car-form-title" style="display: none;">Aggiungi Auto</h2>
-                    <div class="input-field">
-                        <label for="dealer-car-name"><i class="fas fa-car"></i> Nome Macchina</label>
-                        <input type="text" id="dealer-car-name" name="name" required aria-required="true">
-                    </div>
                     <div class="input-field">
                         <label for="dealer-car-description"><i class="fas fa-file-alt"></i> Descrizione</label>
                         <textarea id="dealer-car-description" name="description" rows="4"></textarea>
@@ -224,10 +228,6 @@
                     <span th:if="${product.isFeatured and product.isFeaturedActive}" class="highlight-badge">In Evidenza</span>
                 </div>
                 <div class="product-info">
-                    <div class="info-row">
-                        <span class="label"><strong>Nome:</strong></span>
-                        <span class="value" th:text="${product.name}"></span>
-                    </div>
                     <div class="info-row">
                         <span class="label"><strong>Descrizione:</strong></span>
                         <span class="value" th:text="${product.description} ?: ''"></span>
@@ -267,10 +267,6 @@
         <form id="edit-product-form" class="modern-form" style="display: none;" aria-labelledby="edit-product-form-title">
             <h2 id="edit-product-form-title">Modifica Auto</h2>
             <input type="hidden" id="edit-product-id">
-            <div class="input-field">
-                <label for="edit-product-name"><i class="fas fa-car"></i> Nome Macchina</label>
-                <input type="text" id="edit-product-name" required aria-required="true">
-            </div>
             <div class="input-field">
                 <label for="edit-product-description"><i class="fas fa-file-alt"></i> Descrizione</label>
                 <textarea id="edit-product-description" rows="4"></textarea>

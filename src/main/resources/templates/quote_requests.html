@@ -9,22 +9,364 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        .quote-request-card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            background-color: #fff;
+        /* Override globale per rimuovere margini e limiti di larghezza */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
         }
+
+        /* Header a tutta larghezza */
+        .header-transparent {
+            width: 100%;
+            padding: 20px 40px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+           
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-container img {
+            height: 50px;
+        }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .main-title {
+            color: #FFFFFF;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .products-button,
+        .dealers-button {
+            color: #FFFFFF;
+            text-decoration: none;
+            font-size: 1.1rem;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .products-button:hover,
+        .dealers-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-container .nav-bar {
+            display: flex;
+            gap: 15px;
+        }
+
+        .icon-button {
+            color: #FFFFFF;
+            font-size: 1.2rem;
+            text-decoration: none;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+
+        .icon-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Nuova classe per la sezione principale, evitando conflitti con .hero-content */
+        .full-width-hero {
+            padding: 40px 0; /* Rimuovo padding laterali */
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin: 0;
+            
+        }
+
+        .full-width-hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #F5A623;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            font-weight: 700;
+        }
+
+        /* Layout a due colonne con CSS Grid, a tutta larghezza */
+        .full-width-hero .quote-requests-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            width: 100%; /* Tutta la larghezza */
+            padding: 0 40px; /* Padding laterale per non toccare i bordi */
+            box-sizing: border-box;
+            margin: 0;
+            
+        }
+
+        .quote-requests-container .column {
+            padding: 20px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+            width: 100%; /* Assicuro che la colonna prenda tutta la larghezza disponibile */
+            box-sizing: border-box;
+            margin: 0;
+        }
+
+        .column:hover {
+            transform: translateY(-5px);
+        }
+
+        .column h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #F5A623;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Stile per le card delle richieste */
+        .column .quote-request-card {
+            border: none;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            background: linear-gradient(145deg, #2a2a2a, #3a3a3a);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%; /* Card a tutta larghezza */
+            box-sizing: border-box;
+        }
+
+        .quote-request-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .quote-request-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, #F5A623, #E59400);
+        }
+
         .quote-request-card .info-row {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .quote-request-card .info-row .label {
+            font-weight: 600;
+            margin-right: 10px;
+            color: #F5A623;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .quote-request-card .info-row .value {
+            color: #FFFFFF;
+        }
+
+        /* Stile per il form di risposta */
+        .quote-request-card .form-actions {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .respond-quote-form {
+            width: 100%;
+        }
+
+        .respond-quote-form .input-field {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .respond-quote-form label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #F5A623;
+            margin-bottom: 8px;
+        }
+
+        .respond-quote-form textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFFF;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .respond-quote-form textarea:focus {
+            border-color: #F5A623;
+            outline: none;
+        }
+
+        .respond-quote-form .modern-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s ease, transform 0.2s ease;
+            width: 100%; /* Pulsante a tutta larghezza */
+            justify-content: center;
+        }
+
+        .respond-quote-form .modern-button:hover {
+            background: linear-gradient(45deg, #E59400, #D68F1D);
+            transform: translateY(-2px);
+        }
+
+        /* Stile per il messaggio di assenza richieste */
+        .column .no-requests {
+            text-align: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+        }
+
+        .no-requests-icon {
+            font-size: 2rem;
+            color: #F5A623;
             margin-bottom: 10px;
         }
-        .quote-request-card .info-row .label {
-            font-weight: bold;
-            margin-right: 10px;
+
+        /* Stile per il pulsante "Torna indietro" */
+        .full-width-hero .form-actions {
+            width: 100%;
+            text-align: center;
+            padding: 0 40px;
+            box-sizing: border-box;
         }
-        .quote-request-card .form-actions {
-            margin-top: 10px;
+
+        .form-actions .back-button {
+            background: linear-gradient(45deg, #003087, #0059b3);
+            color: #FFFFFF;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            max-width: 300px; /* Limite massimo per estetica */
+            justify-content: center;
+        }
+
+        .form-actions .back-button:hover {
+            background: linear-gradient(45deg, #002066, #004080);
+            transform: translateY(-2px);
+        }
+
+        /* Animazione di caricamento */
+        .full-width-hero .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .loading-spinner.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #F5A623;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .full-width-hero .quote-requests-container {
+                grid-template-columns: 1fr; /* Impila le colonne */
+                padding: 0 20px; /* Riduco il padding laterale */
+            }
+
+            .quote-requests-container .column {
+                margin-bottom: 20px;
+            }
+
+            .header-transparent {
+                padding: 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .header-left {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .title-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .nav-container {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+            }
+
+           
         }
     </style>
 </head>
@@ -59,43 +401,98 @@
 </header>
 
 <main>
-    <section class="hero-content animated-section visible">
+    <section class="full-width-hero">
         <h2>Richieste di Preventivo</h2>
-        <div th:if="${quoteRequests != null and not #lists.isEmpty(quoteRequests)}">
-            <div th:each="request : ${quoteRequests}" class="quote-request-card">
-                <div class="info-row">
-                    <span class="label">Prodotto:</span>
-                    <span th:text="${request.product.name}"></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Richiesto da:</span>
-                    <span th:text="${request.userEmail}"></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Data Richiesta:</span>
-                    <span th:text="${#temporals.format(request.requestDate, 'dd/MM/yyyy HH:mm')}"></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Stato:</span>
-                    <span th:text="${request.status}"></span>
-                </div>
-                <div class="form-actions">
-                    <form th:action="@{'/rest/dealer/quote-requests/respond/' + ${request.id}}" method="post" class="respond-quote-form">
-                        <div class="input-field">
-                            <label for="responseMessage">Messaggio di Risposta</label>
-                            <textarea id="responseMessage" name="responseMessage" rows="4" required></textarea>
+        <div class="loading-spinner" id="loading-spinner">
+            <div class="spinner"></div>
+        </div>
+        <div class="quote-requests-container" id="quote-requests-container">
+            <!-- Colonna Sinistra: Da Rispondere -->
+            <div class="column pending-column">
+                <h3>Da Rispondere</h3>
+                <div th:if="${quoteRequests != null and not #lists.isEmpty(quoteRequests)}">
+                    <!-- Contatore per le richieste PENDING -->
+                    <th:block th:with="pendingCount=${#lists.size(quoteRequests.?[status == 'PENDING'])}">
+                        <div th:if="${pendingCount > 0}">
+                            <div th:each="request : ${quoteRequests}" th:if="${request.status == 'PENDING'}" class="quote-request-card pending-card">
+                                <div class="info-row">
+                                    <span class="label">Richiesto da:</span>
+                                    <span class="value" th:text="${request.userEmail}"></span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="label">Data Richiesta:</span>
+                                    <span class="value" th:text="${#temporals.format(request.requestDate, 'dd/MM/yyyy HH:mm')}"></span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="label">Stato:</span>
+                                    <span class="value" th:text="${request.status}"></span>
+                                </div>
+                                <div class="form-actions">
+                                    <form th:action="@{'/rest/dealer/quote-requests/respond/' + ${request.id}}" method="post" class="respond-quote-form" onsubmit="handleSubmit(event, this)">
+                                        <div class="input-field">
+                                            <label th:for="'responseMessage-' + ${request.id}">Messaggio di Risposta</label>
+                                            <textarea th:id="'responseMessage-' + ${request.id}" name="responseMessage" rows="4" required></textarea>
+                                        </div>
+                                        <button type="submit" class="modern-button">
+                                            <i class="fas fa-envelope"></i> Invia Risposta
+                                            <span class="spinner"></span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                        <button type="submit" class="modern-button"><i class="fas fa-envelope"></i> Invia Risposta</button>
-                    </form>
+                        <div th:if="${pendingCount == 0}" class="no-requests">
+                            <i class="fas fa-envelope no-requests-icon"></i>
+                            Nessuna richiesta da rispondere.
+                        </div>
+                    </th:block>
+                </div>
+                <div th:if="${quoteRequests == null or #lists.isEmpty(quoteRequests)}" class="no-requests">
+                    <i class="fas fa-envelope no-requests-icon"></i>
+                    Nessuna richiesta da rispondere.
+                </div>
+            </div>
+
+            <!-- Colonna Destra: Risposte -->
+            <div class="column responded-column">
+                <h3>Risposte</h3>
+                <div th:if="${quoteRequests != null and not #lists.isEmpty(quoteRequests)}">
+                    <!-- Contatore per le richieste RESPONDED -->
+                    <th:block th:with="respondedCount=${#lists.size(quoteRequests.?[status == 'RESPONDED'])}">
+                        <div th:if="${respondedCount > 0}">
+                            <div th:each="request : ${quoteRequests}" th:if="${request.status == 'RESPONDED'}" class="quote-request-card responded-card">
+                                <div class="info-row">
+                                    <span class="label">Richiesto da:</span>
+                                    <span class="value" th:text="${request.userEmail}"></span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="label">Data Richiesta:</span>
+                                    <span class="value" th:text="${#temporals.format(request.requestDate, 'dd/MM/yyyy HH:mm')}"></span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="label">Stato:</span>
+                                    <span class="value" th:text="${request.status}"></span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="label">Messaggio di Risposta:</span>
+                                    <span class="value" th:text="${request.responseMessage} ?: 'N/A'"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${respondedCount == 0}" class="no-requests">
+                            <i class="fas fa-envelope no-requests-icon"></i>
+                            Nessuna richiesta risolta.
+                        </div>
+                    </th:block>
+                </div>
+                <div th:if="${quoteRequests == null or #lists.isEmpty(quoteRequests)}" class="no-requests">
+                    <i class="fas fa-envelope no-requests-icon"></i>
+                    Nessuna richiesta risolta.
                 </div>
             </div>
         </div>
-        <div th:if="${quoteRequests == null or #lists.isEmpty(quoteRequests)}" class="no-products">
-            <i class="fas fa-envelope no-products-icon"></i>
-            Nessuna richiesta di preventivo trovata.
-        </div>
         <div class="form-actions">
-            <a th:href="@{'/rest/dealers/manage'}" class="modern-button back-button"><i class="fas fa-arrow-left"></i> Torna alla Gestione Concessionario</a>
+            <a th:href="@{'/rest/dealers/manage'}" class="back-button"><i class="fas fa-arrow-left"></i> Torna alla Gestione Concessionario</a>
         </div>
     </section>
 </main>
@@ -134,5 +531,32 @@
         <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
     </div>
 </footer>
+
+<script>
+    // Mostra lo spinner di caricamento all'avvio
+    document.addEventListener('DOMContentLoaded', () => {
+        const spinner = document.getElementById('loading-spinner');
+        const container = document.getElementById('quote-requests-container');
+        spinner.classList.add('active');
+        setTimeout(() => {
+            spinner.classList.remove('active');
+            container.style.opacity = '1';
+        }, 1000); // Simula un caricamento di 1 secondo
+    });
+
+    // Gestione dell'invio del form con feedback visivo
+    function handleSubmit(event, form) {
+        event.preventDefault();
+        const button = form.querySelector('button[type="submit"]');
+        const spinner = button.querySelector('.spinner');
+        button.disabled = true;
+        spinner.classList.add('active');
+
+        // Simula l'invio del form (sostituisci con una vera chiamata AJAX se necessario)
+        setTimeout(() => {
+            form.submit(); // Invia il form
+        }, 1000); // Simula un ritardo di 1 secondo
+    }
+</script>
 </body>
 </html>

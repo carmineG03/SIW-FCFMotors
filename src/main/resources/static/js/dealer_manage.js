@@ -165,10 +165,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const nameInput = document.getElementById('edit-dealership-name');
             const descriptionInput = document.getElementById('edit-dealership-description');
             const addressInput = document.getElementById('edit-dealership-address');
-            const contactInput = document.getElementById('edit-dealership-contact');
+            const phoneInput = document.getElementById('edit-dealership-phone'); // Nuovo campo
+            const emailInput = document.getElementById('edit-dealership-email'); // Nuovo campo
             const imagePathInput = document.getElementById('edit-dealership-imagePath');
 
-            if (!idInput || !nameInput) {
+            if (!idInput || !nameInput || !phoneInput || !emailInput) {
                 console.error('Campi del form di modifica concessionario non trovati');
                 showToast('Errore: Campi del form di modifica concessionario non trovati.', 'error');
                 return;
@@ -178,7 +179,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const name = nameInput.value.trim();
             const description = descriptionInput ? descriptionInput.value.trim() : '';
             const address = addressInput ? addressInput.value.trim() : '';
-            const contact = contactInput ? contactInput.value.trim() : '';
+            const phone = phoneInput ? phoneInput.value.trim() : '';
+            const email = emailInput ? emailInput.value.trim() : '';
             const imagePath = imagePathInput ? imagePathInput.value.trim() : '';
 
             let isValid = true;
@@ -191,6 +193,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 nameInput.classList.remove('invalid');
             }
 
+            // Validazione opzionale per email e telefono
+            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                emailInput.classList.add('invalid');
+                isValid = false;
+                console.log('Validazione fallita: Email non valida');
+            } else {
+                emailInput.classList.remove('invalid');
+            }
+
+            if (phone && !/\+?[0-9\s\-]{6,15}/.test(phone)) {
+                phoneInput.classList.add('invalid');
+                isValid = false;
+                console.log('Validazione fallita: Telefono non valido');
+            } else {
+                phoneInput.classList.remove('invalid');
+            }
+
             if (!isValid) {
                 showToast('Compila tutti i campi obbligatori correttamente.', 'error');
                 return;
@@ -201,9 +220,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 name: name,
                 description: description,
                 address: address,
-                contact: contact,
+                phone: phone,
+                email: email,
                 imagePath: imagePath,
-                isUpdate: "true" // Aggiunto il flag isUpdate
+                isUpdate: "true"
             };
 
             console.log('Dati del form di modifica concessionario:', dealerData); // Debug
@@ -563,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-// Gestione del click su "Rimuovi Evidenza"
+    // Gestione del click su "Rimuovi Evidenza"
     if (removeHighlightProductLinks) {
         removeHighlightProductLinks.forEach(link => {
             link.addEventListener('click', async function(event) {
@@ -595,7 +615,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-// Animazioni per le sezioni e le card
+    // Animazioni per le sezioni e le card
     const animatedSections = document.querySelectorAll('.animated-section');
     animatedSections.forEach(section => {
         section.classList.add('visible');

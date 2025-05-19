@@ -89,16 +89,19 @@
                 <h3 th:text="${dealer.name != null ? dealer.name : 'Nome non disponibile'}">Concessionario</h3>
                 <p th:text="${dealer.description != null ? dealer.description : 'Nessuna descrizione disponibile'}"></p>
                 <p><i class="fas fa-map-marker-alt"></i> <span th:text="${dealer.address != null ? dealer.address : 'Indirizzo non disponibile'}"></span></p>
-                <p th:if="${dealer.contact != null}">
+                <p th:if="${dealer.phone != null}">
                     <i class="fas fa-phone"></i>
-                    <a th:href="'tel:' + ${dealer.contact}" th:text="${dealer.contact != null ? dealer.contact : 'Contatto non disponibile'}"></a>
+                    <a th:href="'tel:' + ${dealer.phone}" th:text="${dealer.phone != null ? dealer.phone : 'Telefono non disponibile'}"></a>
                 </p>
-                <p th:unless="${dealer.contact != null}">
-                    <i class="fas fa-phone"></i> Contatto non disponibile
+                <p th:unless="${dealer.phone != null}">
+                    <i class="fas fa-phone"></i> Telefono non disponibile
                 </p>
-                <p th:if="${dealer.contact != null}">
+                <p th:if="${dealer.email != null}">
                     <i class="fas fa-envelope"></i>
-                    <a th:href="'mailto:' + ${dealer.contact}" th:text="${dealer.contact != null ? dealer.contact : 'Email non disponibile'}"></a>
+                    <a th:href="'mailto:' + ${dealer.email}" th:text="${dealer.email != null ? dealer.email : 'Email non disponibile'}"></a>
+                </p>
+                <p th:unless="${dealer.email != null}">
+                    <i class="fas fa-envelope"></i> Email non disponibile
                 </p>
                 <a th:if="${dealer.address != null}"
                    th:href="${dealer.address != null ? 'https://www.google.com/maps/search/?api=1&query=' + (dealer.address != null ? dealer.address.replace(' ', '+') : '') : '#'}"

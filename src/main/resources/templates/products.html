@@ -40,14 +40,18 @@
         <h2>Trova Auto</h2>
 
         <div class="search-filter-group">
-            <form class="search-form" action="/products/search" method="get" onsubmit="return validateSearch()">
-                <div class="input-field">
-                    <input type="text" name="query" id="search-input" placeholder="Cerca auto..." required/>
-                </div>
-                <button type="submit" class="search-button">
-                    <i class="fas fa-search"></i> Cerca
-                </button>
-            </form>
+            <!-- Nuova barra di ricerca -->
+            <div class="new-search-bar">
+                <form class="new-search-form" action="/products/search" method="get" onsubmit="return validateSearch()">
+                    <div class="new-search-input-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" name="query" id="new-search-input" placeholder="Cerca auto..." required aria-label="Cerca auto per marca, modello o categoria"/>
+                    </div>
+                    <button type="submit" class="new-search-button" aria-label="Cerca auto">
+                        Cerca
+                    </button>
+                </form>
+            </div>
             <button class="filter-button" onclick="openFilterPopup()">Filtra</button>
             <!-- Pulsante "Rimuovi Filtri" visibile solo se almeno un filtro è attivo -->
             <a th:if="${category != null or brand != null or selectedModel != null or minPrice != null or maxPrice != null or minMileage != null or maxMileage != null or minYear != null or maxYear != null or fuelType != null or transmission != null or query != null}"
@@ -131,10 +135,10 @@
         <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
         <div th:each="product : ${products}" th:if="${products != null and not #lists.isEmpty(products)}" class="car-item" th:classappend="${product.isFeatured and product.isFeaturedActive} ? 'highlighted'">
             <div class="car-image-container">
-                <img th:src="${product.imageUrl} ?: 'https://via.placeholder.com/300x200?text=Immagine+Non+Disponibile'" th:alt="${product.name}"/>
+                <img th:src="${product.imageUrl} ?: 'https://via.placeholder.com/300x200?text=Immagine+Non+Disponibile'" th:alt="${product.brand} + ' ' + ${product.model}"/>
                 <span th:if="${product.isFeatured and product.isFeaturedActive}" class="highlight-badge">In Evidenza</span>
             </div>
-            <h3 th:text="${product.name}"></h3>
+            <h3 th:text="${product.brand} + ' ' + ${product.model}"></h3>
             <p th:text="${product.description}"></p>
             <p th:text="'Categoria: ' + ${product.category}"></p>
             <p class="price" th:text="${#numbers.formatDecimal(product.price, 1, 2, 'COMMA')} + ' €'"></p>
@@ -201,7 +205,7 @@
 
 <script>
     function validateSearch() {
-        const searchInput = document.getElementById('search-input').value.trim();
+        const searchInput = document.getElementById('new-search-input').value.trim();
         if (searchInput === '') {
             alert('Inserisci un termine di ricerca.');
             return false;

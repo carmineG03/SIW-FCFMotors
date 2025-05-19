@@ -61,16 +61,28 @@
                     <form th:action="@{/logout}" method="post" class="logout-form">
                         <button type="submit" class="logout-button">Esci</button>
                     </form>
-                    <!-- Aggiunta del pulsante per cancellare l'account -->
-                    <form th:action="@{/account/delete}" method="post" class="delete-account-form">
+                    <!-- Pulsante per aprire il popup di cancellazione -->
+                    <button class="delete-account-button">Cancella Account</button>
+                </div>
+            </div>
+
+            <!-- Popup per la cancellazione dell'account -->
+            <div class="delete-account-popup">
+                <div class="delete-account-popup-content">
+                    <span class="close-popup">&times;</span>
+                    <h3>Conferma Cancellazione Account</h3>
+                    <p>Inserisci la tua password per confermare la cancellazione dell'account. Questa azione è irreversibile.</p>
+                    <form id="delete-account-form" th:action="@{/account/delete}" method="post">
+                        <!-- Aggiungi il token CSRF se necessario -->
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" th:if="${_csrf != null}"/>
                         <div class="form-group">
-                            <label for="password">Conferma Password:</label>
-                            <input type="password" id="password" name="password" required />
+                            <label for="delete-password">Password</label>
+                            <input type="password" id="delete-password" name="password" required />
                         </div>
-                        <button type="submit" class="delete-account-button"
-                                onclick="return confirm('Sei sicuro di voler cancellare il tuo account? Questa azione è irreversibile e eliminerà tutte le informazioni associate.');">
-                            Cancella Account
-                        </button>
+                        <div class="form-actions">
+                            <button type="submit" class="confirm-delete-button">Conferma</button>
+                            <button type="button" class="cancel-delete-button">Annulla</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -122,7 +134,6 @@
                         Cancella
                     </a>
                 </div>
-                <!--<a href="/subscriptions" class="manage-subscriptions-button">Gestisci Abbonamenti</a>-->
             </div>
             <!-- Caso 2: Nessun abbonamento attivo -->
             <div th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}" class="no-subscriptions">
@@ -174,5 +185,57 @@
         <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
     </div>
 </footer>
+
+<script>
+// Seleziona gli elementi del DOM
+const deleteAccountButton = document.querySelector('.delete-account-button');
+const deleteAccountPopup = document.querySelector('.delete-account-popup');
+const closePopup = document.querySelector('.delete-account-popup .close-popup');
+const cancelDeleteButton = document.querySelector('.cancel-delete-button');
+const deleteAccountForm = document.querySelector('#delete-account-form');
+
+// Funzione per aprire il popup
+if (deleteAccountButton && deleteAccountPopup) {
+    deleteAccountButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        deleteAccountPopup.style.display = 'flex';
+        // Opzionale: focalizza il campo della password
+        document.querySelector('#delete-password').focus();
+    });
+}
+
+// Funzione per chiudere il popup
+if (closePopup) {
+    closePopup.addEventListener('click', () => {
+        deleteAccountPopup.style.display = 'none';
+    });
+}
+
+if (cancelDeleteButton) {
+    cancelDeleteButton.addEventListener('click', () => {
+        deleteAccountPopup.style.display = 'none';
+    });
+}
+
+// Gestione della conferma di cancellazione
+if (deleteAccountForm) {
+    deleteAccountForm.addEventListener('submit', (e) => {
+        const password = document.querySelector('#delete-password').value;
+        if (!password) {
+            e.preventDefault();
+            alert('Per favore, inserisci la tua password per confermare la cancellazione.');
+            return;
+        }
+        // Aggiungi una conferma finale prima dell'invio
+        if (!confirm('Sei sicuro di voler cancellare il tuo account? Questa azione è irreversibile e eliminerà tutte le informazioni associate.')) {
+            e.preventDefault();
+            deleteAccountPopup.style.display = 'none';
+            return;
+        }
+        // Se l'utente conferma, il form verrà inviato al backend (th:action="/account/delete")
+        console.log('Password inserita:', password);
+    });
+}
+</script>
 </body>
 </html>
