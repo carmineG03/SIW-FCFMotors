@@ -128,27 +128,6 @@ header h2 {
     margin-right: 8px;
 }
 
-.dealers-button {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 16px;
-    background-color: #003087;
-    color: #FFFFFF;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
-}
-
-.dealers-button:hover {
-    background-color: #002066;
-}
-
-.dealers-button i {
-    margin-right: 8px;
-}
-
 .nav-container {
     display: flex;
     align-items: center;
@@ -161,13 +140,13 @@ header h2 {
 
 .icon-button {
     font-size: 20px;
-    color: #F5A623;
+    color: rgb(255, 254, 254);
     text-decoration: none;
     margin-left: 15px;
     transition: color 0.3s ease, background-color 0.3s ease;
     padding: 5px 8px;
     border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: #F5A623;;
 }
 
 .icon-button:hover {
