@@ -16,31 +16,34 @@
         </a>
         <div class="title-container">
             <h1 class="main-title">FCF MOTORS</h1>
-            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+            
         </div>
     </div>
-    <div class="nav-container">
-        <div class="nav-bar">
-            <a href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
-            <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
-        </div>
-    </div>
+    
     <button th:if="${user.rolesString != null and user.rolesString.contains('PRIVATE')}"
             onclick="window.location.href='/private/maintenance'"
-            class="maintenance-button">
+            class="icon-button">
         <i class="fas fa-tools"></i> Manutenzione Private
     </button>
     <button th:if="${user != null and user.rolesString != null and user.rolesString.contains('DEALER')}"
             onclick="window.location.href='/rest/manutenzione/dealer'"
-            class="maintenance-button">
+            class="icon-button">
         <i class="fas fa-cogs"></i> Manutenzione Dealer
     </button>
     <button th:if="${user != null and user.rolesString != null and user.rolesString.contains('ADMIN')}"
             onclick="window.location.href='/admin/maintenance'"
-            class="maintenance-button">
+            class="icon-button">
         <i class="fas fa-shield-alt"></i> Manutenzione Admin
     </button>
+
+    <div class="nav-container">
+        <div class="nav-bar">
+            <a href="/products" class="icon-button"><i class="fas fa-car"></i> Auto</a>
+            <a href="/dealers" class="icon-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+            <a href="/account" class="icon-button"><i class="fas fa-user"></i></a>
+            <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i></a>
+        </div>
+    </div>
 </header>
 
 <div class="wrapper">
@@ -150,9 +153,9 @@
             <h4>Navigazione</h4>
             <ul>
                 <li><a href="/">Home</a></li>
-                <li><a href="/products">Trova Auto</a></li>
-                <li><a href="/dealers">Concessionari</a></li>
-                <li><a href="/cart">Carrello</a></li>
+                <li><a href="/products"> Auto</a></li>
+                <li><a href="/dealers"> Concessionari</a></li>
+                <li><a href="/cart"></a></li>
             </ul>
         </div>
         <div class="footer-section">
