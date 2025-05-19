@@ -2,15 +2,18 @@ package it.uniroma3.siwprogetto.service;
 
 import it.uniroma3.siwprogetto.model.Dealer;
 import it.uniroma3.siwprogetto.model.Product;
+import it.uniroma3.siwprogetto.model.QuoteRequest;
 import it.uniroma3.siwprogetto.model.User;
 import it.uniroma3.siwprogetto.repository.DealerRepository;
 import it.uniroma3.siwprogetto.repository.ProductRepository;
+import it.uniroma3.siwprogetto.repository.QuoteRequestRepository;
 import it.uniroma3.siwprogetto.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,6 +46,9 @@ public class DealerService {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private QuoteRequestRepository quoteRequestRepository;
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Transactional
@@ -61,49 +68,7 @@ public class DealerService {
                     return new IllegalStateException("Utente non trovato: " + username);
                 });
 
-        // Geocodifica l'indirizzo solo se necessario
-        boolean needsGeocoding = dealer.getAddress() != null && !dealer.getAddress().isEmpty();
-        if (isUpdate && needsGeocoding) {
-            Optional<Dealer> existingDealer = dealerRepository.findByOwnerUsername(username);
-            if (existingDealer.isPresent() && dealer.getAddress().equals(existingDealer.get().getAddress())) {
-                needsGeocoding = false; // Indirizzo invariato, salta la geocodifica
-            }
-        }
 
-        if (needsGeocoding) {
-            try {
-                String address = dealer.getAddress();
-                String url = "https://nominatim.openstreetmap.org/search?format=json&q=" +
-                             URLEncoder.encode(address, StandardCharsets.UTF_8) + "&countrycodes=IT&limit=1";
-                HttpHeaders headers = new HttpHeaders();
-                headers.set("User-Agent", "FCFMotors/1.0 (info@fcfmotors.com)");
-                HttpEntity<String> entity = new HttpEntity<>(headers);
-
-                List<Map<String, Object>> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class).getBody();
-
-                if (response != null && !response.isEmpty()) {
-                    Map<String, Object> result = response.get(0);
-                    dealer.setLat(Double.parseDouble(result.get("lat").toString()));
-                    dealer.setLng(Double.parseDouble(result.get("lon").toString()));
-                    logger.info("Geocoded address: {} -> lat={}, lng={}", dealer.getAddress(), dealer.getLat(), dealer.getLng());
-                } else {
-                    logger.warn("No coordinates found for address: {}", dealer.getAddress());
-                    dealer.setLat(41.9028); // Roma, fallback
-                    dealer.setLng(12.4964);
-                }
-
-                // Rispetta il limite di 1 richiesta al secondo
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                logger.error("Error during geocoding for address: {}", dealer.getAddress(), e);
-                dealer.setLat(41.9028); // Roma, fallback
-                dealer.setLng(12.4964);
-            }
-        } else if (!needsGeocoding) {
-            logger.warn("No valid address provided for dealer: {}", dealer.getName());
-            dealer.setLat(41.9028); // Roma, fallback
-            dealer.setLng(12.4964);
-        }
 
         Optional<Dealer> existingDealer = dealerRepository.findByOwnerUsername(username);
         if (isUpdate && existingDealer.isPresent()) {
@@ -114,8 +79,6 @@ public class DealerService {
             toUpdate.setAddress(dealer.getAddress());
             toUpdate.setContact(dealer.getContact());
             toUpdate.setImagePath(dealer.getImagePath());
-            toUpdate.setLat(dealer.getLat());
-            toUpdate.setLng(dealer.getLng());
             Dealer savedDealer = dealerRepository.save(toUpdate);
             logger.info("Dealer updated: id={}, name={}", savedDealer.getId(), savedDealer.getName());
             return savedDealer;
@@ -265,15 +228,6 @@ public class DealerService {
         logger.info("Retrieving all dealers");
         List<Dealer> dealers = dealerRepository.findAll();
         logger.info("Trovati {} concessionari.", dealers.size());
-        for (Dealer dealer : dealers) {
-            logger.debug("Dealer: id={}, name={}, lat={}, lng={}",
-                    dealer.getId(), dealer.getName(), dealer.getLat(), dealer.getLng());
-            if (dealer.getLat() == null || dealer.getLng() == null) {
-                dealer.setLat(41.9028); // Roma, fallback
-                dealer.setLng(12.4964);
-                logger.debug("Impostate coordinate predefinite per dealer: {}", dealer.getId());
-            }
-        }
         return dealers;
     }
 
@@ -299,28 +253,174 @@ public class DealerService {
 
     @Transactional
     public void deleteDealer(Long id) {
+        logger.info("Attempting to delete dealer with ID: {}", id);
+
         if (id == null || id <= 0) {
+            logger.error("Invalid dealer ID: {}", id);
             throw new IllegalArgumentException("ID del concessionario non valido.");
         }
+
         if (!dealerRepository.existsById(id)) {
+            logger.error("Dealer not found with ID: {}", id);
             throw new IllegalArgumentException("Concessionario non trovato con ID: " + id);
         }
 
-        Dealer dealer = dealerRepository.findById(id).get();
-        List<Product> products = productRepository.findBySeller(dealer.getOwner());
-        if (!products.isEmpty()) {
-            productRepository.deleteAll(products);
-        }
-
         try {
+            Dealer dealer = dealerRepository.findById(id)
+                    .orElseThrow(() -> {
+                        logger.error("Dealer not found during retrieval: {}", id);
+                        return new IllegalStateException("Concessionario non trovato durante il recupero: " + id);
+                    });
+            logger.debug("Dealer found: id={}, name={}", dealer.getId(), dealer.getName());
+
+            // Elimina i prodotti associati
+            List<Product> products = productRepository.findBySeller(dealer.getOwner());
+            if (!products.isEmpty()) {
+                logger.info("Deleting {} products associated with dealer ID: {}", products.size(), id);
+                productRepository.deleteAll(products);
+                logger.debug("Products deleted successfully");
+            } else {
+                logger.debug("No products found for dealer ID: {}", id);
+            }
+
+            // Elimina eventuali richieste di preventivo associate
+            List<QuoteRequest> quoteRequests = quoteRequestRepository.findByDealerId(id);
+            if (!quoteRequests.isEmpty()) {
+                logger.info("Deleting {} quote requests associated with dealer ID: {}", quoteRequests.size(), id);
+                quoteRequestRepository.deleteAll(quoteRequests);
+                quoteRequestRepository.flush();
+                logger.debug("Quote requests deleted successfully");
+            } else {
+                logger.debug("No quote requests found for dealer ID: {}", id);
+            }
+
+            // Elimina il concessionario con query JPQL
+            logger.info("Executing JPQL query to delete dealer with ID: {}", id);
             Query query = entityManager.createQuery("DELETE FROM Dealer d WHERE d.id = :id");
             query.setParameter("id", id);
-            dealerRepository.flush();
+            int deletedCount = query.executeUpdate();
+            logger.debug("JPQL query executed, deleted rows: {}", deletedCount);
+
+            // Sincronizza le modifiche
+            entityManager.flush();
+            logger.debug("EntityManager flushed");
+
+            // Verifica che il concessionario sia stato eliminato
             if (dealerRepository.existsById(id)) {
+                logger.error("Failed to delete dealer: still exists with ID: {}", id);
                 throw new IllegalStateException("Eliminazione non riuscita: il concessionario esiste ancora.");
             }
+
+            logger.info("Dealer with ID: {} deleted successfully", id);
+        } catch (DataIntegrityViolationException e) {
+            logger.error("Data integrity violation while deleting dealer ID: {}. Possible foreign key constraints.", id, e);
+            throw new IllegalStateException("Impossibile eliminare il concessionario: esistono vincoli di integrità (es. entità correlate non eliminate).", e);
         } catch (Exception e) {
-            throw new IllegalStateException("Errore durante l'eliminazione del concessionario.", e);
+            logger.error("Unexpected error while deleting dealer ID: {}", id, e);
+            throw new IllegalStateException("Errore durante l'eliminazione del concessionario: " + e.getMessage(), e);
         }
+    }
+    public Dealer findByOwnerUsername(String username) {
+        logger.debug("Finding dealer by owner username: {}", username);
+
+        if (username == null || username.trim().isEmpty()) {
+            logger.warn("Invalid username provided: {}", username);
+            return null;
+        }
+
+        Optional<Dealer> dealer = dealerRepository.findByOwnerUsername(username);
+        if (dealer.isPresent()) {
+            logger.info("Dealer found for username '{}': id={}, name={}", username, dealer.get().getId(), dealer.get().getName());
+            return dealer.get();
+        } else {
+            logger.warn("No dealer found for username '{}'", username);
+            return null;
+        }
+    }
+
+    @Transactional
+    public Product highlightProduct(Long productId, int duration) {
+        logger.debug("Highlighting product: id={}, duration={}", productId, duration);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (username == null || "anonymousUser".equals(username)) {
+            logger.error("No authenticated user found");
+            throw new IllegalStateException("Utente non autenticato");
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    logger.error("Utente non trovato: {}", username);
+                    return new IllegalStateException("Utente non trovato: " + username);
+                });
+
+        Dealer dealer = findByOwner();
+        if (dealer == null) {
+            logger.error("No dealer found for user '{}'", username);
+            throw new IllegalStateException("Nessun concessionario trovato");
+        }
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> {
+                    logger.error("Product not found: id={}", productId);
+                    return new IllegalStateException("Prodotto non trovato");
+                });
+
+        if (!product.getSeller().getId().equals(user.getId())) {
+            logger.error("Product does not belong to user: product_id={}, user_id={}", productId, user.getId());
+            throw new IllegalStateException("Il prodotto non appartiene a questo utente");
+        }
+
+        if (duration <= 0) {
+            logger.error("Invalid highlight duration: {}", duration);
+            throw new IllegalStateException("La durata dell'evidenza deve essere positiva");
+        }
+
+        product.setIsFeatured(true);
+        product.setFeaturedUntil(LocalDateTime.now().plusDays(duration));
+        Product savedProduct = productRepository.save(product);
+        logger.info("Product highlighted: id={}, model={}, featuredUntil={}",
+                savedProduct.getId(), savedProduct.getModel(), savedProduct.getFeaturedUntil());
+        return savedProduct;
+    }
+
+    @Transactional
+    public Product removeHighlight(Long productId) {
+        logger.debug("Removing highlight from product: id={}", productId);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (username == null || "anonymousUser".equals(username)) {
+            logger.error("No authenticated user found");
+            throw new IllegalStateException("Utente non autenticato");
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    logger.error("Utente non trovato: {}", username);
+                    return new IllegalStateException("Utente non trovato: " + username);
+                });
+
+        Dealer dealer = findByOwner();
+        if (dealer == null) {
+            logger.error("No dealer found for user '{}'", username);
+            throw new IllegalStateException("Nessun concessionario trovato");
+        }
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> {
+                    logger.error("Product not found: id={}", productId);
+                    return new IllegalStateException("Prodotto non trovato");
+                });
+
+        if (!product.getSeller().getId().equals(user.getId())) {
+            logger.error("Product does not belong to user: product_id={}, user_id={}", productId, user.getId());
+            throw new IllegalStateException("Il prodotto non appartiene a questo utente");
+        }
+
+        product.setIsFeatured(false);
+        product.setFeaturedUntil(null);
+        Product savedProduct = productRepository.save(product);
+        logger.info("Highlight removed from product: id={}, model={}", savedProduct.getId(), savedProduct.getModel());
+        return savedProduct;
     }
 }

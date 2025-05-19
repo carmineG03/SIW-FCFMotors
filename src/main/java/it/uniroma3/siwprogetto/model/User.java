@@ -38,8 +38,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private Set<CartItem> cartItems;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserSubscription> subscriptions = new ArrayList<>();
+    @ManyToOne
+    private Subscription subscription;
 
 
     public User() {
@@ -166,6 +166,14 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public Subscription getSubscription() {
+        return subscription;
+    }
+
+    public void setSubscription(Subscription subscription) {
+        this.subscription = subscription;
     }
 
 }

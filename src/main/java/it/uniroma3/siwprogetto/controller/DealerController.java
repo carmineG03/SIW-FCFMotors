@@ -1,11 +1,12 @@
 package it.uniroma3.siwprogetto.controller;
 
-import it.uniroma3.siwprogetto.model.Dealer;
-import it.uniroma3.siwprogetto.model.Product;
-import it.uniroma3.siwprogetto.model.QuoteRequest;
+import it.uniroma3.siwprogetto.model.*;
 import it.uniroma3.siwprogetto.repository.DealerRepository;
+import it.uniroma3.siwprogetto.repository.ProductRepository;
 import it.uniroma3.siwprogetto.repository.QuoteRequestRepository;
+import it.uniroma3.siwprogetto.repository.UserRepository;
 import it.uniroma3.siwprogetto.service.DealerService;
+import it.uniroma3.siwprogetto.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -43,6 +45,15 @@ public class DealerController {
 
     @Autowired
     private JavaMailSender mailSender;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
 
 
@@ -486,17 +497,13 @@ public class DealerController {
         logger.info("Received POST /rest/api/products/{}/remove-highlight", productId);
         try {
             Product updatedProduct = dealerService.removeHighlight(productId);
-            logger.info("Highlight removed successfully: id={}, name={}", updatedProduct.getId(), updatedProduct.getName());
-
             Map<String, Object> response = new HashMap<>();
             response.put("id", updatedProduct.getId());
             response.put("name", updatedProduct.getName());
-            response.put("highlighted", updatedProduct.isFeatured());
-            response.put("highlightExpiration", updatedProduct.getFeaturedUntil() != null ? updatedProduct.getFeaturedUntil().toString() : null);
-
+            response.put("isFeatured", updatedProduct.isFeatured());
+            response.put("featureExpiration", updatedProduct.getFeaturedUntil() != null ? updatedProduct.getFeaturedUntil().toString() : null);
             return ResponseEntity.ok(response);
         } catch (IllegalStateException e) {
-            logger.error("State error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error removing highlight: {}", e.getMessage(), e);
@@ -578,4 +585,70 @@ public class DealerController {
 			return "redirect:/rest/dealer/quote-requests/" + quoteRequest.getDealer().getId();
 		}
 	}
+
+    @PostMapping("/products/{id}/set-featured")
+    public ResponseEntity<Map<String, Object>> setProductFeatured(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Product product = productService.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Prodotto non trovato"));
+            if (!product.getSeller().equals(user)) {
+                throw new IllegalArgumentException("Non autorizzato a modificare questo prodotto");
+            }
+            if (!productService.canAddFeaturedCar(user, product)) {
+                throw new IllegalArgumentException("Limite massimo di macchine in evidenza raggiunto");
+            }
+            productService.setProductFeatured(id, true, LocalDateTime.now().plusDays(30));
+            response.put("success", true);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    @GetMapping("/api/users/featured-limit")
+    @ResponseBody
+    public ResponseEntity<?> getFeaturedLimit() {
+        logger.info("Received GET /rest/api/users/featured-limit");
+        try {
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            logger.debug("Authenticated user: {}", username);
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> {
+                        logger.error("Utente non trovato: {}", username);
+                        return new IllegalStateException("Utente non trovato");
+                    });
+
+            Subscription subscription = user.getSubscription();
+            if (subscription == null) {
+                logger.warn("Nessun abbonamento trovato per l'utente: {}", username);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Nessun abbonamento associato. Contatta l'assistenza."));
+            }
+
+            int maxFeaturedProducts = subscription.getMaxFeaturedCars();
+            logger.debug("Subscription details for user {}: id={}, maxFeaturedProducts={}",
+                    username, subscription.getId(), maxFeaturedProducts);
+            if (maxFeaturedProducts <= 0) {
+                logger.warn("maxFeaturedProducts non valido per l'utente {}: {}", username, maxFeaturedProducts);
+            }
+            long currentFeaturedCount = productRepository.countBySellerAndIsFeaturedTrue(user);
+            logger.info("Featured limit for user {}: currentFeaturedCount={}, maxFeaturedProducts={}",
+                    username, currentFeaturedCount, maxFeaturedProducts);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("currentFeaturedCount", currentFeaturedCount);
+            response.put("maxFeaturedProducts", maxFeaturedProducts);
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            logger.error("Errore nello stato: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Errore durante il recupero del limite di evidenza: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Errore interno del server"));
+        }
+    }
 }

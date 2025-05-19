@@ -212,17 +212,16 @@ public class AdminService {
 		return subscriptionRepository.findById(id);
 	}
 
-	// Aggiunge un nuovo abbonamento
 	@Transactional
 	@PreAuthorize("hasRole('ADMIN')")
 	public Subscription addSubscription(Subscription subscription) {
 		logger.debug("Admin adding subscription: name={}", subscription.getName());
 		Subscription savedSubscription = subscriptionRepository.save(subscription);
-		logger.info("Subscription added by admin: id={}, name={}", savedSubscription.getId(), savedSubscription.getName());
+		logger.info("Subscription added by admin: id={}, name={}, maxFeaturedCars={}",
+				savedSubscription.getId(), savedSubscription.getName(), savedSubscription.getMaxFeaturedCars());
 		return savedSubscription;
 	}
 
-	// Modifica un abbonamento
 	@Transactional
 	@PreAuthorize("hasRole('ADMIN')")
 	public Subscription updateSubscription(Long subscriptionId, Subscription updatedSubscription) {
@@ -240,9 +239,11 @@ public class AdminService {
 		subscription.setDiscount(updatedSubscription.getDiscount());
 		subscription.setDiscountExpiry(updatedSubscription.getDiscountExpiry());
 		subscription.setDurationDays(updatedSubscription.getDurationDays());
+		subscription.setMaxFeaturedCars(updatedSubscription.getMaxFeaturedCars()); // Aggiunto
 
 		Subscription savedSubscription = subscriptionRepository.save(subscription);
-		logger.info("Subscription updated by admin: id={}, name={}", savedSubscription.getId(), savedSubscription.getName());
+		logger.info("Subscription updated by admin: id={}, name={}, maxFeaturedCars={}",
+				savedSubscription.getId(), savedSubscription.getName(), savedSubscription.getMaxFeaturedCars());
 		return savedSubscription;
 	}
 

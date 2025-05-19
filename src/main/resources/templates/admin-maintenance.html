@@ -157,7 +157,6 @@
             </div>
         </div>
 
-        <!-- Sezione 4: Gestione Abbonamenti -->
         <div class="admin-section">
             <h3>Gestione Abbonamenti</h3>
             <a href="/admin/subscription/add" class="add-button"><i class="fas fa-plus"></i> Aggiungi Abbonamento</a>
@@ -171,6 +170,7 @@
                         <th>Prezzo</th>
                         <th>Sconto</th>
                         <th>Scadenza Sconto</th>
+                        <th>Macchine in Evidenza</th>
                         <th>Azioni</th>
                     </tr>
                     </thead>
@@ -182,6 +182,7 @@
                         <td th:text="${subscription.price}"></td>
                         <td th:text="${subscription.discount != null} ? ${subscription.discount + '%'} : '-'"></td>
                         <td th:text="${subscription.discountExpiry != null} ? ${subscription.discountExpiry} : '-'"></td>
+                        <td th:text="${subscription.maxFeaturedCars}"></td>
                         <td>
                             <a th:href="@{/admin/subscription/{id}/edit(id=${subscription.id})}" class="edit-button"><i class="fas fa-edit"></i> Modifica</a>
                             <a th:href="@{/admin/subscription/{id}/discount(id=${subscription.id})}" class="discount-button"><i class="fas fa-tag"></i> Applica Sconto</a>

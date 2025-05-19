@@ -131,7 +131,8 @@
                     .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
             Subscription subscription = subscriptionRepository.findById(subscriptionId)
                     .orElseThrow(() -> new IllegalArgumentException("Abbonamento non trovato"));
-    
+
+            user.setSubscription(subscription);
             // Cambia il ruolo a DEALER
             user.setRolesString("DEALER");
     
@@ -292,7 +293,6 @@
             List<UserSubscription> activeSubscriptions = userSubscriptionRepository.findByActive(true);
             logger.info("Found {} active subscriptions", activeSubscriptions.size());
 
-            // Step 1: Deactivate expired subscriptions
             for (UserSubscription userSubscription : activeSubscriptions) {
                 boolean isExpired = userSubscription.isExpired();
                 logger.info("Checking subscription ID: {}, userId: {}, expiryDate: {}, isExpired: {}, active: {}",
@@ -303,6 +303,17 @@
                     userSubscription.setActive(false);
                     userSubscriptionRepository.saveAndFlush(userSubscription);
                     logger.info("Subscription ID: {} set to inactive", userSubscription.getId());
+
+                    // Clear subscription from User if no active subscriptions remain
+                    User user = userSubscription.getUser();
+                    List<UserSubscription> remainingActive = userSubscriptionRepository.findByUserAndActive(user, true);
+                    if (remainingActive.isEmpty()) {
+                        user.setSubscription(null);
+                        user.setRolesString("USER");
+                        userRepository.saveAndFlush(user);
+                        logger.info("Cleared subscription and set USER role for user {}", user.getId());
+                    }
+
                     try {
                         emailService.sendSubscriptionCancellationEmail(
                                 userSubscription.getUser().getEmail(),
@@ -311,15 +322,14 @@
                         );
                         logger.info("Sent expiration email to {}", userSubscription.getUser().getEmail());
                     } catch (MessagingException e) {
-                        logger.error("Failed to send expiration email to {}: {}",
-                                userSubscription.getUser().getEmail(), e.getMessage());
+                        logger.error("Failed to send expiration email to {}: {}", userSubscription.getUser().getEmail(), e.getMessage());
                     }
                 } else {
                     logger.info("Subscription ID: {} is still active", userSubscription.getId());
                 }
             }
 
-            // Step 2: Check users with no active subscriptions
+            // Check users with no active subscriptions
             List<User> usersToCheck = activeSubscriptions.stream()
                     .map(UserSubscription::getUser)
                     .distinct()
@@ -332,8 +342,9 @@
                 if (remainingActive.isEmpty()) {
                     logger.info("No active subscriptions for user {}, reverting to USER role", user.getId());
                     user.setRolesString("USER");
+                    user.setSubscription(null);
                     userRepository.saveAndFlush(user);
-                    logger.info("User {} role updated to USER", user.getId());
+                    logger.info("User {} role updated to USER and subscription cleared", user.getId());
 
                     dealerRepository.findByOwner(user).ifPresent(dealer -> {
                         try {

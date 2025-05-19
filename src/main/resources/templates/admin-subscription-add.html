@@ -50,6 +50,10 @@
                 <label for="durationDays">Durata (in giorni)</label>
                 <input type="number" id="durationDays" th:field="*{durationDays}" min="1" required/>
             </div>
+            <div class="form-group">
+                <label for="maxFeaturedCars">Macchine in Evidenza Massime</label>
+                <input type="number" id="maxFeaturedCars" th:field="*{maxFeaturedCars}" min="0" required/>
+            </div>
             <button type="submit" class="submit-button">Aggiungi</button>
             <a href="/admin/maintenance" class="cancel-button">Annulla</a>
         </form>

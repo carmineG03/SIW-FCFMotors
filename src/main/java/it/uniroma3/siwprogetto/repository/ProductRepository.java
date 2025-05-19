@@ -73,4 +73,8 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
     List<Product> findAllOrderedByHighlight();
 
     void deleteById(Long id);
+
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.seller = :seller AND p.isFeatured = true")
+    long countBySellerAndIsFeaturedTrue(@Param("seller") User seller);
+
 }

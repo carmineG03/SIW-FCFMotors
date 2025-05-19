@@ -111,4 +111,5 @@ public class CartService {
         // Svuota il carrello dell'utente
         cartItemRepository.deleteAll(items);
     }
+
 }
