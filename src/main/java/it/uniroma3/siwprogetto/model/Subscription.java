@@ -15,6 +15,7 @@ public class Subscription {
     private int durationDays;
     private Double discount; // Percentuale di sconto (es. 20 per 20%)
     private LocalDate discountExpiry;
+    private Integer maxFeaturedCars;
 
     public Subscription() {}
 
@@ -33,5 +34,8 @@ public class Subscription {
     public void setDiscount(Double discount) { this.discount = discount; }
     public LocalDate getDiscountExpiry() { return discountExpiry; }
     public void setDiscountExpiry(LocalDate discountExpiry) { this.discountExpiry = discountExpiry; }
+    public Integer getMaxFeaturedCars() { return maxFeaturedCars; }
+    public void setMaxFeaturedCars(Integer maxFeaturedCars) { this.maxFeaturedCars = maxFeaturedCars; }
+
 
 }

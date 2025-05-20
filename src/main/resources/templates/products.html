@@ -10,31 +10,31 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-<header>
-    <div class="header-left">
-        <a href="/" class="logo-link">
-            <div class="logo-container">
-                <img src="/image/logo1.png" alt="Logo" class="logo">
-            </div>
-            <div class="title-container">
-                <h1 class="main-title">FCF MOTORS</h1>
-            </div>
-        </a>
-    </div>
-    <div class="nav-container">
-        <nav class="nav-bar">
-            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
-            <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i></a>
-            <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-sign-in-alt"></i></a>
-            <a href="/cart" class="icon-button cart-icon">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}"></span>
+    <header>
+        <div class="header-left">
+            <a href="/" class="logo-link">
+                <div class="logo-container">
+                    <img src="/image/logo1.png" alt="Logo" class="logo">
+                </div>
+                <div class="title-container">
+                    <h1 class="main-title">FCF MOTORS</h1>
+                </div>
             </a>
-        </nav>
-    </div>
-</header>
-
+        </div>
+        <div class="nav-container">
+            <nav class="nav-bar">
+                <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
+                <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i></a>
+                <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-sign-in-alt"></i></a>
+                <a href="/cart" class="icon-button cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}"></span>
+                </a>
+            </nav>
+        </div>
+    </header>
+    
 <section class="search-section">
     <div class="search-content">
         <h2>Trova Auto</h2>

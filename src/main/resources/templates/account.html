@@ -22,6 +22,7 @@
     </div>
     <div class="nav-container">
         <div class="nav-bar">
+            <a href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
             <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
         </div>
     </div>
@@ -30,12 +31,12 @@
             class="maintenance-button">
         <i class="fas fa-tools"></i> Manutenzione Private
     </button>
-    <button th:if="${user.rolesString != null and user.rolesString.contains('DEALER')}"
+    <button th:if="${user != null and user.rolesString != null and user.rolesString.contains('DEALER')}"
             onclick="window.location.href='/rest/manutenzione/dealer'"
             class="maintenance-button">
         <i class="fas fa-cogs"></i> Manutenzione Dealer
     </button>
-    <button th:if="${user.rolesString != null and user.rolesString.contains('ADMIN')}"
+    <button th:if="${user != null and user.rolesString != null and user.rolesString.contains('ADMIN')}"
             onclick="window.location.href='/admin/maintenance'"
             class="maintenance-button">
         <i class="fas fa-shield-alt"></i> Manutenzione Admin
@@ -44,7 +45,6 @@
 
 <div class="wrapper">
     <div class="account-container">
-        <!-- Blocco a sinistra: Informazioni account -->
         <div class="account-details-container">
             <h2>Informazioni Account</h2>
             <div th:if="${!editMode}" class="account-details">
@@ -61,28 +61,15 @@
                     <form th:action="@{/logout}" method="post" class="logout-form">
                         <button type="submit" class="logout-button">Esci</button>
                     </form>
-                    <!-- Pulsante per aprire il popup di cancellazione -->
-                    <button class="delete-account-button">Cancella Account</button>
-                </div>
-            </div>
-
-            <!-- Popup per la cancellazione dell'account -->
-            <div class="delete-account-popup">
-                <div class="delete-account-popup-content">
-                    <span class="close-popup">&times;</span>
-                    <h3>Conferma Cancellazione Account</h3>
-                    <p>Inserisci la tua password per confermare la cancellazione dell'account. Questa azione è irreversibile.</p>
-                    <form id="delete-account-form" th:action="@{/account/delete}" method="post">
-                        <!-- Aggiungi il token CSRF se necessario -->
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" th:if="${_csrf != null}"/>
+                    <form th:action="@{/account/delete}" method="post" class="delete-account-form">
                         <div class="form-group">
-                            <label for="delete-password">Password</label>
-                            <input type="password" id="delete-password" name="password" required />
+                            <label for="password">Conferma Password:</label>
+                            <input type="password" id="password" name="password" required />
                         </div>
-                        <div class="form-actions">
-                            <button type="submit" class="confirm-delete-button">Conferma</button>
-                            <button type="button" class="cancel-delete-button">Annulla</button>
-                        </div>
+                        <button type="submit" class="delete-account-button"
+                                onclick="return confirm('Sei sicuro di voler cancellare il tuo account? Questa azione è irreversibile e eliminerà tutte le informazioni associate.');">
+                            Cancella Account
+                        </button>
                     </form>
                 </div>
             </div>
@@ -123,7 +110,6 @@
 
         <div class="subscriptions-container">
             <h2>Abbonamenti</h2>
-            <!-- Caso 1: Ci sono abbonamenti attivi -->
             <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
                 <h3>Abbonamento Attivo</h3>
                 <div th:each="userSubscription : ${activeSubscriptions}">
@@ -135,17 +121,16 @@
                     </a>
                 </div>
             </div>
-            <!-- Caso 2: Nessun abbonamento attivo -->
             <div th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}" class="no-subscriptions">
                 <p>Nessun abbonamento attivo.</p>
                 <a href="/subscriptions" class="subscribe-button">Scopri Abbonamenti</a>
-                <div th:if="${user.rolesString != null and user.rolesString.contains('USER')}">
+                <div th:if="${user != null and user.rolesString != null and user.rolesString.contains('USER')}">
                     <p>Vuoi vendere la tua auto?</p>
                     <form th:action="@{/account/become-private}" method="post">
                         <button type="submit" class="become-private-button">Diventa Privato</button>
                     </form>
                 </div>
-                <div th:if="${user.rolesString != null and user.rolesString.contains('PRIVATE')}">
+                <div th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}">
                     <p>Sei un utente privato. Vuoi tornare al ruolo USER?</p>
                     <form th:action="@{/account/remove-private}" method="post">
                         <button type="submit" class="remove-private-button"
@@ -185,57 +170,5 @@
         <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
     </div>
 </footer>
-
-<script>
-// Seleziona gli elementi del DOM
-const deleteAccountButton = document.querySelector('.delete-account-button');
-const deleteAccountPopup = document.querySelector('.delete-account-popup');
-const closePopup = document.querySelector('.delete-account-popup .close-popup');
-const cancelDeleteButton = document.querySelector('.cancel-delete-button');
-const deleteAccountForm = document.querySelector('#delete-account-form');
-
-// Funzione per aprire il popup
-if (deleteAccountButton && deleteAccountPopup) {
-    deleteAccountButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        deleteAccountPopup.style.display = 'flex';
-        // Opzionale: focalizza il campo della password
-        document.querySelector('#delete-password').focus();
-    });
-}
-
-// Funzione per chiudere il popup
-if (closePopup) {
-    closePopup.addEventListener('click', () => {
-        deleteAccountPopup.style.display = 'none';
-    });
-}
-
-if (cancelDeleteButton) {
-    cancelDeleteButton.addEventListener('click', () => {
-        deleteAccountPopup.style.display = 'none';
-    });
-}
-
-// Gestione della conferma di cancellazione
-if (deleteAccountForm) {
-    deleteAccountForm.addEventListener('submit', (e) => {
-        const password = document.querySelector('#delete-password').value;
-        if (!password) {
-            e.preventDefault();
-            alert('Per favore, inserisci la tua password per confermare la cancellazione.');
-            return;
-        }
-        // Aggiungi una conferma finale prima dell'invio
-        if (!confirm('Sei sicuro di voler cancellare il tuo account? Questa azione è irreversibile e eliminerà tutte le informazioni associate.')) {
-            e.preventDefault();
-            deleteAccountPopup.style.display = 'none';
-            return;
-        }
-        // Se l'utente conferma, il form verrà inviato al backend (th:action="/account/delete")
-        console.log('Password inserita:', password);
-    });
-}
-</script>
 </body>
 </html>

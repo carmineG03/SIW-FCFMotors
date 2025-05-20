@@ -1,10 +1,20 @@
 package it.uniroma3.siwprogetto.service;
 
 import it.uniroma3.siwprogetto.model.Product;
+import it.uniroma3.siwprogetto.model.Subscription;
+import it.uniroma3.siwprogetto.model.User;
+import it.uniroma3.siwprogetto.model.UserSubscription;
 import it.uniroma3.siwprogetto.repository.ProductRepository;
+import it.uniroma3.siwprogetto.repository.UserRepository;
+import it.uniroma3.siwprogetto.repository.UserSubscriptionRepository;
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +23,16 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
 
-    private final ProductRepository productRepository;
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private UserSubscriptionRepository userSubscriptionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(DealerService.class);
 
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
@@ -107,7 +126,51 @@ public class ProductService {
         return productRepository.findBySellerId(sellerId);
     }
 
+    public boolean canAddFeaturedCar(User user, Product product) {
+        User fullUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> {
+                    logger.error("Utente non trovato: {}", user.getId());
+                    return new IllegalStateException("Utente non trovato");
+                });
+        Subscription subscription = fullUser.getSubscription();
+        if (subscription == null) {
+            logger.warn("Nessun abbonamento trovato per l'utente: {}", fullUser.getUsername());
+            return false; // Impedisce l'aggiunta se l'abbonamento è null
+        }
 
+        int maxFeaturedProducts = subscription.getMaxFeaturedCars();
+        logger.debug("Limite massimo di prodotti in evidenza per l'utente {}: {}", fullUser.getUsername(), maxFeaturedProducts);
+        if (maxFeaturedProducts <= 0) {
+            logger.warn("maxFeaturedProducts non valido per l'utente {}: {}", fullUser.getUsername(), maxFeaturedProducts);
+            return false; // Impedisce l'aggiunta se il limite è 0
+        }
+
+        long featuredCount = productRepository.countBySellerAndIsFeaturedTrue(user);
+        logger.debug("Prodotti attualmente in evidenza per l'utente {}: {}", fullUser.getUsername(), featuredCount);
+
+        if (product != null && product.isFeatured()) {
+            featuredCount--;
+            logger.debug("Escludendo il prodotto corrente, conteggio aggiornato: {}", featuredCount);
+        }
+
+        boolean canAdd = featuredCount < maxFeaturedProducts;
+        logger.info("L'utente {} può aggiungere un prodotto in evidenza: {}", fullUser.getUsername(), canAdd);
+        return canAdd;
+    }
+
+
+    @Transactional
+    public void setProductFeatured(Long id, boolean isFeatured, LocalDateTime featuredUntil) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Prodotto non trovato"));
+        User user = product.getSeller();
+        if (isFeatured && !canAddFeaturedCar(user, product)) {
+            throw new IllegalStateException("Limite massimo di prodotti in evidenza raggiunto per il tuo abbonamento");
+        }
+        product.setIsFeatured(isFeatured);
+        product.setFeaturedUntil(featuredUntil);
+        productRepository.save(product);
+    }
 
 
 }

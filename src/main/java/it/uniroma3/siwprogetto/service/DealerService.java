@@ -2,21 +2,31 @@ package it.uniroma3.siwprogetto.service;
 
 import it.uniroma3.siwprogetto.model.Dealer;
 import it.uniroma3.siwprogetto.model.Product;
+import it.uniroma3.siwprogetto.model.QuoteRequest;
 import it.uniroma3.siwprogetto.model.User;
 import it.uniroma3.siwprogetto.repository.DealerRepository;
 import it.uniroma3.siwprogetto.repository.ProductRepository;
+import it.uniroma3.siwprogetto.repository.QuoteRequestRepository;
 import it.uniroma3.siwprogetto.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -36,6 +46,11 @@ public class DealerService {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private QuoteRequestRepository quoteRequestRepository;
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
     @Transactional
     public Dealer saveDealer(Dealer dealer, boolean isUpdate) {
         logger.info("Saving dealer: name={}, isUpdate={}", dealer.getName(), isUpdate);
@@ -53,6 +68,8 @@ public class DealerService {
                     return new IllegalStateException("Utente non trovato: " + username);
                 });
 
+
+
         Optional<Dealer> existingDealer = dealerRepository.findByOwnerUsername(username);
         if (isUpdate && existingDealer.isPresent()) {
             logger.debug("Updating existing dealer: id={}", existingDealer.get().getId());
@@ -60,8 +77,7 @@ public class DealerService {
             toUpdate.setName(dealer.getName());
             toUpdate.setDescription(dealer.getDescription());
             toUpdate.setAddress(dealer.getAddress());
-            toUpdate.setPhone(dealer.getPhone());
-            toUpdate.setEmail(dealer.getEmail());
+            toUpdate.setContact(dealer.getContact());
             toUpdate.setImagePath(dealer.getImagePath());
             Dealer savedDealer = dealerRepository.save(toUpdate);
             logger.info("Dealer updated: id={}, name={}", savedDealer.getId(), savedDealer.getName());
@@ -81,6 +97,8 @@ public class DealerService {
             throw new IllegalStateException("Nessun concessionario trovato per la modifica");
         }
     }
+
+   
 
     public Dealer findByOwner() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -125,8 +143,8 @@ public class DealerService {
         product.setSeller(user);
         product.setSellerType("DEALER");
         Product savedProduct = productRepository.save(product);
-        logger.info("Product added: id={}, model={}, seller_id={}",
-                savedProduct.getId(), savedProduct.getModel(), user.getId());
+        logger.info("Product added: id={}, name={}, seller_id={}",
+                savedProduct.getId(), savedProduct.getName(), user.getId());
         return savedProduct;
     }
 
@@ -163,11 +181,12 @@ public class DealerService {
             throw new IllegalStateException("Il prodotto non appartiene a questo utente");
         }
 
+        product.setName(updatedProduct.getName());
         product.setDescription(updatedProduct.getDescription());
         product.setPrice(updatedProduct.getPrice());
         Product savedProduct = productRepository.save(product);
-        logger.info("Product updated: id={}, model={}, seller_id={}",
-                savedProduct.getId(), savedProduct.getModel(), user.getId());
+        logger.info("Product updated: id={}, name={}, seller_id={}",
+                savedProduct.getId(), savedProduct.getName(), user.getId());
         return savedProduct;
     }
 
@@ -234,28 +253,88 @@ public class DealerService {
 
     @Transactional
     public void deleteDealer(Long id) {
+        logger.info("Attempting to delete dealer with ID: {}", id);
+
         if (id == null || id <= 0) {
+            logger.error("Invalid dealer ID: {}", id);
             throw new IllegalArgumentException("ID del concessionario non valido.");
         }
+
         if (!dealerRepository.existsById(id)) {
+            logger.error("Dealer not found with ID: {}", id);
             throw new IllegalArgumentException("Concessionario non trovato con ID: " + id);
         }
 
-        Dealer dealer = dealerRepository.findById(id).get();
-        List<Product> products = productRepository.findBySeller(dealer.getOwner());
-        if (!products.isEmpty()) {
-            productRepository.deleteAll(products);
-        }
-
         try {
+            Dealer dealer = dealerRepository.findById(id)
+                    .orElseThrow(() -> {
+                        logger.error("Dealer not found during retrieval: {}", id);
+                        return new IllegalStateException("Concessionario non trovato durante il recupero: " + id);
+                    });
+            logger.debug("Dealer found: id={}, name={}", dealer.getId(), dealer.getName());
+
+            // Elimina i prodotti associati
+            List<Product> products = productRepository.findBySeller(dealer.getOwner());
+            if (!products.isEmpty()) {
+                logger.info("Deleting {} products associated with dealer ID: {}", products.size(), id);
+                productRepository.deleteAll(products);
+                logger.debug("Products deleted successfully");
+            } else {
+                logger.debug("No products found for dealer ID: {}", id);
+            }
+
+            // Elimina eventuali richieste di preventivo associate
+            List<QuoteRequest> quoteRequests = quoteRequestRepository.findByDealerId(id);
+            if (!quoteRequests.isEmpty()) {
+                logger.info("Deleting {} quote requests associated with dealer ID: {}", quoteRequests.size(), id);
+                quoteRequestRepository.deleteAll(quoteRequests);
+                quoteRequestRepository.flush();
+                logger.debug("Quote requests deleted successfully");
+            } else {
+                logger.debug("No quote requests found for dealer ID: {}", id);
+            }
+
+            // Elimina il concessionario con query JPQL
+            logger.info("Executing JPQL query to delete dealer with ID: {}", id);
             Query query = entityManager.createQuery("DELETE FROM Dealer d WHERE d.id = :id");
             query.setParameter("id", id);
-            dealerRepository.flush();
+            int deletedCount = query.executeUpdate();
+            logger.debug("JPQL query executed, deleted rows: {}", deletedCount);
+
+            // Sincronizza le modifiche
+            entityManager.flush();
+            logger.debug("EntityManager flushed");
+
+            // Verifica che il concessionario sia stato eliminato
             if (dealerRepository.existsById(id)) {
+                logger.error("Failed to delete dealer: still exists with ID: {}", id);
                 throw new IllegalStateException("Eliminazione non riuscita: il concessionario esiste ancora.");
             }
+
+            logger.info("Dealer with ID: {} deleted successfully", id);
+        } catch (DataIntegrityViolationException e) {
+            logger.error("Data integrity violation while deleting dealer ID: {}. Possible foreign key constraints.", id, e);
+            throw new IllegalStateException("Impossibile eliminare il concessionario: esistono vincoli di integrità (es. entità correlate non eliminate).", e);
         } catch (Exception e) {
-            throw new IllegalStateException("Errore durante l'eliminazione del concessionario.", e);
+            logger.error("Unexpected error while deleting dealer ID: {}", id, e);
+            throw new IllegalStateException("Errore durante l'eliminazione del concessionario: " + e.getMessage(), e);
+        }
+    }
+    public Dealer findByOwnerUsername(String username) {
+        logger.debug("Finding dealer by owner username: {}", username);
+
+        if (username == null || username.trim().isEmpty()) {
+            logger.warn("Invalid username provided: {}", username);
+            return null;
+        }
+
+        Optional<Dealer> dealer = dealerRepository.findByOwnerUsername(username);
+        if (dealer.isPresent()) {
+            logger.info("Dealer found for username '{}': id={}, name={}", username, dealer.get().getId(), dealer.get().getName());
+            return dealer.get();
+        } else {
+            logger.warn("No dealer found for username '{}'", username);
+            return null;
         }
     }
 
@@ -343,23 +422,5 @@ public class DealerService {
         Product savedProduct = productRepository.save(product);
         logger.info("Highlight removed from product: id={}, model={}", savedProduct.getId(), savedProduct.getModel());
         return savedProduct;
-    }
-
-    public Dealer findByOwnerUsername(String username) {
-        logger.debug("Finding dealer by owner username: {}", username);
-
-        if (username == null || username.trim().isEmpty()) {
-            logger.warn("Invalid username provided: {}", username);
-            return null;
-        }
-
-        Optional<Dealer> dealer = dealerRepository.findByOwnerUsername(username);
-        if (dealer.isPresent()) {
-            logger.info("Dealer found for username '{}': id={}, name={}", username, dealer.get().getId(), dealer.get().getName());
-            return dealer.get();
-        } else {
-            logger.warn("No dealer found for username '{}'", username);
-            return null;
-        }
     }
 }

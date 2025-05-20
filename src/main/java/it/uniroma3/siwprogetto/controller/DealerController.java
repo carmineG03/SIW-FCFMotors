@@ -1,11 +1,12 @@
 package it.uniroma3.siwprogetto.controller;
 
-import it.uniroma3.siwprogetto.model.Dealer;
-import it.uniroma3.siwprogetto.model.Product;
-import it.uniroma3.siwprogetto.model.QuoteRequest;
+import it.uniroma3.siwprogetto.model.*;
 import it.uniroma3.siwprogetto.repository.DealerRepository;
+import it.uniroma3.siwprogetto.repository.ProductRepository;
 import it.uniroma3.siwprogetto.repository.QuoteRequestRepository;
+import it.uniroma3.siwprogetto.repository.UserRepository;
 import it.uniroma3.siwprogetto.service.DealerService;
+import it.uniroma3.siwprogetto.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -44,6 +46,17 @@ public class DealerController {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+
+
     @PostMapping("/api/dealers")
     @ResponseBody
     public ResponseEntity<?> createOrUpdateDealer(@RequestBody Map<String, String> payload) {
@@ -51,8 +64,7 @@ public class DealerController {
         String name = payload.get("name");
         String description = payload.get("description");
         String address = payload.get("address");
-        String phone = payload.get("phone");
-        String email = payload.get("email");
+        String contact = payload.get("contact");
         String imagePath = payload.get("imagePath");
         String isUpdate = payload.get("isUpdate");
         boolean updateFlag = "true".equalsIgnoreCase(isUpdate);
@@ -68,8 +80,7 @@ public class DealerController {
             dealer.setName(trimmedName);
             dealer.setDescription(StringUtils.hasText(description) ? description.trim() : null);
             dealer.setAddress(StringUtils.hasText(address) ? address.trim() : null);
-            dealer.setPhone(StringUtils.hasText(phone) ? phone.trim() : null);
-            dealer.setEmail(StringUtils.hasText(email) ? email.trim() : null);
+            dealer.setContact(StringUtils.hasText(contact) ? contact.trim() : null);
             dealer.setImagePath(StringUtils.hasText(imagePath) ? imagePath.trim() : null);
 
             logger.info("Calling dealerService.saveDealer for dealer: {}, isUpdate={}", dealer.getName(), updateFlag);
@@ -81,8 +92,7 @@ public class DealerController {
             response.put("name", savedDealer.getName());
             response.put("description", savedDealer.getDescription() != null ? savedDealer.getDescription() : "");
             response.put("address", savedDealer.getAddress() != null ? savedDealer.getAddress() : "");
-            response.put("phone", savedDealer.getPhone() != null ? savedDealer.getPhone() : "");
-            response.put("email", savedDealer.getEmail() != null ? savedDealer.getEmail() : "");
+            response.put("contact", savedDealer.getContact() != null ? savedDealer.getContact() : "");
             response.put("imagePath", savedDealer.getImagePath() != null ? savedDealer.getImagePath() : "");
 
             return ResponseEntity.ok(response);
@@ -112,8 +122,7 @@ public class DealerController {
                 dealerMap.put("name", dealer.getName() != null ? dealer.getName() : "");
                 dealerMap.put("description", dealer.getDescription() != null ? dealer.getDescription() : "");
                 dealerMap.put("address", dealer.getAddress() != null ? dealer.getAddress() : "");
-                dealerMap.put("phone", dealer.getPhone() != null ? dealer.getPhone() : "");
-                dealerMap.put("email", dealer.getEmail() != null ? dealer.getEmail() : "");
+                dealerMap.put("contact", dealer.getContact() != null ? dealer.getContact() : "");
                 dealerMap.put("imagePath", dealer.getImagePath() != null ? dealer.getImagePath() : "");
                 return dealerMap;
             }).toList();
@@ -215,19 +224,19 @@ public class DealerController {
     @PostMapping("/api/products")
     @ResponseBody
     public ResponseEntity<?> addProduct(@RequestBody Map<String, String> payload) {
-        logger.info("Received POST /rest/api/products for product: {}", payload.get("model"));
-        String model = payload.get("model");
+        logger.info("Received POST /rest/api/products for product: {}", payload.get("name"));
+        String name = payload.get("name");
         String description = payload.get("description");
         String priceStr = payload.get("price");
         String imageUrl = payload.get("imageUrl");
         String isFeaturedStr = payload.get("isFeatured");
         String featuredUntilStr = payload.get("featuredUntil");
 
-        String trimmedModel = (model != null) ? model.trim() : null;
+        String trimmedName = (name != null) ? name.trim() : null;
 
-        if (!StringUtils.hasText(trimmedModel)) {
-            logger.warn("Validation failed: Product model is missing or empty");
-            return ResponseEntity.badRequest().body(Map.of("message", "Il modello del prodotto è obbligatorio"));
+        if (!StringUtils.hasText(trimmedName)) {
+            logger.warn("Validation failed: Product name is missing or empty");
+            return ResponseEntity.badRequest().body(Map.of("message", "Il nome del prodotto è obbligatorio"));
         }
 
         if (!StringUtils.hasText(priceStr)) {
@@ -243,7 +252,7 @@ public class DealerController {
         try {
             BigDecimal price = new BigDecimal(priceStr);
             Product product = new Product();
-            product.setModel(trimmedModel);
+            product.setName(trimmedName);
             product.setDescription(StringUtils.hasText(description) ? description.trim() : null);
             product.setPrice(price);
             product.setImageUrl(StringUtils.hasText(imageUrl) ? imageUrl.trim() : null);
@@ -259,15 +268,15 @@ public class DealerController {
                 product.setFeaturedUntil(LocalDateTime.now().plusDays(highlightDuration));
             }
 
-            logger.info("Calling dealerService.addProduct for product: {}", product.getModel());
+            logger.info("Calling dealerService.addProduct for product: {}", product.getName());
             long startTime = System.currentTimeMillis();
             Product savedProduct = dealerService.addProduct(product);
-            logger.info("Product added successfully: id={}, model={}, took {} ms",
-                    savedProduct.getId(), savedProduct.getModel(), System.currentTimeMillis() - startTime);
+            logger.info("Product added successfully: id={}, name={}, took {} ms",
+                    savedProduct.getId(), savedProduct.getName(), System.currentTimeMillis() - startTime);
 
             Map<String, Object> response = new HashMap<>();
             response.put("id", savedProduct.getId());
-            response.put("model", savedProduct.getModel());
+            response.put("name", savedProduct.getName());
             response.put("description", savedProduct.getDescription() != null ? savedProduct.getDescription() : "");
             response.put("price", savedProduct.getPrice());
             response.put("imageUrl", savedProduct.getImageUrl() != null ? savedProduct.getImageUrl() : "");
@@ -302,12 +311,12 @@ public class DealerController {
 
             Map<String, Object> response = new HashMap<>();
             response.put("id", product.getId());
-            response.put("model", product.getModel());
+            response.put("name", product.getName());
             response.put("description", product.getDescription() != null ? product.getDescription() : "");
             response.put("price", product.getPrice());
             response.put("imageUrl", product.getImageUrl() != null ? product.getImageUrl() : "");
 
-            logger.info("Product retrieved successfully: id={}, model={}", product.getId(), product.getModel());
+            logger.info("Product retrieved successfully: id={}, name={}", product.getId(), product.getName());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error fetching product: id={}, error={}", productId, e.getMessage(), e);
@@ -320,18 +329,18 @@ public class DealerController {
     @ResponseBody
     public ResponseEntity<?> updateProduct(@PathVariable Long productId, @RequestBody Map<String, String> payload) {
         logger.info("Received PUT /rest/api/products/{} with payload: {}", productId, payload);
-        String model = payload.get("model");
+        String name = payload.get("name");
         String description = payload.get("description");
         String priceStr = payload.get("price");
         String imageUrl = payload.get("imageUrl");
         String highlightedStr = payload.get("highlighted");
         String highlightDurationStr = payload.get("highlightDuration");
 
-        String trimmedModel = (model != null) ? model.trim() : null;
+        String trimmedName = (name != null) ? name.trim() : null;
 
-        if (!StringUtils.hasText(trimmedModel)) {
-            logger.warn("Validation failed: Product model is missing or empty");
-            return ResponseEntity.badRequest().body(Map.of("message", "Il modello del prodotto è obbligatorio"));
+        if (!StringUtils.hasText(trimmedName)) {
+            logger.warn("Validation failed: Product name is missing or empty");
+            return ResponseEntity.badRequest().body(Map.of("message", "Il nome del prodotto è obbligatorio"));
         }
 
         if (!StringUtils.hasText(priceStr)) {
@@ -342,7 +351,7 @@ public class DealerController {
         try {
             BigDecimal price = new BigDecimal(priceStr);
             Product product = new Product();
-            product.setModel(trimmedModel);
+            product.setName(trimmedName);
             product.setDescription(StringUtils.hasText(description) ? description.trim() : null);
             product.setPrice(price);
             product.setImageUrl(StringUtils.hasText(imageUrl) ? imageUrl.trim() : null);
@@ -356,13 +365,13 @@ public class DealerController {
                 product.setFeaturedUntil(null);
             }
 
-            logger.info("Calling dealerService.updateProduct for product: id={}, model={}", productId, product.getModel());
+            logger.info("Calling dealerService.updateProduct for product: id={}, name={}", productId, product.getName());
             Product updatedProduct = dealerService.updateProduct(productId, product);
-            logger.info("Product updated successfully: id={}, model={}", updatedProduct.getId(), updatedProduct.getModel());
+            logger.info("Product updated successfully: id={}, name={}", updatedProduct.getId(), updatedProduct.getName());
 
             Map<String, Object> response = new HashMap<>();
             response.put("id", updatedProduct.getId());
-            response.put("model", updatedProduct.getModel());
+            response.put("name", updatedProduct.getName());
             response.put("description", updatedProduct.getDescription() != null ? updatedProduct.getDescription() : "");
             response.put("price", updatedProduct.getPrice());
             response.put("imageUrl", updatedProduct.getImageUrl() != null ? updatedProduct.getImageUrl() : "");
@@ -460,11 +469,11 @@ public class DealerController {
             }
 
             Product highlightedProduct = dealerService.highlightProduct(productId, duration);
-            logger.info("Product highlighted successfully: id={}, model={}", highlightedProduct.getId(), highlightedProduct.getModel());
+            logger.info("Product highlighted successfully: id={}, name={}", highlightedProduct.getId(), highlightedProduct.getName());
 
             Map<String, Object> response = new HashMap<>();
             response.put("id", highlightedProduct.getId());
-            response.put("model", highlightedProduct.getModel());
+            response.put("name", highlightedProduct.getName());
             response.put("highlighted", highlightedProduct.isFeatured());
             response.put("highlightExpiration", highlightedProduct.getFeaturedUntil() != null ? highlightedProduct.getFeaturedUntil().toString() : null);
 
@@ -488,17 +497,13 @@ public class DealerController {
         logger.info("Received POST /rest/api/products/{}/remove-highlight", productId);
         try {
             Product updatedProduct = dealerService.removeHighlight(productId);
-            logger.info("Highlight removed successfully: id={}, model={}", updatedProduct.getId(), updatedProduct.getModel());
-
             Map<String, Object> response = new HashMap<>();
             response.put("id", updatedProduct.getId());
-            response.put("model", updatedProduct.getModel());
-            response.put("highlighted", updatedProduct.isFeatured());
-            response.put("highlightExpiration", updatedProduct.getFeaturedUntil() != null ? updatedProduct.getFeaturedUntil().toString() : null);
-
+            response.put("name", updatedProduct.getName());
+            response.put("isFeatured", updatedProduct.isFeatured());
+            response.put("featureExpiration", updatedProduct.getFeaturedUntil() != null ? updatedProduct.getFeaturedUntil().toString() : null);
             return ResponseEntity.ok(response);
         } catch (IllegalStateException e) {
-            logger.error("State error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error removing highlight: {}", e.getMessage(), e);
@@ -540,47 +545,110 @@ public class DealerController {
 
     @PostMapping("/dealer/quote-requests/respond/{requestId}")
     public String respondToQuoteRequest(@PathVariable Long requestId, @RequestParam String responseMessage, RedirectAttributes redirectAttributes) {
-        logger.info("Responding to quote request ID: {}", requestId);
-        QuoteRequest quoteRequest = new QuoteRequest();
-        try {
-            quoteRequest = quoteRequestRepository.findById(requestId)
-                    .orElseThrow(() -> new IllegalStateException("Richiesta di preventivo non trovata"));
+		logger.info("Responding to quote request ID: {}", requestId);
+		QuoteRequest quoteRequest = new QuoteRequest();
+		try {
+			quoteRequest = quoteRequestRepository.findById(requestId)
+					.orElseThrow(() -> new IllegalStateException("Richiesta di preventivo non trovata"));
 
-            // Verifica che l'utente autenticato sia il proprietario del dealer
+			// Verifica che l'utente autenticato sia il proprietario del dealer
+			String username = SecurityContextHolder.getContext().getAuthentication().getName();
+			Dealer authenticatedDealer = dealerService.findByOwner();
+			if (authenticatedDealer == null || !authenticatedDealer.getId().equals(quoteRequest.getDealer().getId())) {
+				redirectAttributes.addFlashAttribute("errorMessage", "Accesso non autorizzato.");
+				return "redirect:/rest/dealers/manage";
+			}
+
+			// Invia email all'utente
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setTo(quoteRequest.getUserEmail());
+			message.setSubject("Risposta alla tua richiesta di preventivo - FCF Motors");
+			message.setText("Gentile cliente,\n\nAbbiamo ricevuto la tua richiesta di preventivo per il prodotto: " +
+					quoteRequest.getProduct().getName() + ".\n\nRisposta:\n" + responseMessage +
+					"\n\nGrazie per aver scelto FCF Motors!\nIl team FCF Motors");
+			message.setFrom("info@fcfmotors.com");
+			mailSender.send(message);
+
+			// Aggiorna lo stato della richiesta
+			quoteRequest.setStatus("RESPONDED");
+			quoteRequestRepository.save(quoteRequest);
+
+			redirectAttributes.addFlashAttribute("successMessage", "Risposta inviata con successo!");
+			return "redirect:/rest/dealer/quote-requests/" + quoteRequest.getDealer().getId();
+		} catch (IllegalStateException e) {
+			logger.error("Error responding to quote request: {}", e.getMessage());
+			redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+			return "redirect:/rest/dealer/quote-requests/" + quoteRequest.getDealer().getId();
+		} catch (Exception e) {
+			logger.error("Unexpected error responding to quote request: {}", e.getMessage(), e);
+			redirectAttributes.addFlashAttribute("errorMessage", "Errore durante l'invio della risposta.");
+			return "redirect:/rest/dealer/quote-requests/" + quoteRequest.getDealer().getId();
+		}
+	}
+
+    @PostMapping("/products/{id}/set-featured")
+    public ResponseEntity<Map<String, Object>> setProductFeatured(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Product product = productService.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Prodotto non trovato"));
+            if (!product.getSeller().equals(user)) {
+                throw new IllegalArgumentException("Non autorizzato a modificare questo prodotto");
+            }
+            if (!productService.canAddFeaturedCar(user, product)) {
+                throw new IllegalArgumentException("Limite massimo di macchine in evidenza raggiunto");
+            }
+            productService.setProductFeatured(id, true, LocalDateTime.now().plusDays(30));
+            response.put("success", true);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    @GetMapping("/api/users/featured-limit")
+    @ResponseBody
+    public ResponseEntity<?> getFeaturedLimit() {
+        logger.info("Received GET /rest/api/users/featured-limit");
+        try {
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            Dealer authenticatedDealer = dealerService.findByOwner();
-            if (authenticatedDealer == null || !authenticatedDealer.getId().equals(quoteRequest.getDealer().getId())) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Accesso non autorizzato.");
-                return "redirect:/rest/dealers/manage";
+            logger.debug("Authenticated user: {}", username);
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> {
+                        logger.error("Utente non trovato: {}", username);
+                        return new IllegalStateException("Utente non trovato");
+                    });
+
+            Subscription subscription = user.getSubscription();
+            if (subscription == null) {
+                logger.warn("Nessun abbonamento trovato per l'utente: {}", username);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Nessun abbonamento associato. Contatta l'assistenza."));
             }
 
-            // Invia email all'utente
-            SimpleMailMessage message = new SimpleMailMessage();
-            Product product = quoteRequest.getProduct();
-            String productDisplayName = (product.getBrand() != null ? product.getBrand() + " " : "") + 
-                                      (product.getModel() != null ? product.getModel() : "");
-            message.setTo(quoteRequest.getUserEmail());
-            message.setSubject("Risposta alla tua richiesta di preventivo - FCF Motors");
-            message.setText("Gentile cliente,\n\nAbbiamo ricevuto la tua richiesta di preventivo per il prodotto: " +
-                    productDisplayName + ".\n\nRisposta:\n" + responseMessage +
-                    "\n\nGrazie per aver scelto FCF Motors!\nIl team FCF Motors");
-            message.setFrom("info@fcfmotors.com");
-            mailSender.send(message);
+            int maxFeaturedProducts = subscription.getMaxFeaturedCars();
+            logger.debug("Subscription details for user {}: id={}, maxFeaturedProducts={}",
+                    username, subscription.getId(), maxFeaturedProducts);
+            if (maxFeaturedProducts <= 0) {
+                logger.warn("maxFeaturedProducts non valido per l'utente {}: {}", username, maxFeaturedProducts);
+            }
+            long currentFeaturedCount = productRepository.countBySellerAndIsFeaturedTrue(user);
+            logger.info("Featured limit for user {}: currentFeaturedCount={}, maxFeaturedProducts={}",
+                    username, currentFeaturedCount, maxFeaturedProducts);
 
-            // Aggiorna lo stato della richiesta
-            quoteRequest.setStatus("RESPONDED");
-            quoteRequestRepository.save(quoteRequest);
-
-            redirectAttributes.addFlashAttribute("successMessage", "Risposta inviata con successo!");
-            return "redirect:/rest/dealer/quote-requests/" + quoteRequest.getDealer().getId();
+            Map<String, Object> response = new HashMap<>();
+            response.put("currentFeaturedCount", currentFeaturedCount);
+            response.put("maxFeaturedProducts", maxFeaturedProducts);
+            return ResponseEntity.ok(response);
         } catch (IllegalStateException e) {
-            logger.error("Error responding to quote request: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/rest/dealer/quote-requests/" + quoteRequest.getDealer().getId();
+            logger.error("Errore nello stato: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
-            logger.error("Unexpected error responding to quote request: {}", e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Errore durante l'invio della risposta.");
-            return "redirect:/rest/dealer/quote-requests/" + quoteRequest.getDealer().getId();
+            logger.error("Errore durante il recupero del limite di evidenza: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Errore interno del server"));
         }
     }
 }

@@ -10,4 +10,6 @@ public interface AccountInformationRepository extends JpaRepository<AccountInfor
 	Optional<AccountInformation> findByUser(User user);
 
 	Optional<AccountInformation> findByUserId(Long id);
+
+	void deleteById(Long id);
 }

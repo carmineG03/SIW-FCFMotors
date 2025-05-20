@@ -24,7 +24,7 @@
         <div class="nav-container">
             <div class="nav-bar">
                 <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
-                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i> <span th:text="${user.username}"></span></a>
+                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
                 <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
             </div>
         </div>
