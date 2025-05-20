@@ -1650,6 +1650,11 @@ header h2 {
 .dealers-section h2 {
     text-align: center;
     margin-bottom: 10px;
+    font-family: 'Bungee Spice', sans-serif;
+    font-size: 2.5rem;
+    color: #ffffff;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .section-subtitle {
@@ -1996,6 +2001,7 @@ header h2 {
 }
 
 .account-details-container h2 {
+    font-family: 'Bungee Spice', sans-serif;
     font-size: 2rem;
     color: #F5A623;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
@@ -2449,10 +2455,11 @@ header h2 {
     border-radius: 12px;
     padding: 40px;
     max-width: 1200px;
-    margin: 80px auto;
     color: #FFFFFF;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
+
+
 
 @supports not (backdrop-filter: blur(10px)) {
     .subscriptions-container {
@@ -2641,11 +2648,13 @@ header h2 {
 .subscribe-button {
     background-color: #28a745;
     color: white;
-    padding: 10px 20px;
+    padding: 5px 10px;
     border-radius: 5px;
     text-decoration: none;
     font-size: 1em;
     transition: background-color 0.3s;
+    margin-top: 30px;
+    
 }
 
 .subscribe-button:hover {
@@ -2737,6 +2746,7 @@ header h2 {
     .subscribe-button {
         font-size: 0.9rem;
         padding: 8px;
+        
     }
 }
 
@@ -2939,6 +2949,7 @@ footer {
     }
     .dealers-section h2 {
         font-size: 2rem;
+        
     }
     .account-container {
         flex-direction: column;
