@@ -9,11 +9,137 @@
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* Stile per la header */
+        header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            height: 80px;
+            overflow: visible;
+        }
+        /* Stile per il menu a tendina moderno e accattivante */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            z-index: 1002;
+        }
+        .dropdown-toggle {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            pointer-events: auto;
+            z-index: 1003;
+        }
+        .dropdown-toggle:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #E59400, #F5A623);
+        }
+        .dropdown-toggle i {
+            font-size: 1.2rem;
+            color: #FFFFFF;
+            transition: transform 0.3s ease;
+        }
+        .dropdown-toggle.open i.fa-bars {
+            transform: rotate(90deg);
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            z-index: 1004;
+            min-width: 200px;
+            padding: 10px 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .dropdown-menu.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .dropdown-menu a i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            color: #F5A623;
+        }
+        .dropdown-menu a:hover {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            transform: translateX(5px);
+            border-left: 3px solid #FFFFFF;
+        }
+        .dropdown-menu a:hover i {
+            color: #FFFFFF;
+        }
+        /* Posizionamento del menu, centrato verticalmente */
+        .header-right {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+        }
+        /* Assicurati che il layout sia responsive */
+        @media (max-width: 768px) {
+            header {
+                height: 60px;
+            }
+            .dropdown-menu {
+                min-width: 180px;
+            }
+            .dropdown-toggle {
+                width: 36px;
+                height: 36px;
+            }
+            .dropdown-toggle i {
+                font-size: 1rem;
+            }
+            .dropdown-menu {
+                top: 40px;
+            }
+            .dropdown-menu a {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            .header-right {
+                right: 10px;
+                gap: 5px;
+            }
+        }
         .cart-section {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            margin-top: 80px; /* Aggiunto per evitare sovrapposizione */
+            margin-top: 80px;
         }
         .cart-items {
             display: flex;
@@ -101,6 +227,7 @@
             background-color: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
+            z-index: 1005;
         }
         .modal-content {
             background-color: white;
@@ -160,195 +287,274 @@
     </style>
 </head>
 <body>
-<header>
-    <div class="header-left">
-        <a href="/" class="logo-link">
-            <div class="logo-container">
-                <img src="/image/logo1.png" alt="Logo" class="logo">
-            </div>
-            <div class="title-container">
-                <h1 class="main-title">FCF MOTORS</h1>
-            </div>
-        </a>
-    </div>
-    <div class="nav-container">
-        <nav class="nav-bar">
-            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
-            <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i></a>
-            <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-sign-in-alt"></i></a>
-            <a href="/cart" class="icon-button cart-icon">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}"></span>
-            </a>
-        </nav>
-    </div>
-</header>
-
-<section class="cart-section">
-    <h2>Il tuo Carrello</h2>
-    <div class="cart-items">
-        <div th:each="item : ${cartItems}" class="cart-item">
-            <img th:if="${item.product != null}" th:src="${item.product.imageUrl}" th:alt="${item.product.name}"/>
-            <img th:if="${item.product == null}" src="/images/subscription-placeholder.png" alt="Abbonamento"/>
-            <div class="cart-item-details">
-                <h3 th:text="${item.subscription != null ? item.subscription.name : item.product.name}"></h3>
-                <p th:if="${item.subscription != null}" th:text="'Durata: ' + ${item.subscription.durationDays} + ' giorni'"></p>
-                <p th:if="${item.subscription != null}">
-                    Prezzo:
-                    <span th:if="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
-                        <span class="price-original" th:text="${item.subscription.price} + ' €'"></span>
-                        <span class="price-discounted" th:text="${item.subscription.price * (1 - item.subscription.discount / 100)} + ' €'"></span>
-                    </span>
-                    <span th:unless="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
-                        <span th:text="${item.subscription.price} + ' €'"></span>
-                    </span>
-                </p>
-                <p th:if="${item.product != null && item.subscription == null}" th:text="'Prezzo: ' + ${item.product.price} + ' €'"></p>
-                <div class="quantity-selector">
-                    <label>Quantità:</label>
-                    <select class="quantity" th:data-item-id="${item.id}">
-                        <option th:each="i : ${#numbers.sequence(1, 10)}"
-                                th:value="${i}"
-                                th:selected="${i == item.quantity}"
-                                th:text="${i}">
-                        </option>
-                    </select>
+    <header>
+        <div class="header-left">
+            <a href="/" class="logo-link">
+                <div class="logo-container">
+                    <img src="/image/logo1.png" alt="Logo" class="logo">
                 </div>
-                <button class="remove-button" th:data-item-id="${item.id}">Rimuovi</button>
+                <div class="title-container">
+                    <h1 class="main-title">FCF MOTORS</h1>
+                </div>
+            </a>
+        </div>
+        <div class="nav-container">
+            <nav class="nav-bar">
+            </nav>
+        </div>
+        <div class="header-right">
+            <div class="dropdown">
+                <button class="dropdown-toggle" aria-label="Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                    <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                    <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                    <a th:if="${!isAuthenticated}" th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    <a th:if="${isAuthenticated}" th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+                </div>
             </div>
         </div>
-        <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}">
-            <p>Il carrello è vuoto.</p>
+    </header>
+
+    <section class="cart-section">
+        <h2>Il tuo Carrello</h2>
+        <div class="cart-items">
+            <div th:each="item : ${cartItems}" class="cart-item">
+                <img th:if="${item.product != null}" th:src="${item.product.imageUrl}" th:alt="'Immagine prodotto'"/>
+                <img th:if="${item.product == null}" src="/images/subscription-placeholder.png" alt="Abbonamento"/>
+                <div class="cart-item-details">
+                    <h3 th:text="${item.subscription != null ? item.subscription.name : item.product.name}"></h3>
+                    <p th:if="${item.subscription != null}" th:text="'Durata: ' + ${item.subscription.durationDays} + ' giorni'"></p>
+                    <p th:if="${item.subscription != null}">
+                        Prezzo:
+                        <span th:if="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                            <span class="price-original" th:text="${item.subscription.price} + ' €'"></span>
+                            <span class="price-discounted" th:text="${item.subscription.price * (1 - item.subscription.discount / 100)} + ' €'"></span>
+                        </span>
+                        <span th:unless="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                            <span th:text="${item.subscription.price} + ' €'"></span>
+                        </span>
+                    </p>
+                    <p th:if="${item.product != null && item.subscription == null}" th:text="'Prezzo: ' + ${item.product.price} + ' €'"></p>
+                    <button class="remove-button" th:data-item-id="${item.id}">Rimuovi</button>
+                </div>
+            </div>
+            <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}">
+                <p>Il carrello è vuoto.</p>
+            </div>
+        </div>
+
+        <div class="cart-summary">
+            <p id="subtotal">Subtotale: <span th:text="${#numbers.formatDecimal(subtotal, 1, 2, 'COMMA')} + ' €'"></span></p>
+            <button class="checkout-button" th:disabled="${cartItems == null or #lists.isEmpty(cartItems)}">Procedi al Checkout</button>
+        </div>
+    </section>
+
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <h2>Conferma Checkout</h2>
+            <p>Totale: <span id="modalTotal"></span></p>
+            <p>Sei sicuro di voler procedere con l'acquisto?</p>
+            <button class="confirm-button">Conferma</button>
+            <button class="cancel-button">Annulla</button>
         </div>
     </div>
 
-    <div class="cart-summary">
-        <p id="subtotal">Subtotale: <span th:text="${#numbers.formatDecimal(subtotal, 1, 2, 'COMMA')} + ' €'"></span></p>
-        <button class="checkout-button" th:disabled="${cartItems == null or #lists.isEmpty(cartItems)}">Procedi al Checkout</button>
-    </div>
-</section>
+    <div id="toast" class="toast"></div>
 
-<div id="checkoutModal" class="modal">
-    <div class="modal-content">
-        <h2>Conferma Checkout</h2>
-        <p>Totale: <span id="modalTotal"></span></p>
-        <p>Sei sicuro di voler procedere con l'acquisto?</p>
-        <button class="confirm-button">Conferma</button>
-        <button class="cancel-button">Annulla</button>
-    </div>
-</div>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Link Utili</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Trova Auto</a></li>
+                    <li><a href="/dealers">Concessionari</a></li>
+                    <li><a href="/cart">Carrello</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contatti</h4>
+                <p>Email: info@fcfmotors.com</p>
+                <p>Telefono: +39 123 456 7890</p>
+                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+            </div>
+            <div class="footer-section">
+                <h4>Seguici</h4>
+                <div class="social-links">
+                    <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Informazioni</h4>
+                <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
 
-<div id="toast" class="toast"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quantities = document.querySelectorAll('.quantity');
+            const removeButtons = document.querySelectorAll('.remove-button');
+            const checkoutButton = document.querySelector('.checkout-button');
+            const checkoutModal = document.getElementById('checkoutModal');
+            const confirmButton = document.querySelector('.confirm-button');
+            const cancelButton = document.querySelector('.cancel-button');
+            const modalTotal = document.getElementById('modalTotal');
+            const token = document.querySelector('meta[name="_csrf"]').content;
+            const header = document.querySelector('meta[name="_csrf_header"]').content;
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const quantities = document.querySelectorAll('.quantity');
-        const removeButtons = document.querySelectorAll('.remove-button');
-        const checkoutButton = document.querySelector('.checkout-button');
-        const checkoutModal = document.getElementById('checkoutModal');
-        const confirmButton = document.querySelector('.confirm-button');
-        const cancelButton = document.querySelector('.cancel-button');
-        const modalTotal = document.getElementById('modalTotal');
-        const token = document.querySelector('meta[name="_csrf"]').content;
-        const header = document.querySelector('meta[name="_csrf_header"]').content;
-
-        quantities.forEach(select => {
-            select.addEventListener('change', () => {
-                const itemId = select.getAttribute('data-item-id');
-                const quantity = select.value;
-
-                fetch(`/cart/update/${itemId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        [header]: token
-                    },
-                    body: JSON.stringify({ quantity: parseInt(quantity) })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.reload();
-                        } else {
-                            showToast('Errore durante l\'aggiornamento della quantità');
-                        }
-                    })
-                    .catch(() => showToast('Errore durante l\'aggiornamento della quantità'));
-            });
-        });
-
-        removeButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const itemId = button.getAttribute('data-item-id');
-
-                fetch(`/cart/remove/${itemId}`, {
-                    method: 'POST',
-                    headers: {
-                        [header]: token
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.reload();
-                        } else {
-                            showToast('Errore durante la rimozione dell\'articolo');
-                        }
-                    })
-                    .catch(() => showToast('Errore durante la rimozione dell\'articolo'));
-            });
-        });
-
-        checkoutButton.addEventListener('click', () => {
-            modalTotal.textContent = document.querySelector('#subtotal span').textContent;
-            checkoutModal.style.display = 'flex';
-        });
-
-        confirmButton.addEventListener('click', () => {
-            fetch('/cart/checkout-subscriptions', {
-                method: 'POST',
-                headers: {
-                    [header]: token
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast('Checkout completato con successo!');
-                        setTimeout(() => {
-                            window.location.href = '/account';
-                        }, 2000);
-                    } else {
-                        showToast('Errore durante il checkout');
-                    }
-                    checkoutModal.style.display = 'none';
-                })
-                .catch(() => {
-                    showToast('Errore durante il checkout');
-                    checkoutModal.style.display = 'none';
+            quantities.forEach(select => {
+                select.addEventListener('click', (event) => {
+                    event.stopPropagation();
                 });
+                select.addEventListener('change', (event) => {
+                    event.stopPropagation();
+                    const itemId = select.getAttribute('data-item-id');
+                    const quantity = select.value;
+
+                    fetch(`/cart/update/${itemId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            [header]: token
+                        },
+                        body: JSON.stringify({ quantity: parseInt(quantity) })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                showToast('Errore durante l\'aggiornamento della quantità');
+                            }
+                        })
+                        .catch(() => showToast('Errore durante l\'aggiornamento della quantità'));
+                });
+            });
+
+            removeButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    const itemId = button.getAttribute('data-item-id');
+
+                    fetch(`/cart/remove/${itemId}`, {
+                        method: 'POST',
+                        headers: {
+                            [header]: token
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                showToast('Errore durante la rimozione dell\'articolo');
+                            }
+                        })
+                        .catch(() => showToast('Errore durante la rimozione dell\'articolo'));
+                });
+            });
+
+            checkoutButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                modalTotal.textContent = document.querySelector('#subtotal span').textContent;
+                checkoutModal.style.display = 'flex';
+            });
+
+            confirmButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                fetch('/cart/checkout-subscriptions', {
+                    method: 'POST',
+                    headers: {
+                        [header]: token
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Checkout completato con successo!');
+                            setTimeout(() => {
+                                window.location.href = '/account';
+                            }, 2000);
+                        } else {
+                            showToast('Errore durante il checkout');
+                        }
+                        checkoutModal.style.display = 'none';
+                    })
+                    .catch(() => {
+                        showToast('Errore durante il checkout');
+                        checkoutModal.style.display = 'none';
+                    });
+            });
+
+            cancelButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                checkoutModal.style.display = 'none';
+            });
+
+            function showToast(message) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+
+            // Mostra un messaggio di successo se presente nell'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('success')) {
+                showToast('Abbonamento aggiunto al carrello!');
+            }
         });
 
-        cancelButton.addEventListener('click', () => {
-            checkoutModal.style.display = 'none';
+        // Listener separato per il menu a tendina
+        document.addEventListener('click', function(event) {
+            const dropdownToggle = event.target.closest('.dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+
+            if (!dropdownToggle || !dropdownMenu) return;
+
+            if (dropdownToggle) {
+                event.stopPropagation();
+                console.log('Click sul pulsante toggle');
+                const isOpen = dropdownMenu.classList.contains('show');
+                dropdownMenu.classList.toggle('show');
+                dropdownToggle.classList.toggle('open', !isOpen);
+                return;
+            }
+
+            if (!dropdownMenu.contains(event.target)) {
+                console.log('Click fuori dal menu, chiusura');
+                dropdownMenu.classList.remove('show');
+                const toggle = document.querySelector('.dropdown-toggle');
+                if (toggle) toggle.classList.remove('open');
+            }
         });
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
+        // Gestione tastiera per il menu a tendina
+        document.addEventListener('keydown', function(event) {
+            const dropdownToggle = event.target.closest('.dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
 
-        // Mostra un messaggio di successo se presente nell'URL
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('success')) {
-            showToast('Abbonamento aggiunto al carrello!');
-        }
-    });
-</script>
+            if (!dropdownToggle || !dropdownMenu) return;
+
+            if ((event.key === 'Enter' || event.key === ' ') && event.target === dropdownToggle) {
+                event.preventDefault();
+                console.log('Tasto Enter o Spazio premuto');
+                const isOpen = dropdownMenu.classList.contains('show');
+                dropdownMenu.classList.toggle('show');
+                dropdownToggle.classList.toggle('open', !isOpen);
+            }
+        });
+    </script>
 </body>
 </html>
