@@ -1,10 +1,125 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8" />
     <title>Informazioni Account - FCF Motors</title>
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Stile per il menu a tendina moderno e accattivante */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-toggle {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .dropdown-toggle:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #E59400, #F5A623);
+        }
+        .dropdown-toggle i {
+            font-size: 1.2rem;
+            color: #FFFFFF;
+            transition: transform 0.3s ease;
+        }
+        .dropdown-toggle.open i.fa-bars {
+            transform: rotate(90deg);
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            z-index: 1000;
+            min-width: 200px;
+            padding: 10px 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .dropdown-menu.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .dropdown-menu a i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            color: #F5A623;
+        }
+        .dropdown-menu a:hover {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            transform: translateX(5px);
+            border-left: 3px solid #FFFFFF;
+        }
+        .dropdown-menu a:hover i {
+            color: #FFFFFF;
+        }
+        /* Posizionamento del menu, centrato verticalmente */
+        .header-right {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1010;
+        }
+        /* Assicurati che il layout sia responsive */
+        @media (max-width: 768px) {
+            #main-header {
+                height: 60px;
+            }
+            .dropdown-menu {
+                min-width: 180px;
+            }
+            .dropdown-toggle {
+                width: 36px;
+                height: 36px;
+            }
+            .dropdown-toggle i {
+                font-size: 1rem;
+            }
+            .dropdown-menu {
+                top: 40px;
+            }
+            .dropdown-menu a {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            .header-right {
+                right: 10px;
+                gap: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
 <header id="main-header">
@@ -16,31 +131,31 @@
         </a>
         <div class="title-container">
             <h1 class="main-title">FCF MOTORS</h1>
-            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
         </div>
     </div>
     <div class="nav-container">
         <div class="nav-bar">
-            <a href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
-            <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
+            <!-- Nav bar vuota dopo aver spostato tutti i pulsanti nel menu a tendina -->
         </div>
     </div>
-    <button th:if="${user.rolesString != null and user.rolesString.contains('PRIVATE')}"
-            onclick="window.location.href='/private/maintenance'"
-            class="maintenance-button">
-        <i class="fas fa-tools"></i> Manutenzione Private
-    </button>
-    <button th:if="${user != null and user.rolesString != null and user.rolesString.contains('DEALER')}"
-            onclick="window.location.href='/rest/manutenzione/dealer'"
-            class="maintenance-button">
-        <i class="fas fa-cogs"></i> Manutenzione Dealer
-    </button>
-    <button th:if="${user != null and user.rolesString != null and user.rolesString.contains('ADMIN')}"
-            onclick="window.location.href='/admin/maintenance'"
-            class="maintenance-button">
-        <i class="fas fa-shield-alt"></i> Manutenzione Admin
-    </button>
+    <!-- Contenitore per il menu a tendina -->
+    <div class="header-right">
+        <!-- Menu a tendina con design moderno e accattivante -->
+        <div class="dropdown">
+            <button class="dropdown-toggle" aria-label="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu">
+                <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                <a th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+                <a sec:authorize="hasRole('PRIVATE')" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
+                <a sec:authorize="hasRole('DEALER')" th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i> Manutenzione Dealer</a>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i> Manutenzione Admin</a>
+            </div>
+        </div>
+    </div>
 </header>
 
 <div class="wrapper">
@@ -113,7 +228,7 @@
             <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
                 <h3>Abbonamento Attivo</h3>
                 <div th:each="userSubscription : ${activeSubscriptions}">
-                    <p><strong th:text="${userSubscription.subscription.name}"></strong> - Scade il: <span th:text="${userSubscription.expiryDate}"></span></p>
+                    <p><strong th:text="${userSubscription.subscription.id}"></strong> - Scade il: <span th:text="${userSubscription.expiryDate}"></span></p>
                     <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
                        class="cancel-subscription-button"
                        onclick="return confirm('Sei sicuro di voler cancellare questo abbonamento? Il tuo ruolo tornerà a USER se non hai altri abbonamenti attivi.');">
@@ -170,5 +285,34 @@
         <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
     </div>
 </footer>
+
+<script>
+    // JavaScript per gestire il menu a tendina con animazione
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+
+        dropdownToggle.addEventListener('click', function() {
+            const isOpen = dropdownMenu.classList.contains('show');
+            dropdownMenu.classList.toggle('show');
+            dropdownToggle.classList.toggle('open', !isOpen);
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.classList.remove('show');
+                dropdownToggle.classList.remove('open');
+            }
+        });
+
+        dropdownToggle.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                dropdownMenu.classList.toggle('show');
+                dropdownToggle.classList.toggle('open');
+            }
+        });
+    });
+</script>
 </body>
 </html>
