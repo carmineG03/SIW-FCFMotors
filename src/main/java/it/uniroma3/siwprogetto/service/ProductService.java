@@ -3,7 +3,6 @@ package it.uniroma3.siwprogetto.service;
 import it.uniroma3.siwprogetto.model.Product;
 import it.uniroma3.siwprogetto.model.Subscription;
 import it.uniroma3.siwprogetto.model.User;
-import it.uniroma3.siwprogetto.model.UserSubscription;
 import it.uniroma3.siwprogetto.repository.ProductRepository;
 import it.uniroma3.siwprogetto.repository.UserRepository;
 import it.uniroma3.siwprogetto.repository.UserSubscriptionRepository;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,7 +30,7 @@ public class ProductService {
     @Autowired
     private UserRepository userRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(DealerService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductService.class); // Fixed: Use ProductService logger
 
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
@@ -40,7 +38,7 @@ public class ProductService {
 
     // Trova tutti i prodotti
     public List<Product> findAll() {
-        return (List<Product>) productRepository.findAll();
+        return productRepository.findAll();
     }
 
     // Trova prodotti per categoria
@@ -55,10 +53,10 @@ public class ProductService {
 
     // Trova tutte le marche
     public List<String> findAllBrands() {
-        return ((Collection<Product>) productRepository.findAll()).stream()
+        return productRepository.findAll().stream()
                 .map(Product::getBrand)
                 .distinct()
-                .toList();
+                .collect(Collectors.toList());
     }
 
     // Trova modelli per marca
@@ -82,28 +80,17 @@ public class ProductService {
                                        Integer minMileage, Integer maxMileage,
                                        Integer minYear, Integer maxYear,
                                        String fuelType, String transmission, String query) {
-        System.out.println("Filtri applicati: category=" + category + ", brand=" + brand + ", model=" + selectedModel +
-                ", minPrice=" + minPrice + ", maxPrice=" + maxPrice +
-                ", minMileage=" + minMileage + ", maxMileage=" + maxMileage +
-                ", minYear=" + minYear + ", maxYear=" + maxYear +
-                ", fuelType=" + fuelType + ", transmission=" + transmission +
-                ", query=" + query);
+        logger.debug("Filtri applicati: category={}, brand={}, model={}, minPrice={}, maxPrice={}, minMileage={}, maxMileage={}, minYear={}, maxYear={}, fuelType={}, transmission={}, query={}",
+                category, brand, selectedModel, minPrice, maxPrice, minMileage, maxMileage, minYear, maxYear, fuelType, transmission, query);
 
-        // Se solo query è specificato, cerca in brand, model, category, name e description
-        if (query != null && !query.trim().isEmpty() &&
-                category == null && brand == null && selectedModel == null &&
-                minPrice == null && maxPrice == null && minMileage == null && maxMileage == null &&
-                minYear == null && maxYear == null && fuelType == null && transmission == null) {
-            List<Product> results = productRepository.findByFilters(null, null, null, null, null, null, null, null, null, null, null, query);
-            results.addAll(productRepository.findByFilters(query, null, null, null, null, null, null, null, null, null, null, null));
-            results.addAll(productRepository.findByFilters(null, query, null, null, null, null, null, null, null, null, null, null));
-            results.addAll(productRepository.findByFilters(null, null, query, null, null, null, null, null, null, null, null, null));
-            return results.stream().distinct().collect(Collectors.toList());
-        }
-
-        return productRepository.findByFilters(category, brand, selectedModel,
+        // Call the repository method directly, handling query in the repository
+        List<Product> results = productRepository.findByFilters(category, brand, selectedModel,
                 minPrice, maxPrice, minMileage, maxMileage,
                 minYear, maxYear, fuelType, transmission, query);
+
+        logger.debug("Found {} products", results.size());
+        results.forEach(p -> logger.debug("Product: id={}, brand={}, model={}", p.getId(), p.getBrand(), p.getModel()));
+        return results;
     }
 
     // Trova un prodotto per ID
@@ -135,14 +122,14 @@ public class ProductService {
         Subscription subscription = fullUser.getSubscription();
         if (subscription == null) {
             logger.warn("Nessun abbonamento trovato per l'utente: {}", fullUser.getUsername());
-            return false; // Impedisce l'aggiunta se l'abbonamento è null
+            return false;
         }
 
         int maxFeaturedProducts = subscription.getMaxFeaturedCars();
         logger.debug("Limite massimo di prodotti in evidenza per l'utente {}: {}", fullUser.getUsername(), maxFeaturedProducts);
         if (maxFeaturedProducts <= 0) {
             logger.warn("maxFeaturedProducts non valido per l'utente {}: {}", fullUser.getUsername(), maxFeaturedProducts);
-            return false; // Impedisce l'aggiunta se il limite è 0
+            return false;
         }
 
         long featuredCount = productRepository.countBySellerAndIsFeaturedTrue(user);
@@ -158,7 +145,6 @@ public class ProductService {
         return canAdd;
     }
 
-
     @Transactional
     public void setProductFeatured(Long id, boolean isFeatured, LocalDateTime featuredUntil) {
         Product product = productRepository.findById(id)
@@ -171,6 +157,4 @@ public class ProductService {
         product.setFeaturedUntil(featuredUntil);
         productRepository.save(product);
     }
-
-
 }

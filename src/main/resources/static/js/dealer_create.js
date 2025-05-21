@@ -19,32 +19,36 @@ document.addEventListener('DOMContentLoaded', () => {
             spinner.style.display = 'inline-block';
 
             await saveDealer(creationForm, true);
-
-            // Nasconde lo spinner e riabilita il pulsante
-            submitButton.disabled = false;
-            spinner.style.display = 'none';
         });
     }
 });
 
 async function saveDealer(form, isCreation) {
-    const data = {
-        name: form.querySelector('#create-dealership-name').value.trim(),
-        description: form.querySelector('#create-dealership-description').value.trim(),
-        address: form.querySelector('#create-dealership-address').value.trim(),
-        contact: form.querySelector('#create-dealership-contact').value.trim(),
-        imagePath: form.querySelector('#create-dealership-imagePath').value.trim(),
-        isUpdate: 'false'
-    };
-
-    console.log('Sending dealer data:', data);
-
+    const submitButton = form.querySelector('.modern-button');
+    const spinner = submitButton.querySelector('.spinner');
     try {
+        const data = {
+            name: form.querySelector('#create-dealership-name').value.trim(),
+            description: form.querySelector('#create-dealership-description').value.trim(),
+            address: form.querySelector('#create-dealership-address').value.trim(),
+            phone: form.querySelector('#create-dealership-phone').value.trim(),
+            email: form.querySelector('#create-dealership-email').value.trim(),
+            imagePath: form.querySelector('#create-dealership-imagePath').value.trim(),
+            isUpdate: 'false'
+        };
+
+        console.log('Sending dealer data:', data);
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+        if (!csrfToken) {
+            throw new Error('CSRF token non trovato');
+        }
+
         const response = await fetch('/rest/api/dealers', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                'X-CSRF-TOKEN': csrfToken
             },
             body: JSON.stringify(data)
         });
@@ -67,6 +71,9 @@ async function saveDealer(form, isCreation) {
     } catch (error) {
         console.error('Errore:', error);
         showToast(error.message || 'Errore nel salvataggio del concessionario', 'error');
+    } finally {
+        submitButton.disabled = false;
+        spinner.style.display = 'none';
     }
 }
 

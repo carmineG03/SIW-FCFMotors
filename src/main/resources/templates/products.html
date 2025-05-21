@@ -203,30 +203,21 @@
     document.getElementById('current-year').textContent = new Date().getFullYear();
 </script>
 
-<script>
-    function validateSearch() {
-        const searchInput = document.getElementById('new-search-input').value.trim();
-        if (searchInput === '') {
-            alert('Inserisci un termine di ricerca.');
-            return false;
+    <script>
+        function openFilterPopup() {
+            document.getElementById('filterPopup').style.display = 'flex';
         }
-        return true;
-    }
 
-    function openFilterPopup() {
-        document.getElementById('filterPopup').style.display = 'flex';
-    }
-
-    function closeFilterPopup() {
-        document.getElementById('filterPopup').style.display = 'none';
-    }
-
-    window.onclick = function(event) {
-        const popup = document.getElementById('filterPopup');
-        if (event.target === popup) {
-            popup.style.display = 'none';
+        function closeFilterPopup() {
+            document.getElementById('filterPopup').style.display = 'none';
         }
-    }
-</script>
+
+        window.onclick = function(event) {
+            const popup = document.getElementById('filterPopup');
+            if (event.target === popup) {
+                popup.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

@@ -32,7 +32,7 @@
             <form id="dealership-creation-form" class="modern-form">
                 <div class="input-field">
                     <label for="create-dealership-name"><i class="fas fa-store"></i> Nome Concessionario</label>
-                    <input type="text" id="create-dealership-name"  required aria-required="true">
+                    <input type="text" id="create-dealership-name" required aria-required="true">
                 </div>
                 <div class="input-field">
                     <label for="create-dealership-description"><i class="fas fa-file-alt"></i> Descrizione</label>
@@ -43,8 +43,12 @@
                     <input type="text" id="create-dealership-address">
                 </div>
                 <div class="input-field">
-                    <label for="create-dealership-contact"><i class="fas fa-phone"></i> Contatti</label>
-                    <input type="text" id="create-dealership-contact">
+                    <label for="create-dealership-phone"><i class="fas fa-phone"></i> Telefono</label>
+                    <input type="tel" id="create-dealership-phone" name="phone" pattern="\+?[0-9\s\-]{6,15}" title="Inserisci un numero di telefono valido (es. +39 123 456 7890)">
+                </div>
+                <div class="input-field">
+                    <label for="create-dealership-email"><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="create-dealership-email" name="email" title="Inserisci un indirizzo email valido">
                 </div>
                 <div class="input-field">
                     <label for="create-dealership-imagePath"><i class="fas fa-image"></i> URL Immagine</label>
