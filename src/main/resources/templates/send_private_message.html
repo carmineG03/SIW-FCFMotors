@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <title>Invia Messaggio - FCF Motors</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    .header-transparent {
+      width: 100%;
+      padding: 20px 40px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo-container img {
+      height: 50px;
+    }
+
+    .title-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .main-title {
+      color: #FFFFFF;
+      font-size: 1.8rem;
+      margin: 0;
+    }
+
+    .products-button,
+    .dealers-button {
+      color: #FFFFFF;
+      text-decoration: none;
+      font-size: 1.1rem;
+      padding: 8px 15px;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+    }
+
+    .products-button:hover,
+    .dealers-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-container .nav-bar {
+      display: flex;
+      gap: 15px;
+    }
+
+    .icon-button {
+      color: #FFFFFF;
+      font-size: 1.2rem;
+      text-decoration: none;
+      padding: 8px;
+      border-radius: 50%;
+      transition: background 0.3s ease;
+    }
+
+    .icon-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .full-width-hero {
+      padding: 40px 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin: 0;
+    }
+
+    .full-width-hero h2 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      color: #F5A623;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+      font-weight: 700;
+    }
+
+    .send-message-container {
+      width: 100%;
+      max-width: 600px;
+      padding: 0 40px;
+      box-sizing: border-box;
+    }
+
+    .message-form-card {
+      background: linear-gradient(145deg, #2a2a2a, #3a3a3a);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      width: 100%;
+    }
+
+    .message-form-card .info-row {
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+    }
+
+    .info-row .label {
+      font-weight: 600;
+      margin-right: 10px;
+      color: #F5A623;
+    }
+
+    .info-row .value {
+      color: #FFFFFF;
+    }
+
+    .message-form-card .input-field {
+      margin-bottom: 15px;
+      width: 100%;
+    }
+
+    .message-form-card label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #F5A623;
+      margin-bottom: 8px;
+    }
+
+    .message-form-card textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+      resize: vertical;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .message-form-card textarea:focus {
+      border-color: #F5A623;
+      outline: none;
+    }
+
+    .message-form-card .modern-button {
+      background: linear-gradient(45deg, #F5A623, #E59400);
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.3s ease, transform 0.2s ease;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .message-form-card .modern-button:hover {
+      background: linear-gradient(45deg, #E59400, #D68F1D);
+      transform: translateY(-2px);
+    }
+
+    .form-actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .back-button {
+      background: linear-gradient(45deg, #003087, #0059b3);
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.3s ease, transform 0.2s ease;
+      width: 100%;
+      max-width: 300px;
+      justify-content: center;
+    }
+
+    .back-button:hover {
+      background: linear-gradient(45deg, #002066, #004080);
+      transform: translateY(-2px);
+    }
+
+    .alert-success {
+      color: #28a745;
+      background: rgba(40, 167, 69, 0.1);
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .alert-error {
+      color: #ff3333;
+      background: rgba(255, 51, 51, 0.1);
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .send-message-container {
+        padding: 0 20px;
+      }
+
+      .form-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .modern-button,
+      .back-button {
+        max-width: 100%;
+      }
+
+      .header-transparent {
+        padding: 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .header-left {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .title-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .nav-container {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+<header class="header-transparent">
+  <div class="header-left">
+    <a href="/" class="logo-link">
+      <div class="logo-container">
+        <img src="/image/logo1.png" alt="Logo" class="logo">
+      </div>
+    </a>
+    <div class="title-container">
+      <h2 class="main-title">FCF MOTORS</h2>
+      <a th:href="@{/products}" class="products-button">
+        <i class="fas fa-car"></i> Prodotti
+      </a>
+      <a th:href="@{/dealers}" class="dealers-button">
+        <i class="fas fa-store"></i> Concessionari
+      </a>
+    </div>
+  </div>
+  <div class="nav-container">
+    <nav class="nav-bar">
+      <a th:href="@{/cart}" class="icon-button">
+        <i class="fas fa-shopping-cart"></i>
+      </a>
+      <a th:href="@{/account}" class="icon-button">
+        <i class="fas fa-user"></i>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="full-width-hero">
+    <h2>Invia Messaggio</h2>
+    <div class="send-message-container">
+      <div class="message-form-card">
+        <div th:if="${success}" class="alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert-error" th:text="${error}"></div>
+        <div class="info-row">
+          <span class="label">Prodotto:</span>
+          <span class="value" th:text="${product.brand} + ' ' + ${product.model}"></span>
+        </div>
+        <div class="info-row">
+          <span class="label">Destinatario:</span>
+          <span class="value" th:text="${recipientEmail}"></span>
+        </div>
+        <form th:action="@{/private/messages/send}" method="post" class="send-message-form" onsubmit="handleSubmit(event, this)">
+          <input type="hidden" name="productId" th:value="${product.id}"/>
+          <div class="input-field">
+            <label for="message">Messaggio</label>
+            <textarea id="message" name="message" rows="4" required></textarea>
+          </div>
+          <button type="submit" class="modern-button">
+            <i class="fas fa-envelope"></i> Invia Messaggio
+            <span class="spinner"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="form-actions">
+      <a th:href="@{/products}" class="back-button"><i class="fas fa-arrow-left"></i> Torna ai Prodotti</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h4>Link Utili</h4>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/products">Trova Auto</a></li>
+        <li><a href="/dealers">Concessionari</a></li>
+        <li><a href="/cart">Carrello</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h4>Contatti</h4>
+      <p>Email: info@fcfmotors.com</p>
+      <p>Telefono: +39 123 456 7890</p>
+      <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+    </div>
+    <div class="footer-section">
+      <h4>Seguici</h4>
+      <div class="social-links">
+        <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+        <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+      </div>
+    </div>
+    <div class="footer-section">
+      <h4>Informazioni</h4>
+      <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+  </div>
+</footer>
+
+<script>
+  function handleSubmit(event, form) {
+    event.preventDefault();
+    const button = form.querySelector('button[type="submit"]');
+    const spinner = button.querySelector('.spinner');
+    button.disabled = true;
+    spinner.classList.add('active');
+    setTimeout(() => {
+      form.submit();
+    }, 1000);
+  }
+</script>
+</body>
+</html>

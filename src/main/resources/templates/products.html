@@ -144,7 +144,12 @@
             <p class="price" th:text="${#numbers.formatDecimal(product.price, 1, 2, 'COMMA')} + ' €'"></p>
             <div class="button-group">
                 <div th:if="${product.sellerType == 'PRIVATE'}">
-                    <a th:href="@{'/contact-seller/' + ${product.id}}" class="button">Contatta il Venditore</a>
+                    <th:block th:if="${isAuthenticated}">
+                        <a th:href="@{/private/messages/send/{id}(id=${product.id})}" class="button"><i class="fas fa-envelope"></i> Contatta il Venditore</a>
+                    </th:block>
+                    <th:block th:unless="${isAuthenticated}">
+                        <a href="/login" class="button"><i class="fas fa-sign-in-alt"></i> Accedi per Contattare</a>
+                    </th:block>
                 </div>
                 <div th:if="${product.sellerType == 'DEALER'}">
                     <th:block th:if="${isAuthenticated}">

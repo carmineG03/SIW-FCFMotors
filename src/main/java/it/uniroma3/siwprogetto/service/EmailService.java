@@ -1,7 +1,9 @@
 package it.uniroma3.siwprogetto.service;
 
+import it.uniroma3.siwprogetto.model.Product;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -110,6 +112,28 @@ public class EmailService {
 		);
 
 		mailSender.send(message);
+	}
+
+	public void sendPrivateMessageEmail(String recipientEmail, String senderEmail, Product product, String message) {
+		SimpleMailMessage mailMessage = new SimpleMailMessage();
+		mailMessage.setTo(recipientEmail);
+		mailMessage.setSubject("New Message About " + product.getBrand() + " " + product.getModel());
+		mailMessage.setText("You received a message from " + senderEmail + ":\n\n" +
+				"Product: " + product.getBrand() + " " + product.getModel() + "\n" +
+				"Message: " + message + "\n\n" +
+				"Reply via the platform: [Link to /private/messages]");
+		mailSender.send(mailMessage);
+	}
+
+	public void sendPrivateMessageResponseEmail(String recipientEmail, String responderEmail, Product product, String responseMessage) {
+		SimpleMailMessage mailMessage = new SimpleMailMessage();
+		mailMessage.setTo(recipientEmail);
+		mailMessage.setSubject("Response to Your Message About " + product.getBrand() + " " + product.getModel());
+		mailMessage.setText("You received a response from " + responderEmail + ":\n\n" +
+				"Product: " + product.getBrand() + " " + product.getModel() + "\n" +
+				"Response: " + responseMessage + "\n\n" +
+				"Reply via the platform: [Link to /private/messages]");
+		mailSender.send(mailMessage);
 	}
 
 

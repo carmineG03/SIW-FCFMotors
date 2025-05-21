@@ -16,11 +16,11 @@ public class QuoteRequest {
 	private Product product;
 
 	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false)
+	@JoinColumn(name = "user_id", nullable = true)
 	private User user;
 
 	@ManyToOne
-	@JoinColumn(name = "dealer_id", nullable = false)
+	@JoinColumn(name = "dealer_id", nullable = true)
 	private Dealer dealer;
 
 	private LocalDateTime requestDate;
@@ -28,6 +28,11 @@ public class QuoteRequest {
 	private String status; // PENDING, RESPONDED
 
 	private String userEmail;
+
+	private String requestType;
+
+	private String recipientEmail;
+
 
 	@Column(columnDefinition = "TEXT")
 	private String responseMessage; // Nuovo campo per il messaggio di risposta
@@ -49,4 +54,9 @@ public class QuoteRequest {
 	public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
 	public String getResponseMessage() { return responseMessage; }
 	public void setResponseMessage(String responseMessage) { this.responseMessage = responseMessage; }
+	public String getRequestType() { return requestType; }
+	public void setRequestType(String requestType) { this.requestType = requestType; }
+	public String getRecipientEmail() { return recipientEmail; }
+	public void setRecipientEmail(String recipientEmail) { this.recipientEmail = recipientEmail; }
+
 }
