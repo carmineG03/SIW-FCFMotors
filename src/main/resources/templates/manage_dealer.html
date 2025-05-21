@@ -85,6 +85,18 @@
             opacity: 1;
             transform: scale(1);
         }
+        .image-container {
+            width: 100%;
+            max-width: 250px;
+            margin: 0 auto;
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 0;
+        }
     </style>
 </head>
 <body>
@@ -146,7 +158,9 @@
                     </div>
                     <div class="input-field display-field">
                         <label for="dealer-image"><i class="fas fa-image"></i> Immagine Concessionario</label>
-                        <img id="dealer-image" class="dealer-image" th:src="${dealer.imagePath} ?: 'https://via.placeholder.com/300x200?text=Immagine+Non+Disponibile'" alt="Immagine Concessionario">
+                        <div class="image-container">
+                            <img id="dealer-image" class="dealer-image" th:src="${dealer.imagePath} ?: 'https://via.placeholder.com/300x200?text=Immagine+Non+Disponibile'" alt="Immagine Concessionario">
+                        </div>
                     </div>
                     <div class="form-actions">
                         <a href="#" id="edit-dealer-button" class="modern-button"><i class="fas fa-edit"></i> Modifica</a>
@@ -198,12 +212,52 @@
                     <input type="hidden" name="dealerId" th:value="${dealer.id}">
                     <h2 id="add-car-form-title" style="display: none;">Aggiungi Auto</h2>
                     <div class="input-field">
+                        <label for="dealer-car-model"><i class="fas fa-car"></i> Modello</label>
+                        <input type="text" id="dealer-car-model" name="model" required aria-required="true">
+                    </div>
+                    <div class="input-field">
+                        <label for="dealer-car-brand"><i class="fas fa-industry"></i> Marca</label>
+                        <input type="text" id="dealer-car-brand" name="brand">
+                    </div>
+                    <div class="input-field">
+                        <label for="dealer-car-category"><i class="fas fa-tags"></i> Categoria</label>
+                        <input type="text" id="dealer-car-category" name="category">
+                    </div>
+                    <div class="input-field">
                         <label for="dealer-car-description"><i class="fas fa-file-alt"></i> Descrizione</label>
                         <textarea id="dealer-car-description" name="description" rows="4"></textarea>
                     </div>
                     <div class="input-field">
                         <label for="dealer-car-price"><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
                         <input type="number" id="dealer-car-price" name="price" required step="0.01" min="0.01" aria-required="true">
+                    </div>
+                    <div class="input-field">
+                        <label for="dealer-car-mileage"><i class="fas fa-tachometer-alt"></i> Chilometraggio (km)</label>
+                        <input type="number" id="dealer-car-mileage" name="mileage" min="0">
+                    </div>
+                    <div class="input-field">
+                        <label for="dealer-car-year"><i class="fas fa-calendar-alt"></i> Anno</label>
+                        <input type="number" id="dealer-car-year" name="year" min="1900" max="2025">
+                    </div>
+                    <div class="input-field">
+                        <label for="dealer-car-fuelType"><i class="fas fa-gas-pump"></i> Tipo di carburante</label>
+                        <select id="dealer-car-fuelType" name="fuelType">
+                            <option value="">Seleziona...</option>
+                            <option value="Benzina">Benzina</option>
+                            <option value="Diesel">Diesel</option>
+                            <option value="Elettrico">Elettrico</option>
+                            <option value="Ibrido">Ibrido</option>
+                            <option value="GPL">GPL</option>
+                            <option value="Metano">Metano</option>
+                        </select>
+                    </div>
+                    <div class="input-field">
+                        <label for="dealer-car-transmission"><i class="fas fa-cogs"></i> Trasmissione</label>
+                        <select id="dealer-car-transmission" name="transmission">
+                            <option value="">Seleziona...</option>
+                            <option value="Manuale">Manuale</option>
+                            <option value="Automatico">Automatico</option>
+                        </select>
                     </div>
                     <div class="input-field">
                         <label for="dealer-car-imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
@@ -229,12 +283,40 @@
                 </div>
                 <div class="product-info">
                     <div class="info-row">
+                        <span class="label"><strong>Marca:</strong></span>
+                        <span class="value" th:text="${product.brand} ?: ''"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label"><strong>Modello:</strong></span>
+                        <span class="value" th:text="${product.model} ?: ''"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label"><strong>Categoria:</strong></span>
+                        <span class="value" th:text="${product.category} ?: ''"></span>
+                    </div>
+                    <div class="info-row">
                         <span class="label"><strong>Descrizione:</strong></span>
                         <span class="value" th:text="${product.description} ?: ''"></span>
                     </div>
                     <div class="info-row">
                         <span class="label"><strong>Prezzo:</strong></span>
                         <span class="value" th:text="${product.price} + ' €'"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label"><strong>Chilometraggio:</strong></span>
+                        <span class="value" th:text="${product.mileage} ? ${product.mileage} + ' km' : '-'"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label"><strong>Anno:</strong></span>
+                        <span class="value" th:text="${product.year} ?: '-'"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label"><strong>Carburante:</strong></span>
+                        <span class="value" th:text="${product.fuelType} ?: '-'"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label"><strong>Trasmissione:</strong></span>
+                        <span class="value" th:text="${product.transmission} ?: '-'"></span>
                     </div>
                     <div class="info-row">
                         <span class="label"><strong>In Evidenza:</strong></span>
@@ -268,16 +350,56 @@
             <h2 id="edit-product-form-title">Modifica Auto</h2>
             <input type="hidden" id="edit-product-id">
             <div class="input-field">
+                <label for="edit-product-model"><i class="fas fa-car"></i> Modello</label>
+                <input type="text" id="edit-product-model" name="model" required aria-required="true">
+            </div>
+            <div class="input-field">
+                <label for="edit-product-brand"><i class="fas fa-industry"></i> Marca</label>
+                <input type="text" id="edit-product-brand" name="brand">
+            </div>
+            <div class="input-field">
+                <label for="edit-product-category"><i class="fas fa-tags"></i> Categoria</label>
+                <input type="text" id="edit-product-category" name="category">
+            </div>
+            <div class="input-field">
                 <label for="edit-product-description"><i class="fas fa-file-alt"></i> Descrizione</label>
-                <textarea id="edit-product-description" rows="4"></textarea>
+                <textarea id="edit-product-description" name="description" rows="4"></textarea>
             </div>
             <div class="input-field">
                 <label for="edit-product-price"><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
-                <input type="number" id="edit-product-price" required step="0.01" min="0.01" aria-required="true">
+                <input type="number" id="edit-product-price" name="price" required step="0.01" min="0.01" aria-required="true">
+            </div>
+            <div class="input-field">
+                <label for="edit-product-mileage"><i class="fas fa-tachometer-alt"></i> Chilometraggio (km)</label>
+                <input type="number" id="edit-product-mileage" name="mileage" min="0">
+            </div>
+            <div class="input-field">
+                <label for="edit-product-year"><i class="fas fa-calendar-alt"></i> Anno</label>
+                <input type="number" id="edit-product-year" name="year" min="1900" max="2025">
+            </div>
+            <div class="input-field">
+                <label for="edit-product-fuelType"><i class="fas fa-gas-pump"></i> Tipo di carburante</label>
+                <select id="edit-product-fuelType" name="fuelType">
+                    <option value="">Seleziona...</option>
+                    <option value="Benzina">Benzina</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Elettrico">Elettrico</option>
+                    <option value="Ibrido">Ibrido</option>
+                    <option value="GPL">GPL</option>
+                    <option value="Metano">Metano</option>
+                </select>
+            </div>
+            <div class="input-field">
+                <label for="edit-product-transmission"><i class="fas fa-cogs"></i> Trasmissione</label>
+                <select id="edit-product-transmission" name="transmission">
+                    <option value="">Seleziona...</option>
+                    <option value="Manuale">Manuale</option>
+                    <option value="Automatico">Automatico</option>
+                </select>
             </div>
             <div class="input-field">
                 <label for="edit-product-imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
-                <input type="url" id="edit-product-imageUrl">
+                <input type="url" id="edit-product-imageUrl" name="imageUrl">
             </div>
             <div class="input-field">
                 <label for="edit-product-highlighted"><i class="fas fa-star"></i> Metti in Evidenza</label>

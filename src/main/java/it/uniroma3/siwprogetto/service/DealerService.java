@@ -68,8 +68,6 @@ public class DealerService {
                     return new IllegalStateException("Utente non trovato: " + username);
                 });
 
-
-
         Optional<Dealer> existingDealer = dealerRepository.findByOwnerUsername(username);
         if (isUpdate && existingDealer.isPresent()) {
             logger.debug("Updating existing dealer: id={}", existingDealer.get().getId());
@@ -77,7 +75,8 @@ public class DealerService {
             toUpdate.setName(dealer.getName());
             toUpdate.setDescription(dealer.getDescription());
             toUpdate.setAddress(dealer.getAddress());
-            toUpdate.setContact(dealer.getContact());
+            toUpdate.setPhone(dealer.getPhone());
+            toUpdate.setEmail(dealer.getEmail());
             toUpdate.setImagePath(dealer.getImagePath());
             Dealer savedDealer = dealerRepository.save(toUpdate);
             logger.info("Dealer updated: id={}, name={}", savedDealer.getId(), savedDealer.getName());
@@ -143,10 +142,11 @@ public class DealerService {
         product.setSeller(user);
         product.setSellerType("DEALER");
         Product savedProduct = productRepository.save(product);
-        logger.info("Product added: id={}, name={}, seller_id={}",
-                savedProduct.getId(), savedProduct.getName(), user.getId());
+        logger.info("Product added: id={}, model={}, seller_id={}",
+                savedProduct.getId(), savedProduct.getModel(), user.getId());
         return savedProduct;
     }
+
 
     @Transactional
     public Product updateProduct(Long productId, Product updatedProduct) {
@@ -181,12 +181,21 @@ public class DealerService {
             throw new IllegalStateException("Il prodotto non appartiene a questo utente");
         }
 
-        product.setName(updatedProduct.getName());
+        product.setModel(updatedProduct.getModel());
+        product.setBrand(updatedProduct.getBrand());
+        product.setCategory(updatedProduct.getCategory());
         product.setDescription(updatedProduct.getDescription());
         product.setPrice(updatedProduct.getPrice());
+        product.setMileage(updatedProduct.getMileage());
+        product.setYear(updatedProduct.getYear());
+        product.setFuelType(updatedProduct.getFuelType());
+        product.setTransmission(updatedProduct.getTransmission());
+        product.setImageUrl(updatedProduct.getImageUrl());
+        product.setIsFeatured(updatedProduct.isFeatured());
+        product.setFeaturedUntil(updatedProduct.getFeaturedUntil());
         Product savedProduct = productRepository.save(product);
-        logger.info("Product updated: id={}, name={}, seller_id={}",
-                savedProduct.getId(), savedProduct.getName(), user.getId());
+        logger.info("Product updated: id={}, model={}, seller_id={}",
+                savedProduct.getId(), savedProduct.getModel(), user.getId());
         return savedProduct;
     }
 
@@ -273,39 +282,47 @@ public class DealerService {
                     });
             logger.debug("Dealer found: id={}, name={}", dealer.getId(), dealer.getName());
 
-            // Elimina i prodotti associati
-            List<Product> products = productRepository.findBySeller(dealer.getOwner());
-            if (!products.isEmpty()) {
-                logger.info("Deleting {} products associated with dealer ID: {}", products.size(), id);
-                productRepository.deleteAll(products);
-                logger.debug("Products deleted successfully");
-            } else {
-                logger.debug("No products found for dealer ID: {}", id);
-            }
+            // Step 1: Delete QuoteRequest entities associated with Products of the Dealer's owner
+            logger.info("Deleting quote requests associated with products of dealer ID: {}", id);
+            Query deleteQuoteRequestsByProductsQuery = entityManager.createQuery(
+                    "DELETE FROM QuoteRequest qr WHERE qr.product.seller = :owner"
+            );
+            deleteQuoteRequestsByProductsQuery.setParameter("owner", dealer.getOwner());
+            int quoteRequestsByProductsDeleted = deleteQuoteRequestsByProductsQuery.executeUpdate();
+            logger.debug("Deleted {} quote requests associated with products", quoteRequestsByProductsDeleted);
+            entityManager.flush(); // Ensure changes are applied
 
-            // Elimina eventuali richieste di preventivo associate
-            List<QuoteRequest> quoteRequests = quoteRequestRepository.findByDealerId(id);
-            if (!quoteRequests.isEmpty()) {
-                logger.info("Deleting {} quote requests associated with dealer ID: {}", quoteRequests.size(), id);
-                quoteRequestRepository.deleteAll(quoteRequests);
-                quoteRequestRepository.flush();
-                logger.debug("Quote requests deleted successfully");
-            } else {
-                logger.debug("No quote requests found for dealer ID: {}", id);
-            }
+            // Step 2: Delete Products associated with the Dealer's owner
+            logger.info("Deleting products associated with dealer ID: {}", id);
+            Query deleteProductsQuery = entityManager.createQuery(
+                    "DELETE FROM Product p WHERE p.seller = :owner"
+            );
+            deleteProductsQuery.setParameter("owner", dealer.getOwner());
+            int productsDeleted = deleteProductsQuery.executeUpdate();
+            logger.debug("Deleted {} products", productsDeleted);
+            entityManager.flush(); // Ensure changes are applied
 
-            // Elimina il concessionario con query JPQL
-            logger.info("Executing JPQL query to delete dealer with ID: {}", id);
-            Query query = entityManager.createQuery("DELETE FROM Dealer d WHERE d.id = :id");
-            query.setParameter("id", id);
-            int deletedCount = query.executeUpdate();
-            logger.debug("JPQL query executed, deleted rows: {}", deletedCount);
+            // Step 3: Delete QuoteRequest entities directly associated with the Dealer
+            logger.info("Deleting quote requests directly associated with dealer ID: {}", id);
+            Query deleteQuoteRequestsByDealerQuery = entityManager.createQuery(
+                    "DELETE FROM QuoteRequest qr WHERE qr.dealer.id = :dealerId"
+            );
+            deleteQuoteRequestsByDealerQuery.setParameter("dealerId", id);
+            int quoteRequestsByDealerDeleted = deleteQuoteRequestsByDealerQuery.executeUpdate();
+            logger.debug("Deleted {} quote requests directly associated with dealer", quoteRequestsByDealerDeleted);
+            entityManager.flush(); // Ensure changes are applied
 
-            // Sincronizza le modifiche
-            entityManager.flush();
-            logger.debug("EntityManager flushed");
+            // Step 4: Delete the Dealer
+            logger.info("Deleting dealer with ID: {}", id);
+            Query deleteDealerQuery = entityManager.createQuery(
+                    "DELETE FROM Dealer d WHERE d.id = :id"
+            );
+            deleteDealerQuery.setParameter("id", id);
+            int dealersDeleted = deleteDealerQuery.executeUpdate();
+            logger.debug("Deleted {} dealers", dealersDeleted);
+            entityManager.flush(); // Ensure changes are applied
 
-            // Verifica che il concessionario sia stato eliminato
+            // Verify that the Dealer was deleted
             if (dealerRepository.existsById(id)) {
                 logger.error("Failed to delete dealer: still exists with ID: {}", id);
                 throw new IllegalStateException("Eliminazione non riuscita: il concessionario esiste ancora.");

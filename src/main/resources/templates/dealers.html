@@ -80,33 +80,47 @@
         <p th:if="${errorMessage != null}" th:text="${errorMessage}" class="error-message"></p>
         <div id="dealers-list" class="dealers-list">
             <div th:if="${dealers == null or dealers.isEmpty()}">
-                <p>Nessun concessionario disponibile al momento.</p>
+                <p id="no-dealers-message">Nessun concessionario disponibile al momento.</p>
             </div>
-            <div th:each="dealer : ${dealers}" class="dealer-item">
+            <div th:each="dealer : ${dealers}" class="dealer-item" th:id="'dealer-item-' + ${dealer.id}">
                 <div th:if="${dealer.imagePath != null}">
                     <img th:src="@{${dealer.imagePath}}" th:alt="${dealer.name != null ? dealer.name + ' immagine' : 'Immagine concessionario'}" style="width: 100%; height: auto; border-radius: 5px; margin-bottom: 10px;"/>
                 </div>
-            </a>
-            <div class="title-container">
-                <h1 class="main-title">FCF MOTORS</h1>
-                <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-                <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Trova Concessionario</a>
+                <h3 th:text="${dealer.name} ?: 'Nome non disponibile'"></h3>
+                <p th:text="${dealer.description} ?: 'Nessuna descrizione disponibile'"></p>
+                <p><i class="fas fa-map-marker-alt"></i> <span th:text="${dealer.address} ?: 'Indirizzo non disponibile'"></span></p>
+                <p><i class="fas fa-phone"></i> <a th:href="'tel:' + ${dealer.phone} ?: '#'" th:attr="aria-label='Chiama ' + ${dealer.phone} ?: 'Telefono non disponibile'" th:text="${dealer.phone} ?: 'Telefono non disponibile'"></a></p>
+                <p><i class="fas fa-envelope"></i> <a th:href="'mailto:' + ${dealer.email} ?: '#'" th:attr="aria-label='Invia email a ' + ${dealer.email} ?: 'Email non disponibile'" th:text="${dealer.email} ?: 'Email non disponibile'"></a></p>
+                <a th:if="${dealer.address}" th:href="'https://www.google.com/maps/search/?api=1&query=' + ${#strings.escapeXml(dealer.address)}" class="navigate-button" target="_blank" rel="noopener noreferrer"><i class="fas fa-directions"></i> Raggiungi con il navigatore</a>
             </div>
         </div>
-        <div class="nav-container">
-            <div class="nav-bar">
-                <a sec:authorize="!isAuthenticated()" href="/login" class="icon-button"><i class="fas fa-user"></i> Login</a>
-                <a sec:authorize="isAuthenticated()" href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
-                <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
-            </div>
+    </section>
+</main>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Link Utili</h4>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Trova Auto</a></li>
+                <li><a href="/dealers">Concessionari</a></li>
+                <li><a href="/cart">Carrello</a></li>
+            </ul>
         </div>
         <div class="footer-section">
             <h4>Contatti</h4>
-            <address>
-                <p>Email: <a href="mailto:info@fcfmotors.com">info@fcfmotors.com</a></p>
-                <p>Telefono: <a href="tel:+391234567890">+39 123 456 7890</a></p>
-                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
-            </address>
+            <p>Email: info@fcfmotors.com</p>
+            <p>Telefono: +39 123 456 7890</p>
+            <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+        </div>
+        <div class="footer-section">
+            <h4>Seguici</h4>
+            <div class="social-links">
+                <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+            </div>
         </div>
         <div class="footer-section">
             <h4>Informazioni</h4>
@@ -118,5 +132,11 @@
     </div>
 </footer>
 
+<!-- Iniezione dei dati dei concessionari come JSON -->
+<script th:inline="javascript">
+    window.dealersData = /*[[${dealers}]]*/ [];
+    console.log('Dati concessionari iniettati:', window.dealersData);
+</script>
+<script th:src="@{/js/dealers.js}"></script>
 </body>
 </html>

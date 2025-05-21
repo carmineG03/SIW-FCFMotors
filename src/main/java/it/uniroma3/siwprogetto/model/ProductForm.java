@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 public class ProductForm {
     private Long id;
-    private String name;
     private BigDecimal price;
     private String description;
     private String imageUrl;
@@ -16,14 +15,6 @@ public class ProductForm {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public BigDecimal getPrice() {

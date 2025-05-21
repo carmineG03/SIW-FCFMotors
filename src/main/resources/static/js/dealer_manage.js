@@ -99,48 +99,49 @@ document.addEventListener('DOMContentLoaded', function() {
         addCarForm.addEventListener('submit', async function(event) {
             event.preventDefault();
 
-            const nameInput = document.getElementById('dealer-car-name');
-            const priceInput = document.getElementById('dealer-car-price');
+            const modelInput = document.getElementById('dealer-car-model');
+            const brandInput = document.getElementById('dealer-car-brand');
+            const categoryInput = document.getElementById('dealer-car-category');
             const descriptionInput = document.getElementById('dealer-car-description');
+            const priceInput = document.getElementById('dealer-car-price');
+            const mileageInput = document.getElementById('dealer-car-mileage');
+            const yearInput = document.getElementById('dealer-car-year');
+            const fuelTypeInput = document.getElementById('dealer-car-fuelType');
+            const transmissionInput = document.getElementById('dealer-car-transmission');
             const imageUrlInput = document.getElementById('dealer-car-imageUrl');
-            const isFeaturedInput = document.getElementById('dealer-car-highlighted');
-            const featureDurationInput = document.getElementById('dealer-car-feature-duration');
             const dealerIdInput = addCarForm.querySelector('input[name="dealerId"]');
             const spinner = addCarForm.querySelector('.spinner');
 
-            if (!nameInput || !priceInput || !spinner || !dealerIdInput) {
+            if (!modelInput || !priceInput || !spinner || !dealerIdInput) {
                 showToast('Errore: Elementi del form non trovati.', 'error');
                 return;
             }
 
-            const name = nameInput.value.trim();
-            const price = parseFloat(priceInput.value);
+            const model = modelInput.value.trim();
+            const brand = brandInput ? brandInput.value.trim() : '';
+            const category = categoryInput ? categoryInput.value.trim() : '';
             const description = descriptionInput ? descriptionInput.value.trim() : '';
+            const price = priceInput.value;
+            const mileage = mileageInput ? mileageInput.value : '';
+            const year = yearInput ? yearInput.value : '';
+            const fuelType = fuelTypeInput ? fuelTypeInput.value : '';
+            const transmission = transmissionInput ? transmissionInput.value : '';
             const imageUrl = imageUrlInput ? imageUrlInput.value.trim() : '';
-            const isFeatured = isFeaturedInput ? isFeaturedInput.checked : false;
-            const featureDuration = isFeatured && featureDurationInput ? parseInt(featureDurationInput.value) || 0 : 0;
             const dealerId = dealerIdInput.value;
 
             let isValid = true;
-            if (!name) {
-                nameInput.classList.add('invalid');
+            if (!model) {
+                modelInput.classList.add('invalid');
                 isValid = false;
             } else {
-                nameInput.classList.remove('invalid');
+                modelInput.classList.remove('invalid');
             }
 
-            if (!price || price <= 0) {
+            if (!price || parseFloat(price) <= 0) {
                 priceInput.classList.add('invalid');
                 isValid = false;
             } else {
                 priceInput.classList.remove('invalid');
-            }
-
-            if (isFeatured && (!featureDuration || featureDuration <= 0)) {
-                featureDurationInput.classList.add('invalid');
-                isValid = false;
-            } else if (featureDurationInput) {
-                featureDurationInput.classList.remove('invalid');
             }
 
             if (!isValid) {
@@ -150,13 +151,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const carData = {
                 dealerId,
-                name,
+                model,
+                brand,
+                category,
                 description,
                 price,
-                imageUrl,
-                highlighted: isFeatured, // Mantenuto per compatibilità con il backend
-                featureDuration
+                mileage,
+                year,
+                fuelType,
+                transmission,
+                imageUrl
             };
+
+            console.log('Payload inviato:', carData);
 
             spinner.classList.add('active');
             const submitButton = addCarForm.querySelector('button[type="submit"]');
@@ -173,14 +180,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 const responseData = await response.json();
+                console.log('Risposta del server:', responseData);
                 if (response.ok) {
                     showToast(responseData.message || 'Auto aggiunta con successo!', 'success');
                     addCarForm.reset();
-                    await checkFeaturedLimit(); // Rivaluta il limite dopo l'aggiunta
+                    await checkFeaturedLimit();
                     setTimeout(() => window.location.reload(), 1500);
                 } else {
                     showToast(responseData.message || 'Errore durante l\'aggiunta dell\'auto.', 'error');
-                    await checkFeaturedLimit(); // Rivaluta il limite in caso di errore
+                    await checkFeaturedLimit();
                 }
             } catch (error) {
                 console.error('Errore di rete:', error);
@@ -234,7 +242,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const nameInput = document.getElementById('edit-dealership-name');
             const descriptionInput = document.getElementById('edit-dealership-description');
             const addressInput = document.getElementById('edit-dealership-address');
-            const contactInput = document.getElementById('edit-dealership-contact');
+            const phoneInput = document.getElementById('edit-dealership-phone');
+            const emailInput = document.getElementById('edit-dealership-email');
             const imagePathInput = document.getElementById('edit-dealership-imagePath');
             const spinner = dealershipForm.querySelector('.spinner');
             const submitButton = dealershipForm.querySelector('button[type="submit"]');
@@ -249,7 +258,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 name: nameInput.value.trim(),
                 description: descriptionInput ? descriptionInput.value.trim() : '',
                 address: addressInput ? addressInput.value.trim() : '',
-                contact: contactInput ? contactInput.value.trim() : '',
+                phone: phoneInput ? phoneInput.value.trim() : '',
+                email: emailInput ? emailInput.value.trim() : '',
                 imagePath: imagePathInput ? imagePathInput.value.trim() : '',
                 isUpdate: "true"
             };
@@ -319,15 +329,21 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 const product = await response.json();
                 document.getElementById('edit-product-id').value = product.id || '';
-                document.getElementById('edit-product-name').value = product.name || '';
+                document.getElementById('edit-product-model').value = product.model || '';
+                document.getElementById('edit-product-brand').value = product.brand || '';
+                document.getElementById('edit-product-category').value = product.category || '';
                 document.getElementById('edit-product-description').value = product.description || '';
                 document.getElementById('edit-product-price').value = product.price || '';
+                document.getElementById('edit-product-mileage').value = product.mileage || '';
+                document.getElementById('edit-product-year').value = product.year || '';
+                document.getElementById('edit-product-fuelType').value = product.fuelType || '';
+                document.getElementById('edit-product-transmission').value = product.transmission || '';
                 document.getElementById('edit-product-imageUrl').value = product.imageUrl || '';
-                document.getElementById('edit-product-highlighted').checked = product.isFeatured || false;
-                document.getElementById('edit-product-highlight-duration').value = product.featureExpiration ?
-                    Math.ceil((new Date(product.featureExpiration) - new Date()) / (1000 * 60 * 60 * 24)) : '';
+                document.getElementById('edit-product-highlighted').checked = product.highlighted || false;
+                document.getElementById('edit-product-highlight-duration').value = product.highlightExpiration ?
+                    Math.ceil((new Date(product.highlightExpiration) - new Date()) / (1000 * 60 * 60 * 24)) : '';
                 if (editFeatureDurationField) {
-                    editFeatureDurationField.style.display = product.isFeatured ? 'block' : 'none';
+                    editFeatureDurationField.style.display = product.highlighted ? 'block' : 'none';
                 }
             } else {
                 showToast('Errore durante il recupero dei dati del prodotto.', 'error');
@@ -365,46 +381,58 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
 
             const productIdInput = document.getElementById('edit-product-id');
-            const nameInput = document.getElementById('edit-product-name');
-            const priceInput = document.getElementById('edit-product-price');
+            const modelInput = document.getElementById('edit-product-model');
+            const brandInput = document.getElementById('edit-product-brand');
+            const categoryInput = document.getElementById('edit-product-category');
             const descriptionInput = document.getElementById('edit-product-description');
+            const priceInput = document.getElementById('edit-product-price');
+            const mileageInput = document.getElementById('edit-product-mileage');
+            const yearInput = document.getElementById('edit-product-year');
+            const fuelTypeInput = document.getElementById('edit-product-fuelType');
+            const transmissionInput = document.getElementById('edit-product-transmission');
             const imageUrlInput = document.getElementById('edit-product-imageUrl');
             const isFeaturedInput = document.getElementById('edit-product-highlighted');
             const featureDurationInput = document.getElementById('edit-product-highlight-duration');
             const spinner = editProductForm.querySelector('.spinner');
             const submitButton = editProductForm.querySelector('button[type="submit"]');
 
-            if (!productIdInput || !nameInput || !priceInput) {
+            if (!productIdInput || !modelInput || !priceInput) {
                 showToast('Errore: Campi del form di modifica non trovati.', 'error');
                 return;
             }
 
             const productData = {
                 id: productIdInput.value,
-                name: nameInput.value.trim(),
+                model: modelInput.value.trim(),
+                brand: brandInput ? brandInput.value.trim() : '',
+                category: categoryInput ? categoryInput.value.trim() : '',
                 description: descriptionInput ? descriptionInput.value.trim() : '',
-                price: parseFloat(priceInput.value),
+                price: priceInput.value,
+                mileage: mileageInput ? mileageInput.value : '',
+                year: yearInput ? yearInput.value : '',
+                fuelType: fuelTypeInput ? fuelTypeInput.value : '',
+                transmission: transmissionInput ? transmissionInput.value : '',
                 imageUrl: imageUrlInput ? imageUrlInput.value.trim() : '',
-                highlighted: isFeaturedInput ? isFeaturedInput.checked : false, // Mantenuto per compatibilità
-                highlightDuration: isFeaturedInput && isFeaturedInput.checked && featureDurationInput ? parseInt(featureDurationInput.value) || 0 : 0
+                isFeatured: isFeaturedInput ? isFeaturedInput.checked : false,
+                featuredUntil: isFeaturedInput && isFeaturedInput.checked && featureDurationInput ? featureDurationInput.value : ''
             };
 
             let isValid = true;
-            if (!productData.name) {
-                nameInput.classList.add('invalid');
+            if (!productData.model) {
+                modelInput.classList.add('invalid');
                 isValid = false;
             } else {
-                nameInput.classList.remove('invalid');
+                modelInput.classList.remove('invalid');
             }
 
-            if (isNaN(productData.price) || productData.price <= 0) {
+            if (!productData.price || parseFloat(productData.price) <= 0) {
                 priceInput.classList.add('invalid');
                 isValid = false;
             } else {
                 priceInput.classList.remove('invalid');
             }
 
-            if (productData.highlighted && (!productData.highlightDuration || productData.highlightDuration <= 0)) {
+            if (productData.isFeatured && (!productData.featuredUntil || parseInt(productData.featuredUntil) <= 0)) {
                 featureDurationInput.classList.add('invalid');
                 isValid = false;
             } else if (featureDurationInput) {
@@ -415,6 +443,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 showToast('Compila tutti i campi obbligatori correttamente.', 'error');
                 return;
             }
+
+            console.log('Payload modifica prodotto:', productData);
 
             spinner.classList.add('active');
             submitButton.disabled = true;
@@ -430,17 +460,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 const responseData = await response.json();
+                console.log('Risposta del server:', responseData);
                 if (response.ok) {
                     showToast(responseData.message || 'Auto modificata con successo!', 'success');
                     editProductForm.style.display = 'none';
                     const heroContent = editProductForm.closest('.hero-content');
                     if (heroContent) heroContent.style.display = 'none';
                     editProductForm.reset();
-                    await checkFeaturedLimit(); // Rivaluta il limite dopo la modifica
+                    await checkFeaturedLimit();
                     setTimeout(() => window.location.reload(), 1500);
                 } else {
                     showToast(responseData.message || 'Errore durante la modifica dell\'auto.', 'error');
-                    await checkFeaturedLimit(); // Rivaluta il limite in caso di errore
+                    await checkFeaturedLimit();
                 }
             } catch (error) {
                 console.error('Errore di rete:', error);
@@ -469,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (response.ok) {
                     showToast('Auto eliminata con successo!', 'success');
-                    await checkFeaturedLimit(); // Rivaluta il limite dopo l'eliminazione
+                    await checkFeaturedLimit();
                     setTimeout(() => window.location.reload(), 1500);
                 } else {
                     const responseData = await response.json();
@@ -513,11 +544,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const responseData = await response.json();
                 if (response.ok) {
                     showToast(responseData.message || 'Auto messa in evidenza con successo!', 'success');
-                    await checkFeaturedLimit(); // Rivaluta il limite dopo l'aggiunta
+                    await checkFeaturedLimit();
                     setTimeout(() => window.location.reload(), 1500);
                 } else {
                     showToast(responseData.message || 'Errore durante la messa in evidenza.', 'error');
-                    await checkFeaturedLimit(); // Rivaluta il limite in caso di errore
+                    await checkFeaturedLimit();
                 }
             } catch (error) {
                 console.error('Errore di rete:', error);
@@ -546,7 +577,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (response.ok) {
                     showToast(responseData.message || 'Evidenza rimossa con successo!', 'success');
-                    const result = await checkFeaturedLimit(); // Rivaluta il limite dopo la rimozione
+                    const result = await checkFeaturedLimit();
                     console.log('Risultato di checkFeaturedLimit dopo rimozione:', result);
                     if (result.success && !result.isLimitReached) {
                         console.log('Limite non raggiunto, pulsanti e checkbox dovrebbero essere attivi');

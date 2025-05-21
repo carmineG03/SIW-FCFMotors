@@ -60,7 +60,6 @@ public class AdminService {
 					return new IllegalStateException("Prodotto non trovato");
 				});
 
-		product.setName(updatedProduct.getName());
 		product.setDescription(updatedProduct.getDescription());
 		product.setPrice(updatedProduct.getPrice());
 		product.setCategory(updatedProduct.getCategory());
@@ -72,7 +71,7 @@ public class AdminService {
 		product.setTransmission(updatedProduct.getTransmission());
 
 		Product savedProduct = productRepository.save(product);
-		logger.info("Product updated by admin: id={}, name={}", savedProduct.getId(), savedProduct.getName());
+		logger.info("Product updated by admin: id={}, model={}", savedProduct.getId(), savedProduct.getModel());
 		return savedProduct;
 	}
 
@@ -107,14 +106,14 @@ public class AdminService {
 		dealer.setName(updatedDealer.getName());
 		dealer.setDescription(updatedDealer.getDescription());
 		dealer.setAddress(updatedDealer.getAddress());
-		dealer.setContact(updatedDealer.getContact());
+		dealer.setPhone(updatedDealer.getPhone());
+		dealer.setEmail(updatedDealer.getEmail());
 		dealer.setImagePath(updatedDealer.getImagePath());
 
 		Dealer savedDealer = dealerRepository.save(dealer);
 		logger.info("Dealer updated by admin: id={}, name={}", savedDealer.getId(), savedDealer.getName());
 		return savedDealer;
 	}
-
 	// Rimuove un concessionario e i suoi prodotti associati
 	@Transactional
 	@PreAuthorize("hasRole('ADMIN')")
