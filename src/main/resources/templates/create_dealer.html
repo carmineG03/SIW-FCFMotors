@@ -9,6 +9,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/toast.css">
+    <style>
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 <header class="header-transparent">
@@ -32,15 +42,15 @@
             <form id="dealership-creation-form" class="modern-form">
                 <div class="input-field">
                     <label for="create-dealership-name"><i class="fas fa-store"></i> Nome Concessionario</label>
-                    <input type="text" id="create-dealership-name" required aria-required="true">
+                    <input type="text" id="create-dealership-name" name="name" required aria-required="true">
                 </div>
                 <div class="input-field">
                     <label for="create-dealership-description"><i class="fas fa-file-alt"></i> Descrizione</label>
-                    <textarea id="create-dealership-description" rows="4"></textarea>
+                    <textarea id="create-dealership-description" name="description" rows="4"></textarea>
                 </div>
                 <div class="input-field">
                     <label for="create-dealership-address"><i class="fas fa-map-marker-alt"></i> Indirizzo</label>
-                    <input type="text" id="create-dealership-address">
+                    <input type="text" id="create-dealership-address" name="address">
                 </div>
                 <div class="input-field">
                     <label for="create-dealership-phone"><i class="fas fa-phone"></i> Telefono</label>
@@ -52,10 +62,12 @@
                 </div>
                 <div class="input-field">
                     <label for="create-dealership-imagePath"><i class="fas fa-image"></i> URL Immagine</label>
-                    <input type="url" id="create-dealership-imagePath">
+                    <input type="url" id="create-dealership-imagePath" name="imagePath">
                 </div>
                 <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva <span class="spinner" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span></button>
             </form>
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            <div id="successMessage" class="success-message" style="display: none;"></div>
         </div>
     </section>
 </main>
