@@ -1,12 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     const dealersList = document.getElementById('dealers-list');
-    // Dati iniettati da Thymeleaf
     const dealers = window.dealersData || [];
 
-    // Log per debug
     console.log('Dati concessionari ricevuti:', dealers);
 
-    // Verifica se Thymeleaf ha già renderizzato i concessionari
     if (dealersList.children.length > 0 && !dealersList.classList.contains('js-rendered')) {
         console.log('Rendering Thymeleaf già presente, nessun intervento JavaScript necessario');
         return;
@@ -55,7 +52,6 @@ document.addEventListener('DOMContentLoaded', function () {
         dealersList.classList.add('js-rendered');
     }
 
-    // Renderizza solo se i dati sono disponibili e Thymeleaf non ha già renderizzato
     if (dealers.length > 0 && !dealersList.classList.contains('js-rendered')) {
         renderDealers(dealers);
     }
