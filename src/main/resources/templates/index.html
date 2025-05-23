@@ -152,7 +152,7 @@
                     <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
                     <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
                     <a th:if="${!isAuthenticated}" th:href="@{/login}"><i class="fas fa-user"></i> Login</a>
-                    <a th:if="${isAuthenticated}" th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+                    <a th:if="${isAuthenticated}" th:href="@{/account}"><i class="fas fa-user"></i> <span th:text="${user.username}"></span></a>
                 </div>
             </div>
         </div>

@@ -85,10 +85,13 @@
             </div>
             <div class="button-group">
                 <button id="edit-button" class="modern-button"><i class="fas fa-edit"></i> Modifica</button>
-
                 <form th:action="@{/private/delete/{id}(id=${product.id})}" method="post" style="display: inline;">
                     <button type="submit" class="modern-button danger" onclick="return confirm('Sei sicuro di voler eliminare questa macchina?');"><i class="fas fa-trash"></i> Elimina</button>
                 </form>
+                <!-- Add Messages Button for Private Sellers -->
+                <div th:if="${product != null and product.sellerType == 'PRIVATE'}">
+                    <a th:href="@{/private/messages}" class="modern-button"><i class="fas fa-envelope"></i> Visualizza Messaggi</a>
+                </div>
             </div>
         </div>
 

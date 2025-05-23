@@ -269,7 +269,7 @@
                 <p class="price" th:text="${#numbers.formatDecimal(product.price, 1, 2, 'COMMA')} + ' €'"></p>
                 <div class="button-group">
                     <div th:if="${product.sellerType == 'PRIVATE'}">
-                        <a th:href="@{'/contact-seller/' + ${product.id}}" class="button">Contatta il Venditore</a>
+                        <a th:href="@{'/private/messages/send/' + ${product.id}}" class="button">Contatta il Venditore</a>
                     </div>
                     <div th:if="${product.sellerType == 'DEALER'}">
                         <th:block th:if="${isAuthenticated}">

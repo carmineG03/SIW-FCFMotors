@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <style>
-        /* Highlighted product styling */
+        /* Stili per evidenziazione prodotto */
         .product-card.highlighted {
             border: 2px solid #ffd700;
             background-color: #fffde7;
@@ -25,6 +25,7 @@
             font-size: 0.8em;
             font-weight: bold;
         }
+        /* Stili per validazione input */
         .invalid {
             border-color: red !important;
             animation: shake 0.3s;
@@ -34,6 +35,7 @@
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
         }
+        /* Stili per spinner di caricamento */
         .spinner {
             display: none;
             margin-left: 5px;
@@ -51,6 +53,7 @@
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
+        /* Stili per toast di notifica */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -67,6 +70,7 @@
         .toast.error {
             background-color: #dc3545;
         }
+        /* Stili per animazioni sezioni */
         .animated-section {
             opacity: 0;
             transform: translateY(20px);
@@ -85,6 +89,7 @@
             opacity: 1;
             transform: scale(1);
         }
+        /* Stili per immagini */
         .image-container {
             width: 100%;
             max-width: 250px;
@@ -96,6 +101,85 @@
             object-fit: cover;
             border-radius: 8px;
             margin-right: 0;
+        }
+        /* Stili per select dropdown */
+        .input-field select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+            box-sizing: border-box;
+            margin-top: 5px;
+            text-align: left;
+            appearance: auto;
+        }
+        .input-field select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+        /* Stili per popup di modifica */
+        .edit-product-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .edit-product-popup-content {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: #FFFFFF;
+            position: relative;
+        }
+        .edit-product-popup-content h2 {
+            font-size: 1.8rem;
+            color: #F5A623;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .close-popup {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #F5A623;
+            transition: color 0.3s ease;
+        }
+        .close-popup:hover {
+            color: #E59400;
+        }
+        @media (max-width: 768px) {
+            .edit-product-popup-content {
+                padding: 20px;
+                max-width: 90%;
+            }
+            .edit-product-popup-content h2 {
+                font-size: 1.5rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .edit-product-popup-content {
+                padding: 15px;
+            }
+            .edit-product-popup-content h2 {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
@@ -212,12 +296,12 @@
                     <input type="hidden" name="dealerId" th:value="${dealer.id}">
                     <h2 id="add-car-form-title" style="display: none;">Aggiungi Auto</h2>
                     <div class="input-field">
-                        <label for="dealer-car-model"><i class="fas fa-car"></i> Modello</label>
-                        <input type="text" id="dealer-car-model" name="model" required aria-required="true">
-                    </div>
-                    <div class="input-field">
                         <label for="dealer-car-brand"><i class="fas fa-industry"></i> Marca</label>
                         <input type="text" id="dealer-car-brand" name="brand">
+                    </div>
+                    <div class="input-field">
+                        <label for="dealer-car-model"><i class="fas fa-car"></i> Modello</label>
+                        <input type="text" id="dealer-car-model" name="model" required aria-required="true">
                     </div>
                     <div class="input-field">
                         <label for="dealer-car-category"><i class="fas fa-tags"></i> Categoria</label>
@@ -262,6 +346,14 @@
                     <div class="input-field">
                         <label for="dealer-car-imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
                         <input type="url" id="dealer-car-imageUrl" name="imageUrl">
+                    </div>
+                    <div class="input-field">
+                        <label for="dealer-car-highlighted"><i class="fas fa-star"></i> Metti in Evidenza</label>
+                        <input type="checkbox" id="dealer-car-highlighted" name="isFeatured">
+                    </div>
+                    <div class="input-field" id="dealer-car-feature-duration-field" style="display: none;">
+                        <label for="dealer-car-feature-duration"><i class="fas fa-clock"></i> Durata Evidenza (giorni)</label>
+                        <input type="number" id="dealer-car-feature-duration" name="featuredUntil" min="1" step="1">
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="modern-button"><i class="fas fa-plus"></i> Aggiungi <span class="spinner"></span></button>
@@ -344,78 +436,82 @@
         </div>
     </section>
 
-    <!-- Form per la modifica del prodotto -->
-    <div class="hero-content" style="display: none;">
-        <form id="edit-product-form" class="modern-form" style="display: none;" aria-labelledby="edit-product-form-title">
-            <h2 id="edit-product-form-title">Modifica Auto</h2>
-            <input type="hidden" id="edit-product-id">
-            <div class="input-field">
-                <label for="edit-product-model"><i class="fas fa-car"></i> Modello</label>
-                <input type="text" id="edit-product-model" name="model" required aria-required="true">
-            </div>
-            <div class="input-field">
-                <label for="edit-product-brand"><i class="fas fa-industry"></i> Marca</label>
-                <input type="text" id="edit-product-brand" name="brand">
-            </div>
-            <div class="input-field">
-                <label for="edit-product-category"><i class="fas fa-tags"></i> Categoria</label>
-                <input type="text" id="edit-product-category" name="category">
-            </div>
-            <div class="input-field">
-                <label for="edit-product-description"><i class="fas fa-file-alt"></i> Descrizione</label>
-                <textarea id="edit-product-description" name="description" rows="4"></textarea>
-            </div>
-            <div class="input-field">
-                <label for="edit-product-price"><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
-                <input type="number" id="edit-product-price" name="price" required step="0.01" min="0.01" aria-required="true">
-            </div>
-            <div class="input-field">
-                <label for="edit-product-mileage"><i class="fas fa-tachometer-alt"></i> Chilometraggio (km)</label>
-                <input type="number" id="edit-product-mileage" name="mileage" min="0">
-            </div>
-            <div class="input-field">
-                <label for="edit-product-year"><i class="fas fa-calendar-alt"></i> Anno</label>
-                <input type="number" id="edit-product-year" name="year" min="1900" max="2025">
-            </div>
-            <div class="input-field">
-                <label for="edit-product-fuelType"><i class="fas fa-gas-pump"></i> Tipo di carburante</label>
-                <select id="edit-product-fuelType" name="fuelType">
-                    <option value="">Seleziona...</option>
-                    <option value="Benzina">Benzina</option>
-                    <option value="Diesel">Diesel</option>
-                    <option value="Elettrico">Elettrico</option>
-                    <option value="Ibrido">Ibrido</option>
-                    <option value="GPL">GPL</option>
-                    <option value="Metano">Metano</option>
-                </select>
-            </div>
-            <div class="input-field">
-                <label for="edit-product-transmission"><i class="fas fa-cogs"></i> Trasmissione</label>
-                <select id="edit-product-transmission" name="transmission">
-                    <option value="">Seleziona...</option>
-                    <option value="Manuale">Manuale</option>
-                    <option value="Automatico">Automatico</option>
-                </select>
-            </div>
-            <div class="input-field">
-                <label for="edit-product-imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
-                <input type="url" id="edit-product-imageUrl" name="imageUrl">
-            </div>
-            <div class="input-field">
-                <label for="edit-product-highlighted"><i class="fas fa-star"></i> Metti in Evidenza</label>
-                <input type="checkbox" id="edit-product-highlighted" name="highlighted">
-            </div>
-            <div class="input-field" id="edit-highlight-duration-field" style="display: none;">
-                <label for="edit-product-highlight-duration"><i class="fas fa-clock"></i> Durata Evidenza (giorni)</label>
-                <input type="number" id="edit-product-highlight-duration" name="highlightDuration" min="1" step="1">
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva <span class="spinner"></span></button>
-                <button type="button" id="cancel-edit-product" class="modern-button cancel-button"><i class="fas fa-times"></i> Annulla</button>
-            </div>
-        </form>
+    <!-- Pop-up per Modifica Auto -->
+    <div class="edit-product-popup" id="edit-product-popup">
+        <div class="edit-product-popup-content">
+            <span class="close-popup" id="close-edit-product-popup">×</span>
+            <form id="edit-product-form" class="modern-form" aria-labelledby="edit-product-form-title" th:action="@{/rest/api/products}" method="post" onsubmit="return false;">
+                <h2 id="edit-product-form-title">Modifica Auto</h2>
+                <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" id="edit-product-id" name="id">
+                <input type="hidden" name="dealerId" th:value="${dealer.id}">
+                <div class="input-field">
+                    <label for="edit-product-model"><i class="fas fa-car"></i> Modello</label>
+                    <input type="text" id="edit-product-model" name="model" required aria-required="true">
+                </div>
+                <div class="input-field">
+                    <label for="edit-product-brand"><i class="fas fa-industry"></i> Marca</label>
+                    <input type="text" id="edit-product-brand" name="brand">
+                </div>
+                <div class="input-field">
+                    <label for="edit-product-category"><i class="fas fa-tags"></i> Categoria</label>
+                    <input type="text" id="edit-product-category" name="category">
+                </div>
+                <div class="input-field">
+                    <label for="edit-product-description"><i class="fas fa-file-alt"></i> Descrizione</label>
+                    <textarea id="edit-product-description" name="description" rows="4"></textarea>
+                </div>
+                <div class="input-field">
+                    <label for="edit-product-price"><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
+                    <input type="number" id="edit-product-price" name="price" required step="0.01" min="0.01" aria-required="true">
+                </div>
+                <div class="input-field">
+                    <label for="edit-product-mileage"><i class="fas fa-tachometer-alt"></i> Chilometraggio (km)</label>
+                    <input type="number" id="edit-product-mileage" name="mileage" min="0">
+                </div>
+                <div class="input-field">
+                    <label for="edit-product-year"><i class="fas fa-calendar-alt"></i> Anno</label>
+                    <input type="number" id="edit-product-year" name="year" min="1900" max="2025">
+                </div>
+                <div class="input-field">
+                    <label for="edit-product-fuelType"><i class="fas fa-gas-pump"></i> Tipo di carburante</label>
+                    <select id="edit-product-fuelType" name="fuelType">
+                        <option value="">Seleziona...</option>
+                        <option value="Benzina">Benzina</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Elettrico">Elettrico</option>
+                        <option value="Ibrido">Ibrido</option>
+                        <option value="GPL">GPL</option>
+                        <option value="Metano">Metano</option>
+                    </select>
+                </div>
+                <div class="input-field">
+                    <label for="edit-product-transmission"><i class="fas fa-cogs"></i> Trasmissione</label>
+                    <select id="edit-product-transmission" name="transmission">
+                        <option value="">Seleziona...</option>
+                        <option value="Manuale">Manuale</option>
+                        <option value="Automatico">Automatico</option>
+                    </select>
+                </div>
+                <div class="input-field">
+                    <label for="edit-product-imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
+                    <input type="url" id="edit-product-imageUrl" name="imageUrl">
+                </div>
+                <div class="input-field">
+                    <label for="edit-product-highlighted"><i class="fas fa-star"></i> Metti in Evidenza</label>
+                    <input type="checkbox" id="edit-product-highlighted" name="isFeatured">
+                </div>
+                <div class="input-field" id="edit-highlight-duration-field" style="display: none;">
+                    <label for="edit-product-highlight-duration"><i class="fas fa-clock"></i> Durata Evidenza (giorni)</label>
+                    <input type="number" id="edit-product-highlight-duration" name="featuredUntil" min="1" step="1">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva <span class="spinner"></span></button>
+                    <button type="button" id="cancel-edit-product" class="modern-button cancel-button"><i class="fas fa-times"></i> Annulla</button>
+                </div>
+            </form>
+        </div>
     </div>
-
     <!-- Toast -->
     <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
 </main>

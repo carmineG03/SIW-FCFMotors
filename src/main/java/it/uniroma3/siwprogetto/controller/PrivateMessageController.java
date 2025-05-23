@@ -55,7 +55,7 @@ public class PrivateMessageController {
 			Product product = productRepository.findById(productId)
 					.orElseThrow(() -> new IllegalArgumentException("Product not found"));
 			quoteRequestService.createPrivateMessage(user, product, message);
-			return "redirect:/private/messages?success=message_sent";
+			return "redirect:/products?success=message_sent";
 		} catch (IllegalArgumentException e) {
 			return "redirect:/products?error=" + e.getMessage();
 		}

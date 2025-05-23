@@ -3629,3 +3629,40 @@ footer {
     border: 1px solid #f5c6cb;
 }
 
+.modern-button {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+    color: #FFFFFF;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
+}
+
+.modern-button:hover {
+    background: linear-gradient(45deg, #E59400, #D68F1D);
+    transform: translateY(-2px);
+}
+
+.modern-button.danger {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+}
+
+.modern-button.danger:hover {
+    background: linear-gradient(45deg, #c82333, #b21f2d);
+}
+
+.modern-button.secondary {
+    background: linear-gradient(45deg, #6c757d, #5a6268);
+}
+
+.modern-button.secondary:hover {
+    background: linear-gradient(45deg, #5a6268, #4b5156);
+}
+
