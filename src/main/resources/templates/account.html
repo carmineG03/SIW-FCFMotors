@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Stile per il menu a tendina moderno e accattivante */
+        /* Existing styles remain unchanged */
         .dropdown {
             position: relative;
             display: inline-block;
@@ -81,7 +81,6 @@
         .dropdown-menu a:hover i {
             color: #FFFFFF;
         }
-        /* Posizionamento del menu, centrato verticalmente */
         .header-right {
             position: absolute;
             top: 50%;
@@ -92,7 +91,6 @@
             gap: 10px;
             z-index: 1010;
         }
-        /* Assicurati che il layout sia responsive */
         @media (max-width: 768px) {
             #main-header {
                 height: 60px;
@@ -119,14 +117,231 @@
                 gap: 5px;
             }
         }
-        .debug-info {
+        .modal {
+            display: none;
             position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background-color: #fff;
-            padding: 10px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            position: relative;
+            transform: translateY(-50px);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+        .modal.show .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .modal-content h3 {
+            margin: 0 0 15px;
+            color: #333;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        .modal-content .form-group {
+            margin-bottom: 15px;
+        }
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        .modal-content input[type="password"] {
+            width: 100%;
+            padding: 8px;
             border: 1px solid #ccc;
-            z-index: 1000;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+        .modal-content .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-content button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .modal-content .confirm-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+        }
+        .modal-content .confirm-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-2px);
+        }
+        .modal-content .cancel-button {
+            background: #ccc;
+            color: #333;
+        }
+        .modal-content .cancel-button:hover {
+            background: #bbb;
+            transform: translateY(-2px);
+        }
+        .delete-account-button {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .delete-account-button:hover {
+            background: linear-gradient(45deg, #cc0000, #ff4d4d);
+            transform: translateY(-2px);
+        }
+        /* Existing styles for subscription cards */
+        .subscription-card {
+            background-color: #FFFF00;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .subscription-card h4 {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: black;
+        }
+        .subscription-card p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .subscription-card i {
+            color: #F5A623;
+            margin-right: 5px;
+        }
+        .featured-cars {
+            display: inline-block;
+            background-color: #F5A623;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .description {
+            color: #333;
+            font-size: 0.95rem;
+            margin-top: 10px;
+        }
+        .cancel-subscription-button {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #ff4d4d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+        .cancel-subscription-button:hover {
+            background-color: #cc0000;
+        }
+        /* New modern styles for no-subscriptions section */
+        .no-subscriptions {
+            background: linear-gradient(145deg, #f9f9f9, #ececec);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .no-subscriptions::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(245, 166, 35, 0.2) 0%, transparent 70%);
+            animation: glowRotate 10s infinite linear;
+            pointer-events: none;
+        }
+        .no-subscriptions:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        .no-subscriptions p {
+            font-size: 1.2rem;
+            color: #333;
+            margin: 10px 0;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .no-subscriptions p:hover {
+            color: #F5A623;
+        }
+        .no-subscriptions i {
+            color: #F5A623;
+            margin-right: 8px;
+        }
+        .subscribe-button {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 15px 0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 10px rgba(245, 166, 35, 0.4);
+        }
+        .subscribe-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
+        }
+        .become-private-button, .remove-private-button {
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 10px rgba(245, 166, 35, 0.4);
+        }
+        .become-private-button:hover, .remove-private-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
+        }
+        @keyframes glowRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -147,21 +362,19 @@
             <!-- Nav bar vuota dopo aver spostato tutti i pulsanti nel menu a tendina -->
         </div>
     </div>
-    <!-- Contenitore per il menu a tendina -->
     <div class="header-right">
-        <!-- Menu a tendina con design moderno e accattivante -->
         <div class="dropdown">
             <button class="dropdown-toggle" aria-label="Menu">
                 <i class="fas fa-bars"></i>
             </button>
             <div class="dropdown-menu">
-                 <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
-                 <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
-                 <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
-                 <a th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
-                 <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
-                 <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('DEALER')}" th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i> Manutenzione Dealer</a>
-                 <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('ADMIN')}" th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i> Manutenzione Admin</a>
+                <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                <a th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+                <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
+                <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('DEALER')}" th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i> Manutenzione Dealer</a>
+                <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('ADMIN')}" th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i> Manutenzione Admin</a>
             </div>
         </div>
     </div>
@@ -171,14 +384,6 @@
     <div class="account-container">
         <div class="account-details-container">
             <h2>Informazioni Account</h2>
-            <!-- Debug Temporaneo -->
-            <div class="debug-info">
-                <p sec:authorize="isAuthenticated()">Utente Autenticato: <span sec:authentication="name"></span></p>
-                <p sec:authorize="isAuthenticated()">Ruoli: <span sec:authentication="authorities"></span></p>
-                <p sec:authorize="isAuthenticated()">Ha Ruolo PRIVATE: <span sec:authorize="hasAuthority('ROLE_PRIVATE')">Sì</span><span sec:authorize="!hasAuthority('ROLE_PRIVATE')">No</span></p>
-                <p sec:authorize="isAuthenticated()">Ha Ruolo DEALER: <span sec:authorize="hasAuthority('ROLE_DEALER')">Sì</span><span sec:authorize="!hasAuthority('ROLE_DEALER')">No</span></p>
-                <p sec:authorize="!isAuthenticated()">Utente non autenticato.</p>
-            </div>
             <div th:if="${!editMode}" class="account-details">
                 <p th:if="${error}" th:text="${error}" class="error-message"></p>
                 <p th:if="${user != null}"><strong>Username:</strong> <span th:text="${user.username}"></span></p>
@@ -190,19 +395,10 @@
                 <p th:if="${accountInformation != null}"><strong>Numero di telefono:</strong> <span th:text="${accountInformation.phoneNumber}"></span></p>
                 <div class="account-actions">
                     <a th:href="@{/account/edit}" class="edit-button">Modifica</a>
-                    <form th:action="@{/logout}" method="post" class="logout-form">
-                        <button type="submit" class="logout-button">Esci</button>
+                    <form id="logoutForm" th:action="@{/logout}" method="post" style="display:inline;">
+                        <a href="#" class="logout-button" onclick="event.preventDefault(); document.getElementById('logoutForm').submit()">Esci</a>
                     </form>
-                    <form th:action="@{/account/delete}" method="post" class="delete-account-form">
-                        <div class="form-group">
-                            <label for="password">Conferma Password:</label>
-                            <input type="password" id="password" name="password" required />
-                        </div>
-                        <button type="submit" class="delete-account-button"
-                                onclick="return confirm('Sei sicuro di voler cancellare il tuo account? Questa azione è irreversibile e eliminerà tutte le informazioni associate.');">
-                            Cancella Account
-                        </button>
-                    </form>
+                    <button class="delete-account-button" onclick="openDeleteModal()">Cancella Account</button>
                 </div>
             </div>
 
@@ -244,8 +440,11 @@
             <h2>Abbonamenti</h2>
             <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
                 <h3>Abbonamento Attivo</h3>
-                <div th:each="userSubscription : ${activeSubscriptions}">
-                    <p><strong th:text="${userSubscription.subscription.id}"></strong> - Scade il: <span th:text="${userSubscription.expiryDate}"></span></p>
+                <div th:each="userSubscription : ${activeSubscriptions}" class="subscription-card">
+                    <h4 th:text="${userSubscription.subscription.name}"></h4>
+                    <p><i class="fas fa-calendar-alt"></i> Scade il: <span th:text="${userSubscription.expiryDate}"></span></p>
+                    <p><i class="fas fa-car"></i> Macchine in evidenza: <span class="featured-cars" th:text="${userSubscription.subscription.maxFeaturedCars}"></span></p>
+                    <p class="description" th:text="${userSubscription.subscription.description}"></p>
                     <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
                        class="cancel-subscription-button"
                        onclick="return confirm('Sei sicuro di voler cancellare questo abbonamento? Il tuo ruolo tornerà a USER se non hai altri abbonamenti attivi.');">
@@ -254,25 +453,43 @@
                 </div>
             </div>
             <div th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}" class="no-subscriptions">
-                <p>Nessun abbonamento attivo.</p>
+                <p><i class="fas fa-info-circle"></i> Nessun abbonamento attivo.</p>
                 <a href="/subscriptions" class="subscribe-button">Scopri Abbonamenti</a>
                 <div th:if="${user != null and user.rolesString != null and user.rolesString.contains('USER')}">
-                    <p>Vuoi vendere la tua auto?</p>
+                    <p><i class="fas fa-car"></i> Vuoi vendere la tua auto?</p>
                     <form th:action="@{/account/become-private}" method="post">
-                        <button type="submit" class="become-private-button">Diventa Privato</button>
+                        <button type="submit" class="become-private-button">Vendi la tua auto</button>
                     </form>
                 </div>
                 <div th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}">
-                    <p>Sei un utente privato. Vuoi tornare al ruolo USER?</p>
+                    <p><i class="fas fa-user-alt-slash"></i> Sei un utente privato</p>
                     <form th:action="@{/account/remove-private}" method="post">
                         <button type="submit" class="remove-private-button"
-                                onclick="return confirm('Sei sicuro di voler rimuovere il ruolo PRIVATO? Questo eliminerà anche l\'auto che hai messo in vendita.');">
-                            Rimuovi Ruolo Privato
+                                onclick="return confirm('Sei sicuro di voler cancellare la tua auto? \'Questa azione é irriversibile .');">
+                            Rimuovi Auto
                         </button>
                     </form>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Modal for Delete Account Confirmation -->
+<div id="deleteAccountModal" class="modal">
+    <div class="modal-content">
+        <h3>Conferma Cancellazione Account</h3>
+        <p>Sei sicuro di voler cancellare il tuo account? Questa azione è irreversibile.</p>
+        <form th:action="@{/account/delete}" method="post" id="deleteAccountForm">
+            <div class="form-group">
+                <label for="password">Conferma Password:</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <div class="modal-actions">
+                <button type="submit" class="confirm-button">Conferma</button>
+                <button type="button" class="cancel-button" onclick="closeDeleteModal()">Annulla</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -304,7 +521,7 @@
 </footer>
 
 <script>
-    // JavaScript per gestire il menu a tendina con animazione
+    // Existing JavaScript for dropdown menu
     document.addEventListener('DOMContentLoaded', function() {
         const dropdownToggle = document.querySelector('.dropdown-toggle');
         const dropdownMenu = document.querySelector('.dropdown-menu');
@@ -329,6 +546,31 @@
                 dropdownToggle.classList.toggle('open');
             }
         });
+    });
+
+    // JavaScript for modal remains unchanged
+    function openDeleteModal() {
+        const modal = document.getElementById('deleteAccountModal');
+        modal.classList.add('show');
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteAccountModal');
+        modal.classList.remove('show');
+    }
+
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('deleteAccountModal');
+        const modalContent = modal.querySelector('.modal-content');
+        if (modal.classList.contains('show') && !modalContent.contains(event.target) && !event.target.classList.contains('delete-account-button')) {
+            closeDeleteModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeDeleteModal();
+        }
     });
 </script>
 </body>
