@@ -443,12 +443,13 @@
                 <div th:each="userSubscription : ${activeSubscriptions}" class="subscription-card">
                     <h4 th:text="${userSubscription.subscription.name}"></h4>
                     <p><i class="fas fa-calendar-alt"></i> Scade il: <span th:text="${userSubscription.expiryDate}"></span></p>
+                    <p><i class="fas fa-sync-alt"></i> Rinnovo automatico: <span th:text="${userSubscription.autoRenew} ? 'Attivo' : 'Disattivato'"></span></p>
                     <p><i class="fas fa-car"></i> Macchine in evidenza: <span class="featured-cars" th:text="${userSubscription.subscription.maxFeaturedCars}"></span></p>
                     <p class="description" th:text="${userSubscription.subscription.description}"></p>
                     <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
                        class="cancel-subscription-button"
-                       onclick="return confirm('Sei sicuro di voler cancellare questo abbonamento? Il tuo ruolo tornerà a USER se non hai altri abbonamenti attivi.');">
-                        Cancella
+                       onclick="return confirm('Sei sicuro di voler disattivare il rinnovo automatico di questo abbonamento? Il tuo ruolo tornerà a USER se non hai altri abbonamenti attivi.');">
+                        Disattiva Rinnovo
                     </a>
                 </div>
             </div>

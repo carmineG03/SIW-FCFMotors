@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -224,7 +225,22 @@ public class AccountController {
         }
 
         try {
-            userService.cancelSubscription(userSubscriptionId, user.getId());
+            UserSubscription subscription = userSubscriptionRepository.findById(userSubscriptionId)
+                    .orElseThrow(() -> new IllegalArgumentException("Abbonamento non trovato"));
+            if (!subscription.getUser().getId().equals(user.getId())) {
+                throw new IllegalArgumentException("Non autorizzato");
+            }
+            subscription.setAutoRenew(false); // Disable auto-renewal
+            subscription.setActive(false); // Optionally mark as inactive
+            subscription.setExpiryDate(LocalDate.now()); // Set expiry to now
+            userSubscriptionRepository.save(subscription);
+
+            // Update user role if no active subscriptions remain
+            List<UserSubscription> activeSubscriptions = userSubscriptionRepository.findByUserAndActive(user, true);
+            if (activeSubscriptions.isEmpty()) {
+                userService.updateUserRole(user, "USER");
+            }
+
             return "redirect:/account?success=true";
         } catch (IllegalArgumentException e) {
             return "redirect:/account?error=" + e.getMessage();

@@ -95,10 +95,12 @@ public class CartService {
         List<CartItem> items = cartItemRepository.findByUser(user);
         for (CartItem item : items) {
             if (item.getSubscription() != null) {
-                // Chiama il metodo di UserService per attivare l'abbonamento
-                userService.subscribeUserToDealer(user.getId(), item.getSubscription().getId());
+                // Activate subscription with auto-renewal
+                UserSubscription userSubscription = userService.subscribeUserToDealer(user.getId(), item.getSubscription().getId());
+                userSubscription.setAutoRenew(true); // Enable auto-renewal
+                userSubscriptionRepository.save(userSubscription);
             }
-            // Gestisci prodotti, se presenti
+            // Handle products, if present
             if (item.getProduct() != null && item.getSubscription() != null) {
                 Product product = item.getProduct();
                 product.setIsFeatured(true);
@@ -106,9 +108,7 @@ public class CartService {
                 productRepository.save(product);
             }
         }
-
-
-        // Svuota il carrello dell'utente
+        // Clear the cart
         cartItemRepository.deleteAll(items);
     }
 
