@@ -55,8 +55,7 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
                                 @Param("minYear") Integer minYear,
                                 @Param("maxYear") Integer maxYear,
                                 @Param("fuelType") String fuelType,
-                                @Param("transmission") String transmission,
-                                @Param("query") String query);
+                                @Param("transmission") String transmission);
 
     @Query("SELECT p FROM Product p WHERE p.seller.id = :sellerId")
     List<Product> findBySellerId(@Param("sellerId") Long sellerId);
