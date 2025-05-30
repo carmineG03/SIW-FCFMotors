@@ -1,10 +1,362 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abbonamenti - FCF Motors</title>
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f6f5, #e9ecef);
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-toggle {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .dropdown-toggle:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #E59400, #F5A623);
+        }
+        .dropdown-toggle i {
+            font-size: 1.2rem;
+            color: #FFFFFF;
+            transition: transform 0.3s ease;
+        }
+        .dropdown-toggle.open i.fa-bars {
+            transform: rotate(90deg);
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            z-index: 1000;
+            min-width: 200px;
+            padding: 10px 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .dropdown-menu.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .dropdown-menu a i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            color: #F5A623;
+        }
+        .dropdown-menu a:hover {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            transform: translateX(5px);
+            border-left: 3px solid #FFFFFF;
+        }
+        .dropdown-menu a:hover i {
+            color: #FFFFFF;
+        }
+        .header-right {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1010;
+        }
+        #main-header {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        @media (max-width: 768px) {
+            #main-header {
+                height: 60px;
+            }
+            .dropdown-menu {
+                min-width: 180px;
+            }
+            .dropdown-toggle {
+                width: 36px;
+                height: 36px;
+            }
+            .dropdown-toggle i {
+                font-size: 1rem;
+            }
+            .dropdown-menu {
+                top: 40px;
+            }
+            .dropdown-menu a {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            .header-right {
+                right: 10px;
+                gap: 5px;
+            }
+        }
+        .subscriptions-page {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .subscriptions-page h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #222;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .subscriptions-page .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        .alert {
+            padding: 15px;
+            margin: 0 auto 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            max-width: 800px;
+            text-align: center;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .active-subscriptions, .available-subscriptions {
+            margin-bottom: 40px;
+        }
+        .active-subscriptions h2, .available-subscriptions h2 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .active-subscriptions ul {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .subscription-item, .subscription-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .subscription-item:hover, .subscription-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .subscription-item h3, .subscription-box h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #222;
+            margin: 0 0 15px 0;
+            text-align: center;
+        }
+        .subscription-item p, .subscription-box p {
+            font-size: 1rem;
+            color: #555;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .subscription-box p span {
+            color: #333333;
+            font-weight: 600;
+        }
+
+        .subscription-item p i, .subscription-box p i {
+            color: #F5A623;
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        .subscription-item .description, .subscription-box .description {
+            color: #333;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .subscription-item .featured-cars, .subscription-box .featured-cars {
+            display: inline-block;
+            background: #F5A623;
+            color: #FFFFFF;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .subscription-box .price s {
+            color: #888;
+            margin-right: 8px;
+        }
+        .subscription-box .price span {
+            color: #F5A623;
+            font-weight: 600;
+        }
+        .auto-renew-warning {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+            color: #FFFFFF;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .subscribe-button, .toggle-auto-renew-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            color: #FFFFFF;
+            text-decoration: none;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 15px 0 0;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            box-shadow: 0 2px 10px rgba(245, 166, 35, 0.4);
+            text-align: center;
+        }
+        .subscribe-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+        }
+        .subscribe-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
+        }
+        .toggle-auto-renew-button.disable {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+        }
+        .toggle-auto-renew-button.disable:hover {
+            background: linear-gradient(45deg, #cc0000, #ff4d4d);
+            box-shadow: 0 4px 15px rgba(255, 77, 77, 0.6);
+            transform: translateY(-3px);
+        }
+        .toggle-auto-renew-button.enable {
+            background: linear-gradient(45deg, #28a745, #218838);
+        }
+        .toggle-auto-renew-button.enable:hover {
+            background: linear-gradient(45deg, #218838, #28a745);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.6);
+            transform: translateY(-3px);
+        }
+        .subscription-boxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        footer {
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+        .footer-section h4 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        .footer-section p, .footer-section ul li a {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+        .footer-section ul li a:hover {
+            color: #F5A623;
+        }
+        .footer-bottom {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        @media (max-width: 768px) {
+            .subscriptions-page {
+                padding: 0 15px;
+            }
+            .subscriptions-page h1 {
+                font-size: 2rem;
+            }
+            .subscriptions-page .subtitle {
+                font-size: 1rem;
+            }
+            .active-subscriptions h2, .available-subscriptions h2 {
+                font-size: 1.5rem;
+            }
+            .subscription-boxes {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
 <header id="main-header">
@@ -16,83 +368,88 @@
         </a>
         <div class="title-container">
             <h1 class="main-title">FCF MOTORS</h1>
-            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
         </div>
     </div>
     <div class="nav-container">
         <div class="nav-bar">
-            <a href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
-            <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
         </div>
     </div>
-    <button th:if="${user.rolesString != null and user.rolesString.contains('PRIVATE')}"
-            onclick="window.location.href='/private/maintenance'"
-            class="maintenance-button">
-        <i class="fas fa-tools"></i> Manutenzione Private
-    </button>
-    <button th:if="${user.rolesString != null and user.rolesString.contains('DEALER')}"
-            onclick="window.location.href='/rest/manutenzione/dealer'"
-            class="maintenance-button">
-        <i class="fas fa-cogs"></i> Manutenzione Dealer
-    </button>
-    <button th:if="${user.rolesString != null and user.rolesString.contains('ADMIN')}"
-            onclick="window.location.href='/admin/maintenance'"
-            class="maintenance-button">
-        <i class="fas fa-shield-alt"></i> Manutenzione Admin
-    </button>
+    <div class="header-right">
+        <div class="dropdown">
+            <button class="dropdown-toggle" aria-label="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu">
+                <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                <a th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+                <a th:if="${#authentication != null and #authentication.principal != null and #authentication.principal != 'anonymousUser' and #authentication.authorities != null and #authentication.authorities.contains('ROLE_PRIVATE')}" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
+                <a th:if="${#authentication != null and #authentication.principal != null and #authentication.principal != 'anonymousUser' and #authentication.authorities != null and #authentication.authorities.contains('ROLE_DEALER')}" th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i> Manutenzione Dealer</a>
+                <a th:if="${#authentication != null and #authentication.principal != null and #authentication.principal != 'anonymousUser' and #authentication.authorities != null and #authentication.authorities.contains('ROLE_ADMIN')}" th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i> Manutenzione Admin</a>
+            </div>
+        </div>
+    </div>
 </header>
 
-<div class="wrapper">
-    <div class="subscriptions-container">
-        <h2>Abbonamenti</h2>
-        <!-- Messaggi flash -->
-        <div th:if="${successMessage}" class="alert alert-success">
-            <span th:text="${successMessage}"></span>
-        </div>
-        <div th:if="${errorMessage}" class="alert alert-danger">
-            <span th:text="${errorMessage}"></span>
-        </div>
-        <!-- Abbonamenti attivi -->
-        <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
-            <h3>Abbonamenti Attivi</h3>
-            <ul>
-                <li th:each="userSubscription : ${activeSubscriptions}">
-                    <strong th:text="${userSubscription.subscription.name}"></strong> -
-                    Scade il: <span th:text="${userSubscription.expiryDate}"></span>
-                    <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
-                       class="cancel-subscription-button"
-                       onclick="return confirm('Sei sicuro di voler cancellare questo abbonamento? Il tuo ruolo tornerà a USER se non hai altri abbonamenti attivi.');">
-                        Cancella
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <!-- Abbonamenti disponibili -->
-        <div class="available-subscriptions">
-            <h3 th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}">Sottoscrivi un Abbonamento</h3>
-            <h3 th:unless="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}">Abbonamenti Disponibili</h3>
-            <p th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}">Scopri i nostri abbonamenti disponibili:</p>
-            <div class="subscription-boxes">
-                <div th:each="subscription : ${availableSubscriptions}" class="subscription-box">
-                    <h4 th:text="${subscription.name}"></h4>
-                    <p th:text="${subscription.description}"></p>
-                    <p>
-                        Prezzo:
-                        <span th:if="${subscription.discount != null and subscription.discountExpiry != null and subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
-                            <s th:text="${subscription.price} + ' €'"></s>
-                            <span th:text="${subscription.price * (1 - subscription.discount / 100)} + ' €'"></span>
-                        </span>
-                        <span th:unless="${subscription.discount != null and subscription.discountExpiry != null and subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
-                            <span th:text="${subscription.price} + ' €'"></span>
-                        </span>
-                    </p>
-                    <form th:action="@{/subscribe}" method="post">
-                        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
-                        <input type="hidden" name="subscriptionId" th:value="${subscription.id}"/>
-                        <button type="submit" class="subscribe-button">Sottoscrivi</button>
-                    </form>
+<div class="subscriptions-page">
+    <h1>Scegli il Tuo Abbonamento</h1>
+    <p class="subtitle">Scegli il piano perfetto per vendere le tue auto con FCF Motors!</p>
+
+    <!-- Messaggi flash -->
+    <div th:if="${successMessage}" class="alert alert-success">
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- Abbonamenti attivi -->
+    <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
+        <h2>I Tuoi Abbonamenti Attivi</h2>
+        <ul>
+            <li th:each="userSubscription : ${activeSubscriptions}" class="subscription-item">
+                <h3 th:text="${userSubscription.subscription.name}"></h3>
+                <p><i class="fas fa-calendar-alt"></i> Scade il: <span th:text="${userSubscription.expiryDate}"></span></p>
+                <p><i class="fas fa-sync-alt"></i> Rinnovo automatico: <span th:text="${userSubscription.autoRenew} ? 'Attivo' : 'Disattivato'"></span></p>
+                <p><i class="fas fa-car"></i> Macchine in evidenza: <span class="featured-cars" th:text="${userSubscription.subscription.maxFeaturedCars}"></span></p>
+                <p class="description" th:text="${userSubscription.subscription.description}"></p>
+                <div th:if="${!userSubscription.autoRenew}" class="auto-renew-warning">
+                    <i class="fas fa-exclamation-triangle"></i> Questo abbonamento si disattiverà alla scadenza.
                 </div>
+                <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
+                   th:classappend="${userSubscription.autoRenew} ? 'toggle-auto-renew-button disable' : 'toggle-auto-renew-button enable'"
+                   th:text="${userSubscription.autoRenew} ? 'Disattiva Rinnovo' : 'Riattiva Rinnovo'"
+                   th:onclick="${userSubscription.autoRenew} ? 'return confirm(\'Sei sicuro di voler disattivare il rinnovo automatico di questo abbonamento? L\\\'abbonamento si disattiverà alla scadenza.\')' : 'return confirm(\'Sei sicuro di voler riattivare il rinnovo automatico di questo abbonamento?\')'}">
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Abbonamenti disponibili -->
+    <div class="available-subscriptions">
+        <h2 th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}">Scegli un Abbonamento</h2>
+        <h2 th:unless="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}">Esplora Altri Piani</h2>
+        <div class="subscription-boxes">
+            <div th:each="subscription : ${availableSubscriptions}" class="subscription-box">
+                <h3 th:text="${subscription.name}"></h3>
+                <p><i class="fas fa-euro-sign"></i> Prezzo:
+                    <span th:if="${subscription.discount != null and subscription.discountExpiry != null and subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                        <s th:text="${subscription.price} + ' €'"></s>
+                        <span class="price" th:text="${subscription.price * (1 - subscription.discount / 100)} + ' €'"></span>
+                    </span>
+                    <span th:unless="${subscription.discount != null and subscription.discountExpiry != null and subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                        <span class="price" th:text="${subscription.price} + ' €'"></span>
+                    </span>
+                </p>
+                <p><i class="fas fa-clock"></i> Durata: <span th:text="${subscription.durationDays} + ' giorni'"></span></p>
+                <p><i class="fas fa-car"></i> Macchine in evidenza: <span class="featured-cars" th:text="${subscription.maxFeaturedCars}"></span></p>
+                <p class="description"><i class="fas fa-info-circle"></i> <span th:text="${subscription.description}"></span></p>
+                <form th:action="@{/subscribe}" method="post">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                    <input type="hidden" name="subscriptionId" th:value="${subscription.id}"/>
+                    <button type="submit" class="subscribe-button">Sottoscrivi</button>
+                </form>
             </div>
         </div>
     </div>
@@ -124,5 +481,33 @@
         <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
     </div>
 </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+
+        dropdownToggle.addEventListener('click', function() {
+            const isOpen = dropdownMenu.classList.contains('show');
+            dropdownMenu.classList.toggle('show');
+            dropdownToggle.classList.toggle('open', !isOpen);
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.classList.remove('show');
+                dropdownToggle.classList.remove('open');
+            }
+        });
+
+        dropdownToggle.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                dropdownMenu.classList.toggle('show');
+                dropdownToggle.classList.toggle('open');
+            }
+        });
+    });
+</script>
 </body>
 </html>

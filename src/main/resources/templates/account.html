@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Existing styles for dropdown, header, modal, etc. (unchanged) */
         .dropdown {
             position: relative;
             display: inline-block;
@@ -217,26 +216,25 @@
             background: linear-gradient(45deg, #cc0000, #ff4d4d);
             transform: translateY(-2px);
         }
-        /* Unified styles for subscriptions container */
         .subscriptions-container {
-            margin: 0; /* Remove margin for consistent alignment */
+            margin: 0;
         }
         .subscriptions-container h2 {
-            color: #ddd; /* Light text for dark background */
+            color: #ddd;
             font-size: 1.5rem;
-            margin: 0 0 15px 0; /* Consistent margin */
+            margin: 0 0 15px 0;
         }
         .active-subscriptions, .no-subscriptions {
             background: linear-gradient(145deg, #f9f9f9, #ececec);
             border-radius: 16px;
             padding: 25px;
-            margin: 0; /* No margin */
+            margin: 0;
             text-align: center;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
-            flex-grow: 1; /* Fill available space */
+            flex-grow: 1;
         }
         .active-subscriptions::before, .no-subscriptions::before {
             content: '';
@@ -269,9 +267,8 @@
             color: #F5A623;
             margin-right: 8px;
         }
-        /* Styles for individual subscription items */
         .subscription-item {
-            margin-bottom: 2px;
+            margin-bottom: 20px;
             padding: 15px;
             background: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
@@ -305,11 +302,19 @@
             border-radius: 5px;
             font-size: 0.9rem;
         }
-        /* Button styles */
-        .subscribe-button, .cancel-subscription-button, .become-private-button, .remove-private-button {
+        .auto-renew-warning {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+            color: #FFFFFF;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .subscribe-button, .toggle-auto-renew-button, .become-private-button, .remove-private-button {
             display: inline-block;
             padding: 12px 25px;
-            background: linear-gradient(45deg, #F5A623, #E59400);
             color: #FFFFFF;
             text-decoration: none;
             border: none;
@@ -321,28 +326,49 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 2px 10px rgba(245, 166, 35, 0.4);
         }
-        .subscribe-button:hover, .cancel-subscription-button:hover, .become-private-button:hover, .remove-private-button:hover {
+        .subscribe-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+        }
+        .subscribe-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
             transform: translateY(-3px);
             box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
         }
-        .cancel-subscription-button {
+        .toggle-auto-renew-button.disable {
             background: linear-gradient(45deg, #ff4d4d, #cc0000);
         }
-        .cancel-subscription-button:hover {
+        .toggle-auto-renew-button.disable:hover {
             background: linear-gradient(45deg, #cc0000, #ff4d4d);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(255, 77, 77, 0.6);
+        }
+        .toggle-auto-renew-button.enable {
+            background: linear-gradient(45deg, #28a745, #218838);
+        }
+        .toggle-auto-renew-button.enable:hover {
+            background: linear-gradient(45deg, #218838, #28a745);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.6);
+        }
+        .become-private-button, .remove-private-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+        }
+        .become-private-button:hover, .remove-private-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
         }
         @keyframes glow {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* Styles for side-by-side layout with dark transparent background and equal size */
         .account-container {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
             justify-content: space-between;
             margin: 20px 0;
-            align-items: flex-start; /* Align boxes at the top */
+            align-items: flex-start;
         }
         .account-details-container, .subscriptions-container {
             flex: 1;
@@ -359,7 +385,7 @@
             min-height: 500px;
             max-height: 500px;
             overflow-y: auto;
-            margin: 0; /* Remove any margin */
+            margin: 0;
         }
         .account-details-container h2, .subscriptions-container h2 {
             color: #ddd;
@@ -367,13 +393,23 @@
             margin: 0 0 15px 0;
             flex-shrink: 0;
         }
-        .account-details p, .no-subscriptions p {
+        .account-details p, {
             overflow-wrap: break-word;
             word-break: break-word;
             white-space: normal;
             color: #ddd;
             margin: 5px 0;
             font-size: 1rem;
+        }
+        .no-subscriptions p {
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            color: #333;
+            margin: 5px 0;
+            font-size: 1rem;
+            margin-top: 50px;
+        }
         }
         .subscription-item p {
             overflow-wrap: break-word;
@@ -389,18 +425,16 @@
         .account-details .error-message {
             color: #ff4d4d;
         }
-        /* Ensure inner containers fill space consistently */
         .account-details, .edit-form-container, .active-subscriptions, .no-subscriptions {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            margin: 0; /* No margin */
+            margin: 0;
         }
         .account-details, .edit-form-container {
-            padding: 0; /* No extra padding */
+            padding: 0;
         }
-        /* Responsive design */
         @media (max-width: 768px) {
             .account-container {
                 flex-direction: column;
@@ -430,7 +464,6 @@
     </div>
     <div class="nav-container">
         <div class="nav-bar">
-            <!-- Nav bar vuota dopo aver spostato tutti i pulsanti nel menu a tendina -->
         </div>
     </div>
     <div class="header-right">
@@ -442,7 +475,6 @@
                 <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
                 <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
                 <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
-                <a th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
                 <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
                 <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('DEALER')}" th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i> Manutenzione Dealer</a>
                 <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('ADMIN')}" th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i> Manutenzione Admin</a>
@@ -495,10 +527,6 @@
                         <label for="phoneNumber">Numero di telefono:</label>
                         <input type="text" id="phoneNumber" th:field="*{phoneNumber}" required />
                     </div>
-                    <div class="form-group">
-                        <label for="additionalInfo">Informazioni aggiuntive:</label>
-                        <textarea id="additionalInfo" th:field="*{additionalInfo}"></textarea>
-                    </div>
                     <div class="form-actions">
                         <button type="submit" class="save-button">Salva</button>
                         <a href="/account" class="cancel-button">Annulla</a>
@@ -517,10 +545,13 @@
                     <p><i class="fas fa-sync-alt"></i> Rinnovo automatico: <span th:text="${userSubscription.autoRenew} ? 'Attivo' : 'Disattivato'"></span></p>
                     <p><i class="fas fa-car"></i> Macchine in evidenza: <span class="featured-cars" th:text="${userSubscription.subscription.maxFeaturedCars}"></span></p>
                     <p class="description" th:text="${userSubscription.subscription.description}"></p>
+                    <div th:if="${!userSubscription.autoRenew}" class="auto-renew-warning">
+                        <i class="fas fa-exclamation-triangle"></i> Questo abbonamento si disattiverà alla scadenza, se vuoi continuare ad usarlo riattivalo!
+                    </div>
                     <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
-                       class="cancel-subscription-button"
-                       onclick="return confirm('Sei sicuro di voler disattivare il rinnovo automatico di questo abbonamento? Questa azione cancellera il Concessionario e tutte le sue auto in vendita alla scadenza');">
-                        Disattiva Rinnovo
+                       th:classappend="${userSubscription.autoRenew} ? 'toggle-auto-renew-button disable' : 'toggle-auto-renew-button enable'"
+                       th:text="${userSubscription.autoRenew} ? 'Disattiva Rinnovo' : 'Riattiva Rinnovo'"
+                       th:onclick="${userSubscription.autoRenew} ? 'return confirm(\'Sei sicuro di voler disattivare il rinnovo automatico di questo abbonamento? L\\\'abbonamento si disattiverà alla scadenza.\')' : 'return confirm(\'Sei sicuro di voler riattivare il rinnovo automatico di questo abbonamento?\')'">
                     </a>
                 </div>
             </div>
@@ -547,7 +578,6 @@
     </div>
 </div>
 
-<!-- Modal for Delete Account Confirmation -->
 <div id="deleteAccountModal" class="modal">
     <div class="modal-content">
         <h3>Conferma Cancellazione Account</h3>
@@ -593,7 +623,6 @@
 </footer>
 
 <script>
-    // Existing JavaScript for dropdown menu
     document.addEventListener('DOMContentLoaded', function() {
         const dropdownToggle = document.querySelector('.dropdown-toggle');
         const dropdownMenu = document.querySelector('.dropdown-menu');
@@ -620,7 +649,6 @@
         });
     });
 
-    // JavaScript for modal remains unchanged
     function openDeleteModal() {
         const modal = document.getElementById('deleteAccountModal');
         modal.classList.add('show');

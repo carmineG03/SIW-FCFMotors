@@ -230,18 +230,13 @@ public class AccountController {
             if (!subscription.getUser().getId().equals(user.getId())) {
                 throw new IllegalArgumentException("Non autorizzato");
             }
-            subscription.setAutoRenew(false); // Disable auto-renewal
-            subscription.setActive(false); // Optionally mark as inactive
-            subscription.setExpiryDate(LocalDate.now()); // Set expiry to now
+            // Toggle auto-renewal state
+            boolean newAutoRenewState = !subscription.isAutoRenew();
+            subscription.setAutoRenew(newAutoRenewState);
             userSubscriptionRepository.save(subscription);
 
-            // Update user role if no active subscriptions remain
-            List<UserSubscription> activeSubscriptions = userSubscriptionRepository.findByUserAndActive(user, true);
-            if (activeSubscriptions.isEmpty()) {
-                userService.updateUserRole(user, "USER");
-            }
-
-            return "redirect:/account?success=true";
+            String successMessage = newAutoRenewState ? "Auto-renewal enabled" : "Auto-renewal disabled";
+            return "redirect:/account?success=" + successMessage;
         } catch (IllegalArgumentException e) {
             return "redirect:/account?error=" + e.getMessage();
         }

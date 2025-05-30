@@ -467,6 +467,7 @@ public class DealerController {
         try {
             List<Dealer> dealers = dealerService.findAll();
             model.addAttribute("dealers", dealers);
+
             return "dealers";
         } catch (Exception e) {
             logger.error("Error loading dealers page: {}", e.getMessage(), e);
