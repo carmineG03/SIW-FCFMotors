@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Existing styles remain unchanged */
+        /* Existing styles for dropdown, header, modal, etc. (unchanged) */
         .dropdown {
             position: relative;
             display: inline-block;
@@ -217,131 +217,202 @@
             background: linear-gradient(45deg, #cc0000, #ff4d4d);
             transform: translateY(-2px);
         }
-        /* Existing styles for subscription cards */
-        .subscription-card {
-            background-color: #FFFF00;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 15px;
-            margin-bottom: 15px;
+        /* Unified styles for subscriptions container */
+        .subscriptions-container {
+            margin: 0; /* Remove margin for consistent alignment */
         }
-        .subscription-card h4 {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: black;
+        .subscriptions-container h2 {
+            color: #ddd; /* Light text for dark background */
+            font-size: 1.5rem;
+            margin: 0 0 15px 0; /* Consistent margin */
         }
-        .subscription-card p {
-            margin: 5px 0;
-            color: #666;
-        }
-        .subscription-card i {
-            color: #F5A623;
-            margin-right: 5px;
-        }
-        .featured-cars {
-            display: inline-block;
-            background-color: #F5A623;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-        }
-        .description {
-            color: #333;
-            font-size: 0.95rem;
-            margin-top: 10px;
-        }
-        .cancel-subscription-button {
-            display: inline-block;
-            padding: 8px 15px;
-            background-color: #ff4d4d;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            transition: background-color 0.3s ease;
-        }
-        .cancel-subscription-button:hover {
-            background-color: #cc0000;
-        }
-        /* New modern styles for no-subscriptions section */
-        .no-subscriptions {
+        .active-subscriptions, .no-subscriptions {
             background: linear-gradient(145deg, #f9f9f9, #ececec);
             border-radius: 16px;
             padding: 25px;
-            margin: 20px 0;
+            margin: 0; /* No margin */
             text-align: center;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
+            flex-grow: 1; /* Fill available space */
         }
-        .no-subscriptions::before {
+        .active-subscriptions::before, .no-subscriptions::before {
             content: '';
             position: absolute;
             top: -50%;
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(245, 166, 35, 0.2) 0%, transparent 70%);
-            animation: glowRotate 10s infinite linear;
+            background: radial-gradient(circle, rgba(245, 166, 35, 0.2) 0%, transparent 25%);
+            animation: glow 10s linear infinite;
             pointer-events: none;
         }
-        .no-subscriptions:hover {
+        .active-subscriptions:hover, .no-subscriptions:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
         }
-        .no-subscriptions p {
+        .active-subscriptions p, .no-subscriptions p {
             font-size: 1.2rem;
             color: #333;
             margin: 10px 0;
             font-weight: 500;
             transition: color 0.3s ease;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
-        .no-subscriptions p:hover {
+        .active-subscriptions p:hover, .no-subscriptions p:hover {
             color: #F5A623;
         }
-        .no-subscriptions i {
+        .active-subscriptions i, .no-subscriptions i {
             color: #F5A623;
             margin-right: 8px;
         }
-        .subscribe-button {
+        /* Styles for individual subscription items */
+        .subscription-item {
+            margin-bottom: 2px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .subscription-item h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 10px 0;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .subscription-item p {
+            font-size: 1rem;
+            color: #666;
+            margin: 5px 0;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .subscription-item .description {
+            color: #333;
+            font-size: 0.95rem;
+            margin-top: 10px;
+        }
+        .subscription-item .featured-cars {
+            display: inline-block;
+            background: #F5A623;
+            color: #FFFFFF;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        /* Button styles */
+        .subscribe-button, .cancel-subscription-button, .become-private-button, .remove-private-button {
             display: inline-block;
             padding: 12px 25px;
             background: linear-gradient(45deg, #F5A623, #E59400);
             color: #FFFFFF;
             text-decoration: none;
+            border: none;
             border-radius: 10px;
             font-size: 1rem;
             font-weight: 600;
             margin: 15px 0;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 2px 10px rgba(245, 166, 35, 0.4);
-        }
-        .subscribe-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
-        }
-        .become-private-button, .remove-private-button {
-            padding: 10px 20px;
-            background: linear-gradient(45deg, #F5A623, #E59400);
-            color: #FFFFFF;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 2px 10px rgba(245, 166, 35, 0.4);
         }
-        .become-private-button:hover, .remove-private-button:hover {
+        .subscribe-button:hover, .cancel-subscription-button:hover, .become-private-button:hover, .remove-private-button:hover {
             transform: translateY(-3px);
             box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
         }
-        @keyframes glowRotate {
+        .cancel-subscription-button {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+        }
+        .cancel-subscription-button:hover {
+            background: linear-gradient(45deg, #cc0000, #ff4d4d);
+        }
+        @keyframes glow {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        /* Styles for side-by-side layout with dark transparent background and equal size */
+        .account-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+            margin: 20px 0;
+            align-items: flex-start; /* Align boxes at the top */
+        }
+        .account-details-container, .subscriptions-container {
+            flex: 1;
+            width: 48%;
+            min-width: 300px;
+            max-width: 48%;
+            box-sizing: border-box;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+            max-height: 500px;
+            overflow-y: auto;
+            margin: 0; /* Remove any margin */
+        }
+        .account-details-container h2, .subscriptions-container h2 {
+            color: #ddd;
+            font-size: 1.5rem;
+            margin: 0 0 15px 0;
+            flex-shrink: 0;
+        }
+        .account-details p, .no-subscriptions p {
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            color: #ddd;
+            margin: 5px 0;
+            font-size: 1rem;
+        }
+        .subscription-item p {
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            color: #666;
+            margin: 5px 0;
+            font-size: 1rem;
+        }
+        .account-details p strong {
+            color: #fff;
+        }
+        .account-details .error-message {
+            color: #ff4d4d;
+        }
+        /* Ensure inner containers fill space consistently */
+        .account-details, .edit-form-container, .active-subscriptions, .no-subscriptions {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            margin: 0; /* No margin */
+        }
+        .account-details, .edit-form-container {
+            padding: 0; /* No extra padding */
+        }
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .account-container {
+                flex-direction: column;
+            }
+            .account-details-container, .subscriptions-container {
+                width: 100%;
+                max-width: 100%;
+                min-width: 100%;
+                min-height: auto;
+                max-height: none;
+                overflow-y: visible;
+            }
         }
     </style>
 </head>
@@ -439,8 +510,8 @@
         <div class="subscriptions-container">
             <h2>Abbonamenti</h2>
             <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
-                <h3>Abbonamento Attivo</h3>
-                <div th:each="userSubscription : ${activeSubscriptions}" class="subscription-card">
+                <p><i class="fas fa-check-circle"></i> I tuoi abbonamenti attivi</p>
+                <div th:each="userSubscription : ${activeSubscriptions}" class="subscription-item">
                     <h4 th:text="${userSubscription.subscription.name}"></h4>
                     <p><i class="fas fa-calendar-alt"></i> Scade il: <span th:text="${userSubscription.expiryDate}"></span></p>
                     <p><i class="fas fa-sync-alt"></i> Rinnovo automatico: <span th:text="${userSubscription.autoRenew} ? 'Attivo' : 'Disattivato'"></span></p>
@@ -448,7 +519,7 @@
                     <p class="description" th:text="${userSubscription.subscription.description}"></p>
                     <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
                        class="cancel-subscription-button"
-                       onclick="return confirm('Sei sicuro di voler disattivare il rinnovo automatico di questo abbonamento? Il tuo ruolo tornerà a USER se non hai altri abbonamenti attivi.');">
+                       onclick="return confirm('Sei sicuro di voler disattivare il rinnovo automatico di questo abbonamento? Questa azione cancellera il Concessionario e tutte le sue auto in vendita alla scadenza');">
                         Disattiva Rinnovo
                     </a>
                 </div>
@@ -466,7 +537,7 @@
                     <p><i class="fas fa-user-alt-slash"></i> Sei un utente privato</p>
                     <form th:action="@{/account/remove-private}" method="post">
                         <button type="submit" class="remove-private-button"
-                                onclick="return confirm('Sei sicuro di voler cancellare la tua auto? \'Questa azione é irriversibile .');">
+                                onclick="return confirm('Sei sicuro di voler cancellare la tua auto? Questa azione è irreversibile.');">
                             Rimuovi Auto
                         </button>
                     </form>
