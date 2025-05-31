@@ -13,7 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,13 +38,49 @@ public class CartController {
         if (!isAuthenticated || principal == null) {
             model.addAttribute("cartItems", List.of());
             model.addAttribute("cartCount", 0);
-            model.addAttribute("subtotal", 0.0);
+            model.addAttribute("originalTotal", BigDecimal.ZERO);
+            model.addAttribute("discountedTotal", BigDecimal.ZERO);
+            model.addAttribute("discountedPrices", new HashMap<Long, BigDecimal>());
         } else {
             User user = userService.findByUsername(principal.getName());
             List<CartItem> cartItems = cartService.getCartItems(user);
+
+            // Calculate totals and discounted prices
+            BigDecimal originalTotal = BigDecimal.ZERO;
+            BigDecimal discountedTotal = BigDecimal.ZERO;
+            Map<Long, BigDecimal> discountedPrices = new HashMap<>();
+
+            for (CartItem item : cartItems) {
+                if (item.getSubscription() != null) {
+                    BigDecimal price = BigDecimal.valueOf(item.getSubscription().getPrice());
+                    originalTotal = originalTotal.add(price);
+                    discountedPrices.put(item.getId(), price); // Default to original price
+
+                    // Apply discount if valid
+                    if (item.getSubscription().getDiscount() != null &&
+                            item.getSubscription().getDiscountExpiry() != null &&
+                            item.getSubscription().getDiscountExpiry().isAfter(LocalDate.now())) {
+                        BigDecimal discount = new BigDecimal(item.getSubscription().getDiscount().toString())
+                                .divide(new BigDecimal("100"), 10, BigDecimal.ROUND_HALF_UP);
+                        BigDecimal discountedPrice = price.multiply(BigDecimal.ONE.subtract(discount));
+                        discountedTotal = discountedTotal.add(discountedPrice);
+                        discountedPrices.put(item.getId(), discountedPrice);
+                    } else {
+                        discountedTotal = discountedTotal.add(price);
+                    }
+                } else if (item.getProduct() != null) {
+                    BigDecimal price = item.getProduct().getPrice();
+                    originalTotal = originalTotal.add(price);
+                    discountedTotal = discountedTotal.add(price);
+                    discountedPrices.put(item.getId(), price);
+                }
+            }
+
             model.addAttribute("cartItems", cartItems);
             model.addAttribute("cartCount", cartItems.size());
-            model.addAttribute("subtotal", cartService.calculateSubtotal(user));
+            model.addAttribute("originalTotal", originalTotal);
+            model.addAttribute("discountedTotal", discountedTotal);
+            model.addAttribute("discountedPrices", discountedPrices);
         }
 
         return "cart";

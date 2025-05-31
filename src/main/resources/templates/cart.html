@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Stile per la header */
         header {
             position: relative;
             display: flex;
@@ -19,7 +18,6 @@
             height: 80px;
             overflow: visible;
         }
-        /* Stile per il menu a tendina moderno e accattivante */
         .dropdown {
             position: relative;
             display: inline-block;
@@ -97,7 +95,6 @@
         .dropdown-menu a:hover i {
             color: #FFFFFF;
         }
-        /* Posizionamento del menu, centrato verticalmente */
         .header-right {
             position: absolute;
             top: 50%;
@@ -108,7 +105,6 @@
             gap: 10px;
             z-index: 1000;
         }
-        /* Assicurati che il layout sia responsive */
         @media (max-width: 768px) {
             header {
                 height: 60px;
@@ -287,191 +283,168 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-left">
-            <a href="/" class="logo-link">
-                <div class="logo-container">
-                    <img src="/image/logo1.png" alt="Logo" class="logo">
-                </div>
-                <div class="title-container">
-                    <h1 class="main-title">FCF MOTORS</h1>
-                </div>
-            </a>
-        </div>
-        <div class="nav-container">
-            <nav class="nav-bar">
-            </nav>
-        </div>
-        <div class="header-right">
-            <div class="dropdown">
-                <button class="dropdown-toggle" aria-label="Menu">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="dropdown-menu">
-                    <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
-                    <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
-                    <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
-                    <a th:if="${!isAuthenticated}" th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Login</a>
-                    <a th:if="${isAuthenticated}" th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
-                </div>
+<header>
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img src="/image/logo1.png" alt="Logo" class="logo">
+            </div>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
+            </div>
+        </a>
+    </div>
+    <div class="nav-container">
+        <nav class="nav-bar">
+        </nav>
+    </div>
+    <div class="header-right">
+        <div class="dropdown">
+            <button class="dropdown-toggle" aria-label="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu">
+                <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                <a th:if="${!isAuthenticated}" th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a th:if="${isAuthenticated}" th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <section class="cart-section">
-        <h2>Il tuo Carrello</h2>
-        <div class="cart-items">
-            <div th:each="item : ${cartItems}" class="cart-item">
-                <img th:if="${item.product != null}" th:src="${item.product.imageUrl}" th:alt="'Immagine prodotto'"/>
-                <img th:if="${item.product == null}" src="/images/subscription-placeholder.png" alt="Abbonamento"/>
-                <div class="cart-item-details">
-                    <h3 th:text="${item.subscription != null ? item.subscription.name : item.product.name}"></h3>
-                    <p th:if="${item.subscription != null}" th:text="'Durata: ' + ${item.subscription.durationDays} + ' giorni'"></p>
-                    <p th:if="${item.subscription != null}">
-                        Prezzo:
-                        <span th:if="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
-                            <span class="price-original" th:text="${item.subscription.price} + ' €'"></span>
-                            <span class="price-discounted" th:text="${item.subscription.price * (1 - item.subscription.discount / 100)} + ' €'"></span>
+<section class="cart-section">
+    <h2>Il tuo Carrello</h2>
+    <div class="cart-items">
+        <div th:each="item : ${cartItems}" class="cart-item">
+            <img th:if="${item.product != null}" th:src="${item.product.imageUrl}" th:alt="'Immagine prodotto'"/>
+            <img th:if="${item.product == null}" src="/images/subscription-placeholder.png" alt="Abbonamento"/>
+            <div class="cart-item-details">
+                <h3 th:text="${item.subscription != null ? item.subscription.name : item.product.name}"></h3>
+                <p th:if="${item.subscription != null}" th:text="'Durata: ' + ${item.subscription.durationDays} + ' giorni'"></p>
+                <p th:if="${item.subscription != null}">
+                    Prezzo:
+                    <span th:if="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                            <span class="price-original" th:text="${#numbers.formatDecimal(item.subscription.price, 1, 2, 'COMMA')} + ' €'"></span>
+                            <span class="price-discounted" th:text="${#numbers.formatDecimal(discountedPrices[item.id], 1, 2, 'COMMA')} + ' €'"></span>
                         </span>
-                        <span th:unless="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
-                            <span th:text="${item.subscription.price} + ' €'"></span>
+                    <span th:unless="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                            <span th:text="${#numbers.formatDecimal(item.subscription.price, 1, 2, 'COMMA')} + ' €'"></span>
                         </span>
-                    </p>
-                    <p th:if="${item.product != null && item.subscription == null}" th:text="'Prezzo: ' + ${item.product.price} + ' €'"></p>
-                    <button class="remove-button" th:data-item-id="${item.id}">Rimuovi</button>
-                </div>
-            </div>
-            <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}">
-                <p>Il carrello è vuoto.</p>
+                </p>
+                <p th:if="${item.product != null && item.subscription == null}" th:text="'Prezzo: ' + ${#numbers.formatDecimal(item.product.price, 1, 2, 'COMMA')} + ' €'"></p>
+                <button class="remove-button" th:data-item-id="${item.id}">Rimuovi</button>
             </div>
         </div>
-
-        <div class="cart-summary">
-            <p id="subtotal">Subtotale: <span th:text="${#numbers.formatDecimal(subtotal, 1, 2, 'COMMA')} + ' €'"></span></p>
-            <button class="checkout-button" th:disabled="${cartItems == null or #lists.isEmpty(cartItems)}">Procedi al Checkout</button>
-        </div>
-    </section>
-
-    <div id="checkoutModal" class="modal">
-        <div class="modal-content">
-            <h2>Conferma Checkout</h2>
-            <p>Totale: <span id="modalTotal"></span></p>
-            <p>Sei sicuro di voler procedere con l'acquisto?</p>
-            <button class="confirm-button">Conferma</button>
-            <button class="cancel-button">Annulla</button>
+        <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}">
+            <p>Il carrello è vuoto.</p>
         </div>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <div class="cart-summary">
+        <p th:if="${originalTotal != null and discountedTotal != null and originalTotal.compareTo(discountedTotal) > 0}">
+            Subtotale originale: <span th:text="${#numbers.formatDecimal(originalTotal, 1, 2, 'COMMA')} + ' €'" class="price-original"></span>
+        </p>
+        <p id="subtotal">Subtotale: <span th:text="${#numbers.formatDecimal(discountedTotal, 1, 2, 'COMMA')} + ' €'"></span></p>
+        <button class="checkout-button" th:disabled="${cartItems == null or #lists.isEmpty(cartItems)}">Procedi al Checkout</button>
+    </div>
+</section>
 
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>Link Utili</h4>
-                <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/products">Trova Auto</a></li>
-                    <li><a href="/dealers">Concessionari</a></li>
-                    <li><a href="/cart">Carrello</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Contatti</h4>
-                <p>Email: info@fcfmotors.com</p>
-                <p>Telefono: +39 123 456 7890</p>
-                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
-            </div>
-            <div class="footer-section">
-                <h4>Seguici</h4>
-                <div class="social-links">
-                    <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-                    <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h4>Informazioni</h4>
-                <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+<div id="checkoutModal" class="modal">
+    <div class="modal-content">
+        <h2>Conferma Checkout</h2>
+        <p>Totale: <span id="modalTotal" th:text="${#numbers.formatDecimal(discountedTotal, 1, 2, 'COMMA')} + ' €'"></span></p>
+        <p>Sei sicuro di voler procedere con l'acquisto?</p>
+        <button class="confirm-button">Conferma</button>
+        <button class="cancel-button">Annulla</button>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Link Utili</h4>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Trova Auto</a></li>
+                <li><a href="/dealers">Concessionari</a></li>
+                <li><a href="/cart">Carrello</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contatti</h4>
+            <p>Email: info@fcfmotors.com</p>
+            <p>Telefono: +39 123 456 7890</p>
+            <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+        </div>
+        <div class="footer-section">
+            <h4>Seguici</h4>
+            <div class="social-links">
+                <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+        <div class="footer-section">
+            <h4>Informazioni</h4>
+            <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
         </div>
-    </footer>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+    </div>
+</footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const quantities = document.querySelectorAll('.quantity');
-            const removeButtons = document.querySelectorAll('.remove-button');
-            const checkoutButton = document.querySelector('.checkout-button');
-            const checkoutModal = document.getElementById('checkoutModal');
-            const confirmButton = document.querySelector('.confirm-button');
-            const cancelButton = document.querySelector('.cancel-button');
-            const modalTotal = document.getElementById('modalTotal');
-            const token = document.querySelector('meta[name="_csrf"]').content;
-            const header = document.querySelector('meta[name="_csrf_header"]').content;
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const quantities = document.querySelectorAll('.quantity');
+        const removeButtons = document.querySelectorAll('.remove-button');
+        const checkoutButton = document.querySelector('.checkout-button');
+        const checkoutModal = document.getElementById('checkoutModal');
+        const confirmButton = document.querySelector('.confirm-button');
+        const cancelButton = document.querySelector('.cancel-button');
+        const modalTotal = document.getElementById('modalTotal');
+        const token = document.querySelector('meta[name="_csrf"]').content;
+        const header = document.querySelector('meta[name="_csrf_header"]').content;
 
-            quantities.forEach(select => {
-                select.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                });
-                select.addEventListener('change', (event) => {
-                    event.stopPropagation();
-                    const itemId = select.getAttribute('data-item-id');
-                    const quantity = select.value;
-
-                    fetch(`/cart/update/${itemId}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            [header]: token
-                        },
-                        body: JSON.stringify({ quantity: parseInt(quantity) })
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.reload();
-                            } else {
-                                showToast('Errore durante l\'aggiornamento della quantità');
-                            }
-                        })
-                        .catch(() => showToast('Errore durante l\'aggiornamento della quantità'));
-                });
+        quantities.forEach(select => {
+            select.addEventListener('click', (event) => {
+                event.stopPropagation();
             });
+            select.addEventListener('change', (event) => {
+                event.stopPropagation();
+                const itemId = select.getAttribute('data-item-id');
+                const quantity = select.value;
 
-            removeButtons.forEach(button => {
-                button.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    const itemId = button.getAttribute('data-item-id');
-
-                    fetch(`/cart/remove/${itemId}`, {
-                        method: 'POST',
-                        headers: {
-                            [header]: token
+                fetch(`/cart/update/${itemId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [header]: token
+                    },
+                    body: JSON.stringify({ quantity: parseInt(quantity) })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            showToast('Errore durante l\'aggiornamento della quantità');
                         }
                     })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.reload();
-                            } else {
-                                showToast('Errore durante la rimozione dell\'articolo');
-                            }
-                        })
-                        .catch(() => showToast('Errore durante la rimozione dell\'articolo'));
-                });
+                    .catch(() => showToast('Errore durante l\'aggiornamento della quantità'));
             });
+        });
 
-            checkoutButton.addEventListener('click', (event) => {
+        removeButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
                 event.stopPropagation();
-                modalTotal.textContent = document.querySelector('#subtotal span').textContent;
-                checkoutModal.style.display = 'flex';
-            });
+                const itemId = button.getAttribute('data-item-id');
 
-            confirmButton.addEventListener('click', (event) => {
-                event.stopPropagation();
-                fetch('/cart/checkout-subscriptions', {
+                fetch(`/cart/remove/${itemId}`, {
                     method: 'POST',
                     headers: {
                         [header]: token
@@ -480,81 +453,101 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            showToast('Checkout completato con successo!');
-                            setTimeout(() => {
-                                window.location.href = '/account';
-                            }, 2000);
+                            window.location.reload();
                         } else {
-                            showToast('Errore durante il checkout');
+                            showToast('Errore durante la rimozione dell\'articolo');
                         }
-                        checkoutModal.style.display = 'none';
                     })
-                    .catch(() => {
+                    .catch(() => showToast('Errore durante la rimozione dell\'articolo'));
+            });
+        });
+
+        checkoutButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            modalTotal.textContent = document.querySelector('#subtotal span').textContent;
+            checkoutModal.style.display = 'flex';
+        });
+
+        confirmButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            fetch('/cart/checkout-subscriptions', {
+                method: 'POST',
+                headers: {
+                    [header]: token
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Checkout completato con successo!');
+                        setTimeout(() => {
+                            window.location.href = '/account';
+                        }, 2000);
+                    } else {
                         showToast('Errore durante il checkout');
-                        checkoutModal.style.display = 'none';
-                    });
-            });
-
-            cancelButton.addEventListener('click', (event) => {
-                event.stopPropagation();
-                checkoutModal.style.display = 'none';
-            });
-
-            function showToast(message) {
-                const toast = document.getElementById('toast');
-                toast.textContent = message;
-                toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3000);
-            }
-
-            // Mostra un messaggio di successo se presente nell'URL
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('success')) {
-                showToast('Abbonamento aggiunto al carrello!');
-            }
+                    }
+                    checkoutModal.style.display = 'none';
+                })
+                .catch(() => {
+                    showToast('Errore durante il checkout');
+                    checkoutModal.style.display = 'none';
+                });
         });
 
-        // Listener separato per il menu a tendina
-        document.addEventListener('click', function(event) {
-            const dropdownToggle = event.target.closest('.dropdown-toggle');
-            const dropdownMenu = document.querySelector('.dropdown-menu');
-
-            if (!dropdownToggle || !dropdownMenu) return;
-
-            if (dropdownToggle) {
-                event.stopPropagation();
-                console.log('Click sul pulsante toggle');
-                const isOpen = dropdownMenu.classList.contains('show');
-                dropdownMenu.classList.toggle('show');
-                dropdownToggle.classList.toggle('open', !isOpen);
-                return;
-            }
-
-            if (!dropdownMenu.contains(event.target)) {
-                console.log('Click fuori dal menu, chiusura');
-                dropdownMenu.classList.remove('show');
-                const toggle = document.querySelector('.dropdown-toggle');
-                if (toggle) toggle.classList.remove('open');
-            }
+        cancelButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            checkoutModal.style.display = 'none';
         });
 
-        // Gestione tastiera per il menu a tendina
-        document.addEventListener('keydown', function(event) {
-            const dropdownToggle = event.target.closest('.dropdown-toggle');
-            const dropdownMenu = document.querySelector('.dropdown-menu');
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
 
-            if (!dropdownToggle || !dropdownMenu) return;
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success')) {
+            showToast('Abbonamento aggiunto al carrello!');
+        }
+    });
 
-            if ((event.key === 'Enter' || event.key === ' ') && event.target === dropdownToggle) {
-                event.preventDefault();
-                console.log('Tasto Enter o Spazio premuto');
-                const isOpen = dropdownMenu.classList.contains('show');
-                dropdownMenu.classList.toggle('show');
-                dropdownToggle.classList.toggle('open', !isOpen);
-            }
-        });
-    </script>
+    document.addEventListener('click', function(event) {
+        const dropdownToggle = event.target.closest('.dropdown-toggle');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+
+        if (!dropdownToggle || !dropdownMenu) return;
+
+        if (dropdownToggle) {
+            event.stopPropagation();
+            const isOpen = dropdownMenu.classList.contains('show');
+            dropdownMenu.classList.toggle('show');
+            dropdownToggle.classList.toggle('open', !isOpen);
+            return;
+        }
+
+        if (!dropdownMenu.contains(event.target)) {
+            dropdownMenu.classList.remove('show');
+            const toggle = document.querySelector('.dropdown-toggle');
+            if (toggle) toggle.classList.remove('open');
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        const dropdownToggle = event.target.closest('.dropdown-toggle');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+
+        if (!dropdownToggle || !dropdownMenu) return;
+
+        if ((event.key === 'Enter' || event.key === ' ') && event.target === dropdownToggle) {
+            event.preventDefault();
+            const isOpen = dropdownMenu.classList.contains('show');
+            dropdownMenu.classList.toggle('show');
+            dropdownToggle.classList.toggle('open', !isOpen);
+        }
+    });
+</script>
 </body>
 </html>

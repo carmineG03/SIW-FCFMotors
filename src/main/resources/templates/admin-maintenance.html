@@ -6,6 +6,10 @@
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: #f5f5f5;
+        }
         .dropdown {
             position: relative;
             display: inline-block;
@@ -90,12 +94,120 @@
             gap: 10px;
             z-index: 1010;
         }
+        .admin-maintenance-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        .admin-maintenance-container h2 {
+            margin: 0 0 20px;
+            color: #333;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        .admin-section {
+            margin-bottom: 30px;
+        }
+        .admin-section h3 {
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #FFFFFF;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .admin-table th, .admin-table td {
+            padding: 1rem;
+            text-align: left;
+        }
+        .admin-table th {
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            color: white;
+            font-weight: 600;
+        }
+        .admin-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        .admin-table tr:hover {
+            background-color: #e5e7eb;
+            transition: background-color 0.2s ease;
+        }
+        .success-message, .error-message {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .edit-button, .delete-button, .add-button, .discount-button, .remove-discount-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            color: #FFFFFF;
+            text-decoration: none;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .edit-button {
+            background-color: #3b82f6;
+        }
+        .edit-button:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+        .delete-button, .remove-discount-button {
+            background-color: #ef4444;
+        }
+        .delete-button:hover, .remove-discount-button:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+        }
+        .add-button {
+            background-color: #22c55e;
+        }
+        .add-button:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+        }
+        .discount-button {
+            background-color: #eab308;
+        }
+        .discount-button:hover {
+            background-color: #ca8a04;
+            transform: translateY(-2px);
+        }
+        .edit-button i, .delete-button i, .add-button i, .discount-button i, .remove-discount-button i {
+            margin-right: 6px;
+        }
         @media (max-width: 768px) {
             #main-header {
                 height: 60px;
             }
             .dropdown-menu {
                 min-width: 180px;
+                top: 40px;
             }
             .dropdown-toggle {
                 width: 36px;
@@ -104,12 +216,16 @@
             .dropdown-toggle i {
                 font-size: 1rem;
             }
-            .dropdown-menu {
-                top: 40px;
+            .admin-maintenance-container {
+                padding: 20px;
             }
-            .dropdown-menu a {
-                padding: 10px 15px;
-                font-size: 0.9rem;
+            .admin-table th, .admin-table td {
+                font-size: 0.85rem;
+                padding: 0.75rem;
+            }
+            .edit-button, .delete-button, .add-button, .discount-button, .remove-discount-button {
+                padding: 6px 12px;
+                font-size: 0.8rem;
             }
             .header-right {
                 right: 10px;
@@ -161,7 +277,6 @@
                         <th>ID</th>
                         <th>Nome</th>
                         <th>Proprietario</th>
-                        <th>Tipo</th>
                         <th>Azioni</th>
                     </tr>
                     </thead>
@@ -258,6 +373,7 @@
             </div>
         </div>
 
+        <!-- Sezione 4: Gestione Abbonamenti -->
         <div class="admin-section">
             <h3>Gestione Abbonamenti</h3>
             <a href="/admin/subscription/add" class="add-button"><i class="fas fa-plus"></i> Aggiungi Abbonamento</a>
@@ -286,7 +402,14 @@
                         <td th:text="${subscription.maxFeaturedCars}"></td>
                         <td>
                             <a th:href="@{/admin/subscription/{id}/edit(id=${subscription.id})}" class="edit-button"><i class="fas fa-edit"></i> Modifica</a>
-                            <a th:href="@{/admin/subscription/{id}/discount(id=${subscription.id})}" class="discount-button"><i class="fas fa-tag"></i> Applica Sconto</a>
+                            <a th:if="${subscription.discount == null or subscription.discountExpiry == null or subscription.discountExpiry.isBefore(T(java.time.LocalDate).now())}"
+                               th:href="@{/admin/subscription/{id}/discount(id=${subscription.id})}" class="discount-button"><i class="fas fa-tag"></i> Applica Sconto</a>
+                            <form th:if="${subscription.discount != null and subscription.discountExpiry != null and subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}"
+                                  th:action="@{/admin/subscription/{id}/remove-discount(id=${subscription.id})}" method="post" style="display:inline;">
+                                <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                                <input type="hidden" name="id" th:value="${subscription.id}"/>
+                                <button type="submit" class="remove-discount-button" onclick="return confirm('Sei sicuro di voler rimuovere lo sconto?');"><i class="fas fa-times"></i> Rimuovi Sconto</button>
+                            </form>
                             <form th:action="@{/admin/subscription/{id}/delete(id=${subscription.id})}" method="post" style="display:inline;">
                                 <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
                                 <input type="hidden" name="id" th:value="${subscription.id}"/>
