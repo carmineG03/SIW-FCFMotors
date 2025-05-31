@@ -404,27 +404,6 @@
         <span th:text="${errorMessage}"></span>
     </div>
 
-    <!-- Abbonamenti attivi -->
-    <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
-        <h2>I Tuoi Abbonamenti Attivi</h2>
-        <ul>
-            <li th:each="userSubscription : ${activeSubscriptions}" class="subscription-item">
-                <h3 th:text="${userSubscription.subscription.name}"></h3>
-                <p><i class="fas fa-calendar-alt"></i> Scade il: <span th:text="${userSubscription.expiryDate}"></span></p>
-                <p><i class="fas fa-sync-alt"></i> Rinnovo automatico: <span th:text="${userSubscription.autoRenew} ? 'Attivo' : 'Disattivato'"></span></p>
-                <p><i class="fas fa-car"></i> Macchine in evidenza: <span class="featured-cars" th:text="${userSubscription.subscription.maxFeaturedCars}"></span></p>
-                <p class="description" th:text="${userSubscription.subscription.description}"></p>
-                <div th:if="${!userSubscription.autoRenew}" class="auto-renew-warning">
-                    <i class="fas fa-exclamation-triangle"></i> Questo abbonamento si disattiverà alla scadenza.
-                </div>
-                <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
-                   th:classappend="${userSubscription.autoRenew} ? 'toggle-auto-renew-button disable' : 'toggle-auto-renew-button enable'"
-                   th:text="${userSubscription.autoRenew} ? 'Disattiva Rinnovo' : 'Riattiva Rinnovo'"
-                   th:onclick="${userSubscription.autoRenew} ? 'return confirm(\'Sei sicuro di voler disattivare il rinnovo automatico di questo abbonamento? L\\\'abbonamento si disattiverà alla scadenza.\')' : 'return confirm(\'Sei sicuro di voler riattivare il rinnovo automatico di questo abbonamento?\')'}">
-                </a>
-            </li>
-        </ul>
-    </div>
 
     <!-- Abbonamenti disponibili -->
     <div class="available-subscriptions">
