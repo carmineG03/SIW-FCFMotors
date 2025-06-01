@@ -138,7 +138,7 @@
             userSubscription.setUser(user);
             userSubscription.setSubscription(subscription);
             userSubscription.setStartDate(LocalDate.now());
-            LocalDate expiryDate = LocalDate.now().plusMonths(1); // Monthly subscription
+            LocalDate expiryDate = LocalDate.now().plusDays(subscription.getDurationDays()); // Monthly subscription
             userSubscription.setExpiryDate(expiryDate);
             userSubscription.setActive(true);
             userSubscription.setAutoRenew(true); // Enable auto-renewal by default
@@ -243,12 +243,6 @@
             logger.info("Attempting to delete user: {}", user.getId());
             if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
                 throw new IllegalArgumentException("Password non corretta");
-            }
-
-            // Check for active subscriptions
-            List<UserSubscription> activeSubscriptions = userSubscriptionRepository.findByUserAndActive(user, true);
-            if (!activeSubscriptions.isEmpty()) {
-                throw new IllegalArgumentException("Impossibile eliminare l'account: hai abbonamenti attivi. Cancella prima gli abbonamenti.");
             }
 
             // Delete related data
