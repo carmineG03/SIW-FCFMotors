@@ -565,7 +565,7 @@
                     </form>
                 </div>
                 <div th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}">
-                    <p><i class="fas fa-user-alt-slash"></i> Sei un utente privato</p>
+                    <p><i class="fas fa-user-alt-slash"></i> Smetti di vendere la tua auto?</p>
                     <form th:action="@{/account/remove-private}" method="post">
                         <button type="submit" class="remove-private-button"
                                 onclick="return confirm('Sei sicuro di voler cancellare la tua auto? Questa azione è irreversibile.');">

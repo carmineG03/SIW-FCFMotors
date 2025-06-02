@@ -220,6 +220,7 @@
                 <p id="no-dealers-message">Nessun concessionario disponibile al momento.</p>
             </div>
             <div th:unless="${dealers == null or dealers.isEmpty()}" th:each="dealer : ${dealers}" class="dealer-item" th:id="'dealer-item-' + ${dealer.id}">
+                <h3 th:text="${dealer.name} ?: 'Nome non disponibile'"></h3>
                 <div th:if="${dealer.imagePath != null}">
                     <img th:src="@{${dealer.imagePath}}" th:alt="'Immagine concessionario'" style="width: 100%; height: auto; border-radius: 5px; margin-bottom: 10px;"/>
                 </div>

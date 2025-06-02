@@ -626,6 +626,7 @@ public class DealerController {
 
             // Aggiorna lo stato della richiesta
             quoteRequest.setStatus("RESPONDED");
+            quoteRequest.setResponseMessage(responseMessage);
             quoteRequestRepository.save(quoteRequest);
 
             redirectAttributes.addFlashAttribute("successMessage", "Risposta inviata con successo!");
