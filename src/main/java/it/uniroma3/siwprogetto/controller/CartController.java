@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 public class CartController {
@@ -154,8 +155,29 @@ public class CartController {
     }
 
     @PostMapping("/cart/checkout-subscriptions")
+    public String initiateCheckout(Principal principal, Model model) {
+        try {
+            if (principal == null) {
+                throw new IllegalArgumentException("Utente non autenticato");
+            }
+            User user = userService.findByUsername(principal.getName());
+            if (user == null) {
+                throw new IllegalArgumentException("Utente non trovato");
+            }
+            BigDecimal total = cartService.calculateSubtotal(user);
+            String transactionId = UUID.randomUUID().toString();
+            model.addAttribute("total", total);
+            model.addAttribute("transactionId", transactionId);
+            return "payment";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+    }
+
+    @PostMapping("/cart/process-payment")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> checkoutSubscriptions(Principal principal) {
+    public ResponseEntity<Map<String, Object>> processPayment(@RequestParam String transactionId, Principal principal) {
         Map<String, Object> response = new HashMap<>();
         try {
             if (principal == null) {
@@ -165,10 +187,10 @@ public class CartController {
             if (user == null) {
                 throw new IllegalArgumentException("Utente non trovato");
             }
-
-
-            cartService.checkoutSubscriptions(user);
+            // Process the checkout with the transaction ID
+            cartService.checkoutSubscriptions(user, transactionId);
             response.put("success", true);
+            response.put("message", "Pagamento avvenuto con successo");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("success", false);

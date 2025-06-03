@@ -45,6 +45,9 @@
 
         @Autowired
         private QuoteRequestRepository quoteRequestRepository;
+
+        @Autowired
+        private PaymentRepository paymentRepository;
     
         public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService) {
             this.userRepository = userRepository;
@@ -266,6 +269,11 @@
             List<QuoteRequest> quoteRequests = quoteRequestRepository.findByUserId(user.getId());
             quoteRequestRepository.deleteAll(quoteRequests);
             logger.info("Deleted {} quote requests for user {}", quoteRequests.size(), user.getId());
+
+            // Delete payment records
+            List<Payment> payments = paymentRepository.findByUser(user);
+            paymentRepository.deleteAll(payments);
+            logger.info("Deleted {} payments for user {}", payments.size(), user.getId());
 
             // Delete user
             userRepository.delete(user);
