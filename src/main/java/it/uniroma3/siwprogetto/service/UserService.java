@@ -48,6 +48,9 @@
 
         @Autowired
         private PaymentRepository paymentRepository;
+
+        @Autowired
+        private CartItemRepository cartItemRepository;
     
         public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService) {
             this.userRepository = userRepository;
@@ -274,6 +277,11 @@
             List<Payment> payments = paymentRepository.findByUser(user);
             paymentRepository.deleteAll(payments);
             logger.info("Deleted {} payments for user {}", payments.size(), user.getId());
+
+            // Clean cart
+            List<CartItem> items = cartItemRepository.findByUser(user);
+            cartItemRepository.deleteAll(items);
+            logger.info("Deleted {} cart items for user {}", items.size(), user.getId());
 
             // Delete user
             userRepository.delete(user);
