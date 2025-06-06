@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -83,13 +84,35 @@ public class ProductService {
         logger.debug("Filtri applicati: category={}, brand={}, model={}, minPrice={}, maxPrice={}, minMileage={}, maxMileage={}, minYear={}, maxYear={}, fuelType={}, transmission={}, query={}",
                 category, brand, selectedModel, minPrice, maxPrice, minMileage, maxMileage, minYear, maxYear, fuelType, transmission, query);
 
-        // Call the repository method directly, handling query in the repository
+        // Fetch products using the repository without the query parameter
         List<Product> results = productRepository.findByFilters(category, brand, selectedModel,
                 minPrice, maxPrice, minMileage, maxMileage,
-                minYear, maxYear, fuelType, transmission, query);
+                minYear, maxYear, fuelType, transmission);
 
-        logger.debug("Found {} products", results.size());
-        results.forEach(p -> logger.debug("Product: id={}, brand={}, model={}", p.getId(), p.getBrand(), p.getModel()));
+        // Apply query filter in Java if query is not null or empty
+        if (query != null && !query.trim().isEmpty()) {
+            // Split the query into terms (e.g., "Fiat 500" -> ["fiat", "500"])
+            String[] searchTerms = query.trim().toLowerCase().split("\\s+");
+            logger.debug("Termini di ricerca: {}", Arrays.toString(searchTerms));
+
+            results = results.stream()
+                    .filter(p -> {
+                        // Check if all terms match in brand, model, or category
+                        for (String term : searchTerms) {
+                            boolean termMatches = (p.getBrand() != null && p.getBrand().toLowerCase().contains(term)) ||
+                                    (p.getModel() != null && p.getModel().toLowerCase().contains(term)) ||
+                                    (p.getCategory() != null && p.getCategory().toLowerCase().contains(term));
+                            if (!termMatches) {
+                                return false; // If any term doesn't match, exclude the product
+                            }
+                        }
+                        return true; // All terms match
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        logger.debug("Trovati {} prodotti", results.size());
+        results.forEach(p -> logger.debug("Prodotto: id={}, brand={}, model={}", p.getId(), p.getBrand(), p.getModel()));
         return results;
     }
 

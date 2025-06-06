@@ -1,11 +1,13 @@
 package it.uniroma3.siwprogetto.service;
 
 import it.uniroma3.siwprogetto.model.CartItem;
+import it.uniroma3.siwprogetto.model.Payment;
 import it.uniroma3.siwprogetto.model.Product;
 import it.uniroma3.siwprogetto.model.Subscription;
 import it.uniroma3.siwprogetto.model.User;
 import it.uniroma3.siwprogetto.model.UserSubscription;
 import it.uniroma3.siwprogetto.repository.CartItemRepository;
+import it.uniroma3.siwprogetto.repository.PaymentRepository;
 import it.uniroma3.siwprogetto.repository.ProductRepository;
 import it.uniroma3.siwprogetto.repository.SubscriptionRepository;
 import it.uniroma3.siwprogetto.repository.UserRepository;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CartService {
@@ -37,6 +40,9 @@ public class CartService {
 
     @Autowired
     private UserSubscriptionRepository userSubscriptionRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     public List<CartItem> getCartItems(User user) {
         return cartItemRepository.findByUser(user);
@@ -82,23 +88,39 @@ public class CartService {
                 .map(item -> {
                     BigDecimal price = BigDecimal.ZERO;
                     if (item.getSubscription() != null) {
-                        price = BigDecimal.valueOf(item.getSubscription().getPrice()); // getPrice() restituisce BigDecimal
+                        price = BigDecimal.valueOf(item.getSubscription().getPrice());
+                        // Apply discount if valid
+                        if (item.getSubscription().getDiscount() != null &&
+                                item.getSubscription().getDiscountExpiry() != null &&
+                                item.getSubscription().getDiscountExpiry().isAfter(LocalDate.now())) {
+                            BigDecimal discount = new BigDecimal(item.getSubscription().getDiscount().toString())
+                                    .divide(new BigDecimal("100"), 10, BigDecimal.ROUND_HALF_UP);
+                            price = price.multiply(BigDecimal.ONE.subtract(discount));
+                        }
                     } else if (item.getProduct() != null) {
-                        price = item.getProduct().getPrice(); // getPrice() restituisce BigDecimal
+                        price = item.getProduct().getPrice();
                     }
                     return price.multiply(BigDecimal.valueOf(item.getQuantity()));
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public void checkoutSubscriptions(User user) {
+    public void checkoutSubscriptions(User user, String transactionId) {
+        BigDecimal total = calculateSubtotal(user);
+
+        // Save payment record
+        Payment payment = new Payment(user, total, transactionId, "SUCCESS");
+        paymentRepository.save(payment);
+
         List<CartItem> items = cartItemRepository.findByUser(user);
         for (CartItem item : items) {
             if (item.getSubscription() != null) {
-                // Chiama il metodo di UserService per attivare l'abbonamento
-                userService.subscribeUserToDealer(user.getId(), item.getSubscription().getId());
+                // Activate subscription with auto-renewal
+                UserSubscription userSubscription = userService.subscribeUserToDealer(user.getId(), item.getSubscription().getId());
+                userSubscription.setAutoRenew(true); // Enable auto-renewal
+                userSubscriptionRepository.save(userSubscription);
             }
-            // Gestisci prodotti, se presenti
+            // Handle products, if present
             if (item.getProduct() != null && item.getSubscription() != null) {
                 Product product = item.getProduct();
                 product.setIsFeatured(true);
@@ -106,10 +128,7 @@ public class CartService {
                 productRepository.save(product);
             }
         }
-
-
-        // Svuota il carrello dell'utente
+        // Clear the cart
         cartItemRepository.deleteAll(items);
     }
-
 }

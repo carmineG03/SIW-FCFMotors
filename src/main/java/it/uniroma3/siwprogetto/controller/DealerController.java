@@ -467,6 +467,7 @@ public class DealerController {
         try {
             List<Dealer> dealers = dealerService.findAll();
             model.addAttribute("dealers", dealers);
+
             return "dealers";
         } catch (Exception e) {
             logger.error("Error loading dealers page: {}", e.getMessage(), e);
@@ -625,6 +626,7 @@ public class DealerController {
 
             // Aggiorna lo stato della richiesta
             quoteRequest.setStatus("RESPONDED");
+            quoteRequest.setResponseMessage(responseMessage);
             quoteRequestRepository.save(quoteRequest);
 
             redirectAttributes.addFlashAttribute("successMessage", "Risposta inviata con successo!");

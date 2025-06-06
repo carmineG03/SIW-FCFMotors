@@ -20,6 +20,9 @@ public class UserSubscription {
 
 	private boolean active;
 
+	// New field for auto-renewal
+	private boolean autoRenew;
+
 	// Getters e Setters
 	public Long getId() { return id; }
 	public void setId(Long id) { this.id = id; }
@@ -33,8 +36,18 @@ public class UserSubscription {
 	public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
 	public boolean isActive() { return active; }
 	public void setActive(boolean active) { this.active = active; }
+	public boolean isAutoRenew() { return autoRenew; }
+	public void setAutoRenew(boolean autoRenew) { this.autoRenew = autoRenew; }
 	// Method to check if the subscription is expired
 	public boolean isExpired() {
-		return expiryDate != null && LocalDate.now().isAfter(expiryDate);
+		return expiryDate != null && LocalDate.now().isAfter(expiryDate) && !autoRenew;
+	}
+
+	// Method to renew subscription
+	public void renew() {
+		if (autoRenew) {
+			this.expiryDate = this.expiryDate.plusMonths(1);
+			this.active = true;
+		}
 	}
 }

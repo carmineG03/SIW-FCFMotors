@@ -204,10 +204,7 @@
                 <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
                 <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
                 <a sec:authorize="!isAuthenticated()" th:href="@{/login}"><i class="fas fa-user"></i> Login</a>
-                <a sec:authorize="isAuthenticated()" th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
-                <a sec:authorize="hasRole('PRIVATE')" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
-                <a sec:authorize="hasRole('DEALER')" th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i> Manutenzione Dealer</a>
-                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i> Manutenzione Admin</a>
+                <a sec:authorize="isAuthenticated()" th:href="@{/account}"><i class="fas fa-user"></i> Account </a>
             </div>
         </div>
     </div>
@@ -223,6 +220,7 @@
                 <p id="no-dealers-message">Nessun concessionario disponibile al momento.</p>
             </div>
             <div th:unless="${dealers == null or dealers.isEmpty()}" th:each="dealer : ${dealers}" class="dealer-item" th:id="'dealer-item-' + ${dealer.id}">
+                <h3 th:text="${dealer.name} ?: 'Nome non disponibile'"></h3>
                 <div th:if="${dealer.imagePath != null}">
                     <img th:src="@{${dealer.imagePath}}" th:alt="'Immagine concessionario'" style="width: 100%; height: auto; border-radius: 5px; margin-bottom: 10px;"/>
                 </div>

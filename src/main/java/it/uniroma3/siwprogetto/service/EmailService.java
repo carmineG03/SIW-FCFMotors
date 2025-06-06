@@ -136,5 +136,22 @@ public class EmailService {
 		mailSender.send(mailMessage);
 	}
 
+	public void sendSubscriptionRenewalEmail(String recipientEmail, String username, String subscriptionName, LocalDate newExpiryDate) throws MessagingException {
+		MimeMessage message = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+		helper.setTo(recipientEmail);
+		helper.setSubject("Conferma Rinnovo Abbonamento - FCF Motors");
+		String htmlContent = "<h3>Ciao, " + username + "!</h3>" +
+				"<p>Il tuo abbonamento <strong>" + subscriptionName + "</strong> è stato rinnovato con successo.</p>" +
+				"<p>Nuova data di scadenza: <strong>" + newExpiryDate + "</strong></p>" +
+				"<p>Puoi gestire il tuo abbonamento dalla sezione <a href='http://yourdomain.com/account'>Account</a>.</p>" +
+				"<p>Grazie per essere con FCF Motors!</p>" +
+				"<p>Il Team FCF Motors</p>";
+		helper.setText(htmlContent, true);
+
+		mailSender.send(message);
+	}
+
 
 }

@@ -5,6 +5,234 @@
     <title>Manutenzione Admin - FCF Motors</title>
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: #f5f5f5;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-toggle {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .dropdown-toggle:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #E59400, #F5A623);
+        }
+        .dropdown-toggle i {
+            font-size: 1.2rem;
+            color: #FFFFFF;
+            transition: transform 0.3s ease;
+        }
+        .dropdown-toggle.open i.fa-bars {
+            transform: rotate(90deg);
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            z-index: 1000;
+            min-width: 200px;
+            padding: 10px 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .dropdown-menu.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .dropdown-menu a i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            color: #F5A623;
+        }
+        .dropdown-menu a:hover {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            transform: translateX(5px);
+            border-left: 3px solid #FFFFFF;
+        }
+        .dropdown-menu a:hover i {
+            color: #FFFFFF;
+        }
+        .header-right {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1010;
+        }
+        .admin-maintenance-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        .admin-maintenance-container h2 {
+            margin: 0 0 20px;
+            color: #333;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        .admin-section {
+            margin-bottom: 30px;
+        }
+        .admin-section h3 {
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #FFFFFF;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .admin-table th, .admin-table td {
+            padding: 1rem;
+            text-align: left;
+        }
+        .admin-table th {
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            color: white;
+            font-weight: 600;
+        }
+        .admin-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        .admin-table tr:hover {
+            background-color: #e5e7eb;
+            transition: background-color 0.2s ease;
+        }
+        .success-message, .error-message {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .edit-button, .delete-button, .add-button, .discount-button, .remove-discount-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            color: #FFFFFF;
+            text-decoration: none;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .edit-button {
+            background-color: #3b82f6;
+        }
+        .edit-button:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+        .delete-button, .remove-discount-button {
+            background-color: #ef4444;
+        }
+        .delete-button:hover, .remove-discount-button:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+        }
+        .add-button {
+            background-color: #22c55e;
+        }
+        .add-button:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+        }
+        .discount-button {
+            background-color: #eab308;
+        }
+        .discount-button:hover {
+            background-color: #ca8a04;
+            transform: translateY(-2px);
+        }
+        .edit-button i, .delete-button i, .add-button i, .discount-button i, .remove-discount-button i {
+            margin-right: 6px;
+        }
+        @media (max-width: 768px) {
+            #main-header {
+                height: 60px;
+            }
+            .dropdown-menu {
+                min-width: 180px;
+                top: 40px;
+            }
+            .dropdown-toggle {
+                width: 36px;
+                height: 36px;
+            }
+            .dropdown-toggle i {
+                font-size: 1rem;
+            }
+            .admin-maintenance-container {
+                padding: 20px;
+            }
+            .admin-table th, .admin-table td {
+                font-size: 0.85rem;
+                padding: 0.75rem;
+            }
+            .edit-button, .delete-button, .add-button, .discount-button, .remove-discount-button {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            .header-right {
+                right: 10px;
+                gap: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
 <header id="main-header">
@@ -16,31 +244,21 @@
         </a>
         <div class="title-container">
             <h1 class="main-title">FCF MOTORS</h1>
-            <a href="/products" class="products-button"><i class="fas fa-car"></i> Trova Auto</a>
-            <a href="/dealers" class="dealers-button"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
         </div>
     </div>
-    <div class="nav-container">
-        <div class="nav-bar">
-            <a href="/account" class="icon-button"><i class="fas fa-user"></i> Account</a>
-            <a href="/cart" class="icon-button"><i class="fas fa-shopping-cart"></i> Carrello</a>
+    <div class="header-right">
+        <div class="dropdown">
+            <button class="dropdown-toggle" aria-label="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu">
+                <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+                <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+            </div>
         </div>
     </div>
-    <button th:if="${user.rolesString != null and user.rolesString.contains('PRIVATE')}"
-            onclick="window.location.href='/private/maintenance'"
-            class="maintenance-button">
-        <i class="fas fa-tools"></i> Manutenzione Private
-    </button>
-    <button th:if="${user.rolesString != null and user.rolesString.contains('DEALER')}"
-            onclick="window.location.href='/rest/manutenzione/dealer'"
-            class="maintenance-button">
-        <i class="fas fa-cogs"></i> Manutenzione Dealer
-    </button>
-    <button th:if="${user.rolesString != null and user.rolesString.contains('ADMIN')}"
-            onclick="window.location.href='/admin/maintenance'"
-            class="maintenance-button">
-        <i class="fas fa-shield-alt"></i> Manutenzione Admin
-    </button>
 </header>
 
 <div class="wrapper">
@@ -59,7 +277,6 @@
                         <th>ID</th>
                         <th>Nome</th>
                         <th>Proprietario</th>
-                        <th>Tipo</th>
                         <th>Azioni</th>
                     </tr>
                     </thead>
@@ -156,6 +373,7 @@
             </div>
         </div>
 
+        <!-- Sezione 4: Gestione Abbonamenti -->
         <div class="admin-section">
             <h3>Gestione Abbonamenti</h3>
             <a href="/admin/subscription/add" class="add-button"><i class="fas fa-plus"></i> Aggiungi Abbonamento</a>
@@ -184,7 +402,14 @@
                         <td th:text="${subscription.maxFeaturedCars}"></td>
                         <td>
                             <a th:href="@{/admin/subscription/{id}/edit(id=${subscription.id})}" class="edit-button"><i class="fas fa-edit"></i> Modifica</a>
-                            <a th:href="@{/admin/subscription/{id}/discount(id=${subscription.id})}" class="discount-button"><i class="fas fa-tag"></i> Applica Sconto</a>
+                            <a th:if="${subscription.discount == null or subscription.discountExpiry == null or subscription.discountExpiry.isBefore(T(java.time.LocalDate).now())}"
+                               th:href="@{/admin/subscription/{id}/discount(id=${subscription.id})}" class="discount-button"><i class="fas fa-tag"></i> Applica Sconto</a>
+                            <form th:if="${subscription.discount != null and subscription.discountExpiry != null and subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}"
+                                  th:action="@{/admin/subscription/{id}/remove-discount(id=${subscription.id})}" method="post" style="display:inline;">
+                                <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                                <input type="hidden" name="id" th:value="${subscription.id}"/>
+                                <button type="submit" class="remove-discount-button" onclick="return confirm('Sei sicuro di voler rimuovere lo sconto?');"><i class="fas fa-times"></i> Rimuovi Sconto</button>
+                            </form>
                             <form th:action="@{/admin/subscription/{id}/delete(id=${subscription.id})}" method="post" style="display:inline;">
                                 <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
                                 <input type="hidden" name="id" th:value="${subscription.id}"/>
@@ -228,5 +453,33 @@
         <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
     </div>
 </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+
+        dropdownToggle.addEventListener('click', function() {
+            const isOpen = dropdownMenu.classList.contains('show');
+            dropdownMenu.classList.toggle('show');
+            dropdownToggle.classList.toggle('open', !isOpen);
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.classList.remove('show');
+                dropdownToggle.classList.remove('open');
+            }
+        });
+
+        dropdownToggle.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                dropdownMenu.classList.toggle('show');
+                dropdownToggle.classList.toggle('open');
+            }
+        });
+    });
+</script>
 </body>
 </html>

@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Stile per il menu a tendina moderno e accattivante */
         .dropdown {
             position: relative;
             display: inline-block;
@@ -81,7 +80,6 @@
         .dropdown-menu a:hover i {
             color: #FFFFFF;
         }
-        /* Posizionamento del menu, centrato verticalmente */
         .header-right {
             position: absolute;
             top: 50%;
@@ -92,7 +90,6 @@
             gap: 10px;
             z-index: 1010;
         }
-        /* Assicurati che il layout sia responsive */
         @media (max-width: 768px) {
             #main-header {
                 height: 60px;
@@ -119,14 +116,337 @@
                 gap: 5px;
             }
         }
-        .debug-info {
+        .modal {
+            display: none;
             position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background-color: #fff;
-            padding: 10px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            position: relative;
+            transform: translateY(-50px);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+        .modal.show .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .modal-content h3 {
+            margin: 0 0 15px;
+            color: #333;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        .modal-content .form-group {
+            margin-bottom: 15px;
+        }
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        .modal-content input[type="password"] {
+            width: 100%;
+            padding: 8px;
             border: 1px solid #ccc;
-            z-index: 1000;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+        .modal-content .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-content button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .modal-content .confirm-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+        }
+        .modal-content .confirm-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-2px);
+        }
+        .modal-content .cancel-button {
+            background: #ccc;
+            color: #333;
+        }
+        .modal-content .cancel-button:hover {
+            background: #bbb;
+            transform: translateY(-2px);
+        }
+        .delete-account-button {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .delete-account-button:hover {
+            background: linear-gradient(45deg, #cc0000, #ff4d4d);
+            transform: translateY(-2px);
+        }
+        .subscriptions-container {
+            margin: 0;
+        }
+        .subscriptions-container h2 {
+            color: #ddd;
+            font-size: 1.5rem;
+            margin: 0 0 15px 0;
+        }
+        .active-subscriptions, .no-subscriptions {
+            background: linear-gradient(145deg, #f9f9f9, #ececec);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+        .active-subscriptions::before, .no-subscriptions::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(245, 166, 35, 0.2) 0%, transparent 25%);
+            animation: glow 10s linear infinite;
+            pointer-events: none;
+        }
+        .active-subscriptions:hover, .no-subscriptions:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        .active-subscriptions p, .no-subscriptions p {
+            font-size: 1.2rem;
+            color: #333;
+            margin: 10px 0;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .active-subscriptions p:hover, .no-subscriptions p:hover {
+            color: #F5A623;
+        }
+        .active-subscriptions i, .no-subscriptions i {
+            color: #F5A623;
+            margin-right: 8px;
+        }
+        .subscription-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .subscription-item h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 10px 0;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .subscription-item p {
+            font-size: 1rem;
+            color: #666;
+            margin: 5px 0;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .subscription-item .description {
+            color: #333;
+            font-size: 0.95rem;
+            margin-top: 10px;
+        }
+        .subscription-item .featured-cars {
+            display: inline-block;
+            background: #F5A623;
+            color: #FFFFFF;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .auto-renew-warning {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+            color: #FFFFFF;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .subscribe-button, .toggle-auto-renew-button, .become-private-button, .remove-private-button {
+            display: inline-block;
+            padding: 12px 25px;
+            color: #FFFFFF;
+            text-decoration: none;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 10px rgba(245, 166, 35, 0.4);
+        }
+        .subscribe-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+        }
+        .subscribe-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
+        }
+        .toggle-auto-renew-button.disable {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+        }
+        .toggle-auto-renew-button.disable:hover {
+            background: linear-gradient(45deg, #cc0000, #ff4d4d);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(255, 77, 77, 0.6);
+        }
+        .toggle-auto-renew-button.enable {
+            background: linear-gradient(45deg, #28a745, #218838);
+        }
+        .toggle-auto-renew-button.enable:hover {
+            background: linear-gradient(45deg, #218838, #28a745);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.6);
+        }
+        .become-private-button, .remove-private-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+        }
+        .become-private-button:hover, .remove-private-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
+        }
+        @keyframes glow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .account-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+            margin: 20px 0;
+            align-items: flex-start;
+        }
+        .account-details-container, .subscriptions-container {
+            flex: 1;
+            width: 48%;
+            min-width: 300px;
+            max-width: 48%;
+            box-sizing: border-box;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+            max-height: 500px;
+            overflow-y: auto;
+            margin: 0;
+        }
+        .account-details-container h2, .subscriptions-container h2 {
+            color: #ddd;
+            font-size: 1.5rem;
+            margin: 0 0 15px 0;
+            flex-shrink: 0;
+        }
+        .account-details p, {
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            color: #ddd;
+            margin: 5px 0;
+            font-size: 1rem;
+        }
+        .no-subscriptions p {
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            color: #333;
+            margin: 5px 0;
+            font-size: 1rem;
+            margin-top: 50px;
+        }
+        }
+        .subscription-item p {
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            color: #666;
+            margin: 5px 0;
+            font-size: 1rem;
+        }
+        .account-details p strong {
+            color: #fff;
+        }
+        .account-details .error-message {
+            color: #ff4d4d;
+        }
+        .account-details, .edit-form-container, .active-subscriptions, .no-subscriptions {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            margin: 0;
+        }
+        .account-details, .edit-form-container {
+            padding: 0;
+        }
+        @media (max-width: 768px) {
+            .account-container {
+                flex-direction: column;
+            }
+            .account-details-container, .subscriptions-container {
+                width: 100%;
+                max-width: 100%;
+                min-width: 100%;
+                min-height: auto;
+                max-height: none;
+                overflow-y: visible;
+            }
         }
     </style>
 </head>
@@ -144,24 +464,20 @@
     </div>
     <div class="nav-container">
         <div class="nav-bar">
-            <!-- Nav bar vuota dopo aver spostato tutti i pulsanti nel menu a tendina -->
         </div>
     </div>
-    <!-- Contenitore per il menu a tendina -->
     <div class="header-right">
-        <!-- Menu a tendina con design moderno e accattivante -->
         <div class="dropdown">
             <button class="dropdown-toggle" aria-label="Menu">
                 <i class="fas fa-bars"></i>
             </button>
             <div class="dropdown-menu">
-                 <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
-                 <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
-                 <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
-                 <a th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
-                 <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
-                 <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('DEALER')}" th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i> Manutenzione Dealer</a>
-                 <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('ADMIN')}" th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i> Manutenzione Admin</a>
+                <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
+                <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('DEALER')}" th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i> Manutenzione Dealer</a>
+                <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('ADMIN')}" th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i> Manutenzione Admin</a>
             </div>
         </div>
     </div>
@@ -171,14 +487,6 @@
     <div class="account-container">
         <div class="account-details-container">
             <h2>Informazioni Account</h2>
-            <!-- Debug Temporaneo -->
-            <div class="debug-info">
-                <p sec:authorize="isAuthenticated()">Utente Autenticato: <span sec:authentication="name"></span></p>
-                <p sec:authorize="isAuthenticated()">Ruoli: <span sec:authentication="authorities"></span></p>
-                <p sec:authorize="isAuthenticated()">Ha Ruolo PRIVATE: <span sec:authorize="hasAuthority('ROLE_PRIVATE')">Sì</span><span sec:authorize="!hasAuthority('ROLE_PRIVATE')">No</span></p>
-                <p sec:authorize="isAuthenticated()">Ha Ruolo DEALER: <span sec:authorize="hasAuthority('ROLE_DEALER')">Sì</span><span sec:authorize="!hasAuthority('ROLE_DEALER')">No</span></p>
-                <p sec:authorize="!isAuthenticated()">Utente non autenticato.</p>
-            </div>
             <div th:if="${!editMode}" class="account-details">
                 <p th:if="${error}" th:text="${error}" class="error-message"></p>
                 <p th:if="${user != null}"><strong>Username:</strong> <span th:text="${user.username}"></span></p>
@@ -190,19 +498,10 @@
                 <p th:if="${accountInformation != null}"><strong>Numero di telefono:</strong> <span th:text="${accountInformation.phoneNumber}"></span></p>
                 <div class="account-actions">
                     <a th:href="@{/account/edit}" class="edit-button">Modifica</a>
-                    <form th:action="@{/logout}" method="post" class="logout-form">
-                        <button type="submit" class="logout-button">Esci</button>
+                    <form id="logoutForm" th:action="@{/logout}" method="post" style="display:inline;">
+                        <a href="#" class="logout-button" onclick="event.preventDefault(); document.getElementById('logoutForm').submit()">Esci</a>
                     </form>
-                    <form th:action="@{/account/delete}" method="post" class="delete-account-form">
-                        <div class="form-group">
-                            <label for="password">Conferma Password:</label>
-                            <input type="password" id="password" name="password" required />
-                        </div>
-                        <button type="submit" class="delete-account-button"
-                                onclick="return confirm('Sei sicuro di voler cancellare il tuo account? Questa azione è irreversibile e eliminerà tutte le informazioni associate.');">
-                            Cancella Account
-                        </button>
-                    </form>
+                    <button class="delete-account-button" onclick="openDeleteModal()">Cancella Account</button>
                 </div>
             </div>
 
@@ -228,10 +527,6 @@
                         <label for="phoneNumber">Numero di telefono:</label>
                         <input type="text" id="phoneNumber" th:field="*{phoneNumber}" required />
                     </div>
-                    <div class="form-group">
-                        <label for="additionalInfo">Informazioni aggiuntive:</label>
-                        <textarea id="additionalInfo" th:field="*{additionalInfo}"></textarea>
-                    </div>
                     <div class="form-actions">
                         <button type="submit" class="save-button">Salva</button>
                         <a href="/account" class="cancel-button">Annulla</a>
@@ -243,36 +538,60 @@
         <div class="subscriptions-container">
             <h2>Abbonamenti</h2>
             <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
-                <h3>Abbonamento Attivo</h3>
-                <div th:each="userSubscription : ${activeSubscriptions}">
-                    <p><strong th:text="${userSubscription.subscription.id}"></strong> - Scade il: <span th:text="${userSubscription.expiryDate}"></span></p>
+                <p><i class="fas fa-check-circle"></i> I tuoi abbonamenti attivi</p>
+                <div th:each="userSubscription : ${activeSubscriptions}" class="subscription-item">
+                    <h4 th:text="${userSubscription.subscription.name}"></h4>
+                    <p><i class="fas fa-calendar-alt"></i> Scade il: <span th:text="${userSubscription.expiryDate}"></span></p>
+                    <p><i class="fas fa-sync-alt"></i> Rinnovo automatico: <span th:text="${userSubscription.autoRenew} ? 'Attivo' : 'Disattivato'"></span></p>
+                    <p><i class="fas fa-car"></i> Macchine in evidenza: <span class="featured-cars" th:text="${userSubscription.subscription.maxFeaturedCars}"></span></p>
+                    <p class="description" th:text="${userSubscription.subscription.description}"></p>
+                    <div th:if="${!userSubscription.autoRenew}" class="auto-renew-warning">
+                        <i class="fas fa-exclamation-triangle"></i> Questo abbonamento si disattiverà alla scadenza, se vuoi continuare ad usarlo riattivalo!
+                    </div>
                     <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
-                       class="cancel-subscription-button"
-                       onclick="return confirm('Sei sicuro di voler cancellare questo abbonamento? Il tuo ruolo tornerà a USER se non hai altri abbonamenti attivi.');">
-                        Cancella
+                       th:classappend="${userSubscription.autoRenew} ? 'toggle-auto-renew-button disable' : 'toggle-auto-renew-button enable'"
+                       th:text="${userSubscription.autoRenew} ? 'Disattiva Rinnovo' : 'Riattiva Rinnovo'"
+                       th:onclick="${userSubscription.autoRenew} ? 'return confirm(\'Sei sicuro di voler disattivare il rinnovo automatico di questo abbonamento? L\\\'abbonamento si disattiverà alla scadenza.\')' : 'return confirm(\'Sei sicuro di voler riattivare il rinnovo automatico di questo abbonamento?\')'">
                     </a>
                 </div>
             </div>
             <div th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}" class="no-subscriptions">
-                <p>Nessun abbonamento attivo.</p>
+                <p><i class="fas fa-info-circle"></i> Nessun abbonamento attivo.</p>
                 <a href="/subscriptions" class="subscribe-button">Scopri Abbonamenti</a>
                 <div th:if="${user != null and user.rolesString != null and user.rolesString.contains('USER')}">
-                    <p>Vuoi vendere la tua auto?</p>
+                    <p><i class="fas fa-car"></i> Vuoi vendere la tua auto?</p>
                     <form th:action="@{/account/become-private}" method="post">
-                        <button type="submit" class="become-private-button">Diventa Privato</button>
+                        <button type="submit" class="become-private-button">Vendi la tua auto</button>
                     </form>
                 </div>
                 <div th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}">
-                    <p>Sei un utente privato. Vuoi tornare al ruolo USER?</p>
+                    <p><i class="fas fa-user-alt-slash"></i> Smetti di vendere la tua auto?</p>
                     <form th:action="@{/account/remove-private}" method="post">
                         <button type="submit" class="remove-private-button"
-                                onclick="return confirm('Sei sicuro di voler rimuovere il ruolo PRIVATO? Questo eliminerà anche l\'auto che hai messo in vendita.');">
-                            Rimuovi Ruolo Privato
+                                onclick="return confirm('Sei sicuro di voler cancellare la tua auto? Questa azione è irreversibile.');">
+                            Rimuovi Auto
                         </button>
                     </form>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="deleteAccountModal" class="modal">
+    <div class="modal-content">
+        <h3>Conferma Cancellazione Account</h3>
+        <p>Sei sicuro di voler cancellare il tuo account? Questa azione è irreversibile, e cancellera tutti i tuoi dati compreso l'abbonamento.</p>
+        <form th:action="@{/account/delete}" method="post" id="deleteAccountForm">
+            <div class="form-group">
+                <label for="password">Conferma Password:</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <div class="modal-actions">
+                <button type="submit" class="confirm-button">Conferma</button>
+                <button type="button" class="cancel-button" onclick="closeDeleteModal()">Annulla</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -304,7 +623,6 @@
 </footer>
 
 <script>
-    // JavaScript per gestire il menu a tendina con animazione
     document.addEventListener('DOMContentLoaded', function() {
         const dropdownToggle = document.querySelector('.dropdown-toggle');
         const dropdownMenu = document.querySelector('.dropdown-menu');
@@ -329,6 +647,30 @@
                 dropdownToggle.classList.toggle('open');
             }
         });
+    });
+
+    function openDeleteModal() {
+        const modal = document.getElementById('deleteAccountModal');
+        modal.classList.add('show');
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteAccountModal');
+        modal.classList.remove('show');
+    }
+
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('deleteAccountModal');
+        const modalContent = modal.querySelector('.modal-content');
+        if (modal.classList.contains('show') && !modalContent.contains(event.target) && !event.target.classList.contains('delete-account-button')) {
+            closeDeleteModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeDeleteModal();
+        }
     });
 </script>
 </body>

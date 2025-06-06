@@ -14,7 +14,6 @@
     import java.time.LocalDate;
     import java.time.LocalDateTime;
     import java.util.List;
-    import java.util.Optional;
     import java.util.UUID;
     import java.util.stream.Collectors;
 
@@ -46,6 +45,12 @@
 
         @Autowired
         private QuoteRequestRepository quoteRequestRepository;
+
+        @Autowired
+        private PaymentRepository paymentRepository;
+
+        @Autowired
+        private CartItemRepository cartItemRepository;
     
         public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService) {
             this.userRepository = userRepository;
@@ -125,31 +130,28 @@
                 throw new RuntimeException("Token non valido o scaduto");
             }
         }
-    
-        public void subscribeUserToDealer(Long userId, Long subscriptionId) {
+
+        public UserSubscription subscribeUserToDealer(Long userId, Long subscriptionId) {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
             Subscription subscription = subscriptionRepository.findById(subscriptionId)
                     .orElseThrow(() -> new IllegalArgumentException("Abbonamento non trovato"));
 
             user.setSubscription(subscription);
-            // Cambia il ruolo a DEALER
             user.setRolesString("DEALER");
-    
-            // Crea una nuova sottoscrizione attiva
+
             UserSubscription userSubscription = new UserSubscription();
             userSubscription.setUser(user);
             userSubscription.setSubscription(subscription);
             userSubscription.setStartDate(LocalDate.now());
-            LocalDate expiryDate = LocalDate.now().plusDays(subscription.getDurationDays());
+            LocalDate expiryDate = LocalDate.now().plusDays(subscription.getDurationDays()); // Monthly subscription
             userSubscription.setExpiryDate(expiryDate);
             userSubscription.setActive(true);
-    
-            // Salva le modifiche
+            userSubscription.setAutoRenew(true); // Enable auto-renewal by default
+
             userSubscriptionRepository.save(userSubscription);
             userRepository.save(user);
-    
-            // Invia mail di conferma sottoscrizione
+
             try {
                 emailService.sendSubscriptionConfirmationEmail(
                         user.getEmail(),
@@ -159,19 +161,24 @@
                         userSubscription.getExpiryDate()
                 );
             } catch (MessagingException e) {
-                System.err.println("Errore durante l'invio della mail di conferma sottoscrizione: " + e.getMessage());
+                logger.error("Errore durante l'invio della mail di conferma sottoscrizione: {}", e.getMessage());
             }
+            return userSubscription;
         }
-    
+
         public void cancelSubscription(Long userSubscriptionId, Long userId) {
             UserSubscription userSubscription = userSubscriptionRepository.findById(userSubscriptionId)
                     .orElseThrow(() -> new IllegalArgumentException("Abbonamento non trovato"));
-    
+
             if (!userSubscription.getUser().getId().equals(userId)) {
                 throw new IllegalArgumentException("Non autorizzato a cancellare questo abbonamento");
             }
-    
-            // Invia mail di conferma cancellazione abbonamento
+
+            userSubscription.setAutoRenew(false); // Disable auto-renewal
+            userSubscription.setActive(false); // Mark as inactive
+            userSubscription.setExpiryDate(LocalDate.now()); // Set expiry to now
+            userSubscriptionRepository.save(userSubscription);
+
             try {
                 emailService.sendSubscriptionCancellationEmail(
                         userSubscription.getUser().getEmail(),
@@ -179,28 +186,27 @@
                         userSubscription.getSubscription().getName()
                 );
             } catch (MessagingException e) {
-                System.err.println("Errore durante l'invio della mail di cancellazione abbonamento: " + e.getMessage());
+                logger.error("Errore durante l'invio della mail di cancellazione abbonamento: {}", e.getMessage());
             }
-    
-            // Cancella l'abbonamento
-            userSubscriptionRepository.delete(userSubscription);
-    
-            // Aggiorna il ruolo dell'utente a USER
+
             User user = userSubscription.getUser();
-            user.setRolesString("USER");
-            userRepository.save(user);
-    
-            dealerRepository.findByOwner(user).ifPresent(dealer -> {
-                try {
-                    dealerService.deleteDealer(dealer.getId());
-                } catch (IllegalArgumentException ignored) {
-                    // Ignora l'eccezione se il dealer non esiste
-                }
-            });
-    
-            // Cancella tutti i prodotti creati dall'utente con ruolo DEALER
-            List<Product> products = productRepository.findBySeller(user);
-            productRepository.deleteAll(products);
+            List<UserSubscription> remainingActive = userSubscriptionRepository.findByUserAndActive(user, true);
+            if (remainingActive.isEmpty()) {
+                user.setRolesString("USER");
+                user.setSubscription(null);
+                userRepository.save(user);
+
+                dealerRepository.findByOwner(user).ifPresent(dealer -> {
+                    try {
+                        dealerService.deleteDealer(dealer.getId());
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Failed to delete dealer for user {}: {}", user.getId(), e.getMessage());
+                    }
+                });
+
+                List<Product> products = productRepository.findBySeller(user);
+                productRepository.deleteAll(products);
+            }
         }
 
         public List<UserSubscription> getActiveSubscriptions(Long userId) {
@@ -245,12 +251,6 @@
                 throw new IllegalArgumentException("Password non corretta");
             }
 
-            // Check for active subscriptions
-            List<UserSubscription> activeSubscriptions = userSubscriptionRepository.findByUserAndActive(user, true);
-            if (!activeSubscriptions.isEmpty()) {
-                throw new IllegalArgumentException("Impossibile eliminare l'account: hai abbonamenti attivi. Cancella prima gli abbonamenti.");
-            }
-
             // Delete related data
             List<UserSubscription> subscriptions = userSubscriptionRepository.findByUserId(user.getId());
             userSubscriptionRepository.deleteAll(subscriptions);
@@ -273,6 +273,16 @@
             quoteRequestRepository.deleteAll(quoteRequests);
             logger.info("Deleted {} quote requests for user {}", quoteRequests.size(), user.getId());
 
+            // Delete payment records
+            List<Payment> payments = paymentRepository.findByUser(user);
+            paymentRepository.deleteAll(payments);
+            logger.info("Deleted {} payments for user {}", payments.size(), user.getId());
+
+            // Clean cart
+            List<CartItem> items = cartItemRepository.findByUser(user);
+            cartItemRepository.deleteAll(items);
+            logger.info("Deleted {} cart items for user {}", items.size(), user.getId());
+
             // Delete user
             userRepository.delete(user);
 
@@ -286,51 +296,56 @@
 
             logger.info("User {} deleted successfully", user.getId());
         }
-        @Scheduled(cron = "0 * * * * ?")
+        @Scheduled(cron = "0 0 0 * * ?")
         @Transactional
-        public void checkAndDeactivateExpiredSubscriptions() {
-            logger.info("START: Checking for expired subscriptions at {}", LocalDateTime.now());
-            List<UserSubscription> activeSubscriptions = userSubscriptionRepository.findByActive(true);
-            logger.info("Found {} active subscriptions", activeSubscriptions.size());
+        public void renewSubscriptions() {
+            logger.info("START: Processing subscriptions at {}", LocalDateTime.now());
+            List<UserSubscription> expiringSubscriptions = userSubscriptionRepository.findByActiveAndExpiryDate(true, LocalDate.now());
+            logger.info("Found {} subscriptions expiring today", expiringSubscriptions.size());
 
-            for (UserSubscription userSubscription : activeSubscriptions) {
-                boolean isExpired = userSubscription.isExpired();
-                logger.info("Checking subscription ID: {}, userId: {}, expiryDate: {}, isExpired: {}, active: {}",
-                        userSubscription.getId(), userSubscription.getUser().getId(),
-                        userSubscription.getExpiryDate(), isExpired, userSubscription.isActive());
-                if (isExpired) {
-                    logger.info("Deactivating subscription ID: {}", userSubscription.getId());
-                    userSubscription.setActive(false);
-                    userSubscriptionRepository.saveAndFlush(userSubscription);
-                    logger.info("Subscription ID: {} set to inactive", userSubscription.getId());
+            for (UserSubscription subscription : expiringSubscriptions) {
+                User user = subscription.getUser();
+                logger.info("Processing subscription ID: {}, userId: {}, expiryDate: {}, autoRenew: {}",
+                        subscription.getId(), user.getId(), subscription.getExpiryDate(), subscription.isAutoRenew());
 
-                    // Clear subscription from User if no active subscriptions remain
-                    User user = userSubscription.getUser();
-                    List<UserSubscription> remainingActive = userSubscriptionRepository.findByUserAndActive(user, true);
-                    if (remainingActive.isEmpty()) {
-                        user.setSubscription(null);
-                        user.setRolesString("USER");
-                        userRepository.saveAndFlush(user);
-                        logger.info("Cleared subscription and set USER role for user {}", user.getId());
+                if (subscription.isAutoRenew()) {
+                    logger.info("Renewing subscription ID: {}", subscription.getId());
+                    subscription.renew(); // Extends expiry by one month
+                    userSubscriptionRepository.saveAndFlush(subscription);
+                    logger.info("Subscription ID: {} renewed until {}", subscription.getId(), subscription.getExpiryDate());
+
+                    try {
+                        emailService.sendSubscriptionRenewalEmail(
+                                user.getEmail(),
+                                user.getUsername(),
+                                subscription.getSubscription().getName(),
+                                subscription.getExpiryDate()
+                        );
+                        logger.info("Sent renewal email to {}", user.getEmail());
+                    } catch (MessagingException e) {
+                        logger.error("Failed to send renewal email to {}: {}", user.getEmail(), e.getMessage());
                     }
+                } else {
+                    logger.info("Deactivating expired subscription ID: {}", subscription.getId());
+                    subscription.setActive(false);
+                    userSubscriptionRepository.saveAndFlush(subscription);
+                    logger.info("Subscription ID: {} set to inactive", subscription.getId());
 
                     try {
                         emailService.sendSubscriptionCancellationEmail(
-                                userSubscription.getUser().getEmail(),
-                                userSubscription.getUser().getUsername(),
-                                userSubscription.getSubscription().getName()
+                                user.getEmail(),
+                                user.getUsername(),
+                                subscription.getSubscription().getName()
                         );
-                        logger.info("Sent expiration email to {}", userSubscription.getUser().getEmail());
+                        logger.info("Sent expiration email to {}", user.getEmail());
                     } catch (MessagingException e) {
-                        logger.error("Failed to send expiration email to {}: {}", userSubscription.getUser().getEmail(), e.getMessage());
+                        logger.error("Failed to send expiration email to {}: {}", user.getEmail(), e.getMessage());
                     }
-                } else {
-                    logger.info("Subscription ID: {} is still active", userSubscription.getId());
                 }
             }
 
-            // Check users with no active subscriptions
-            List<User> usersToCheck = activeSubscriptions.stream()
+            // Check users with expiring subscriptions for role updates
+            List<User> usersToCheck = expiringSubscriptions.stream()
                     .map(UserSubscription::getUser)
                     .distinct()
                     .collect(Collectors.toList());
@@ -359,11 +374,11 @@
                     productRepository.deleteAll(products);
                     logger.info("Deleted {} products for user {}", products.size(), user.getId());
                 } else {
-                    logger.info("User {} still has active subscriptions: {}", user.getId(), remainingActive);
+                    logger.info("User {} still has active subscriptions", user.getId());
                 }
             }
 
-            logger.info("END: Finished checking expired subscriptions at {}", LocalDateTime.now());
+            logger.info("END: Finished processing subscriptions at {}", LocalDateTime.now());
         }
     
     }

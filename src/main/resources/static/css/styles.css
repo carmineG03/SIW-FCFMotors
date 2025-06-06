@@ -2033,9 +2033,9 @@ header h2 {
     flex-wrap: wrap; /* Permette ai bottoni di andare a capo su schermi piccoli */
 }
 
-/* Stile per il pulsante Modifica */
-.edit-button {
-    font-size: 1rem; /* Dimensione del testo uniforme */
+/* Stili aggiornati per i pulsanti */
+.edit-button, .logout-button {
+    font-size: 1rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -2045,76 +2045,73 @@ header h2 {
     text-transform: uppercase;
     cursor: pointer;
     background: linear-gradient(45deg, #F5A623, #E59400);
-    padding: 10px 20px; /* Padding uniforme */
+    padding: 0 20px;
+    height: 40px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     animation: fadeIn 0.5s ease-out forwards;
-    min-width: 120px; /* Dimensione minima per uniformità */
+    min-width: 120px;
+    box-sizing: border-box;
+    line-height: 1.5;
+    border: none;
 }
-
-.edit-button:hover {
-    background: linear-gradient(45deg, #0056b3, #003d82); /* Gradiente più scuro */
+.edit-button:hover, .logout-button:hover {
+    background: linear-gradient(45deg, #E59400, #F5A623);
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
-
-.edit-button:active {
+.edit-button:active, .logout-button:active {
     transform: scale(0.95);
 }
-
-.edit-button:focus {
+.edit-button:focus, .logout-button:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Focus visibile */
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.5);
 }
-/* Stile per il pulsante Esci */
-.logout-button {
-    font-size: 1rem; /* Dimensione del testo uniforme */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: #FFFFFF;
-    font-weight: 600;
-    text-transform: uppercase;
-    cursor: pointer;
-    background: linear-gradient(45deg, #F5A623, #E59400);
-    padding: 10px 20px; /* Padding uniforme */
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    animation: fadeIn 0.5s ease-out forwards;
-    min-width: 120px; /* Dimensione minima per uniformità */
-}
-
-.logout-button:hover {
-    background: linear-gradient(45deg, #0056b3, #003d82); /* Gradiente più scuro */
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.logout-button:active {
-    transform: scale(0.95);
-}
-
-.logout-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Focus visibile */
-}
-
 .logout-form {
-    display: inline;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
 }
-
+.account-actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.delete-account-button {
+    background: linear-gradient(45deg, #ff4d4d, #cc0000);
+    color: #FFFFFF;
+    padding: 0 20px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: background 0.2s ease, transform 0.2s ease;
+    min-width: 120px;
+    box-sizing: border-box;
+    line-height: 1.5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.delete-account-button:hover {
+    background: linear-gradient(45deg, #cc0000, #ff4d4d);
+    transform: translateY(-2px);
+}
+/* Stili per il form di modifica (invariati) */
 .edit-form-container {
     width: 100%;
 }
-
 .edit-form .form-group {
     margin-bottom: 20px;
     text-align: left;
 }
-
 .edit-form .form-group label {
     display: block;
     font-size: 0.9rem;
@@ -2122,9 +2119,8 @@ header h2 {
     font-weight: 600;
     margin-bottom: 8px;
     text-transform: uppercase;
-    transition: color 0.3s ease; /* Transizione fluida per il colore */
+    transition: color 0.3s ease;
 }
-
 .edit-form .form-group input,
 .edit-form .form-group textarea {
     width: 100%;
@@ -2137,26 +2133,22 @@ header h2 {
     outline: none;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-
 .edit-form .form-group input:focus,
 .edit-form .form-group textarea:focus {
     border-color: #F5A623;
     box-shadow: 0 0 8px rgba(245, 166, 35, 0.3);
 }
-
 .edit-form .form-group textarea {
     min-height: 100px;
     resize: vertical;
 }
-
 .form-actions {
     display: flex;
-    justify-content: center; /* Centra i bottoni del form */
-    gap: 15px; /* Spaziatura tra i bottoni */
+    justify-content: center;
+    gap: 15px;
     margin-top: 20px;
     flex-wrap: wrap;
 }
-
 .save-button,
 .cancel-button {
     padding: 10px 20px;

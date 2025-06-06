@@ -265,6 +265,27 @@ public class AdminController {
 		return "redirect:/admin/maintenance";
 	}
 
+	// Rimuove uno sconto da un abbonamento
+	@PostMapping("/subscription/{id}/remove-discount")
+	public String removeDiscount(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+		logger.debug("Removing discount from subscription: id={}", id);
+		try {
+			Subscription subscription = adminService.findSubscriptionById(id)
+					.orElseThrow(() -> {
+						logger.error("Subscription not found: id={}", id);
+						return new IllegalStateException("Abbonamento non trovato");
+					});
+			subscription.setDiscount(null);
+			subscription.setDiscountExpiry(null);
+			adminService.updateSubscription(id, subscription);
+			redirectAttributes.addFlashAttribute("successMessage", "Sconto rimosso con successo");
+		} catch (Exception e) {
+			logger.error("Error removing discount from subscription: id={}", id, e);
+			redirectAttributes.addFlashAttribute("errorMessage", "Errore durante la rimozione dello sconto");
+		}
+		return "redirect:/admin/maintenance";
+	}
+
 	// Elimina un abbonamento
 	@PostMapping("/subscription/{id}/delete")
 	public String deleteSubscription(@PathVariable Long id, RedirectAttributes redirectAttributes) {

@@ -133,6 +133,13 @@ public class ProductsController {
         return "redirect:/products?brand=" + brand;
     }
 
+    @GetMapping("/category/{category}")
+    public String getCategory(@PathVariable String category) {
+        // Reindirizza a /products con il parametro category
+        return "redirect:/products?category=" + category;
+    }
+
+
     @PostMapping("/request-quote/{productId}")
     public String requestQuote(@PathVariable Long productId, Authentication authentication, RedirectAttributes redirectAttributes) {
         if (authentication == null || "anonymousUser".equals(authentication.getName())) {
