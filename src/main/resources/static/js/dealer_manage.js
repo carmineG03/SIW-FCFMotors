@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const addCarForm = document.getElementById('dealer-add-car-form');
     const editProductForm = document.getElementById('edit-product-form');
     const editProductPopup = document.getElementById('edit-product-popup');
-    const closeEditProductPopupButton = document.getElementById('close-edit-product-popup'); // Renamed to avoid conflict
+    const closeEditProductPopupButton = document.getElementById('close-edit-product-popup');
     const cancelEditProductButton = document.getElementById('cancel-edit-product');
     const toast = document.getElementById('toast');
     const isFeaturedCheckbox = document.getElementById('dealer-car-highlighted');
@@ -14,6 +14,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Debug: Verifica se la sezione prodotti esiste
     console.log('Sezione prodotti trovata:', productsSection ? 'Sì' : 'No');
+
+    // Funzione per aggiornare lo stato delle etichette dei select
+    function updateSelectLabel(selectElement) {
+        const label = selectElement.parentElement.querySelector('label');
+        if (label && selectElement.value) {
+            label.style.top = '-10px';
+            label.style.left = '10px';
+            label.style.fontSize = '12px';
+            label.style.color = '#F5A623';
+            label.style.background = 'rgba(0, 0, 0, 0.8)';
+            label.style.padding = '2px 6px';
+            label.style.borderRadius = '4px';
+            label.style.maxWidth = 'fit-content';
+        } else if (label) {
+            label.style.top = '50%';
+            label.style.left = '15px';
+            label.style.transform = 'translateY(-50%)';
+            label.style.fontSize = '14px';
+            label.style.color = 'rgba(255, 255, 255, 0.9)';
+            label.style.background = 'none';
+            label.style.padding = '0';
+            label.style.borderRadius = '0';
+            label.style.maxWidth = 'calc(100% - 30px)';
+        }
+    }
+
+    // Funzione per inizializzare le etichette dei select
+    function initializeSelectLabels(form) {
+        const selects = form.querySelectorAll('select');
+        selects.forEach(select => {
+            updateSelectLabel(select);
+            select.addEventListener('change', () => updateSelectLabel(select));
+            select.addEventListener('focus', () => updateSelectLabel(select));
+        });
+    }
+
+    // Inizializza le etichette dei select nei form
+    if (addCarForm) initializeSelectLabels(addCarForm);
+    if (editProductForm) initializeSelectLabels(editProductForm);
 
     // Funzione per mostrare il toast
     function showToast(message, type) {
@@ -33,22 +72,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Funzione per aprire il pop-up di modifica
     function openEditProductPopup() {
-        if (editProductPopup) {
+        if (editProductPopup && editProductForm) {
             console.log('Apertura popup di modifica');
             editProductPopup.style.display = 'flex';
         } else {
-            console.error('Pop-up di modifica non trovato nel DOM');
-            showToast('Errore: Pop-up di modifica non trovato', 'error');
+            console.error('Pop-up o form di modifica non trovati nel DOM');
+            showToast('Errore: Pop-up o form di modifica non trovati', 'error');
         }
     }
 
     // Funzione per chiudere il pop-up di modifica
-    function closeEditPopup() { // Renamed to avoid redeclaration
+    function closeEditPopup() {
         if (editProductPopup) {
             console.log('Chiusura popup di modifica');
             editProductPopup.style.display = 'none';
             if (editProductForm) {
                 editProductForm.reset();
+                initializeSelectLabels(editProductForm);
             }
         } else {
             console.error('Pop-up di modifica non trovato nel DOM');
@@ -73,7 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`currentFeaturedCount: ${currentFeaturedCount}, maxFeaturedProducts: ${maxFeaturedProducts}`);
                 const isLimitReached = currentFeaturedCount >= maxFeaturedProducts;
 
-                // Aggiorna lo stato dei pulsanti "Metti in evidenza"
                 const highlightLinks = document.querySelectorAll('.highlight-product-link');
                 console.log(`Trovati ${highlightLinks.length} pulsanti .highlight-product-link`);
                 highlightLinks.forEach(link => {
@@ -92,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
 
-                // Aggiorna lo stato del checkbox nel form di aggiunta
                 if (isFeaturedCheckbox) {
                     if (isLimitReached) {
                         console.log('Disabilitazione del checkbox isFeaturedCheckbox');
@@ -112,8 +150,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 return { success: true, isLimitReached };
             } else {
                 console.error('Errore nella risposta del server:', data.message);
-                showToast(data.message || 'Errore nel recupero del limite di evidenza', 'error');
-                return { success: false };
+                if (data.message === 'Nessun abbonamento associato. Contatta l\'assistenza.') {
+                    showToast('Nessun abbonamento attivo. Alcune funzionalità potrebbero essere limitate.', 'error');
+                    return { success: false, isLimitReached: true };
+                } else {
+                    showToast(data.message || 'Errore nel recupero del limite di evidenza', 'error');
+                    return { success: false };
+                }
             }
         } catch (error) {
             console.error('Errore durante il recupero del limite di evidenza:', error);
@@ -122,10 +165,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Esegui il controllo del limite al caricamento della pagina
     checkFeaturedLimit();
 
-    // Gestione del form per aggiungere un'auto
     if (addCarForm) {
         addCarForm.addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -231,8 +272,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (response.ok) {
                     showToast(responseData.message || 'Auto aggiunta con successo!', 'success');
                     addCarForm.reset();
+                    initializeSelectLabels(addCarForm);
                     await checkFeaturedLimit();
-                    // Ricarica senza cache
                     setTimeout(() => window.location.href = window.location.href + '?t=' + new Date().getTime(), 1500);
                 } else {
                     console.error('Errore server:', responseData.message);
@@ -251,21 +292,18 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Form di aggiunta auto non trovato nel DOM');
     }
 
-    // Gestione della visibilità del campo "Durata Evidenza" nel form di aggiunta
     if (isFeaturedCheckbox && featureDurationField) {
         isFeaturedCheckbox.addEventListener('change', function() {
             featureDurationField.style.display = this.checked && !this.disabled ? 'block' : 'none';
         });
     }
 
-    // Gestione della visibilità del campo "Durata Evidenza" nel form di modifica
     if (editIsFeaturedCheckbox && editFeatureDurationField) {
         editIsFeaturedCheckbox.addEventListener('change', function() {
             editFeatureDurationField.style.display = this.checked ? 'block' : 'none';
         });
     }
 
-    // Gestione del pulsante "Modifica Concessionario"
     const editDealerButton = document.getElementById('edit-dealer-button');
     const displayDealerDetails = document.getElementById('display-dealer-details');
     const dealershipForm = document.getElementById('dealership-form');
@@ -286,7 +324,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Gestione del form di modifica del concessionario
     if (dealershipForm) {
         dealershipForm.addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -371,16 +408,13 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Form di modifica concessionario non trovato nel DOM');
     }
 
-    // Gestione del form di modifica del prodotto
     const editProductLinks = document.querySelectorAll('.edit-product-link');
     const deleteProductLinks = document.querySelectorAll('.delete-product-link');
     const highlightProductLinks = document.querySelectorAll('.highlight-product-link');
     const removeHighlightProductLinks = document.querySelectorAll('.remove-highlight-product-link');
 
-    // Debug: Verifica se ci sono pulsanti di modifica
     console.log(`Trovati ${editProductLinks.length} pulsanti .edit-product-link`);
 
-    // Funzione per popolare il form di modifica con i dati del prodotto
     async function populateEditForm(productId) {
         console.log(`Inizio populateEditForm per productId: ${productId}`);
         try {
@@ -395,23 +429,41 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 const product = await response.json();
                 console.log('Dati prodotto ricevuti:', product);
-                document.getElementById('edit-product-id').value = product.id || '';
-                document.getElementById('edit-product-model').value = product.model || '';
-                document.getElementById('edit-product-brand').value = product.brand || '';
-                document.getElementById('edit-product-category').value = product.category || '';
-                document.getElementById('edit-product-description').value = product.description || '';
-                document.getElementById('edit-product-price').value = product.price || '';
-                document.getElementById('edit-product-mileage').value = product.mileage || '';
-                document.getElementById('edit-product-year').value = product.year || '';
-                document.getElementById('edit-product-fuelType').value = product.fuelType || '';
-                document.getElementById('edit-product-transmission').value = product.transmission || '';
-                document.getElementById('edit-product-imageUrl').value = product.imageUrl || '';
-                document.getElementById('edit-product-highlighted').checked = product.isFeatured || false;
-                document.getElementById('edit-product-highlight-duration').value = product.featuredUntil ?
-                    Math.ceil((new Date(product.featuredUntil) - new Date()) / (1000 * 60 * 60 * 24)) : '';
+
+                const fields = {
+                    'edit-product-id': product.id || '',
+                    'edit-product-model': product.model || '',
+                    'edit-product-brand': product.brand || '',
+                    'edit-product-category': product.category || '',
+                    'edit-product-description': product.description || '',
+                    'edit-product-price': product.price || '',
+                    'edit-product-mileage': product.mileage || '',
+                    'edit-product-year': product.year || '',
+                    'edit-product-fuelType': product.fuelType || '',
+                    'edit-product-transmission': product.transmission || '',
+                    'edit-product-imageUrl': product.imageUrl || '',
+                    'edit-product-highlighted': product.isFeatured || false,
+                    'edit-product-highlight-duration': product.featuredUntil ?
+                        Math.ceil((new Date(product.featuredUntil) - new Date()) / (1000 * 60 * 60 * 24)) : ''
+                };
+
+                for (const [id, value] of Object.entries(fields)) {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        if (id === 'edit-product-highlighted') {
+                            element.checked = value;
+                        } else {
+                            element.value = value;
+                        }
+                    } else {
+                        console.error(`Elemento con ID ${id} non trovato nel DOM`);
+                    }
+                }
+
                 if (editFeatureDurationField) {
                     editFeatureDurationField.style.display = product.isFeatured ? 'block' : 'none';
                 }
+                initializeSelectLabels(editProductForm);
                 openEditProductPopup();
             } else {
                 const errorData = await response.json();
@@ -424,7 +476,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Gestione del click su "Modifica"
     if (editProductLinks && editProductForm && cancelEditProductButton && closeEditProductPopupButton) {
         editProductLinks.forEach(link => {
             link.addEventListener('click', async function(event) {
@@ -446,7 +497,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Gestione dell'invio del form di modifica
     if (editProductForm) {
         editProductForm.addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -543,7 +593,6 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Form di modifica prodotto non trovato nel DOM');
     }
 
-    // Gestione del click su "Elimina"
     deleteProductLinks.forEach(link => {
         link.addEventListener('click', async function(event) {
             event.preventDefault();
@@ -575,7 +624,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Gestione del click su "Metti in Evidenza"
     highlightProductLinks.forEach(link => {
         link.addEventListener('click', async function(event) {
             event.preventDefault();
@@ -623,7 +671,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Gestione del click su "Rimuovi Evidenza"
     removeHighlightProductLinks.forEach(link => {
         link.addEventListener('click', async function(event) {
             event.preventDefault();
@@ -657,7 +704,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Animazioni per le sezioni e le card
     const animatedSections = document.querySelectorAll('.animated-section');
     animatedSections.forEach(section => section.classList.add('visible'));
 

@@ -102,23 +102,69 @@
             border-radius: 8px;
             margin-right: 0;
         }
+       
         /* Stili per select dropdown */
-        .input-field select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1em;
-            box-sizing: border-box;
-            margin-top: 5px;
-            text-align: left;
-            appearance: auto;
-        }
-        .input-field select:focus {
-            outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
-        }
+    .input-field select {
+        width: 100%;
+        padding: 12px 12px 12px 40px; /* Matches input padding */
+        background: rgba(255, 255, 255, 0.1); /* Matches input background */
+        border: 1px solid rgba(255, 255, 255, 0.5); /* Matches input border */
+        border-radius: 8px; /* Matches input border-radius */
+        font-size: 14px; /* Matches input font-size */
+        color: #FFFFFF; /* Matches input text color */
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Matches input text-shadow */
+        outline: none; /* Removes default outline */
+        transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Matches input transition */
+        appearance: none; /* Removes default browser styling */
+        -webkit-appearance: none; /* For Safari */
+        -moz-appearance: none; /* For Firefox */
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); /* Custom arrow */
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px;
+    }
+
+    .input-field select:focus {
+        border-color: #F5A623; /* Matches input focus border color */
+        box-shadow: 0 0 8px rgba(245, 166, 35, 0.3); /* Matches input focus shadow */
+    }
+
+    .input-field select option {
+        background: rgba(0, 0, 0, 0.8); /* Dark background for options */
+        color: #FFFFFF; /* White text for options */
+        font-size: 14px; /* Matches input font-size */
+    }
+
+    /* Ensure label alignment for select fields */
+    .input-field select + label {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        max-width: calc(100% - 30px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .input-field select:focus + label,
+    .input-field select:not(:placeholder-shown) + label {
+        top: -10px;
+        left: 10px;
+        font-size: 12px;
+        color: #F5A623;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 2px 6px;
+        border-radius: 4px;
+        max-width: fit-content;
+    }
         /* Stili per popup di modifica */
         .edit-product-popup {
             display: none;
@@ -305,7 +351,15 @@
                     </div>
                     <div class="input-field">
                         <label for="dealer-car-category"><i class="fas fa-tags"></i> Categoria</label>
-                        <input type="text" id="dealer-car-category" name="category">
+                        <select id="dealer-car-category" name="category">
+                            <option value="">Seleziona...</option>
+                            <option value="Berlina">Berlina</option>
+                            <option value="City Car">City Car</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Sportiva">Sportiva</option>
+                            <option value="Station Wagon">Station Wagon</option>
+                            <option value="Elettrica">Elettrica</option>
+                        </select>
                     </div>
                     <div class="input-field">
                         <label for="dealer-car-description"><i class="fas fa-file-alt"></i> Descrizione</label>
@@ -365,81 +419,40 @@
 
     <!-- Sezione Macchine Aggiunte -->
     <section id="dealer-added-cars" class="products-section animated-section">
-        <h3>Macchine Aggiunte</h3>
-        <div class="product-grid">
-            <div th:each="product : ${products}" th:classappend="${product.isFeatured and product.isFeaturedActive} ? 'product-card animated-card highlighted' : 'product-card animated-card'">
-                <div class="product-image">
-                    <img th:src="${product.imageUrl} ?: 'https://via.placeholder.com/300x200?text=Auto+Immagine'" alt="Immagine Auto">
-                    <span class="product-badge"><i class="fas fa-car"></i></span>
-                    <span th:if="${product.isFeatured and product.isFeaturedActive}" class="highlight-badge">In Evidenza</span>
-                </div>
-                <div class="product-info">
-                    <div class="info-row">
-                        <span class="label"><strong>Marca:</strong></span>
-                        <span class="value" th:text="${product.brand} ?: ''"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label"><strong>Modello:</strong></span>
-                        <span class="value" th:text="${product.model} ?: ''"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label"><strong>Categoria:</strong></span>
-                        <span class="value" th:text="${product.category} ?: ''"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label"><strong>Descrizione:</strong></span>
-                        <span class="value" th:text="${product.description} ?: ''"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label"><strong>Prezzo:</strong></span>
-                        <span class="value" th:text="${product.price} + ' €'"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label"><strong>Chilometraggio:</strong></span>
-                        <span class="value" th:text="${product.mileage} ? ${product.mileage} + ' km' : '-'"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label"><strong>Anno:</strong></span>
-                        <span class="value" th:text="${product.year} ?: '-'"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label"><strong>Carburante:</strong></span>
-                        <span class="value" th:text="${product.fuelType} ?: '-'"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label"><strong>Trasmissione:</strong></span>
-                        <span class="value" th:text="${product.transmission} ?: '-'"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label"><strong>In Evidenza:</strong></span>
-                        <span class="value" th:text="${product.isFeatured and product.isFeaturedActive} ? 'Sì' : 'No'"></span>
-                    </div>
-                    <div class="info-row" th:if="${product.isFeatured and product.isFeaturedActive}">
-                        <span class="label"><strong>Scadenza Evidenza:</strong></span>
-                        <span class="value" th:text="${product.featuredUntil} ?: '-'"></span>
-                    </div>
-                    <div class="form-actions">
-                        <a href="#" th:attr="data-product-id=${product.id}" class="modern-button edit-product-link"><i class="fas fa-edit"></i> Modifica</a>
-                        <a href="#" th:attr="data-product-id=${product.id}" class="modern-button delete-product-link cancel-button"><i class="fas fa-trash"></i> Elimina</a>
-                        <a href="#" th:attr="data-product-id=${product.id}" class="modern-button highlight-product-link" th:if="${!product.isFeatured or !product.isFeaturedActive}"><i class="fas fa-star"></i> Metti in Evidenza</a>
-                        <a href="#" th:attr="data-product-id=${product.id}" class="modern-button remove-highlight-product-link cancel-button" th:if="${product.isFeatured and product.isFeaturedActive}"><i class="fas fa-star"></i> Rimuovi Evidenza</a>
-                    </div>
-                </div>
+    <h3>Macchine Aggiunte</h3>
+    <div class="car-grid">
+        <div th:each="product : ${products}" th:classappend="${product.isFeatured and product.isFeaturedActive} ? 'car-card animated-card highlighted' : 'car-card animated-card'">
+            <div class="car-image">
+                <img th:src="${product.imageUrl} ?: '/images/placeholder.jpg'" alt="Immagine Auto">
+                <span th:if="${product.isFeatured and product.isFeaturedActive}" class="highlight-badge">In Evidenza</span>
+            </div>
+            <div class="car-info">
+                <h4 th:text="${product.brand} + ' ' + ${product.model}"></h4>
+                <p class="price" th:text="${product.price} + ' €'"></p>
+                <p class="details" th:text="${product.fuelType} ? ${product.fuelType} + ' • ' + ${product.transmission} : '-'"></p>
+            </div>
+            <div class="car-actions">
+                <a href="#" th:attr="data-product-id=${product.id}" class="modern-button edit-product-link"><i class="fas fa-edit"></i></a>
+                <a href="#" th:attr="data-product-id=${product.id}" class="modern-button delete-product-link cancel-button"><i class="fas fa-trash"></i></a>
+                <a href="#" th:attr="data-product-id=${product.id}" class="modern-button highlight-product-link" th:if="${!product.isFeatured or !product.isFeaturedActive}"><i class="fas fa-star"></i></a>
+                <a href="#" th:attr="data-product-id=${product.id}" class="modern-button remove-highlight-product-link cancel-button" th:if="${product.isFeatured and product.isFeaturedActive}"><i class="fas fa-star"></i></a>
             </div>
         </div>
-        <div th:if="${products.isEmpty()}" class="no-products">
-            <i class="fas fa-car no-products-icon"></i>
-            Nessuna macchina aggiunta
-        </div>
-        <div class="form-actions">
-            <a th:href="@{/dealers}" class="modern-button back-button"><i class="fas fa-arrow-left"></i> Torna ai concessionari</a>
-        </div>
-    </section>
+    </div>
+    <div th:if="${products.isEmpty()}" class="no-products">
+        <i class="fas fa-car no-products-icon"></i>
+        Nessuna macchina aggiunta
+    </div>
+    <div class="form-actions">
+        <a th:href="@{/dealers}" class="modern-button back-button"><i class="fas fa-arrow-left"></i> Torna ai concessionari</a>
+    </div>
+</section>
+        
 
     <!-- Pop-up per Modifica Auto -->
     <div class="edit-product-popup" id="edit-product-popup">
         <div class="edit-product-popup-content">
-            <span class="close-popup" id="close-edit-product-popup">×</span>
+            <span class="close-popup" id="close-edit-product-popup"></span>
             <form id="edit-product-form" class="modern-form" aria-labelledby="edit-product-form-title" th:action="@{/rest/api/products}" method="post" onsubmit="return false;">
                 <h2 id="edit-product-form-title">Modifica Auto</h2>
                 <input type="hidden" name="_method" value="PUT">
@@ -454,8 +467,16 @@
                     <input type="text" id="edit-product-brand" name="brand">
                 </div>
                 <div class="input-field">
-                    <label for="edit-product-category"><i class="fas fa-tags"></i> Categoria</label>
-                    <input type="text" id="edit-product-category" name="category">
+                    <label for="dealer-car-category"><i class="fas fa-tags"></i> Categoria</label>
+                        <select id="dealer-car-category" name="category">
+                            <option value="">Seleziona...</option>
+                            <option value="Berlina">Berlina</option>
+                            <option value="City Car">City Car</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Sportiva">Sportiva</option>
+                            <option value="Station Wagon">Station Wagon</option>
+                            <option value="Elettrica">Elettrica</option>
+                        </select>
                 </div>
                 <div class="input-field">
                     <label for="edit-product-description"><i class="fas fa-file-alt"></i> Descrizione</label>
