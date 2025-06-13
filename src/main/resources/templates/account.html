@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <title>Informazioni Account - FCF Motors</title>
     <link rel="stylesheet" href="/css/styles.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
     <style>
         .dropdown {
             position: relative;
@@ -136,7 +136,7 @@
             border-radius: 12px;
             padding: 20px;
             width: 90%;
-            max-width: 400px;
+            max-width: 500px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             position: relative;
             transform: translateY(-50px);
@@ -150,7 +150,7 @@
         .modal-content h3 {
             margin: 0 0 15px;
             color: #333;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             text-align: center;
         }
         .modal-content .form-group {
@@ -162,7 +162,7 @@
             color: #333;
             font-weight: 500;
         }
-        .modal-content input[type="password"] {
+        .modal-content input {
             width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
@@ -185,11 +185,11 @@
             font-weight: 500;
             transition: background 0.2s ease, transform 0.2s ease;
         }
-        .modal-content .confirm-button {
+        .modal-content .confirm-button, .modal-content .save-button {
             background: linear-gradient(45deg, #F5A623, #E59400);
             color: #FFFFFF;
         }
-        .modal-content .confirm-button:hover {
+        .modal-content .confirm-button:hover, .modal-content .save-button:hover {
             background: linear-gradient(45deg, #E59400, #F5A623);
             transform: translateY(-2px);
         }
@@ -201,8 +201,21 @@
             background: #bbb;
             transform: translateY(-2px);
         }
-        .delete-account-button {
-            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            color: #F5A623;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .close-modal:hover {
+            color: #E59400;
+            transform: scale(1.1);
+        }
+        .delete-account-button, .edit-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
             color: #FFFFFF;
             padding: 10px 20px;
             border: none;
@@ -211,10 +224,36 @@
             font-size: 0.95rem;
             font-weight: 500;
             transition: background 0.2s ease, transform 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        /* Stile separato per logout-button */
+        .logout-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease;
+            text-decoration: none;
+            display: inline-flex; /* Usa flex per centrare il testo */
+            align-items: center; /* Centra verticalmente */
+            justify-content: center; /* Centra orizzontalmente */
+            width: 100px; /* Larghezza fissa per uniformità */
+            text-align: center; /* Fallback per centramento testo */
+        }
+        .delete-account-button:hover, .edit-button:hover, .logout-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-2px);
+        }
+        .delete-account-button {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
         }
         .delete-account-button:hover {
             background: linear-gradient(45deg, #cc0000, #ff4d4d);
-            transform: translateY(-2px);
         }
         .subscriptions-container {
             margin: 0;
@@ -393,7 +432,7 @@
             margin: 0 0 15px 0;
             flex-shrink: 0;
         }
-        .account-details p, {
+        .account-details p {
             overflow-wrap: break-word;
             word-break: break-word;
             white-space: normal;
@@ -410,7 +449,6 @@
             font-size: 1rem;
             margin-top: 50px;
         }
-        }
         .subscription-item p {
             overflow-wrap: break-word;
             word-break: break-word;
@@ -425,14 +463,14 @@
         .account-details .error-message {
             color: #ff4d4d;
         }
-        .account-details, .edit-form-container, .active-subscriptions, .no-subscriptions {
+        .account-details, .active-subscriptions, .no-subscriptions {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             margin: 0;
         }
-        .account-details, .edit-form-container {
+        .account-details {
             padding: 0;
         }
         @media (max-width: 768px) {
@@ -463,8 +501,7 @@
         </div>
     </div>
     <div class="nav-container">
-        <div class="nav-bar">
-        </div>
+        <div class="nav-bar"></div>
     </div>
     <div class="header-right">
         <div class="dropdown">
@@ -487,7 +524,7 @@
     <div class="account-container">
         <div class="account-details-container">
             <h2>Informazioni Account</h2>
-            <div th:if="${!editMode}" class="account-details">
+            <div class="account-details">
                 <p th:if="${error}" th:text="${error}" class="error-message"></p>
                 <p th:if="${user != null}"><strong>Username:</strong> <span th:text="${user.username}"></span></p>
                 <p th:if="${user != null}"><strong>Email:</strong> <span th:text="${user.email}"></span></p>
@@ -497,41 +534,12 @@
                 <p th:if="${accountInformation != null}"><strong>Indirizzo:</strong> <span th:text="${accountInformation.address}"></span></p>
                 <p th:if="${accountInformation != null}"><strong>Numero di telefono:</strong> <span th:text="${accountInformation.phoneNumber}"></span></p>
                 <div class="account-actions">
-                    <a th:href="@{/account/edit}" class="edit-button">Modifica</a>
+                    <button class="edit-button" onclick="openEditModal()">Modifica</button>
                     <form id="logoutForm" th:action="@{/logout}" method="post" style="display:inline;">
                         <a href="#" class="logout-button" onclick="event.preventDefault(); document.getElementById('logoutForm').submit()">Esci</a>
                     </form>
                     <button class="delete-account-button" onclick="openDeleteModal()">Cancella Account</button>
                 </div>
-            </div>
-
-            <div th:if="${editMode}" class="edit-form-container">
-                <form th:action="@{/account}" method="post" th:object="${accountInformation}" class="edit-form">
-                    <div class="form-group">
-                        <label for="firstName">Nome:</label>
-                        <input type="text" id="firstName" th:field="*{firstName}" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName">Cognome:</label>
-                        <input type="text" id="lastName" th:field="*{lastName}" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="birthDate">Data di nascita:</label>
-                        <input type="date" id="birthDate" th:field="*{birthDate}" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="address">Indirizzo:</label>
-                        <input type="text" id="address" th:field="*{address}" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="phoneNumber">Numero di telefono:</label>
-                        <input type="text" id="phoneNumber" th:field="*{phoneNumber}" required />
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="save-button">Salva</button>
-                        <a href="/account" class="cancel-button">Annulla</a>
-                    </div>
-                </form>
             </div>
         </div>
 
@@ -578,10 +586,46 @@
     </div>
 </div>
 
+<div id="editAccountModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeEditModal()">×</span>
+        <h3>Modifica Account</h3>
+        <form th:action="@{/account}" method="post" th:object="${accountInformation}" id="editAccountForm">
+            <div class="form-group">
+                <label for="firstName">Nome:</label>
+                <input type="text" id="firstName" th:field="*{firstName}" required />
+            </div>
+            <div class="form-group">
+                <label for="lastName">Cognome:</label>
+                <input type="text" id="lastName" th:field="*{lastName}" required />
+            </div>
+            <div class="form-group">
+                <label for="birthDate">Data di nascita:</label>
+                <input type="date" id="birthDate" th:field="*{birthDate}"
+                       th:value="${accountInformation.birthDate != null} ? ${accountInformation.birthDate} : ''"
+                       required />
+            </div>
+            <div class="form-group">
+                <label for="address">Indirizzo:</label>
+                <input type="text" id="address" th:field="*{address}" required />
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Numero di telefono:</label>
+                <input type="text" id="phoneNumber" th:field="*{phoneNumber}" required />
+            </div>
+            <div class="modal-actions">
+                <button type="submit" class="save-button">Salva</button>
+                <button type="button" class="cancel-button" onclick="closeEditModal()">Annulla</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div id="deleteAccountModal" class="modal">
     <div class="modal-content">
+        <span class="close-modal" onclick="closeDeleteModal()">×</span>
         <h3>Conferma Cancellazione Account</h3>
-        <p>Sei sicuro di voler cancellare il tuo account? Questa azione è irreversibile, e cancellera tutti i tuoi dati compreso l'abbonamento.</p>
+        <p>Sei sicuro di voler cancellare il tuo account? Questa azione è irreversibile e cancellerà tutti i tuoi dati, compreso l'abbonamento.</p>
         <form th:action="@{/account/delete}" method="post" id="deleteAccountForm">
             <div class="form-group">
                 <label for="password">Conferma Password:</label>
@@ -649,6 +693,16 @@
         });
     });
 
+    function openEditModal() {
+        const modal = document.getElementById('editAccountModal');
+        modal.classList.add('show');
+    }
+
+    function closeEditModal() {
+        const modal = document.getElementById('editAccountModal');
+        modal.classList.remove('show');
+    }
+
     function openDeleteModal() {
         const modal = document.getElementById('deleteAccountModal');
         modal.classList.add('show');
@@ -660,15 +714,22 @@
     }
 
     document.addEventListener('click', function(event) {
-        const modal = document.getElementById('deleteAccountModal');
-        const modalContent = modal.querySelector('.modal-content');
-        if (modal.classList.contains('show') && !modalContent.contains(event.target) && !event.target.classList.contains('delete-account-button')) {
+        const editModal = document.getElementById('editAccountModal');
+        const editModalContent = editModal.querySelector('.modal-content');
+        const deleteModal = document.getElementById('deleteAccountModal');
+        const deleteModalContent = deleteModal.querySelector('.modal-content');
+
+        if (editModal.classList.contains('show') && !editModalContent.contains(event.target) && !event.target.classList.contains('edit-button')) {
+            closeEditModal();
+        }
+        if (deleteModal.classList.contains('show') && !deleteModalContent.contains(event.target) && !event.target.classList.contains('delete-account-button')) {
             closeDeleteModal();
         }
     });
 
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
+            closeEditModal();
             closeDeleteModal();
         }
     });
