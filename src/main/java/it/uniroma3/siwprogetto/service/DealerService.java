@@ -440,4 +440,19 @@ public class DealerService {
         logger.info("Highlight removed from product: id={}, model={}", savedProduct.getId(), savedProduct.getModel());
         return savedProduct;
     }
+
+    public Dealer findById(Long id) {
+        return dealerRepository.findById(id).orElse(null);
+    }
+
+    public List<Product> getProductsByDealerOwner(Dealer dealer) {
+        if (dealer == null) {
+            throw new IllegalArgumentException("Concessionario non valido.");
+        }
+        if (dealer.getOwner() == null) {
+            throw new IllegalStateException("Il concessionario non ha un proprietario associato.");
+        }
+        return productRepository.findBySeller(dealer.getOwner());
+    }
+
 }

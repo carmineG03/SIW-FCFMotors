@@ -358,6 +358,8 @@ public class DealerController {
     @ResponseBody
     public ResponseEntity<?> updateProduct(@PathVariable Long productId, @RequestBody Map<String, String> payload) {
         logger.info("Received PUT /rest/api/products/{} with payload: {}", productId, payload);
+
+        // Estrai i dati dal payload
         String model = payload.get("model");
         String brand = payload.get("brand");
         String category = payload.get("category");
@@ -373,6 +375,7 @@ public class DealerController {
 
         String trimmedModel = (model != null) ? model.trim() : null;
 
+        // Validazione
         if (!StringUtils.hasText(trimmedModel)) {
             logger.warn("Validation failed: Product model is missing or empty");
             return ResponseEntity.badRequest().body(Map.of("message", "Il modello del prodotto è obbligatorio"));
@@ -383,33 +386,75 @@ public class DealerController {
             return ResponseEntity.badRequest().body(Map.of("message", "Il prezzo del prodotto è obbligatorio"));
         }
 
-        try {
-            BigDecimal price = new BigDecimal(priceStr);
-            Product product = new Product();
-            product.setModel(trimmedModel);
-            product.setBrand(StringUtils.hasText(brand) ? brand.trim() : null);
-            product.setCategory(StringUtils.hasText(category) ? category.trim() : null);
-            product.setDescription(StringUtils.hasText(description) ? description.trim() : null);
-            product.setPrice(price);
-            product.setMileage(StringUtils.hasText(mileageStr) ? Integer.parseInt(mileageStr) : null);
-            product.setYear(StringUtils.hasText(yearStr) ? Integer.parseInt(yearStr) : null);
-            product.setFuelType(StringUtils.hasText(fuelType) ? fuelType.trim() : null);
-            product.setTransmission(StringUtils.hasText(transmission) ? transmission.trim() : null);
-            product.setImageUrl(StringUtils.hasText(imageUrl) ? imageUrl.trim() : null);
+        if (!priceStr.matches("\\d+(\\.\\d{1,2})?")) {
+            logger.warn("Invalid price format: {}", priceStr);
+            return ResponseEntity.badRequest().body(Map.of("message", "Il prezzo deve essere un numero valido (es. 20000.00)"));
+        }
 
-            boolean highlighted = Boolean.parseBoolean(highlightedStr);
-            product.setIsFeatured(highlighted);
-            if (highlighted && StringUtils.hasText(highlightDurationStr)) {
-                int highlightDuration = Integer.parseInt(highlightDurationStr);
-                product.setFeaturedUntil(LocalDateTime.now().plusDays(highlightDuration));
-            } else if (!highlighted) {
-                product.setFeaturedUntil(null);
+        try {
+            // Recupera il prodotto esistente
+            Product existingProduct = dealerService.findProductById(productId);
+            if (existingProduct == null) {
+                logger.warn("Product not found: id={}", productId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "Prodotto non trovato"));
             }
 
-            logger.info("Calling dealerService.updateProduct for product: id={}, model={}", productId, product.getModel());
-            Product updatedProduct = dealerService.updateProduct(productId, product);
+            // Aggiorna i campi solo se forniti nel payload
+            if (StringUtils.hasText(model)) {
+                existingProduct.setModel(trimmedModel);
+            }
+            if (StringUtils.hasText(brand)) {
+                existingProduct.setBrand(brand.trim());
+            }
+            if (StringUtils.hasText(category)) {
+                existingProduct.setCategory(category.trim());
+            }
+            if (StringUtils.hasText(description)) {
+                existingProduct.setDescription(description.trim());
+            }
+            if (StringUtils.hasText(priceStr)) {
+                BigDecimal price = new BigDecimal(priceStr);
+                existingProduct.setPrice(price);
+            }
+            if (StringUtils.hasText(imageUrl)) {
+                existingProduct.setImageUrl(imageUrl.trim());
+            }
+            if (StringUtils.hasText(fuelType)) {
+                existingProduct.setFuelType(fuelType.trim());
+            }
+            if (StringUtils.hasText(transmission)) {
+                existingProduct.setTransmission(transmission.trim());
+            }
+            if (StringUtils.hasText(mileageStr)) {
+                existingProduct.setMileage(Integer.parseInt(mileageStr));
+            }
+            if (StringUtils.hasText(yearStr)) {
+                existingProduct.setYear(Integer.parseInt(yearStr));
+            }
+
+            // Gestione dell’evidenza
+            if (StringUtils.hasText(highlightedStr)) {
+                boolean highlighted = Boolean.parseBoolean(highlightedStr);
+                existingProduct.setIsFeatured(highlighted);
+                if (highlighted && StringUtils.hasText(highlightDurationStr)) {
+                    int highlightDuration = Integer.parseInt(highlightDurationStr);
+                    if (highlightDuration <= 0) {
+                        logger.warn("Invalid highlight duration: {}", highlightDurationStr);
+                        return ResponseEntity.badRequest().body(Map.of("message", "La durata deve essere positiva"));
+                    }
+                    existingProduct.setFeaturedUntil(LocalDateTime.now().plusDays(highlightDuration));
+                } else if (!highlighted) {
+                    existingProduct.setFeaturedUntil(null);
+                }
+            }
+            // Se highlightedStr non è fornito, i valori esistenti di isFeatured e featuredUntil restano invariati
+
+            logger.info("Calling dealerService.updateProduct for product: id={}, model={}", productId, existingProduct.getModel());
+            Product updatedProduct = dealerService.updateProduct(productId, existingProduct);
             logger.info("Product updated successfully: id={}, model={}", updatedProduct.getId(), updatedProduct.getModel());
 
+            // Prepara la risposta
             Map<String, Object> response = new HashMap<>();
             response.put("id", updatedProduct.getId());
             response.put("model", updatedProduct.getModel());
@@ -466,7 +511,9 @@ public class DealerController {
         logger.info("Accessing /dealers page");
         try {
             List<Dealer> dealers = dealerService.findAll();
+            List<User> user = userRepository.findAll();
             model.addAttribute("dealers", dealers);
+            model.addAttribute("user", user);
 
             return "dealers";
         } catch (Exception e) {
@@ -705,6 +752,30 @@ public class DealerController {
             logger.error("Errore durante il recupero del limite di evidenza: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Errore interno del server"));
+        }
+    }
+
+    @GetMapping("/dealers/{id}")
+    public String showDealerDetailPage(@PathVariable("id") Long id,
+                                       @RequestParam(value = "productId", required = false) Long productId,
+                                       Model model,
+                                       RedirectAttributes redirectAttributes) {
+        logger.info("Accessing dealer detail page for dealer ID: {}", id);
+        try {
+            Dealer dealer = dealerService.findById(id);
+            if (dealer == null) {
+                logger.error("Dealer not found: id={}", id);
+                redirectAttributes.addFlashAttribute("errorMessage", "Concessionario non trovato.");
+                return "redirect:/dealers"; // Redirect a /dealers
+            }
+            List<Product> products = dealerService.getProductsByDealerOwner(dealer);
+            model.addAttribute("dealer", dealer);
+            model.addAttribute("products", products);
+            return "dealer_detail";
+        } catch (Exception e) {
+            logger.error("Error loading dealer detail page: id={}, error={}", id, e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Errore nel caricamento della pagina del concessionario.");
+            return "redirect:/dealers"; // Redirect a /dealers in caso di errore
         }
     }
 }

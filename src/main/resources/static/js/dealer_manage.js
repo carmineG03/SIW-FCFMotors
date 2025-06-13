@@ -8,8 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const toast = document.getElementById('toast');
     const isFeaturedCheckbox = document.getElementById('dealer-car-highlighted');
     const featureDurationField = document.getElementById('dealer-car-feature-duration-field');
-    const editIsFeaturedCheckbox = document.getElementById('edit-product-highlighted');
-    const editFeatureDurationField = document.getElementById('edit-highlight-duration-field');
     const productsSection = document.getElementById('dealer-added-cars');
 
     // Debug: Verifica se la sezione prodotti esiste
@@ -298,11 +296,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (editIsFeaturedCheckbox && editFeatureDurationField) {
-        editIsFeaturedCheckbox.addEventListener('change', function() {
-            editFeatureDurationField.style.display = this.checked ? 'block' : 'none';
-        });
-    }
 
     const editDealerButton = document.getElementById('edit-dealer-button');
     const displayDealerDetails = document.getElementById('display-dealer-details');
@@ -441,28 +434,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     'edit-product-year': product.year || '',
                     'edit-product-fuelType': product.fuelType || '',
                     'edit-product-transmission': product.transmission || '',
-                    'edit-product-imageUrl': product.imageUrl || '',
-                    'edit-product-highlighted': product.isFeatured || false,
-                    'edit-product-highlight-duration': product.featuredUntil ?
-                        Math.ceil((new Date(product.featuredUntil) - new Date()) / (1000 * 60 * 60 * 24)) : ''
+                    'edit-product-imageUrl': product.imageUrl || ''
                 };
 
                 for (const [id, value] of Object.entries(fields)) {
                     const element = document.getElementById(id);
                     if (element) {
-                        if (id === 'edit-product-highlighted') {
-                            element.checked = value;
-                        } else {
-                            element.value = value;
-                        }
+                        element.value = value;
                     } else {
                         console.error(`Elemento con ID ${id} non trovato nel DOM`);
                     }
                 }
 
-                if (editFeatureDurationField) {
-                    editFeatureDurationField.style.display = product.isFeatured ? 'block' : 'none';
-                }
                 initializeSelectLabels(editProductForm);
                 openEditProductPopup();
             } else {
@@ -515,15 +498,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 year: formData.get('year') || '',
                 fuelType: formData.get('fuelType') || '',
                 transmission: formData.get('transmission') || '',
-                imageUrl: formData.get('imageUrl')?.trim() || '',
-                isFeatured: formData.get('isFeatured') === 'on',
-                featuredUntil: formData.get('featuredUntil') || ''
+                imageUrl: formData.get('imageUrl')?.trim() || ''
             };
 
             let isValid = true;
             const modelInput = document.getElementById('edit-product-model');
             const priceInput = document.getElementById('edit-product-price');
-            const featureDurationInput = document.getElementById('edit-product-highlight-duration');
 
             if (!productData.model) {
                 modelInput.classList.add('invalid');
@@ -537,13 +517,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 isValid = false;
             } else {
                 priceInput.classList.remove('invalid');
-            }
-
-            if (productData.isFeatured && (!productData.featuredUntil || parseInt(productData.featuredUntil) <= 0)) {
-                featureDurationInput.classList.add('invalid');
-                isValid = false;
-            } else if (featureDurationInput) {
-                featureDurationInput.classList.remove('invalid');
             }
 
             if (!isValid) {

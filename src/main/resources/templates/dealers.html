@@ -175,6 +175,112 @@
                 gap: 5px;
             }
         }
+
+        .dealer-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        /* Dealer Name/Link Styles */
+        .dealers-section .dealer-name-link {
+            margin: 0 0 15px 0;
+            padding: 0;
+            display: inline-block;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .dealers-section .dealer-name-link .dealer-link {
+            color: #003087; /* Blu primario */
+            text-decoration: none !important; /* Nessuna sottolineatura */
+            border: none !important; /* Nessun bordo */
+            outline: none !important; /* Nessun contorno */
+            position: relative;
+            padding: 5px 10px;
+            background: linear-gradient(45deg, transparent, transparent); /* Sfondo trasparente */
+            border-radius: 8px;
+            transition: color 0.3s ease, background 0.3s ease, transform 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Hover Effect */
+        .dealers-section .dealer-name-link .dealer-link:hover {
+            color: #FFFFFF;
+            background: linear-gradient(45deg, #F5A623, #E59400); /* Gradiente arancione */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-decoration: none !important; /* Nessuna sottolineatura su hover */
+        }
+
+        /* Focus State for Accessibility */
+        .dealers-section .dealer-name-link .dealer-link:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.5); /* Anello di focus */
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            text-decoration: none !important;
+        }
+
+        /* Icon Before Link */
+        .dealers-section .dealer-name-link .dealer-link::before {
+            content: '\f3c5'; /* Font Awesome location pin icon */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: #F5A623;
+            margin-right: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .dealers-section .dealer-name-link .dealer-link:hover::before {
+            color: #FFFFFF;
+        }
+
+        /* Prevenire qualsiasi pseudo-elemento indesiderato */
+        .dealers-section .dealer-name-link .dealer-link::after {
+            display: none !important; /* Nessun ::after */
+        }
+
+        /* Reset per link generici nella sezione */
+        .dealers-section a {
+            text-decoration: none !important;
+            border-bottom: none !important;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .dealers-section .dealer-name-link {
+                font-size: 1.3rem;
+            }
+            .dealers-section .dealer-name-link .dealer-link {
+                font-size: 1.1rem;
+                padding: 4px 8px;
+            }
+            .dealers-section .dealer-name-link .dealer-link::before {
+                font-size: 1rem;
+                margin-right: 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dealers-section .dealer-name-link {
+                font-size: 1.1rem;
+            }
+            .dealers-section .dealer-name-link .dealer-link {
+                font-size: 1rem;
+                padding: 3px 6px;
+            }
+            .dealers-section .dealer-name-link .dealer-link::before {
+                font-size: 0.9rem;
+                margin-right: 5px;
+            }
+        }
     </style>
 </head>
 
@@ -220,7 +326,9 @@
                 <p id="no-dealers-message">Nessun concessionario disponibile al momento.</p>
             </div>
             <div th:unless="${dealers == null or dealers.isEmpty()}" th:each="dealer : ${dealers}" class="dealer-item" th:id="'dealer-item-' + ${dealer.id}">
-                <h3 th:text="${dealer.name} ?: 'Nome non disponibile'"></h3>
+                <h3 class="dealer-name-link">
+                    <a th:href="@{/rest/dealers/{id}(id=${dealer.id})}" th:text="${dealer.name} ?: 'Nome non disponibile'"></a>
+                </h3>
                 <div th:if="${dealer.imagePath != null}">
                     <img th:src="@{${dealer.imagePath}}" th:alt="'Immagine concessionario'" style="width: 100%; height: auto; border-radius: 5px; margin-bottom: 10px;"/>
                 </div>
