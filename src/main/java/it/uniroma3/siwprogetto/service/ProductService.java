@@ -121,6 +121,10 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
+    public Product findById1(Long id) {
+        return productRepository.findById(id).orElse(null);
+    }
+
     // Salva un prodotto
     public Product save(Product product) {
         return productRepository.save(product);
@@ -180,4 +184,6 @@ public class ProductService {
         product.setFeaturedUntil(featuredUntil);
         productRepository.save(product);
     }
+
+
 }

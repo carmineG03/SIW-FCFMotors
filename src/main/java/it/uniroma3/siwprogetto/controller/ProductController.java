@@ -1,5 +1,6 @@
 package it.uniroma3.siwprogetto.controller;
 
+import it.uniroma3.siwprogetto.model.Product;
 import it.uniroma3.siwprogetto.service.CartService;
 import it.uniroma3.siwprogetto.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +9,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/manutenzione")
@@ -41,5 +45,8 @@ public class ProductController {
         // Reindirizza a /manutenzione/prodotti con il parametro query
         return "redirect:/manutenzione/prodotti?query=" + query;
     }
+
+
+
 
 }

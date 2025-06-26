@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/products")
@@ -193,4 +194,22 @@ public class ProductsController {
         redirectAttributes.addFlashAttribute("success", "Richiesta di preventivo inviata con successo!");
         return "redirect:/products";
     }
+
+    @GetMapping("/{id}")
+    public String getProductDetails(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Product product = productService.findById(id).orElse(null);
+        if (product == null) {
+            redirectAttributes.addFlashAttribute("error", "Prodotto non trovato");
+            return "redirect:/products";
+        }
+        model.addAttribute("product", product);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = authentication != null && authentication.isAuthenticated() &&
+                !"anonymousUser".equals(authentication.getPrincipal());
+        model.addAttribute("isAuthenticated", isAuthenticated);
+
+        return "product-detail";
+    }
+
 }
