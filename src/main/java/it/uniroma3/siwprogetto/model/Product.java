@@ -3,6 +3,7 @@ package it.uniroma3.siwprogetto.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -16,9 +17,6 @@ public class Product {
 
     @Column(nullable = false)
     private BigDecimal price;
-
-    @Column(length = 1000)
-    private String imageUrl;
 
     @Column(length = 100)
     private String category;
@@ -48,7 +46,8 @@ public class Product {
 
     private LocalDateTime featuredUntil;
 
-    public Product() {}
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Image> images;
 
     // Getters e Setters
     public Long getId() { return id; }
@@ -57,8 +56,6 @@ public class Product {
     public void setDescription(String description) { this.description = description; }
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
     public String getBrand() { return brand; }
@@ -84,4 +81,6 @@ public class Product {
     public boolean isFeaturedActive() {
         return isFeatured && (featuredUntil == null || LocalDateTime.now().isBefore(featuredUntil));
     }
+    public List<Image> getImages() { return images; }
+    public void setImages(List<Image> images) { this.images = images; }
 }

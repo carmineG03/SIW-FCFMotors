@@ -1,172 +1,132 @@
 <!DOCTYPE html>
-<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-    <title>Gestione Concessionario</title>
+    <title>Gestione Concessionario - FCF Motors</title>
+    <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
     <style>
-        /* Stili per evidenziazione prodotto */
-        .product-card.highlighted {
-            border: 2px solid #ffd700;
-            background-color: #fffde7;
+        /* Stile generale per la pagina */
+        body {
+            background: linear-gradient(135deg, #010A33, #003087);
+            color: #FFFFFF;
+            font-family: 'Open Sans', sans-serif;
         }
-        .highlight-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #ffd700;
-            color: #333;
-            padding: 5px 10px;
-            border-radius: 12px;
-            font-size: 0.8em;
-            font-weight: bold;
+        .dealer-details, .dealer-added-cars, .add-car-section {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        /* Stili per validazione input */
-        .invalid {
-            border-color: red !important;
-            animation: shake 0.3s;
+        .dealer-details h2 {
+            color: #F5A623;
+            font-family: 'Bungee Spice', sans-serif;
+            text-transform: uppercase;
+            margin-bottom: 20px;
         }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+        .dealer-details p {
+            margin: 10px 0;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        /* Stili per spinner di caricamento */
-        .spinner {
-            display: none;
-            margin-left: 5px;
+        .dealer-details p i {
+            color: #F5A623;
+            font-size: 1.2rem;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .spinner.active {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #FFFFFF;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        /* Stili per toast di notifica */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
+        .edit-dealer-button, .add-car-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
             padding: 10px 20px;
+            border: none;
             border-radius: 5px;
-            color: white;
-            z-index: 1000;
-            transition: opacity 0.3s, transform 0.3s;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+            font-weight: 600;
         }
-        .toast.success {
-            background-color: #28a745;
+        .edit-dealer-button:hover, .add-car-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #E59400, #F5A623);
         }
-        .toast.error {
-            background-color: #dc3545;
+
+        /* Carosello per immagini del concessionario */
+        .dealer-images-carousel {
+            position: relative;
+            max-width: 100%;
+            height: 250px;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
         }
-        /* Stili per animazioni sezioni */
-        .animated-section {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s, transform 0.5s;
-        }
-        .animated-section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .product-card {
-            opacity: 0;
-            transform: scale(0.95);
-            transition: opacity 0.3s, transform 0.3s;
-        }
-        .product-card.visible {
-            opacity: 1;
-            transform: scale(1);
-        }
-        /* Stili per immagini */
-        .image-container {
+        .dealer-images-carousel .dealer-image-item {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 250px;
-            margin: 0 auto;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        .image-container img {
+        .dealer-images-carousel .dealer-image-item.active {
+            opacity: 1;
+        }
+        .dealer-images-carousel .dealer-image-item img {
             width: 100%;
-            height: auto;
+            height: 100%;
             object-fit: cover;
-            border-radius: 8px;
-            margin-right: 0;
+            border-radius: 10px;
         }
-       
-        /* Stili per select dropdown */
-    .input-field select {
-        width: 100%;
-        padding: 12px 12px 12px 40px; /* Matches input padding */
-        background: rgba(255, 255, 255, 0.1); /* Matches input background */
-        border: 1px solid rgba(255, 255, 255, 0.5); /* Matches input border */
-        border-radius: 8px; /* Matches input border-radius */
-        font-size: 14px; /* Matches input font-size */
-        color: #FFFFFF; /* Matches input text color */
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Matches input text-shadow */
-        outline: none; /* Removes default outline */
-        transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Matches input transition */
-        appearance: none; /* Removes default browser styling */
-        -webkit-appearance: none; /* For Safari */
-        -moz-appearance: none; /* For Firefox */
-        background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); /* Custom arrow */
-        background-repeat: no-repeat;
-        background-position: right 12px center;
-        background-size: 16px;
-    }
+        .dealer-carousel-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        .dealer-carousel-btn {
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            pointer-events: all;
+            border-radius: 5px;
+        }
+        .dealer-carousel-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+        .dealer-dots {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .dealer-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .dealer-dot.active {
+            background: #F5A623;
+        }
 
-    .input-field select:focus {
-        border-color: #F5A623; /* Matches input focus border color */
-        box-shadow: 0 0 8px rgba(245, 166, 35, 0.3); /* Matches input focus shadow */
-    }
-
-    .input-field select option {
-        background: rgba(0, 0, 0, 0.8); /* Dark background for options */
-        color: #FFFFFF; /* White text for options */
-        font-size: 14px; /* Matches input font-size */
-    }
-
-    /* Ensure label alignment for select fields */
-    .input-field select + label {
-        position: absolute;
-        top: 50%;
-        left: 15px;
-        transform: translateY(-50%);
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 14px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        pointer-events: none;
-        display: flex;
-        align-items: center;
-        max-width: calc(100% - 30px);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .input-field select:focus + label,
-    .input-field select:not(:placeholder-shown) + label {
-        top: -10px;
-        left: 10px;
-        font-size: 12px;
-        color: #F5A623;
-        background: rgba(0, 0, 0, 0.8);
-        padding: 2px 6px;
-        border-radius: 4px;
-        max-width: fit-content;
-    }
-        /* Stili per popup di modifica */
-        .edit-product-popup {
+        /* Stile per i popup */
+        .modal-overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -177,55 +137,451 @@
             z-index: 1000;
             justify-content: center;
             align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        .edit-product-popup-content {
-            background: rgba(0, 0, 0, 0.8);
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 30px;
-            border-radius: 10px;
+            border-radius: 15px;
             max-width: 600px;
             width: 90%;
-            max-height: 80vh;
+            max-height: 90vh;
             overflow-y: auto;
-            color: #FFFFFF;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
             position: relative;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
         }
-        .edit-product-popup-content h2 {
-            font-size: 1.8rem;
+        .modal-content.show {
+            transform: translateY(0);
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
             color: #F5A623;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: color 0.2s ease;
+            z-index: 1001;
+        }
+        .close-modal:hover {
+            color: #E59400;
+        }
+        .modal-content h2 {
+            color: #F5A623;
             margin-bottom: 20px;
             text-align: center;
         }
-        .close-popup {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 28px;
+        .modal-content form div {
+            margin-bottom: 15px;
+        }
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+        .modal-content input, .modal-content textarea, .modal-content select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFFF;
+            transition: border-color 0.2s ease;
+            box-sizing: border-box;
+        }
+        .modal-content input:focus, .modal-content textarea:focus, .modal-content select:focus {
+            border-color: #F5A623;
+            outline: none;
+        }
+        .modal-content button[type="submit"] {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+            font-weight: 600;
+            display: block;
+            margin: 20px auto 0;
+        }
+        .modal-content button[type="submit"]:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #E59400, #F5A623);
+        }
+        .modal-content .spinner {
+            display: none;
+            margin-left: 10px;
+        }
+        .modal-content .spinner.active {
+            display: inline-block;
+        }
+
+        /* Carosello immagini nel modal */
+        .modal-image-carousel {
+            position: relative;
+            max-width: 100%;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+        }
+        .modal-image-carousel.has-images {
+            border: none;
+        }
+        .modal-image-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-image-item.active {
+            opacity: 1;
+        }
+        .modal-image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .modal-image-placeholder {
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            font-size: 1rem;
+        }
+        .modal-carousel-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        .modal-carousel-btn {
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: #fff;
+            font-size: 1.2rem;
+            padding: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            pointer-events: all;
+            border-radius: 3px;
+        }
+        .modal-carousel-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+        .modal-dots {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .modal-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            margin: 0 3px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .modal-dot.active {
+            background: #F5A623;
+        }
+
+        .invalid {
+            border: 2px solid #dc3545 !important;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 10000;
+        }
+        .toast.success {
+            background: #28a745;
+        }
+        .toast.error {
+            background: #dc3545;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .dealer-added-cars h2 {
             color: #F5A623;
-            transition: color 0.3s ease;
+            text-align: center;
+            margin-bottom: 20px;
         }
-        .close-popup:hover {
-            color: #E59400;
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
         }
-        @media (max-width: 768px) {
-            .edit-product-popup-content {
-                padding: 20px;
-                max-width: 90%;
-            }
-            .edit-product-popup-content h2 {
-                font-size: 1.5rem;
-            }
+        .car-card {
+            padding: 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
         }
-        @media (max-width: 480px) {
-            .edit-product-popup-content {
-                padding: 15px;
-            }
-            .edit-product-popup-content h2 {
-                font-size: 1.3rem;
-            }
+        .car-card:hover {
+            transform: translateY(-5px);
+        }
+        .carousel {
+            position: relative;
+            max-width: 100%;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .category-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .category-item.active {
+            opacity: 1;
+        }
+        .category-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        .carousel-btn {
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            pointer-events: all;
+        }
+        .carousel-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+        .dots {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .dot.active {
+            background: #F5A623;
+        }
+        .edit-product-link, .delete-product-link, .highlight-product-link, .remove-highlight-product-link {
+            margin: 5px;
+            padding: 5px 10px;
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #fff;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        .edit-product-link:hover, .delete-product-link:hover, .highlight-product-link:hover, .remove-highlight-product-link:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+        }
+        .highlight-product-link.disabled, .remove-highlight-product-link.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-toggle {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .dropdown-toggle:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #E59400, #F5A623);
+        }
+        .dropdown-toggle i {
+            font-size: 1.2rem;
+            color: #FFFFFF;
+            transition: transform 0.3s ease;
+        }
+        .dropdown-toggle.open i.fa-bars {
+            transform: rotate(90deg);
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            z-index: 1000;
+            min-width: 200px;
+            padding: 10px 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .dropdown-menu.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .dropdown-menu a i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            color: #F5A623;
+        }
+        .dropdown-menu a:hover {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            transform: translateX(5px);
+            border-left: 3px solid #FFFFFF;
+        }
+        .dropdown-menu a:hover i {
+            color: #FFFFFF;
+        }
+
+        /* Footer styles */
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 40px 20px 20px;
+            margin-top: 50px;
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        .footer-section h4 {
+            color: #F5A623;
+            margin-bottom: 15px;
+        }
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+        .footer-section ul li a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .footer-section ul li a:hover {
+            color: #F5A623;
+        }
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Header styles */
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        .logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
+        .logo-container {
+            margin-right: 15px;
+        }
+        .logo {
+            height: 40px;
+            width: auto;
+        }
+        .main-title {
+            color: #F5A623;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0;
         }
     </style>
 </head>
@@ -236,303 +592,340 @@
             <div class="logo-container">
                 <img src="/image/logo1.png" alt="Logo" class="logo">
             </div>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
+            </div>
         </a>
-        <div class="title-container">
-            <h2 class="main-title">FCF MOTORS</h2>
-            <a th:href="@{/products}" class="products-button">
-                <i class="fas fa-car"></i> Prodotti
-            </a>
-            <a th:href="@{/dealers}" class="dealers-button">
-                <i class="fas fa-store"></i> Concessionari
-            </a>
-        </div>
     </div>
-    <div class="nav-container">
-        <nav class="nav-bar">
-            <a th:href="@{/cart}" class="icon-button">
-                <i class="fas fa-shopping-cart"></i>
-            </a>
-            <a th:href="@{/account}" class="icon-button">
-                <i class="fas fa-user"></i>
-            </a>
-        </nav>
+    <div class="header-right">
+        <div class="dropdown">
+            <button class="dropdown-toggle" aria-label="Menu" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu" role="menu">
+                <a th:href="@{/products}" role="menuitem"><i class="fas fa-car"></i> Trova Auto</a>
+                <a th:href="@{/dealers}" role="menuitem"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:href="@{/cart}" role="menuitem"><i class="fas fa-shopping-cart"></i> Carrello</a>
+            </div>
+        </div>
     </div>
 </header>
 
 <main>
-    <div class="two-column-container shared-background">
-        <!-- Colonna Dettagli Concessionario -->
-        <div class="dealer-details-column">
-            <div class="hero-content">
-                <h2>Gestione Concessionario</h2>
-                <div id="display-dealer-details" class="animated-section visible">
-                    <div class="input-field display-field">
-                        <label for="display-name"><i class="fas fa-store"></i> Nome Concessionario</label>
-                        <span id="display-name" th:text="${dealer.name}"></span>
-                    </div>
-                    <div class="input-field display-field">
-                        <label for="display-description"><i class="fas fa-file-alt"></i> Descrizione</label>
-                        <span id="display-description" th:text="${dealer.description} ?: ''"></span>
-                    </div>
-                    <div class="input-field display-field">
-                        <label for="display-address"><i class="fas fa-map-marker-alt"></i> Indirizzo</label>
-                        <span id="display-address" th:text="${dealer.address} ?: ''"></span>
-                    </div>
-                    <div class="input-field display-field">
-                        <label for="display-phone"><i class="fas fa-phone"></i> Telefono</label>
-                        <span id="display-phone" th:text="${dealer.phone} ?: ''"></span>
-                    </div>
-                    <div class="input-field display-field">
-                        <label for="display-email"><i class="fas fa-envelope"></i> Email</label>
-                        <span id="display-email" th:text="${dealer.email} ?: ''"></span>
-                    </div>
-                    <div class="input-field display-field">
-                        <label for="dealer-image"><i class="fas fa-image"></i> Immagine Concessionario</label>
-                        <div class="image-container">
-                            <img id="dealer-image" class="dealer-image" th:src="${dealer.imagePath} ?: 'https://via.placeholder.com/300x200?text=Immagine+Non+Disponibile'" alt="Immagine Concessionario">
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <a href="#" id="edit-dealer-button" class="modern-button"><i class="fas fa-edit"></i> Modifica</a>
-                        <a th:href="@{'/rest/dealer/quote-requests/' + ${dealer.id}}" class="modern-button"><i class="fas fa-envelope"></i> Visualizza Richieste di Preventivo</a>
-                        <a th:if="${dealer != null and dealer.id != null}" th:href="@{/rest/manutenzione/dealer/delete_dealer/{id}(id=${dealer.id})}" th:id="'delete-dealer-link-' + ${dealer.id}" class="modern-button cancel-button"><i class="fas fa-trash"></i> Elimina</a>
-                        <a th:unless="${dealer != null and dealer.id != null}" href="#" class="modern-button cancel-button disabled" onclick="alert('Impossibile eliminare: concessionario non valido'); return false;"><i class="fas fa-trash"></i> Elimina</a>
-                    </div>
-                </div>
-                <form id="dealership-form" class="modern-form" style="display: none;" aria-labelledby="dealership-form-title" th:action="@{/rest/api/dealers}" method="post">
-                    <h2 id="dealership-form-title">Modifica Concessionario</h2>
-                    <input type="hidden" name="id" th:value="${dealer.id}">
-                    <div class="input-field">
-                        <label for="edit-dealership-name"><i class="fas fa-store"></i> Nome Concessionario</label>
-                        <input type="text" id="edit-dealership-name" name="name" th:value="${dealer.name}" required aria-required="true">
-                    </div>
-                    <div class="input-field">
-                        <label for="edit-dealership-description"><i class="fas fa-file-alt"></i> Descrizione</label>
-                        <textarea id="edit-dealership-description" name="description" rows="4" th:text="${dealer.description}"></textarea>
-                    </div>
-                    <div class="input-field">
-                        <label for="edit-dealership-address"><i class="fas fa-map-marker-alt"></i> Indirizzo</label>
-                        <input type="text" id="edit-dealership-address" name="address" th:value="${dealer.address}">
-                    </div>
-                    <div class="input-field">
-                        <label for="edit-dealership-phone"><i class="fas fa-phone"></i> Telefono</label>
-                        <input type="tel" id="edit-dealership-phone" name="phone" th:value="${dealer.phone}" pattern="\+?[0-9\s\-]{6,15}" title="Inserisci un numero di telefono valido (es. +39 123 456 7890)">
-                    </div>
-                    <div class="input-field">
-                        <label for="edit-dealership-email"><i class="fas fa-envelope"></i> Email</label>
-                        <input type="email" id="edit-dealership-email" name="email" th:value="${dealer.email}" title="Inserisci un indirizzo email valido">
-                    </div>
-                    <div class="input-field">
-                        <label for="edit-dealership-imagePath"><i class="fas fa-image"></i> URL Immagine</label>
-                        <input type="url" id="edit-dealership-imagePath" name="imagePath" th:value="${dealer.imagePath}">
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva <span class="spinner"></span></button>
-                        <button type="button" id="cancel-edit-dealer" class="modern-button cancel-button"><i class="fas fa-times"></i> Annulla</button>
-                    </div>
-                </form>
+    <!-- Sezione dettagli concessionario -->
+    <section class="dealer-details">
+        <!-- Carosello immagini del concessionario -->
+        <div th:if="${dealer.images != null and !dealer.images.isEmpty()}" class="dealer-images-carousel">
+            <div th:each="image, iterStat : ${dealer.images}" th:classappend="${iterStat.index == 0} ? 'dealer-image-item active' : 'dealer-image-item'">
+                <img th:src="@{/rest/api/images/{id}(id=${image.id})}" th:alt="'Immagine ' + ${dealer.name}"/>
+            </div>
+            <div class="dealer-carousel-nav">
+                <button class="dealer-carousel-btn prev"><i class="fas fa-chevron-left"></i></button>
+                <button class="dealer-carousel-btn next"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="dealer-dots">
+                <span th:each="image, iterStat : ${dealer.images}" th:classappend="${iterStat.index == 0} ? 'dealer-dot active' : 'dealer-dot'"></span>
             </div>
         </div>
 
-        <!-- Colonna Aggiungi una Macchina -->
-        <div class="add-car-column">
-            <div class="hero-content">
-                <h2>Aggiungi una Macchina</h2>
-                <form id="dealer-add-car-form" class="modern-form" th:action="@{/rest/api/products}" method="post" aria-labelledby="add-car-form-title">
-                    <input type="hidden" name="dealerId" th:value="${dealer.id}">
-                    <h2 id="add-car-form-title" style="display: none;">Aggiungi Auto</h2>
-                    <div class="input-field">
-                        <label for="dealer-car-brand"><i class="fas fa-industry"></i> Marca</label>
-                        <input type="text" id="dealer-car-brand" name="brand">
+        <h2 th:text="${dealer.name}">Nome Concessionario</h2>
+        <p th:text="${dealer.description} ?: 'Nessuna descrizione disponibile'">Descrizione concessionario</p>
+        <p><i class="fas fa-map-marker-alt"></i> <span th:text="'Indirizzo: ' + ${dealer.address} ?: 'Indirizzo non disponibile'">Indirizzo: Via Roma 123</span></p>
+        <p><i class="fas fa-phone"></i> <span th:text="'Telefono: ' + ${dealer.phone} ?: 'Telefono non disponibile'">Telefono: +39 123 456 789</span></p>
+        <p><i class="fas fa-envelope"></i> <span th:text="'Email: ' + ${dealer.email} ?: 'Email non disponibile'">Email: info@dealer.com</span></p>
+        <button class="edit-dealer-button" id="edit-dealer-button">Modifica Concessionario</button>
+    </section>
+
+    <!-- Modal per modificare concessionario -->
+    <div id="edit-dealer-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" id="close-edit-dealer">×</span>
+            <h2>Modifica Concessionario</h2>
+
+            <!-- Carosello per preview immagini -->
+            <div id="dealer-image-preview" class="modal-image-carousel">
+                <div class="modal-image-item active">
+                    <div class="modal-image-placeholder">
+                        <i class="fas fa-images" style="font-size: 2rem; margin-bottom: 10px;"></i><br>
+                        Seleziona immagini per vedere l'anteprima
                     </div>
-                    <div class="input-field">
-                        <label for="dealer-car-model"><i class="fas fa-car"></i> Modello</label>
-                        <input type="text" id="dealer-car-model" name="model" required aria-required="true">
-                    </div>
-                    <div class="input-field">
-                        <label for="dealer-car-category"><i class="fas fa-tags"></i> Categoria</label>
-                        <select id="dealer-car-category" name="category">
-                            <option value="">Seleziona...</option>
-                            <option value="Berlina">Berlina</option>
-                            <option value="City Car">City Car</option>
-                            <option value="SUV">SUV</option>
-                            <option value="Sportiva">Sportiva</option>
-                            <option value="Station Wagon">Station Wagon</option>
-                            <option value="Elettrica">Elettrica</option>
-                        </select>
-                    </div>
-                    <div class="input-field">
-                        <label for="dealer-car-description"><i class="fas fa-file-alt"></i> Descrizione</label>
-                        <textarea id="dealer-car-description" name="description" rows="4"></textarea>
-                    </div>
-                    <div class="input-field">
-                        <label for="dealer-car-price"><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
-                        <input type="number" id="dealer-car-price" name="price" required step="0.01" min="0.01" aria-required="true">
-                    </div>
-                    <div class="input-field">
-                        <label for="dealer-car-mileage"><i class="fas fa-tachometer-alt"></i> Chilometraggio (km)</label>
-                        <input type="number" id="dealer-car-mileage" name="mileage" min="0">
-                    </div>
-                    <div class="input-field">
-                        <label for="dealer-car-year"><i class="fas fa-calendar-alt"></i> Anno</label>
-                        <input type="number" id="dealer-car-year" name="year" min="1900" max="2025">
-                    </div>
-                    <div class="input-field">
-                        <label for="dealer-car-fuelType"><i class="fas fa-gas-pump"></i> Tipo di carburante</label>
-                        <select id="dealer-car-fuelType" name="fuelType">
-                            <option value="">Seleziona...</option>
-                            <option value="Benzina">Benzina</option>
-                            <option value="Diesel">Diesel</option>
-                            <option value="Elettrico">Elettrico</option>
-                            <option value="Ibrido">Ibrido</option>
-                            <option value="GPL">GPL</option>
-                            <option value="Metano">Metano</option>
-                        </select>
-                    </div>
-                    <div class="input-field">
-                        <label for="dealer-car-transmission"><i class="fas fa-cogs"></i> Trasmissione</label>
-                        <select id="dealer-car-transmission" name="transmission">
-                            <option value="">Seleziona...</option>
-                            <option value="Manuale">Manuale</option>
-                            <option value="Automatico">Automatico</option>
-                        </select>
-                    </div>
-                    <div class="input-field">
-                        <label for="dealer-car-imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
-                        <input type="url" id="dealer-car-imageUrl" name="imageUrl">
-                    </div>
-                    <div class="input-field">
-                        <label for="dealer-car-highlighted"><i class="fas fa-star"></i> Metti in Evidenza</label>
-                        <input type="checkbox" id="dealer-car-highlighted" name="isFeatured">
-                    </div>
-                    <div class="input-field" id="dealer-car-feature-duration-field" style="display: none;">
-                        <label for="dealer-car-feature-duration"><i class="fas fa-clock"></i> Durata Evidenza (giorni)</label>
-                        <input type="number" id="dealer-car-feature-duration" name="featuredUntil" min="1" step="1">
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="modern-button"><i class="fas fa-plus"></i> Aggiungi <span class="spinner"></span></button>
-                    </div>
-                </form>
+                </div>
+                <div class="modal-carousel-nav" style="display: none;">
+                    <button class="modal-carousel-btn prev" type="button"><i class="fas fa-chevron-left"></i></button>
+                    <button class="modal-carousel-btn next" type="button"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="modal-dots" style="display: none;"></div>
             </div>
+
+            <form id="edit-dealer-form" th:action="@{/rest/api/dealers/{id}(id=${dealer.id})}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="_method" value="PUT"/>
+                <input type="hidden" name="id" th:value="${dealer.id}"/>
+                <div>
+                    <label for="edit-dealership-name">Nome *</label>
+                    <input type="text" id="edit-dealership-name" name="name" th:value="${dealer.name}" required/>
+                </div>
+                <div>
+                    <label for="edit-dealership-description">Descrizione</label>
+                    <textarea id="edit-dealership-description" name="description" th:text="${dealer.description}"></textarea>
+                </div>
+                <div>
+                    <label for="edit-dealership-address">Indirizzo</label>
+                    <input type="text" id="edit-dealership-address" name="address" th:value="${dealer.address}"/>
+                </div>
+                <div>
+                    <label for="edit-dealership-phone">Telefono</label>
+                    <input type="text" id="edit-dealership-phone" name="phone" th:value="${dealer.phone}"/>
+                </div>
+                <div>
+                    <label for="edit-dealership-email">Email</label>
+                    <input type="email" id="edit-dealership-email" name="email" th:value="${dealer.email}"/>
+                </div>
+                <div>
+                    <label for="edit-dealership-images">Nuove Immagini (max 4, sostituiranno quelle esistenti)</label>
+                    <input type="file" id="edit-dealership-images" name="images" multiple accept="image/*"/>
+                    <small style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; display: block; margin-top: 5px;">
+                        Lascia vuoto per mantenere le immagini attuali
+                    </small>
+                </div>
+                <button type="submit">Salva Modifiche</button>
+                <span class="spinner"><i class="fas fa-spinner fa-spin"></i></span>
+            </form>
         </div>
     </div>
 
-    <!-- Sezione Macchine Aggiunte -->
-    <section id="dealer-added-cars" class="products-section animated-section">
-    <h3>Macchine Aggiunte</h3>
-    <div class="car-grid">
-        <div th:each="product : ${products}" th:classappend="${product.isFeatured and product.isFeaturedActive} ? 'car-card animated-card highlighted' : 'car-card animated-card'">
-            <div class="car-image">
-                <img th:src="${product.imageUrl} ?: '/images/placeholder.jpg'" alt="Immagine Auto">
-                <span th:if="${product.isFeatured and product.isFeaturedActive}" class="highlight-badge">In Evidenza</span>
-            </div>
-            <div class="car-info">
-                <h4 th:text="${product.brand} + ' ' + ${product.model}"></h4>
-                <p class="price" th:text="${product.price} + ' €'"></p>
-                <p class="details" th:text="${product.fuelType} ? ${product.fuelType} + ' • ' + ${product.transmission} : '-'"></p>
-            </div>
-            <div class="car-actions">
-                <a href="#" th:attr="data-product-id=${product.id}" class="modern-button edit-product-link"><i class="fas fa-edit"></i></a>
-                <a href="#" th:attr="data-product-id=${product.id}" class="modern-button delete-product-link cancel-button"><i class="fas fa-trash"></i></a>
-                <a href="#" th:attr="data-product-id=${product.id}" class="modern-button highlight-product-link" th:if="${!product.isFeatured or !product.isFeaturedActive}"><i class="fas fa-star"></i></a>
-                <a href="#" th:attr="data-product-id=${product.id}" class="modern-button remove-highlight-product-link cancel-button" th:if="${product.isFeatured and product.isFeaturedActive}"><i class="fas fa-star"></i></a>
-            </div>
-        </div>
-    </div>
-    <div th:if="${products.isEmpty()}" class="no-products">
-        <i class="fas fa-car no-products-icon"></i>
-        Nessuna macchina aggiunta
-    </div>
-    <div class="form-actions">
-        <a th:href="@{/dealers}" class="modern-button back-button"><i class="fas fa-arrow-left"></i> Torna ai concessionari</a>
-    </div>
-</section>
-        
+    <!-- Sezione aggiungi auto -->
+    <section class="add-car-section">
+        <button class="add-car-button" id="add-car-button">Aggiungi Auto</button>
+    </section>
 
-    <!-- Pop-up per Modifica Auto -->
-    <div class="edit-product-popup" id="edit-product-popup">
-        <div class="edit-product-popup-content">
-            <span class="close-popup" id="close-edit-product-popup"></span>
-            <form id="edit-product-form" class="modern-form" aria-labelledby="edit-product-form-title" th:action="@{/rest/api/products}" method="post" onsubmit="return false;">
-                <h2 id="edit-product-form-title">Modifica Auto</h2>
-                <input type="hidden" name="_method" value="PUT">
-                <input type="hidden" id="edit-product-id" name="id">
-                <input type="hidden" name="dealerId" th:value="${dealer.id}">
-                <div class="input-field">
-                    <label for="edit-product-model"><i class="fas fa-car"></i> Modello</label>
-                    <input type="text" id="edit-product-model" name="model" required aria-required="true">
+    <!-- Modal per aggiungere auto -->
+    <div id="add-car-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" id="close-add-car">×</span>
+            <h2>Aggiungi Auto</h2>
+
+            <!-- Carosello per preview immagini auto -->
+            <div id="car-image-preview" class="modal-image-carousel">
+                <div class="modal-image-item active">
+                    <div class="modal-image-placeholder">
+                        <i class="fas fa-car" style="font-size: 2rem; margin-bottom: 10px;"></i><br>
+                        Seleziona immagini per vedere l'anteprima
+                    </div>
                 </div>
-                <div class="input-field">
-                    <label for="edit-product-brand"><i class="fas fa-industry"></i> Marca</label>
-                    <input type="text" id="edit-product-brand" name="brand">
+                <div class="modal-carousel-nav" style="display: none;">
+                    <button class="modal-carousel-btn prev" type="button"><i class="fas fa-chevron-left"></i></button>
+                    <button class="modal-carousel-btn next" type="button"><i class="fas fa-chevron-right"></i></button>
                 </div>
-                <div class="input-field">
-                    <label for="dealer-car-category"><i class="fas fa-tags"></i> Categoria</label>
-                        <select id="dealer-car-category" name="category">
-                            <option value="">Seleziona...</option>
-                            <option value="Berlina">Berlina</option>
-                            <option value="City Car">City Car</option>
-                            <option value="SUV">SUV</option>
-                            <option value="Sportiva">Sportiva</option>
-                            <option value="Station Wagon">Station Wagon</option>
-                            <option value="Elettrica">Elettrica</option>
-                        </select>
+                <div class="modal-dots" style="display: none;"></div>
+            </div>
+
+            <form id="dealer-add-car-form" th:action="@{/rest/api/products}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="dealerId" th:value="${dealer.id}"/>
+                <div>
+                    <label for="dealer-car-model">Modello *</label>
+                    <input type="text" id="dealer-car-model" name="model" required/>
                 </div>
-                <div class="input-field">
-                    <label for="edit-product-description"><i class="fas fa-file-alt"></i> Descrizione</label>
-                    <textarea id="edit-product-description" name="description" rows="4"></textarea>
+                <div>
+                    <label for="dealer-car-brand">Marca</label>
+                    <input type="text" id="dealer-car-brand" name="brand"/>
                 </div>
-                <div class="input-field">
-                    <label for="edit-product-price"><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
-                    <input type="number" id="edit-product-price" name="price" required step="0.01" min="0.01" aria-required="true">
+                <div>
+                    <label for="dealer-car-category">Categoria</label>
+                    <select id="dealer-car-category" name="category">
+                        <option value="">Seleziona</option>
+                        <option value="SUV">SUV</option>
+                        <option value="Sedan">Sedan</option>
+                        <option value="Sportiva">Sportiva</option>
+                    </select>
                 </div>
-                <div class="input-field">
-                    <label for="edit-product-mileage"><i class="fas fa-tachometer-alt"></i> Chilometraggio (km)</label>
-                    <input type="number" id="edit-product-mileage" name="mileage" min="0">
+                <div>
+                    <label for="dealer-car-description">Descrizione</label>
+                    <textarea id="dealer-car-description" name="description"></textarea>
                 </div>
-                <div class="input-field">
-                    <label for="edit-product-year"><i class="fas fa-calendar-alt"></i> Anno</label>
-                    <input type="number" id="edit-product-year" name="year" min="1900" max="2025">
+                <div>
+                    <label for="dealer-car-price">Prezzo (€) *</label>
+                    <input type="number" id="dealer-car-price" name="price" step="0.01" required/>
                 </div>
-                <div class="input-field">
-                    <label for="edit-product-fuelType"><i class="fas fa-gas-pump"></i> Tipo di carburante</label>
-                    <select id="edit-product-fuelType" name="fuelType">
-                        <option value="">Seleziona...</option>
+                <div>
+                    <label for="dealer-car-mileage">Chilometraggio</label>
+                    <input type="number" id="dealer-car-mileage" name="mileage"/>
+                </div>
+                <div>
+                    <label for="dealer-car-year">Anno</label>
+                    <input type="number" id="dealer-car-year" name="year"/>
+                </div>
+                <div>
+                    <label for="dealer-car-fuelType">Carburante</label>
+                    <select id="dealer-car-fuelType" name="fuelType">
+                        <option value="">Seleziona</option>
                         <option value="Benzina">Benzina</option>
                         <option value="Diesel">Diesel</option>
                         <option value="Elettrico">Elettrico</option>
-                        <option value="Ibrido">Ibrido</option>
-                        <option value="GPL">GPL</option>
-                        <option value="Metano">Metano</option>
                     </select>
                 </div>
-                <div class="input-field">
-                    <label for="edit-product-transmission"><i class="fas fa-cogs"></i> Trasmissione</label>
-                    <select id="edit-product-transmission" name="transmission">
-                        <option value="">Seleziona...</option>
+                <div>
+                    <label for="dealer-car-transmission">Trasmissione</label>
+                    <select id="dealer-car-transmission" name="transmission">
+                        <option value="">Seleziona</option>
                         <option value="Manuale">Manuale</option>
                         <option value="Automatico">Automatico</option>
                     </select>
                 </div>
-                <div class="input-field">
-                    <label for="edit-product-imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
-                    <input type="url" id="edit-product-imageUrl" name="imageUrl">
+                <div>
+                    <label for="dealer-car-images">Immagini (max 10) *</label>
+                    <input type="file" id="dealer-car-images" name="images" multiple accept="image/*" required/>
                 </div>
-                <div class="form-actions">
-                    <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva <span class="spinner"></span></button>
-                    <button type="button" id="cancel-edit-product" class="modern-button cancel-button"><i class="fas fa-times"></i> Annulla</button>
+                <div>
+                    <label for="dealer-car-highlighted">
+                        <input type="checkbox" id="dealer-car-highlighted" name="isFeatured"/>
+                        In Evidenza
+                    </label>
                 </div>
+                <div id="dealer-car-feature-duration-field" style="display: none;">
+                    <label for="dealer-car-feature-duration">Durata Evidenza (giorni)</label>
+                    <input type="number" id="dealer-car-feature-duration" name="featuredUntil"/>
+                </div>
+                <button type="submit">Aggiungi</button>
+                <span class="spinner"><i class="fas fa-spinner fa-spin"></i></span>
             </form>
         </div>
     </div>
-    <!-- Toast -->
-    <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+
+    <!-- Sezione auto aggiunte -->
+    <section class="dealer-added-cars" id="dealer-added-cars">
+        <h2>Auto Aggiunte</h2>
+        <div th:if="${products == null or products.isEmpty()}">
+            <p>Nessuna auto aggiunta al momento.</p>
+        </div>
+        <div th:unless="${products == null or products.isEmpty()}" class="car-grid">
+            <div th:each="product : ${products}" class="car-card">
+                <h3 th:text="${product.brand} + ' ' + ${product.model}">Brand Model</h3>
+                <div class="carousel">
+                    <div th:each="image, iterStat : ${product.images}" th:classappend="${iterStat.index == 0} ? 'category-item active' : 'category-item'">
+                        <img th:src="@{/rest/api/images/{id}(id=${image.id})}" th:alt="'Immagine ' + ${product.model}"/>
+                    </div>
+                    <div th:if="${product.images == null or product.images.isEmpty()}" class="category-item active">
+                        <img src="https://via.placeholder.com/300x200?text=Immagine+Non+Disponibile" alt="Immagine Non Disponibile"/>
+                    </div>
+                    <div th:unless="${product.images == null or product.images.isEmpty()}" class="carousel-nav">
+                        <button class="carousel-btn prev"><i class="fas fa-chevron-left"></i></button>
+                        <button class="carousel-btn next"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div th:unless="${product.images == null or product.images.isEmpty()}" class="dots">
+                        <span th:each="image, iterStat : ${product.images}" th:classappend="${iterStat.index == 0} ? 'dot active' : 'dot'"></span>
+                    </div>
+                </div>
+                <p th:text="${product.description} ?: 'Nessuna descrizione disponibile'">Descrizione prodotto</p>
+                <p th:text="'Prezzo: €' + ${product.price}">Prezzo: €25000</p>
+                <p th:text="'Chilometraggio: ' + ${product.mileage} + ' km' ?: 'Chilometraggio non disponibile'">Chilometraggio: 50000 km</p>
+                <p th:text="'Anno: ' + ${product.year} ?: 'Anno non disponibile'">Anno: 2020</p>
+                <p th:text="'Carburante: ' + ${product.fuelType} ?: 'Carburante non disponibile'">Carburante: Benzina</p>
+                <p th:text="'Trasmissione: ' + ${product.transmission} ?: 'Trasmissione non disponibile'">Trasmissione: Manuale</p>
+                <div class="product-actions">
+                    <a href="#" class="edit-product-link" th:attr="data-product-id=${product.id}">Modifica</a>
+                    <a href="#" class="delete-product-link" th:attr="data-product-id=${product.id}">Elimina</a>
+                    <a th:if="${product.isFeatured == null or !product.isFeatured}" href="#" class="highlight-product-link" th:attr="data-product-id=${product.id}">Metti in Evidenza</a>
+                    <a th:if="${product.isFeatured != null and product.isFeatured}" href="#" class="remove-highlight-product-link" th:attr="data-product-id=${product.id}">Rimuovi Evidenza</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal per modificare prodotto -->
+    <div id="edit-product-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" id="close-edit-product">×</span>
+            <h2>Modifica Auto</h2>
+
+            <!-- Carosello per preview immagini modifica auto -->
+            <div id="edit-car-image-preview" class="modal-image-carousel">
+                <div class="modal-image-item active">
+                    <div class="modal-image-placeholder">
+                        <i class="fas fa-car" style="font-size: 2rem; margin-bottom: 10px;"></i><br>
+                        Caricamento immagini attuali...
+                    </div>
+                </div>
+                <div class="modal-carousel-nav" style="display: none;">
+                    <button class="modal-carousel-btn prev" type="button"><i class="fas fa-chevron-left"></i></button>
+                    <button class="modal-carousel-btn next" type="button"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="modal-dots" style="display: none;"></div>
+            </div>
+
+            <form id="edit-product-form" action="" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="_method" value="PUT"/>
+                <input type="hidden" id="edit-product-id" name="id"/>
+                <div>
+                    <label for="edit-product-model">Modello *</label>
+                    <input type="text" id="edit-product-model" name="model" required/>
+                </div>
+                <div>
+                    <label for="edit-product-brand">Marca</label>
+                    <input type="text" id="edit-product-brand" name="brand"/>
+                </div>
+                <div>
+                    <label for="edit-product-category">Categoria</label>
+                    <select id="edit-product-category" name="category">
+                        <option value="">Seleziona</option>
+                        <option value="SUV">SUV</option>
+                        <option value="Sedan">Sedan</option>
+                        <option value="Sportiva">Sportiva</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit-product-description">Descrizione</label>
+                    <textarea id="edit-product-description" name="description"></textarea>
+                </div>
+                <div>
+                    <label for="edit-product-price">Prezzo (€) *</label>
+                    <input type="number" id="edit-product-price" name="price" step="0.01" required/>
+                </div>
+                <div>
+                    <label for="edit-product-mileage">Chilometraggio</label>
+                    <input type="number" id="edit-product-mileage" name="mileage"/>
+                </div>
+                <div>
+                    <label for="edit-product-year">Anno</label>
+                    <input type="number" id="edit-product-year" name="year"/>
+                </div>
+                <div>
+                    <label for="edit-product-fuelType">Carburante</label>
+                    <select id="edit-product-fuelType" name="fuelType">
+                        <option value="">Seleziona</option>
+                        <option value="Benzina">Benzina</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Elettrico">Elettrico</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit-product-transmission">Trasmissione</label>
+                    <select id="edit-product-transmission" name="transmission">
+                        <option value="">Seleziona</option>
+                        <option value="Manuale">Manuale</option>
+                        <option value="Automatico">Automatico</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit-product-images">Nuove Immagini (max 10, sostituiranno quelle esistenti)</label>
+                    <input type="file" id="edit-product-images" name="images" multiple accept="image/*"/>
+                    <small style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; display: block; margin-top: 5px;">
+                        Lascia vuoto per mantenere le immagini attuali
+                    </small>
+                </div>
+                <button type="submit">Salva</button>
+                <span class="spinner"><i class="fas fa-spinner fa-spin"></i></span>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
 </main>
 
 <footer>
     <div class="footer-content">
         <div class="footer-section">
-            <h4>Link Utili</h4>
+            <h4>Navigazione</h4>
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/products">Trova Auto</a></li>
@@ -547,14 +940,6 @@
             <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
         </div>
         <div class="footer-section">
-            <h4>Seguici</h4>
-            <div class="social-links">
-                <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-                <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
-            </div>
-        </div>
-        <div class="footer-section">
             <h4>Informazioni</h4>
             <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
         </div>
@@ -564,6 +949,482 @@
     </div>
 </footer>
 
-<script th:src="@{/js/dealer_manage.js}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements
+    const editDealerButton = document.getElementById('edit-dealer-button');
+    const editDealerModal = document.getElementById('edit-dealer-modal');
+    const closeEditDealerButton = document.getElementById('close-edit-dealer');
+    const editDealerForm = document.getElementById('edit-dealer-form');
+
+    const addCarButton = document.getElementById('add-car-button');
+    const addCarModal = document.getElementById('add-car-modal');
+    const closeAddCarButton = document.getElementById('close-add-car');
+    const addCarForm = document.getElementById('dealer-add-car-form');
+
+    const editProductModal = document.getElementById('edit-product-modal');
+    const closeEditProductButton = document.getElementById('close-edit-product');
+    const editProductForm = document.getElementById('edit-product-form');
+
+    const toast = document.getElementById('toast');
+    const isFeaturedCheckbox = document.getElementById('dealer-car-highlighted');
+    const featureDurationField = document.getElementById('dealer-car-feature-duration-field');
+
+    // Dropdown functionality
+    const dropdownToggle = document.querySelector('.dropdown-toggle');
+    const dropdownMenu = document.querySelector('.dropdown-menu');
+
+    if (dropdownToggle && dropdownMenu) {
+        dropdownToggle.addEventListener('click', function() {
+            const isOpen = dropdownMenu.classList.contains('show');
+            dropdownMenu.classList.toggle('show');
+            dropdownToggle.classList.toggle('open', !isOpen);
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.classList.remove('show');
+                dropdownToggle.classList.remove('open');
+            }
+        });
+    }
+
+    // Toast function
+    function showToast(message, type = 'success') {
+        if (toast) {
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    // Modal functions
+    function showModal(modal) {
+        if (modal) {
+            modal.classList.add('show');
+            setTimeout(() => {
+                const content = modal.querySelector('.modal-content');
+                if (content) content.classList.add('show');
+            }, 10);
+        }
+    }
+
+    function hideModal(modal) {
+        if (modal) {
+            const content = modal.querySelector('.modal-content');
+            if (content) content.classList.remove('show');
+            setTimeout(() => {
+                modal.classList.remove('show');
+            }, 300);
+        }
+    }
+
+    // Edit dealer functionality
+    if (editDealerButton && editDealerModal) {
+        editDealerButton.addEventListener('click', function() {
+            showModal(editDealerModal);
+        });
+    }
+
+    if (closeEditDealerButton && editDealerModal) {
+        closeEditDealerButton.addEventListener('click', function() {
+            hideModal(editDealerModal);
+        });
+    }
+
+    // Edit dealer form submission
+    if (editDealerForm) {
+        editDealerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const spinner = this.querySelector('.spinner');
+            const submitButton = this.querySelector('button[type="submit"]');
+
+            if (spinner) spinner.classList.add('active');
+            if (submitButton) submitButton.disabled = true;
+
+            try {
+                const response = await fetch(this.action, {
+                    method: 'PUT',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast(data.message || 'Concessionario modificato con successo!', 'success');
+                    hideModal(editDealerModal);
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast(data.message || 'Errore durante la modifica', 'error');
+                }
+            } catch (error) {
+                showToast('Errore di rete: ' + error.message, 'error');
+            } finally {
+                if (spinner) spinner.classList.remove('active');
+                if (submitButton) submitButton.disabled = false;
+            }
+        });
+    }
+
+    // Add car modal functionality
+    if (addCarButton && addCarModal) {
+        addCarButton.addEventListener('click', function() {
+            showModal(addCarModal);
+        });
+    }
+
+    if (closeAddCarButton && addCarModal) {
+        closeAddCarButton.addEventListener('click', function() {
+            hideModal(addCarModal);
+        });
+    }
+
+    // Featured checkbox functionality
+    if (isFeaturedCheckbox && featureDurationField) {
+        isFeaturedCheckbox.addEventListener('change', function() {
+            featureDurationField.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+
+    // Add car form submission
+    if (addCarForm) {
+        addCarForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const spinner = this.querySelector('.spinner');
+            const submitButton = this.querySelector('button[type="submit"]');
+
+            if (spinner) spinner.classList.add('active');
+            if (submitButton) submitButton.disabled = true;
+
+            try {
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast(data.message || 'Auto aggiunta con successo!', 'success');
+                    hideModal(addCarModal);
+                    this.reset();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast(data.message || 'Errore durante l\'aggiunta', 'error');
+                }
+            } catch (error) {
+                showToast('Errore di rete: ' + error.message, 'error');
+            } finally {
+                if (spinner) spinner.classList.remove('active');
+                if (submitButton) submitButton.disabled = false;
+            }
+        });
+    }
+
+    // Edit product functionality
+    const editProductLinks = document.querySelectorAll('.edit-product-link');
+    const deleteProductLinks = document.querySelectorAll('.delete-product-link');
+    const highlightProductLinks = document.querySelectorAll('.highlight-product-link');
+    const removeHighlightProductLinks = document.querySelectorAll('.remove-highlight-product-link');
+
+    // Edit product modal
+    if (closeEditProductButton && editProductModal) {
+        closeEditProductButton.addEventListener('click', function() {
+            hideModal(editProductModal);
+        });
+    }
+
+    // Populate edit form
+    async function populateEditForm(productId) {
+        try {
+            const response = await fetch(`/rest/api/products/${productId}`, {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                }
+            });
+
+            if (response.ok) {
+                const product = await response.json();
+
+                if (editProductForm) {
+                    editProductForm.action = `/rest/api/products/${productId}`;
+
+                    const fields = {
+                        'edit-product-id': product.id || '',
+                        'edit-product-model': product.model || '',
+                        'edit-product-brand': product.brand || '',
+                        'edit-product-category': product.category || '',
+                        'edit-product-description': product.description || '',
+                        'edit-product-price': product.price || '',
+                        'edit-product-mileage': product.mileage || '',
+                        'edit-product-year': product.year || '',
+                        'edit-product-fuelType': product.fuelType || '',
+                        'edit-product-transmission': product.transmission || ''
+                    };
+
+                    for (const [id, value] of Object.entries(fields)) {
+                        const element = document.getElementById(id);
+                        if (element) element.value = value;
+                    }
+
+                    showModal(editProductModal);
+                }
+            } else {
+                const data = await response.json();
+                showToast(data.message || 'Errore nel caricamento dei dati', 'error');
+            }
+        } catch (error) {
+            showToast('Errore di rete: ' + error.message, 'error');
+        }
+    }
+
+    // Edit product links
+    editProductLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+            if (productId) populateEditForm(productId);
+        });
+    });
+
+    // Edit product form submission
+    if (editProductForm) {
+        editProductForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const spinner = this.querySelector('.spinner');
+            const submitButton = this.querySelector('button[type="submit"]');
+
+            if (spinner) spinner.classList.add('active');
+            if (submitButton) submitButton.disabled = true;
+
+            try {
+                const response = await fetch(this.action, {
+                    method: 'PUT',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast(data.message || 'Auto modificata con successo!', 'success');
+                    hideModal(editProductModal);
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast(data.message || 'Errore durante la modifica', 'error');
+                }
+            } catch (error) {
+                showToast('Errore di rete: ' + error.message, 'error');
+            } finally {
+                if (spinner) spinner.classList.remove('active');
+                if (submitButton) submitButton.disabled = false;
+            }
+        });
+    }
+
+    // Delete product links
+    deleteProductLinks.forEach(link => {
+        link.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+
+            if (!confirm('Sei sicuro di voler eliminare questo prodotto?')) return;
+
+            try {
+                const response = await fetch(`/rest/api/products/${productId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast(data.message || 'Auto eliminata con successo!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast(data.message || 'Errore durante l\'eliminazione', 'error');
+                }
+            } catch (error) {
+                showToast('Errore di rete: ' + error.message, 'error');
+            }
+        });
+    });
+
+    // Highlight product links
+    highlightProductLinks.forEach(link => {
+        link.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+
+            const duration = prompt('Inserisci la durata in giorni per l\'evidenza (es. 7):');
+            if (!duration || isNaN(duration) || parseInt(duration) <= 0) {
+                showToast('Inserisci una durata valida', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/rest/api/products/${productId}/highlight`, {
+                    method: 'POST',
+                    body: JSON.stringify({ duration: parseInt(duration) }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast(data.message || 'Auto messa in evidenza con successo!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast(data.message || 'Errore durante la messa in evidenza', 'error');
+                }
+            } catch (error) {
+                showToast('Errore di rete: ' + error.message, 'error');
+            }
+        });
+    });
+
+    // Remove highlight product links
+    removeHighlightProductLinks.forEach(link => {
+        link.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+
+            try {
+                const response = await fetch(`/rest/api/products/${productId}/remove-highlight`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast(data.message || 'Evidenza rimossa con successo!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast(data.message || 'Errore durante la rimozione dell\'evidenza', 'error');
+                }
+            } catch (error) {
+                showToast('Errore di rete: ' + error.message, 'error');
+            }
+        });
+    });
+
+    // Dealer images carousel functionality
+    const dealerCarousel = document.querySelector('.dealer-images-carousel');
+    if (dealerCarousel) {
+        const dealerItems = dealerCarousel.querySelectorAll('.dealer-image-item');
+        const dealerDots = dealerCarousel.querySelectorAll('.dealer-dot');
+        const dealerPrevBtn = dealerCarousel.querySelector('.dealer-carousel-btn.prev');
+        const dealerNextBtn = dealerCarousel.querySelector('.dealer-carousel-btn.next');
+
+        if (dealerItems.length > 1 && dealerPrevBtn && dealerNextBtn) {
+            let dealerCurrentIndex = 0;
+
+            const updateDealerCarousel = () => {
+                dealerItems.forEach((item, index) => {
+                    item.classList.toggle('active', index === dealerCurrentIndex);
+                });
+                dealerDots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === dealerCurrentIndex);
+                });
+            };
+
+            dealerPrevBtn.addEventListener('click', () => {
+                dealerCurrentIndex = dealerCurrentIndex > 0 ? dealerCurrentIndex - 1 : dealerItems.length - 1;
+                updateDealerCarousel();
+            });
+
+            dealerNextBtn.addEventListener('click', () => {
+                dealerCurrentIndex = dealerCurrentIndex < dealerItems.length - 1 ? dealerCurrentIndex + 1 : 0;
+                updateDealerCarousel();
+            });
+
+            dealerDots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    dealerCurrentIndex = index;
+                    updateDealerCarousel();
+                });
+            });
+        }
+    }
+
+    // Product carousels functionality
+    document.querySelectorAll('.carousel').forEach(carousel => {
+        const items = carousel.querySelectorAll('.category-item');
+        const dots = carousel.querySelectorAll('.dot');
+        const prevBtn = carousel.querySelector('.carousel-btn.prev');
+        const nextBtn = carousel.querySelector('.carousel-btn.next');
+
+        if (items.length > 1 && prevBtn && nextBtn) {
+            let currentIndex = 0;
+
+            const updateCarousel = () => {
+                items.forEach((item, index) => {
+                    item.classList.toggle('active', index === currentIndex);
+                });
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentIndex);
+                });
+            };
+
+            prevBtn.addEventListener('click', () => {
+                currentIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+                updateCarousel();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                currentIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+                updateCarousel();
+            });
+
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    currentIndex = index;
+                    updateCarousel();
+                });
+            });
+        }
+    });
+
+    // Close modals when clicking outside
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal-overlay')) {
+            hideModal(e.target);
+        }
+    });
+
+    // Close modals on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const openModal = document.querySelector('.modal-overlay.show');
+            if (openModal) hideModal(openModal);
+        }
+    });
+});
+</script>
 </body>
 </html>

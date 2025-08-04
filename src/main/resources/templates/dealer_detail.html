@@ -59,7 +59,7 @@
       justify-content: space-between;
       padding: 10px 20px;
       height: 80px;
-      background-color: #010A33 !important; /* Updated to match the desired color */
+      background-color: #010A33 !important;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       z-index: 1000;
     }
@@ -206,16 +206,36 @@
       margin: 10px 0;
       text-align: center;
     }
-    .dealer-content .image-container {
-      max-width: 300px;
-      margin: 0 auto 20px;
+    .dealer-content .main-image-container {
+      width: 100%;
+      max-height: 400px;
+      margin-bottom: 20px;
     }
-    .dealer-content .image-container img {
+    .dealer-content .main-image-container img {
       width: 100%;
       height: auto;
-      border-radius: 10px;
+      max-height: 400px;
       object-fit: cover;
+      border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .dealer-content .thumbnails-container {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .dealer-content .thumbnails-container img {
+      width: 120px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .dealer-content .thumbnails-container img:hover {
+      transform: scale(1.05);
     }
     .dealer-content .details-grid {
       display: grid;
@@ -294,20 +314,17 @@
       grid-template-columns: repeat(3, 33.3%);
       gap: 25px;
       width: 100%;
-      max-width: 1200px; /* Limita la larghezza massima */
-      margin: 0 auto; /* Centra la griglia */
+      max-width: 1200px;
+      margin: 0 auto;
     }
-
-    /* Responsive layout */
     @media (max-width: 1024px) {
       .car-grid {
-        grid-template-columns: repeat(2, 50%); /* Due colonne su schermi medi */
+        grid-template-columns: repeat(2, 50%);
       }
     }
-
     @media (max-width: 768px) {
       .car-grid {
-        grid-template-columns: 1fr; /* Una colonna su schermi piccoli */
+        grid-template-columns: 1fr;
       }
     }
     .car-card {
@@ -382,7 +399,7 @@
     .car-actions .modern-button {
       background: linear-gradient(45deg, #F5A623, #E59400);
       color: #FFFFFF;
-      padding: 10px 50px; /* Adjusted for better spacing */
+      padding: 10px 50px;
       border-radius: 6px;
       font-size: 0.9rem;
       font-weight: 600;
@@ -390,7 +407,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px; /* Space between icon and text */
+      gap: 6px;
       transition: background 0.2s ease, transform 0.2s ease;
     }
     .car-actions .modern-button:hover {
@@ -418,7 +435,7 @@
       background: #FFFFFF;
       border-radius: 12px;
       padding: 25px;
-      max-width: 1000px; /* Reduced from 500px for a more compact popup */
+      max-width: 1000px;
       width: 90%;
       max-height: 85vh;
       overflow-y: auto;
@@ -439,14 +456,63 @@
       margin-bottom: 15px;
       text-align: center;
     }
-    .car-details-popup-content .image-container {
-      width: 100%;
-      margin-bottom: 15px; /* Remove fixed height */
+    .car-details-popup-content .carousel {
+      position: relative;
+      max-width: 600px;
+      margin: 0 auto;
     }
-    .car-details-popup-content img {
+    .car-details-popup-content .carousel-inner {
+      position: relative;
       width: 100%;
-      height: auto; /* Scales naturally with width */
+      overflow: hidden;
+    }
+    .car-details-popup-content .carousel-item {
+      display: none;
+      position: relative;
+      width: 100%;
+    }
+    .car-details-popup-content .carousel-item.active {
+      display: block;
+    }
+    .car-details-popup-content .carousel-item img {
+      width: 100%;
+      height: auto;
       border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .car-details-popup-content .carousel-thumbnails {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .car-details-popup-content .carousel-thumbnails img {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      margin: 0 5px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border 0.3s ease;
+    }
+    .car-details-popup-content .carousel-thumbnails img.active {
+      border: 2px solid #F5A623;
+    }
+    .car-details-popup-content .carousel-control-prev, .car-details-popup-content .carousel-control-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: #FFFFFF;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      z-index: 1;
+    }
+    .car-details-popup-content .carousel-control-prev {
+      left: 10px;
+    }
+    .car-details-popup-content .carousel-control-next {
+      right: 10px;
     }
     .car-details-popup-content .detail-field {
       margin-bottom: 12px;
@@ -546,8 +612,11 @@
       .dealer-content .details-grid {
         grid-template-columns: 1fr;
       }
-      .dealer-content .image-container {
-        max-width: 250px;
+      .dealer-content .main-image-container {
+        max-height: 300px;
+      }
+      .dealer-content .thumbnails-container {
+        flex-wrap: wrap;
       }
       .car-image {
         height: 140px;
@@ -601,11 +670,14 @@
     <!-- Dealer Details -->
     <div class="dealer-content">
       <h2 th:text="${dealer.name} ?: 'Concessionario'">Concessionario</h2>
-      <p th:if="${errorMessage != null}" th:text="${errorMessage}" class="error-message"></p>
-      <div class="image-container">
-        <img th:if="${dealer.imagePath != null}" th:src="@{${dealer.imagePath}}" th:alt="'Immagine concessionario'" />
-        <img th:unless="${dealer.imagePath != null}" th:src="@{/image/default-dealer.jpg}" alt="Immagine di default" />
+      <div class="main-image-container">
+        <img th:if="${dealer.images != null and not dealer.images.isEmpty()}" th:src="@{'/rest/api/images/' + ${dealer.images[0].id}}" th:alt="'Immagine principale concessionario ' + ${dealer.name}"/>
+        <img th:unless="${dealer.images != null and not dealer.images.isEmpty()}" src="/image/default-dealer.jpg" alt="Immagine di default"/>
       </div>
+      <div class="thumbnails-container">
+        <img th:each="image, iterStat : ${dealer.images}" th:if="${iterStat.index > 0}" th:src="@{'/rest/api/images/' + ${image.id}}" th:alt="'Miniatura concessionario ' + ${dealer.name}" onclick="changeMainImage(this)"/>
+      </div>
+      <p th:if="${errorMessage != null}" th:text="${errorMessage}" class="error-message"></p>
       <div class="description-container">
         <div class="description-item">
           <i class="fas fa-info-circle"></i>
@@ -640,7 +712,7 @@
       <div class="car-grid">
         <div th:each="product : ${products}" class="car-card" th:classappend="${product.isFeatured} ? 'highlighted'" th:data-id="${product.id}">
           <div class="car-image">
-            <img th:src="@{${product.imageUrl} ?: '/image/default-car.jpg'}" th:alt="'Immagine ' + ${product.model}" />
+            <img th:src="@{'/rest/api/images/' + ${product.images[0].id} ?: '/image/default-car.jpg'}" th:alt="'Immagine ' + ${product.model}"/>
             <span th:if="${product.isFeatured}" class="highlight-badge">In Evidenza</span>
           </div>
           <div class="car-info">
@@ -664,8 +736,20 @@
         <div class="car-details-popup-content">
           <span class="close-popup">×</span>
           <h3 th:text="${product.brand} + ' ' + ${product.model} ?: 'Auto'"></h3>
-          <div class="image-container">
-            <img th:src="@{${product.imageUrl} ?: '/image/default-car.jpg'}" th:alt="'Immagine ' + ${product.model}" />
+          <div class="carousel">
+            <div class="carousel-inner">
+              <div th:each="image, iterStat : ${product.images}" class="carousel-item" th:classappend="${iterStat.index == 0} ? 'active' : ''">
+                <img th:src="@{'/rest/api/images/' + ${image.id}}" th:alt="'Immagine ' + ${product.model}"/>
+              </div>
+              <div th:if="${product.images == null or product.images.isEmpty()}" class="carousel-item active">
+                <img src="/image/default-car.jpg" th:alt="'Immagine ' + ${product.model}"/>
+              </div>
+            </div>
+            <div class="carousel-thumbnails">
+              <img th:each="image, iterStat : ${product.images}" th:src="@{'/rest/api/images/' + ${image.id}}" th:alt="'Immagine ' + ${product.model}" th:classappend="${iterStat.index == 0} ? 'active' : ''" onclick="showImage(this, event)"/>
+            </div>
+            <button class="carousel-control-prev" onclick="prevImage(event)">❮</button>
+            <button class="carousel-control-next" onclick="nextImage(event)">❯</button>
           </div>
           <div class="detail-field">
             <label><i class="fas fa-euro-sign"></i> Prezzo</label>
@@ -702,6 +786,7 @@
     <div class="footer-section">
       <h4>Link Utili</h4>
       <ul>
+        <li><a href="/">Home</a></li>
         <li><a href="/products">Trova Auto</a></li>
         <li><a href="/dealers">Concessionari</a></li>
         <li><a href="/cart">Carrello</a></li>
@@ -768,6 +853,13 @@
     }
   });
 
+  // Funzione per cambiare l'immagine principale
+  function changeMainImage(thumbnail) {
+    const mainImage = document.querySelector('.main-image-container img');
+    mainImage.src = thumbnail.src;
+    mainImage.alt = thumbnail.alt;
+  }
+
   // Gestione del popup
   document.addEventListener('click', function(event) {
     const viewDetailsButton = event.target.closest('.view-details');
@@ -781,6 +873,7 @@
       if (popup) {
         popups.forEach(p => p.classList.remove('show'));
         popup.classList.add('show');
+        initializeCarousel(popup);
       } else {
         console.error(`Popup with ID popup-${productId} not found`);
       }
@@ -803,6 +896,60 @@
     if (event.key === 'Escape') {
       popups.forEach(p => p.classList.remove('show'));
     }
+  });
+
+  // Funzione per inizializzare il carosello in ogni popup
+  function initializeCarousel(popup) {
+    const carousel = popup.querySelector('.carousel');
+    if (!carousel) return;
+
+    let currentIndex = 0;
+    const items = carousel.querySelectorAll('.carousel-item');
+    const thumbnails = carousel.querySelectorAll('.carousel-thumbnails img');
+    const prevBtn = carousel.querySelector('.carousel-control-prev');
+    const nextBtn = carousel.querySelector('.carousel-control-next');
+
+    if (items.length <= 1 || !prevBtn || !nextBtn) {
+      if (prevBtn) prevBtn.style.display = 'none';
+      if (nextBtn) nextBtn.style.display = 'none';
+      return;
+    }
+
+    const updateCarousel = () => {
+      items.forEach((item, index) => {
+        item.classList.toggle('active', index === currentIndex);
+      });
+      thumbnails.forEach((thumb, index) => {
+        thumb.classList.toggle('active', index === currentIndex);
+      });
+    };
+
+    prevBtn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      currentIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+      updateCarousel();
+    });
+
+    nextBtn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      currentIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+      updateCarousel();
+    });
+
+    thumbnails.forEach((thumb, index) => {
+      thumb.addEventListener('click', (event) => {
+        event.stopPropagation();
+        currentIndex = index;
+        updateCarousel();
+      });
+    });
+
+    updateCarousel();
+  }
+
+  // Inizializza i caroselli per ogni popup all'avvio
+  document.querySelectorAll('.car-details-popup').forEach(popup => {
+    initializeCarousel(popup);
   });
 </script>
 </body>

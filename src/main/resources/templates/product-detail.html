@@ -9,6 +9,67 @@
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* Stili per il carosello delle immagini */
+        .carousel {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .carousel-inner {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+        .carousel-item {
+            display: none;
+            position: relative;
+            width: 100%;
+        }
+        .carousel-item.active {
+            display: block;
+        }
+        .carousel-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .carousel-thumbnails {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        .carousel-thumbnails img {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            margin: 0 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border 0.3s ease;
+        }
+        .carousel-thumbnails img.active {
+            border: 2px solid #F5A623;
+        }
+        .carousel-control-prev, .carousel-control-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: #FFFFFF;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 1;
+        }
+        .carousel-control-prev {
+            left: 10px;
+        }
+        .carousel-control-next {
+            right: 10px;
+        }
         /* Stile per il menu a tendina moderno e accattivante */
         .dropdown {
             position: relative;
@@ -84,7 +145,6 @@
         .dropdown-menu a:hover i {
             color: #FFFFFF;
         }
-        /* Posizionamento del menu, centrato verticalmente */
         .header-right {
             position: absolute;
             top: 50%;
@@ -94,7 +154,6 @@
             align-items: center;
             gap: 10px;
         }
-        /* Assicurati che il layout sia responsive */
         @media (max-width: 768px) {
             #main-header {
                 height: 60px;
@@ -136,12 +195,6 @@
         .product-image-container {
             flex: 1;
             min-width: 300px;
-        }
-        .product-image-container img {
-            width: 100%;
-            height: auto;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .highlight-badge {
             position: absolute;
@@ -243,7 +296,18 @@
 <section class="product-details-section">
     <div class="product-details-container">
         <div class="product-image-container">
-            <img th:src="${product.imageUrl} ?: 'https://via.placeholder.com/600x400?text=Immagine+Non+Disponibile'" th:alt="${product.brand} + ' ' + ${product.model}"/>
+            <div class="carousel">
+                <div class="carousel-inner">
+                    <div th:each="image, iterStat : ${product.images}" class="carousel-item" th:classappend="${iterStat.index == 0} ? 'active' : ''">
+                        <img th:src="@{'/rest/api/images/' + ${image.id}}" th:alt="${product.brand} + ' ' + ${product.model}"/>
+                    </div>
+                </div>
+                <div class="carousel-thumbnails">
+                    <img th:each="image, iterStat : ${product.images}" th:src="@{'/rest/api/images/' + ${image.id}}" th:alt="${product.brand} + ' ' + ${product.model}" th:classappend="${iterStat.index == 0} ? 'active' : ''" onclick="showImage(this, event)"/>
+                </div>
+                <button class="carousel-control-prev" onclick="prevImage(event)">❮</button>
+                <button class="carousel-control-next" onclick="nextImage(event)">❯</button>
+            </div>
             <span th:if="${product.isFeatured and product.isFeaturedActive}" class="highlight-badge">In Evidenza</span>
         </div>
         <div class="product-info-container">
@@ -349,6 +413,41 @@
             dropdownToggle.classList.toggle('open', !isOpen);
         }
     });
+
+    let currentIndex = 0;
+    const items = document.querySelectorAll('.carousel-item');
+    const thumbnails = document.querySelectorAll('.carousel-thumbnails img');
+
+    function showImage(thumbnail, event) {
+        event.stopPropagation();
+        const index = Array.from(thumbnails).indexOf(thumbnail);
+        currentIndex = index;
+        updateCarousel();
+    }
+
+    function prevImage(event) {
+        event.stopPropagation();
+        currentIndex = (currentIndex > 0) ? currentIndex - 1 : items.length - 1;
+        updateCarousel();
+    }
+
+    function nextImage(event) {
+        event.stopPropagation();
+        currentIndex = (currentIndex < items.length - 1) ? currentIndex + 1 : 0;
+        updateCarousel();
+    }
+
+    function updateCarousel() {
+        items.forEach((item, index) => {
+            item.classList.toggle('active', index === currentIndex);
+        });
+        thumbnails.forEach((thumb, index) => {
+            thumb.classList.toggle('active', index === currentIndex);
+        });
+    }
+
+    // Inizializza il carosello
+    updateCarousel();
 </script>
 </body>
 </html>

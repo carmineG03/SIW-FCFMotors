@@ -79,10 +79,10 @@
                 <label><i class="fas fa-cogs"></i> Trasmissione</label>
                 <p th:text="${product != null ? product.transmission : 'N/A'}"></p>
             </div>
-            <div class="detail-field">
-                <label><i class="fas fa-image"></i> Immagine</label>
-                <img th:src="${product != null and product.imageUrl != null ? product.imageUrl : '/image/default-car.jpg'}" alt="Immagine Macchina" class="car-image">
-            </div>
+           <div class="detail-field">
+               <label><i class="fas fa-image"></i> Immagine</label>
+               <img th:src="${product != null and product.images != null and !product.images.isEmpty()} ? ${product.images[0].path} : '/image/default-car.jpg'" alt="Immagine Macchina" class="car-image">
+           </div>
             <div class="button-group">
                 <button id="edit-button" class="modern-button"><i class="fas fa-edit"></i> Modifica</button>
                 <form th:action="@{/private/delete/{id}(id=${product.id})}" method="post" style="display: inline;">
@@ -144,8 +144,9 @@
             </div>
             <div class="input-field">
                 <label for="imageUrl"><i class="fas fa-image"></i> URL Immagine</label>
-                <input type="text" id="imageUrl" th:field="*{imageUrl}" th:value="*{imageUrl}" placeholder="https://example.com/image.jpg" required>
-                <span th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}" class="error"></span>
+                <input type="text" id="imageUrl" name="imageUrl"
+                       th:value="${product.images != null and !product.images.isEmpty()} ? ${product.images[0].path} : ''"
+                       placeholder="https://example.com/image.jpg" required>
             </div>
             <div class="button-group">
                 <button type="submit" class="modern-button"><i class="fas fa-save"></i> Salva Modifiche</button>

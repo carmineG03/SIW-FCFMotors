@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -146,6 +146,87 @@
             border: none;
             outline: none;
         }
+        /* Stile per il carousel dei prodotti */
+        .product-carousel-container {
+            position: relative;
+            max-width: 300px;
+            border-radius: 10px;
+            height: 200px;
+            margin: 20px auto;
+            overflow: hidden;
+            background: #faf1e0;
+        }
+        .product-carousel {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+        }
+        .product-image-item {
+            flex: 0 0 100%;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            border: 1px solid #E59400;
+            display: flex;
+            align-items: flex-end;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        .product-image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        @media (max-width: 768px) {
+            .product-carousel-container {
+                max-width: 100%;
+                padding: 0 10px;
+            }
+            .product-image-item {
+                height: 150px;
+            }
+        }
+        @media (max-width: 480px) {
+            .product-carousel-container {
+                height: 120px;
+            }
+            .product-image-item {
+                height: 100px;
+            }
+        }
+        /* Stile per il popup dei filtri */
+        .filter-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .filter-popup.show {
+            display: flex;
+        }
+        .filter-popup-content {
+            background: #000000;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 750px;
+            width: 100%;
+            position: relative;
+        }
+        .close-popup {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -162,7 +243,6 @@
     </div>
     <div class="nav-container">
         <nav class="nav-bar">
-            <!-- Rimossi i pulsanti -->
         </nav>
     </div>
     <div class="header-right">
@@ -186,7 +266,6 @@
 <section class="search-section">
     <div class="search-content">
         <h2>Trova Auto</h2>
-
         <div class="search-filter-group">
             <!-- Nuova barra di ricerca -->
             <div class="new-search-bar">
@@ -286,9 +365,22 @@
         </div>
         <div th:each="product : ${products}" th:if="${products != null and not #lists.isEmpty(products)}" class="car-item" th:classappend="${product.isFeatured and product.isFeaturedActive} ? 'highlighted'">
             <a th:href="@{'/products/' + ${product.id}}" class="car-link">
-                <div class="car-image-container">
-                    <img th:src="${product.imageUrl} ?: 'https://via.placeholder.com/300x200?text=Immagine+Non+Disponibile'" th:alt="${product.brand} + ' ' + ${product.model}"/>
-                    <span th:if="${product.isFeatured and product.isFeaturedActive}" class="highlight-badge">In Evidenza</span>
+                <div class="product-carousel-container">
+                    <div class="product-carousel">
+                        <div th:each="image, iterStat : ${product.images}" th:classappend="${iterStat.index == 0} ? 'product-image-item active' : 'product-image-item'">
+                            <img th:src="@{'/rest/api/images/' + ${image.id}}" th:alt="${product.brand} + ' ' + ${product.model}"/>
+                        </div>
+                        <div th:if="${product.images == null or product.images.isEmpty()}" class="product-image-item active">
+                            <img src="https://via.placeholder.com/300x200?text=Immagine+Non+Disponibile" th:alt="${product.brand} + ' ' + ${product.model}"/>
+                        </div>
+                    </div>
+                    <div th:unless="${product.images == null or product.images.isEmpty()}" class="carousel-nav">
+                        <button class="carousel-btn prev"><i class="fas fa-chevron-left"></i></button>
+                        <button class="carousel-btn next"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div th:unless="${product.images == null or product.images.isEmpty()}" class="dots">
+                        <span th:each="image, iterStat : ${product.images}" th:classappend="${iterStat.index == 0} ? 'dot active' : 'dot'"></span>
+                    </div>
                 </div>
                 <h3 th:text="${product.brand} + ' ' + ${product.model}"></h3>
                 <p th:text="${product.description}"></p>
@@ -360,27 +452,26 @@
 
 <script>
     function openFilterPopup() {
-        document.getElementById('filterPopup').style.display = 'flex';
+        const popup = document.getElementById('filterPopup');
+        if (popup) {
+            popup.classList.add('show');
+        }
     }
 
     function closeFilterPopup() {
-        document.getElementById('filterPopup').style.display = 'none';
+        const popup = document.getElementById('filterPopup');
+        if (popup) {
+            popup.classList.remove('show');
+        }
     }
 
-    window.onclick = function(event) {
-        const popup = document.getElementById('filterPopup');
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-        const dropdownToggle = document.querySelector('.dropdown-toggle');
-
-        if (dropdownMenu && dropdownToggle) {
-            if (dropdownMenu.contains(event.target) || dropdownToggle.contains(event.target)) {
-                return;
-            }
+    function validateSearch() {
+        const searchInput = document.getElementById('new-search-input');
+        if (!searchInput.value.trim()) {
+            alert('Inserisci un termine di ricerca valido.');
+            return false;
         }
-
-        if (event.target === popup) {
-            popup.style.display = 'none';
-        }
+        return true;
     }
 
     function toggleDropdownMenu(event) {
@@ -388,12 +479,9 @@
         const dropdownMenu = document.querySelector('.dropdown-menu');
         const dropdownToggle = document.querySelector('.dropdown-toggle');
         if (dropdownMenu && dropdownToggle) {
-            console.log('Click sul pulsante toggle');
             const isOpen = dropdownMenu.classList.contains('show');
             dropdownMenu.classList.toggle('show');
             dropdownToggle.classList.toggle('open', !isOpen);
-        } else {
-            console.error('Errore: Elementi del menu a tendina non trovati.');
         }
     }
 
@@ -401,7 +489,6 @@
         const dropdownMenu = document.querySelector('.dropdown-menu');
         const dropdownToggle = document.querySelector('.dropdown-toggle');
         if (dropdownMenu && dropdownToggle && !dropdownMenu.contains(event.target) && !dropdownToggle.contains(event.target)) {
-            console.log('Click fuori dal menu, chiusura');
             dropdownMenu.classList.remove('show');
             dropdownToggle.classList.remove('open');
         }
@@ -414,10 +501,48 @@
 
         if ((event.key === 'Enter' || event.key === ' ') && event.target === dropdownToggle) {
             event.preventDefault();
-            console.log('Tasto Enter o Spazio premuto');
             const isOpen = dropdownMenu.classList.contains('show');
             dropdownMenu.classList.toggle('show');
             dropdownToggle.classList.toggle('open', !isOpen);
+        }
+    });
+
+    // Handle carousel navigation for product images
+    document.querySelectorAll('.product-carousel').forEach(carousel => {
+        const items = carousel.querySelectorAll('.product-image-item');
+        const dots = carousel.querySelectorAll('.dots .dot');
+        const prevBtn = carousel.querySelector('.carousel-btn.prev');
+        const nextBtn = carousel.querySelector('.carousel-btn.next');
+
+        if (items.length > 1 && prevBtn && nextBtn) {
+            let currentIndex = 0;
+
+            const updateCarousel = () => {
+                items.forEach((item, index) => {
+                    item.classList.toggle('active', index === currentIndex);
+                    if (dots[index]) dots[index].classList.toggle('active', index === currentIndex);
+                });
+                carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+            };
+
+            prevBtn.addEventListener('click', () => {
+                currentIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+                updateCarousel();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                currentIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+                updateCarousel();
+            });
+
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    currentIndex = index;
+                    updateCarousel();
+                });
+            });
+
+            updateCarousel();
         }
     });
 </script>

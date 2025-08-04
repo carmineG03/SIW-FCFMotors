@@ -1,6 +1,7 @@
 package it.uniroma3.siwprogetto.service;
 
 import it.uniroma3.siwprogetto.model.Dealer;
+import it.uniroma3.siwprogetto.model.Image;
 import it.uniroma3.siwprogetto.model.Product;
 import it.uniroma3.siwprogetto.model.QuoteRequest;
 import it.uniroma3.siwprogetto.model.User;
@@ -10,23 +11,21 @@ import it.uniroma3.siwprogetto.repository.QuoteRequestRepository;
 import it.uniroma3.siwprogetto.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -77,7 +76,13 @@ public class DealerService {
             toUpdate.setAddress(dealer.getAddress());
             toUpdate.setPhone(dealer.getPhone());
             toUpdate.setEmail(dealer.getEmail());
-            toUpdate.setImagePath(dealer.getImagePath());
+            if (dealer.getImages() != null && !dealer.getImages().isEmpty()) {
+                toUpdate.getImages().clear();
+                dealer.getImages().forEach(img -> {
+                    img.setDealer(toUpdate);
+                    toUpdate.getImages().add(img);
+                });
+            }
             Dealer savedDealer = dealerRepository.save(toUpdate);
             logger.info("Dealer updated: id={}, name={}", savedDealer.getId(), savedDealer.getName());
             return savedDealer;
@@ -87,6 +92,7 @@ public class DealerService {
         } else if (!isUpdate && !existingDealer.isPresent()) {
             logger.debug("Creating new dealer for user: id={}, username={}", user.getId(), username);
             dealer.setOwner(user);
+            dealer.getImages().forEach(img -> img.setDealer(dealer));
             Dealer savedDealer = dealerRepository.save(dealer);
             logger.info("Dealer created: id={}, name={}, owner_id={}",
                     savedDealer.getId(), savedDealer.getName(), savedDealer.getOwner().getId());
@@ -97,8 +103,7 @@ public class DealerService {
         }
     }
 
-   
-
+    @Transactional(readOnly = true)
     public Dealer findByOwner() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         logger.debug("Finding dealer for user: {}", username);
@@ -110,6 +115,7 @@ public class DealerService {
 
         Optional<Dealer> dealer = dealerRepository.findByOwnerUsername(username);
         if (dealer.isPresent()) {
+            Hibernate.initialize(dealer.get().getImages());
             return dealer.get();
         } else {
             logger.warn("No dealer found for user '{}'", username);
@@ -141,12 +147,12 @@ public class DealerService {
 
         product.setSeller(user);
         product.setSellerType("DEALER");
+        product.getImages().forEach(img -> img.setProduct(product));
         Product savedProduct = productRepository.save(product);
         logger.info("Product added: id={}, model={}, seller_id={}",
                 savedProduct.getId(), savedProduct.getModel(), user.getId());
         return savedProduct;
     }
-
 
     @Transactional
     public Product updateProduct(Long productId, Product updatedProduct) {
@@ -190,7 +196,13 @@ public class DealerService {
         product.setYear(updatedProduct.getYear());
         product.setFuelType(updatedProduct.getFuelType());
         product.setTransmission(updatedProduct.getTransmission());
-        product.setImageUrl(updatedProduct.getImageUrl());
+        if (updatedProduct.getImages() != null && !updatedProduct.getImages().isEmpty()) {
+            product.getImages().clear();
+            updatedProduct.getImages().forEach(img -> {
+                img.setProduct(product);
+                product.getImages().add(img);
+            });
+        }
         product.setIsFeatured(updatedProduct.isFeatured());
         product.setFeaturedUntil(updatedProduct.getFeaturedUntil());
         Product savedProduct = productRepository.save(product);
@@ -199,6 +211,7 @@ public class DealerService {
         return savedProduct;
     }
 
+    @Transactional(readOnly = true)
     public List<Product> getProductsByDealer() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         logger.debug("Retrieving products for user: {}", username);
@@ -221,10 +234,12 @@ public class DealerService {
         }
 
         List<Product> products = productRepository.findBySellerId(user.getId());
+        products.forEach(product -> Hibernate.initialize(product.getImages()));
         logger.info("Found {} products for user: id={}", products.size(), user.getId());
         return products;
     }
 
+    @Transactional(readOnly = true)
     public List<Dealer> findByLocation(String query) {
         logger.debug("Finding dealers with query: {}", query);
         if (query == null || query.trim().isEmpty()) {
@@ -233,22 +248,29 @@ public class DealerService {
         return dealerRepository.findByAddressContainingIgnoreCase(query);
     }
 
+    @Transactional(readOnly = true)
     public List<Dealer> findAll() {
         logger.info("Retrieving all dealers");
         List<Dealer> dealers = dealerRepository.findAll();
+        dealers.forEach(dealer -> Hibernate.initialize(dealer.getImages()));
         logger.info("Trovati {} concessionari.", dealers.size());
         return dealers;
     }
 
+    @Transactional(readOnly = true)
     public Product findProductById(Long id) {
         logger.debug("Finding product by ID: {}", id);
-        return productRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Product not found: id={}", id);
-                    return new IllegalStateException("Prodotto non trovato");
-                });
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent()) {
+            Hibernate.initialize(product.get().getImages());
+            return product.get();
+        } else {
+            logger.error("Product not found: id={}", id);
+            return null;
+        }
     }
 
+    @Transactional
     public void deleteProduct(Long id) {
         logger.debug("Deleting product: id={}", id);
         Product product = productRepository.findById(id)
@@ -282,7 +304,6 @@ public class DealerService {
                     });
             logger.debug("Dealer found: id={}, name={}", dealer.getId(), dealer.getName());
 
-            // Step 1: Delete QuoteRequest entities associated with Products of the Dealer's owner
             logger.info("Deleting quote requests associated with products of dealer ID: {}", id);
             Query deleteQuoteRequestsByProductsQuery = entityManager.createQuery(
                     "DELETE FROM QuoteRequest qr WHERE qr.product.seller = :owner"
@@ -290,9 +311,8 @@ public class DealerService {
             deleteQuoteRequestsByProductsQuery.setParameter("owner", dealer.getOwner());
             int quoteRequestsByProductsDeleted = deleteQuoteRequestsByProductsQuery.executeUpdate();
             logger.debug("Deleted {} quote requests associated with products", quoteRequestsByProductsDeleted);
-            entityManager.flush(); // Ensure changes are applied
+            entityManager.flush();
 
-            // Step 2: Delete Products associated with the Dealer's owner
             logger.info("Deleting products associated with dealer ID: {}", id);
             Query deleteProductsQuery = entityManager.createQuery(
                     "DELETE FROM Product p WHERE p.seller = :owner"
@@ -300,9 +320,8 @@ public class DealerService {
             deleteProductsQuery.setParameter("owner", dealer.getOwner());
             int productsDeleted = deleteProductsQuery.executeUpdate();
             logger.debug("Deleted {} products", productsDeleted);
-            entityManager.flush(); // Ensure changes are applied
+            entityManager.flush();
 
-            // Step 3: Delete QuoteRequest entities directly associated with the Dealer
             logger.info("Deleting quote requests directly associated with dealer ID: {}", id);
             Query deleteQuoteRequestsByDealerQuery = entityManager.createQuery(
                     "DELETE FROM QuoteRequest qr WHERE qr.dealer.id = :dealerId"
@@ -310,9 +329,8 @@ public class DealerService {
             deleteQuoteRequestsByDealerQuery.setParameter("dealerId", id);
             int quoteRequestsByDealerDeleted = deleteQuoteRequestsByDealerQuery.executeUpdate();
             logger.debug("Deleted {} quote requests directly associated with dealer", quoteRequestsByDealerDeleted);
-            entityManager.flush(); // Ensure changes are applied
+            entityManager.flush();
 
-            // Step 4: Delete the Dealer
             logger.info("Deleting dealer with ID: {}", id);
             Query deleteDealerQuery = entityManager.createQuery(
                     "DELETE FROM Dealer d WHERE d.id = :id"
@@ -320,9 +338,8 @@ public class DealerService {
             deleteDealerQuery.setParameter("id", id);
             int dealersDeleted = deleteDealerQuery.executeUpdate();
             logger.debug("Deleted {} dealers", dealersDeleted);
-            entityManager.flush(); // Ensure changes are applied
+            entityManager.flush();
 
-            // Verify that the Dealer was deleted
             if (dealerRepository.existsById(id)) {
                 logger.error("Failed to delete dealer: still exists with ID: {}", id);
                 throw new IllegalStateException("Eliminazione non riuscita: il concessionario esiste ancora.");
@@ -337,6 +354,8 @@ public class DealerService {
             throw new IllegalStateException("Errore durante l'eliminazione del concessionario: " + e.getMessage(), e);
         }
     }
+
+    @Transactional(readOnly = true)
     public Dealer findByOwnerUsername(String username) {
         logger.debug("Finding dealer by owner username: {}", username);
 
@@ -348,6 +367,7 @@ public class DealerService {
         Optional<Dealer> dealer = dealerRepository.findByOwnerUsername(username);
         if (dealer.isPresent()) {
             logger.info("Dealer found for username '{}': id={}, name={}", username, dealer.get().getId(), dealer.get().getName());
+            Hibernate.initialize(dealer.get().getImages());
             return dealer.get();
         } else {
             logger.warn("No dealer found for username '{}'", username);
@@ -441,10 +461,20 @@ public class DealerService {
         return savedProduct;
     }
 
+    @Transactional(readOnly = true)
     public Dealer findById(Long id) {
-        return dealerRepository.findById(id).orElse(null);
+        logger.debug("Finding dealer by ID: {}", id);
+        Optional<Dealer> dealer = dealerRepository.findById(id);
+        if (dealer.isPresent()) {
+            Hibernate.initialize(dealer.get().getImages());
+            return dealer.get();
+        } else {
+            logger.warn("No dealer found for ID '{}'", id);
+            return null;
+        }
     }
 
+    @Transactional(readOnly = true)
     public List<Product> getProductsByDealerOwner(Dealer dealer) {
         if (dealer == null) {
             throw new IllegalArgumentException("Concessionario non valido.");
@@ -452,7 +482,31 @@ public class DealerService {
         if (dealer.getOwner() == null) {
             throw new IllegalStateException("Il concessionario non ha un proprietario associato.");
         }
-        return productRepository.findBySeller(dealer.getOwner());
+        List<Product> products = productRepository.findBySeller(dealer.getOwner());
+        products.forEach(product -> Hibernate.initialize(product.getImages()));
+        return products;
     }
 
+    @Transactional
+    public Image saveImageFile(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            logger.warn("File immagine non valido o vuoto");
+            throw new IllegalArgumentException("File immagine non valido");
+        }
+
+        Image image = new Image();
+        image.setData(file.getBytes());
+        image.setContentType(file.getContentType());
+        logger.info("Immagine preparata per il salvataggio: size={} bytes, contentType={}",
+                file.getBytes().length, file.getContentType());
+        return image;
+    }
+
+    @Transactional(readOnly = true)
+    public User getAuthenticatedUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.debug("Retrieving authenticated user: {}", username);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalStateException("Utente autenticato non trovato: " + username));
+    }
 }

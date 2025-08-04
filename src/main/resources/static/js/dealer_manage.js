@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Elementi principali del DOM
+    // Main DOM elements
     const addCarForm = document.getElementById('dealer-add-car-form');
     const editProductForm = document.getElementById('edit-product-form');
     const editProductPopup = document.getElementById('edit-product-popup');
@@ -10,10 +10,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const featureDurationField = document.getElementById('dealer-car-feature-duration-field');
     const productsSection = document.getElementById('dealer-added-cars');
 
-    // Debug: Verifica se la sezione prodotti esiste
+    // Debug: Check if products section exists
     console.log('Sezione prodotti trovata:', productsSection ? 'Sì' : 'No');
 
-    // Funzione per aggiornare lo stato delle etichette dei select
+    // Function to update select labels
     function updateSelectLabel(selectElement) {
         const label = selectElement.parentElement.querySelector('label');
         if (label && selectElement.value) {
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Funzione per inizializzare le etichette dei select
+    // Function to initialize select labels
     function initializeSelectLabels(form) {
         const selects = form.querySelectorAll('select');
         selects.forEach(select => {
@@ -48,11 +48,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Inizializza le etichette dei select nei form
+    // Initialize select labels for forms
     if (addCarForm) initializeSelectLabels(addCarForm);
     if (editProductForm) initializeSelectLabels(editProductForm);
 
-    // Funzione per mostrare il toast
+    // Function to show toast notification
     function showToast(message, type) {
         if (!toast) {
             console.error('Elemento toast non trovato nel DOM');
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
-    // Funzione per aprire il pop-up di modifica
+    // Function to open edit product popup
     function openEditProductPopup() {
         if (editProductPopup && editProductForm) {
             console.log('Apertura popup di modifica');
@@ -79,13 +79,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Funzione per chiudere il pop-up di modifica
+    // Function to close edit product popup
     function closeEditPopup() {
         if (editProductPopup) {
             console.log('Chiusura popup di modifica');
             editProductPopup.style.display = 'none';
             if (editProductForm) {
                 editProductForm.reset();
+                editProductForm.action = ''; // Reset action
                 initializeSelectLabels(editProductForm);
             }
         } else {
@@ -93,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Verifica il limite di prodotti in evidenza
+    // Function to check featured products limit
     async function checkFeaturedLimit() {
         try {
             console.log('Esecuzione di checkFeaturedLimit');
@@ -165,6 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     checkFeaturedLimit();
 
+    // 1. Submit aggiunta auto
     if (addCarForm) {
         addCarForm.addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -179,11 +181,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const yearInput = document.getElementById('dealer-car-year');
             const fuelTypeInput = document.getElementById('dealer-car-fuelType');
             const transmissionInput = document.getElementById('dealer-car-transmission');
-            const imageUrlInput = document.getElementById('dealer-car-imageUrl');
+            const imageInputs = addCarForm.querySelectorAll('input[name="images"]');
             const dealerIdInput = addCarForm.querySelector('input[name="dealerId"]');
             const isFeaturedInput = document.getElementById('dealer-car-highlighted');
             const featureDurationInput = document.getElementById('dealer-car-feature-duration');
             const spinner = addCarForm.querySelector('.spinner');
+            const submitButton = addCarForm.querySelector('button[type="submit"]');
 
             if (!modelInput || !priceInput || !spinner || !dealerIdInput) {
                 console.error('Elementi del form non trovati:', { modelInput, priceInput, spinner, dealerIdInput });
@@ -191,93 +194,98 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const model = modelInput.value.trim();
-            const brand = brandInput ? brandInput.value.trim() : '';
-            const category = categoryInput ? categoryInput.value.trim() : '';
-            const description = descriptionInput ? descriptionInput.value.trim() : '';
-            const price = priceInput.value;
-            const mileage = mileageInput ? mileageInput.value : '';
-            const year = yearInput ? yearInput.value : '';
-            const fuelType = fuelTypeInput ? fuelTypeInput.value : '';
-            const transmission = transmissionInput ? transmissionInput.value : '';
-            const imageUrl = imageUrlInput ? imageUrlInput.value.trim() : '';
-            const dealerId = dealerIdInput.value;
-            const isFeatured = isFeaturedInput ? isFeaturedInput.checked : false;
-            const featuredUntil = featureDurationInput && isFeatured ? featureDurationInput.value : '';
+            const formData = new FormData();
+            formData.append('dealerId', dealerIdInput.value);
+            formData.append('model', modelInput.value.trim());
+            if (brandInput.value) formData.append('brand', brandInput.value.trim());
+            if (categoryInput.value) formData.append('category', categoryInput.value.trim());
+            if (descriptionInput.value) formData.append('description', descriptionInput.value.trim());
+            formData.append('price', priceInput.value);
+            if (mileageInput.value) formData.append('mileage', mileageInput.value);
+            if (yearInput.value) formData.append('year', yearInput.value);
+            if (fuelTypeInput.value) formData.append('fuelType', fuelTypeInput.value);
+            if (transmissionInput.value) formData.append('transmission', transmissionInput.value);
+            const imageFiles = Array.from(imageInputs).flatMap(input => Array.from(input.files)).filter(file => file);
+            console.log('Numero di immagini selezionate:', imageFiles.length);
+            imageFiles.forEach((file, index) => {
+                console.log(`Immagine ${index + 1}: ${file.name}, size: ${file.size} bytes, type: ${file.type}`);
+                formData.append('images', file);
+            });
+            formData.append('isFeatured', isFeaturedInput ? isFeaturedInput.checked : false);
+            if (isFeaturedInput.checked && featureDurationInput.value) {
+                formData.append('featuredUntil', featureDurationInput.value);
+            }
 
             let isValid = true;
-            if (!model) {
+            if (!modelInput.value.trim()) {
                 modelInput.classList.add('invalid');
                 isValid = false;
             } else {
                 modelInput.classList.remove('invalid');
             }
 
-            if (!price || parseFloat(price) <= 0) {
+            if (!priceInput.value || parseFloat(priceInput.value) <= 0) {
                 priceInput.classList.add('invalid');
                 isValid = false;
             } else {
                 priceInput.classList.remove('invalid');
             }
 
-            if (isFeatured && (!featuredUntil || parseInt(featuredUntil) <= 0)) {
+            if (isFeaturedInput.checked && (!featureDurationInput.value || parseInt(featureDurationInput.value) <= 0)) {
                 featureDurationInput.classList.add('invalid');
                 isValid = false;
             } else if (featureDurationInput) {
                 featureDurationInput.classList.remove('invalid');
             }
 
+            if (imageFiles.length > 10) {
+                showToast('Puoi caricare un massimo di 10 immagini per prodotto', 'error');
+                isValid = false;
+            }
+
+            if (imageFiles.length === 0) {
+                console.warn('Nessuna immagine selezionata');
+                showToast('Seleziona almeno un\'immagine per il prodotto', 'error');
+                isValid = false;
+            }
+
             if (!isValid) {
-                console.error('Validazione fallita:', { model, price, isFeatured, featuredUntil });
+                console.error('Validazione fallita:', Object.fromEntries(formData));
                 showToast('Compila tutti i campi obbligatori correttamente.', 'error');
                 return;
             }
 
-            const carData = {
-                dealerId,
-                model,
-                brand,
-                category,
-                description,
-                price,
-                mileage,
-                year,
-                fuelType,
-                transmission,
-                imageUrl,
-                isFeatured,
-                featuredUntil
-            };
-
-            console.log('Payload inviato:', carData);
+            console.log('Payload inviato:', Object.fromEntries(formData));
 
             spinner.classList.add('active');
-            const submitButton = addCarForm.querySelector('button[type="submit"]');
             submitButton.disabled = true;
 
             try {
                 const response = await fetch(addCarForm.action, {
                     method: 'POST',
-                    body: JSON.stringify(carData),
+                    body: formData,
                     headers: {
-                        'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
                     }
                 });
 
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Errore server:', errorData);
+                    showToast(errorData.message || 'Errore durante l\'aggiunta dell\'auto.', 'error');
+                    throw new Error(errorData.message || 'Errore durante l\'aggiunta dell\'auto.');
+                }
+
                 const responseData = await response.json();
                 console.log('Risposta del server:', responseData);
-                if (response.ok) {
-                    showToast(responseData.message || 'Auto aggiunta con successo!', 'success');
-                    addCarForm.reset();
-                    initializeSelectLabels(addCarForm);
-                    await checkFeaturedLimit();
-                    setTimeout(() => window.location.href = window.location.href + '?t=' + new Date().getTime(), 1500);
-                } else {
-                    console.error('Errore server:', responseData.message);
-                    showToast(responseData.message || 'Errore durante l\'aggiunta dell\'auto.', 'error');
-                    await checkFeaturedLimit();
-                }
+                showToast(responseData.message || 'Auto aggiunta con successo!', 'success');
+                addCarForm.reset();
+                initializeSelectLabels(addCarForm);
+                await checkFeaturedLimit();
+                setTimeout(() => {
+                    const baseUrl = window.location.pathname;
+                    window.location.href = baseUrl + '?t=' + new Date().getTime();
+                }, 1500);
             } catch (error) {
                 console.error('Errore di rete:', error);
                 showToast('Errore di rete: ' + error.message, 'error');
@@ -290,13 +298,14 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Form di aggiunta auto non trovato nel DOM');
     }
 
+    // Handle featured checkbox toggle
     if (isFeaturedCheckbox && featureDurationField) {
         isFeaturedCheckbox.addEventListener('change', function() {
             featureDurationField.style.display = this.checked && !this.disabled ? 'block' : 'none';
         });
     }
 
-
+    // Handle dealer edit form toggle
     const editDealerButton = document.getElementById('edit-dealer-button');
     const displayDealerDetails = document.getElementById('display-dealer-details');
     const dealershipForm = document.getElementById('dealership-form');
@@ -317,6 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Handle dealer edit form submission
     if (dealershipForm) {
         dealershipForm.addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -328,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const addressInput = document.getElementById('edit-dealership-address');
             const phoneInput = document.getElementById('edit-dealership-phone');
             const emailInput = document.getElementById('edit-dealership-email');
-            const imagePathInput = document.getElementById('edit-dealership-imagePath');
+            const imageInputs = dealershipForm.querySelectorAll('input[name="images"]');
             const spinner = dealershipForm.querySelector('.spinner');
             const submitButton = dealershipForm.querySelector('button[type="submit"]');
 
@@ -338,57 +348,97 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const dealerData = {
-                id: idInput.value,
-                name: nameInput.value.trim(),
-                description: descriptionInput ? descriptionInput.value.trim() : '',
-                address: addressInput ? addressInput.value.trim() : '',
-                phone: phoneInput ? phoneInput.value.trim() : '',
-                email: emailInput ? emailInput.value.trim() : '',
-                imagePath: imagePathInput ? imagePathInput.value.trim() : '',
-                isUpdate: "true"
-            };
+            const dealerId = idInput.value;
+            if (!dealerId || dealerId === 'undefined') {
+                console.error('Dealer ID non valido:', dealerId);
+                showToast('Errore: ID del concessionario non valido.', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('name', nameInput.value.trim());
+            if (descriptionInput.value) formData.append('description', descriptionInput.value.trim());
+            if (addressInput.value) formData.append('address', addressInput.value.trim());
+            if (phoneInput.value) formData.append('phone', phoneInput.value.trim());
+            if (emailInput.value) formData.append('email', emailInput.value.trim());
+            const imageFiles = Array.from(imageInputs).map(input => input.files[0]).filter(file => file);
+            imageFiles.forEach((file, index) => {
+                console.log(`Immagine ${index + 1}: ${file.name}, size: ${file.size} bytes, type: ${file.type}`);
+                formData.append('images', file);
+            });
 
             let isValid = true;
-            if (!dealerData.name) {
+            if (!nameInput.value.trim()) {
                 nameInput.classList.add('invalid');
                 isValid = false;
             } else {
                 nameInput.classList.remove('invalid');
             }
 
+            const phonePattern = /^\+?[0-9\s\-]{6,15}$/;
+            if (phoneInput.value && !phonePattern.test(phoneInput.value.trim())) {
+                phoneInput.classList.add('invalid');
+                isValid = false;
+                showToast('Inserisci un numero di telefono valido', 'error');
+            } else {
+                phoneInput.classList.remove('invalid');
+            }
+
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailInput.value && !emailPattern.test(emailInput.value.trim())) {
+                emailInput.classList.add('invalid');
+                isValid = false;
+                showToast('Inserisci un indirizzo email valido', 'error');
+            } else {
+                emailInput.classList.remove('invalid');
+            }
+
+            if (imageFiles.length > 4) {
+                showToast('Puoi caricare un massimo di 4 immagini per concessionario', 'error');
+                isValid = false;
+            }
+
             if (!isValid) {
-                console.error('Validazione fallita per il nome del concessionario');
+                console.error('Validazione fallita:', Object.fromEntries(formData));
                 showToast('Compila tutti i campi obbligatori correttamente.', 'error');
                 return;
             }
 
-            console.log('Payload modifica concessionario:', dealerData);
+            console.log('Payload modifica concessionario:', Object.fromEntries(formData));
 
             spinner.classList.add('active');
             submitButton.disabled = true;
 
             try {
-                const response = await fetch(dealershipForm.action, {
-                    method: 'POST',
-                    body: JSON.stringify(dealerData),
+                const response = await fetch(`/rest/api/dealers/${dealerId}`, {
+                    method: 'PUT',
+                    body: formData,
                     headers: {
-                        'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
                     }
                 });
 
+                if (!response.ok) {
+                    let errorData;
+                    try {
+                        errorData = await response.json();
+                    } catch (e) {
+                        console.error('Risposta non JSON:', await response.text());
+                        throw new Error('Errore del server: risposta non valida.');
+                    }
+                    console.error('Errore server:', errorData);
+                    throw new Error(errorData.message || 'Errore durante la modifica del concessionario.');
+                }
+
                 const responseData = await response.json();
                 console.log('Risposta del server:', responseData);
-                if (response.ok) {
-                    showToast(responseData.message || 'Concessionario modificato con successo!', 'success');
-                    dealershipForm.style.display = 'none';
-                    displayDealerDetails.style.display = 'block';
-                    setTimeout(() => window.location.href = window.location.href + '?t=' + new Date().getTime(), 1500);
-                } else {
-                    console.error('Errore server:', responseData.message);
-                    showToast(responseData.message || 'Errore durante la modifica del concessionario.', 'error');
-                }
+                showToast(responseData.message || 'Concessionario modificato con successo!', 'success');
+                dealershipForm.style.display = 'none';
+                displayDealerDetails.style.display = 'block';
+                setTimeout(() => {
+                    const baseUrl = window.location.pathname;
+                    window.location.href = baseUrl + '?t=' + new Date().getTime();
+                }, 1500);
             } catch (error) {
                 console.error('Errore di rete:', error);
                 showToast('Errore di rete: ' + error.message, 'error');
@@ -401,6 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Form di modifica concessionario non trovato nel DOM');
     }
 
+    // 2. Popolamento form modifica auto
     const editProductLinks = document.querySelectorAll('.edit-product-link');
     const deleteProductLinks = document.querySelectorAll('.delete-product-link');
     const highlightProductLinks = document.querySelectorAll('.highlight-product-link');
@@ -423,6 +474,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const product = await response.json();
                 console.log('Dati prodotto ricevuti:', product);
 
+                // Set form action dynamically
+                if (editProductForm) {
+                    editProductForm.action = `/rest/api/products/${productId}`;
+                }
+
                 const fields = {
                     'edit-product-id': product.id || '',
                     'edit-product-model': product.model || '',
@@ -433,8 +489,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'edit-product-mileage': product.mileage || '',
                     'edit-product-year': product.year || '',
                     'edit-product-fuelType': product.fuelType || '',
-                    'edit-product-transmission': product.transmission || '',
-                    'edit-product-imageUrl': product.imageUrl || ''
+                    'edit-product-transmission': product.transmission || ''
                 };
 
                 for (const [id, value] of Object.entries(fields)) {
@@ -480,80 +535,96 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // 3. Submit modifica auto
     if (editProductForm) {
         editProductForm.addEventListener('submit', async function(event) {
             event.preventDefault();
             console.log('Invio form di modifica prodotto');
 
-            const formData = new FormData(this);
-            const productData = {
-                id: formData.get('id'),
-                dealerId: formData.get('dealerId'),
-                model: formData.get('model')?.trim() || '',
-                brand: formData.get('brand')?.trim() || '',
-                category: formData.get('category')?.trim() || '',
-                description: formData.get('description')?.trim() || '',
-                price: formData.get('price') || '',
-                mileage: formData.get('mileage') || '',
-                year: formData.get('year') || '',
-                fuelType: formData.get('fuelType') || '',
-                transmission: formData.get('transmission') || '',
-                imageUrl: formData.get('imageUrl')?.trim() || ''
-            };
-
-            let isValid = true;
             const modelInput = document.getElementById('edit-product-model');
             const priceInput = document.getElementById('edit-product-price');
+            const imageInputs = editProductForm.querySelectorAll('input[name="images"]');
+            const spinner = editProductForm.querySelector('.spinner');
+            const submitButton = editProductForm.querySelector('button[type="submit"]');
 
-            if (!productData.model) {
+            const formData = new FormData();
+            formData.append('id', document.getElementById('edit-product-id').value);
+            formData.append('model', modelInput.value.trim());
+            formData.append('brand', document.getElementById('edit-product-brand').value.trim());
+            formData.append('category', document.getElementById('edit-product-category').value.trim());
+            formData.append('description', document.getElementById('edit-product-description').value.trim());
+            formData.append('price', priceInput.value);
+            formData.append('mileage', document.getElementById('edit-product-mileage').value);
+            formData.append('year', document.getElementById('edit-product-year').value);
+            formData.append('fuelType', document.getElementById('edit-product-fuelType').value);
+            formData.append('transmission', document.getElementById('edit-product-transmission').value);
+            const imageFiles = Array.from(imageInputs).map(input => input.files[0]).filter(file => file);
+            imageFiles.forEach((file, index) => {
+                console.log(`Immagine prodotto ${index + 1}: ${file.name}, size: ${file.size} bytes, type: ${file.type}`);
+                formData.append('images', file);
+            });
+
+            let isValid = true;
+            if (!modelInput.value.trim()) {
                 modelInput.classList.add('invalid');
                 isValid = false;
             } else {
                 modelInput.classList.remove('invalid');
             }
 
-            if (!productData.price || parseFloat(productData.price) <= 0) {
+            if (!priceInput.value || parseFloat(priceInput.value) <= 0) {
                 priceInput.classList.add('invalid');
                 isValid = false;
             } else {
                 priceInput.classList.remove('invalid');
             }
 
+            if (imageFiles.length > 10) {
+                showToast('Puoi caricare un massimo di 10 immagini per prodotto', 'error');
+                isValid = false;
+            }
+
             if (!isValid) {
-                console.error('Validazione fallita:', productData);
+                console.error('Validazione fallita:', Object.fromEntries(formData));
                 showToast('Compila tutti i campi obbligatori correttamente.', 'error');
                 return;
             }
 
-            console.log('Payload modifica prodotto:', productData);
+            console.log('Payload modifica prodotto:', Object.fromEntries(formData));
 
-            const spinner = editProductForm.querySelector('.spinner');
-            const submitButton = editProductForm.querySelector('button[type="submit"]');
             spinner.classList.add('active');
             submitButton.disabled = true;
 
             try {
-                const response = await fetch(`/rest/api/products/${productData.id}`, {
+                const response = await fetch(editProductForm.action, {
                     method: 'PUT',
-                    body: JSON.stringify(productData),
+                    body: formData,
                     headers: {
-                        'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
                     }
                 });
 
+                if (!response.ok) {
+                    let errorData;
+                    try {
+                        errorData = await response.json();
+                    } catch (e) {
+                        console.error('Risposta non JSON:', await response.text());
+                        throw new Error('Errore del server: risposta non valida.');
+                    }
+                    console.error('Errore server:', errorData);
+                    throw new Error(errorData.message || 'Errore durante la modifica dell\'auto.');
+                }
+
                 const responseData = await response.json();
                 console.log('Risposta del server:', responseData);
-                if (response.ok) {
-                    showToast(responseData.message || 'Auto modificata con successo!', 'success');
-                    closeEditPopup();
-                    await checkFeaturedLimit();
-                    setTimeout(() => window.location.href = window.location.href + '?t=' + new Date().getTime(), 1500);
-                } else {
-                    console.error('Errore server:', responseData.message);
-                    showToast(responseData.message || 'Errore durante la modifica dell\'auto.', 'error');
-                    await checkFeaturedLimit();
-                }
+                showToast(responseData.message || 'Auto modificata con successo!', 'success');
+                closeEditPopup();
+                await checkFeaturedLimit();
+                setTimeout(() => {
+                    const baseUrl = window.location.pathname;
+                    window.location.href = baseUrl + '?t=' + new Date().getTime();
+                }, 1500);
             } catch (error) {
                 console.error('Errore di rete:', error);
                 showToast('Errore di rete: ' + error.message, 'error');
@@ -566,6 +637,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Form di modifica prodotto non trovato nel DOM');
     }
 
+    // Handle delete product links
     deleteProductLinks.forEach(link => {
         link.addEventListener('click', async function(event) {
             event.preventDefault();
@@ -581,15 +653,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
 
-                if (response.ok) {
-                    showToast('Auto eliminata con successo!', 'success');
-                    await checkFeaturedLimit();
-                    setTimeout(() => window.location.href = window.location.href + '?t=' + new Date().getTime(), 1500);
-                } else {
-                    const responseData = await response.json();
-                    console.error('Errore server:', responseData.message);
-                    showToast(responseData.message || 'Errore durante l\'eliminazione dell\'auto.', 'error');
+                if (!response.ok) {
+                    let errorData;
+                    try {
+                        errorData = await response.json();
+                    } catch (e) {
+                        console.error('Risposta non JSON:', await response.text());
+                        throw new Error('Errore del server: risposta non valida.');
+                    }
+                    console.error('Errore server:', errorData);
+                    throw new Error(errorData.message || 'Errore durante l\'eliminazione dell\'auto.');
                 }
+
+                const responseData = await response.json();
+                console.log('Risposta del server:', responseData);
+                showToast(responseData.message || 'Auto eliminata con successo!', 'success');
+                await checkFeaturedLimit();
+                setTimeout(() => {
+                    const baseUrl = window.location.pathname;
+                    window.location.href = baseUrl + '?t=' + new Date().getTime();
+                }, 1500);
             } catch (error) {
                 console.error('Errore di rete:', error);
                 showToast('Errore di rete: ' + error.message, 'error');
@@ -597,6 +680,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Handle highlight product links
     highlightProductLinks.forEach(link => {
         link.addEventListener('click', async function(event) {
             event.preventDefault();
@@ -626,17 +710,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
 
+                if (!response.ok) {
+                    let errorData;
+                    try {
+                        errorData = await response.json();
+                    } catch (e) {
+                        console.error('Risposta non JSON:', await response.text());
+                        throw new Error('Errore del server: risposta non valida.');
+                    }
+                    console.error('Errore server:', errorData);
+                    throw new Error(errorData.message || 'Errore durante la messa in evidenza.');
+                }
+
                 const responseData = await response.json();
                 console.log('Risposta del server:', responseData);
-                if (response.ok) {
-                    showToast(responseData.message || 'Auto messa in evidenza con successo!', 'success');
-                    await checkFeaturedLimit();
-                    setTimeout(() => window.location.href = window.location.href + '?t=' + new Date().getTime(), 1500);
-                } else {
-                    console.error('Errore server:', responseData.message);
-                    showToast(responseData.message || 'Errore durante la messa in evidenza.', 'error');
-                    await checkFeaturedLimit();
-                }
+                showToast(responseData.message || 'Auto messa in evidenza con successo!', 'success');
+                await checkFeaturedLimit();
+                setTimeout(() => {
+                    const baseUrl = window.location.pathname;
+                    window.location.href = baseUrl + '?t=' + new Date().getTime();
+                }, 1500);
             } catch (error) {
                 console.error('Errore di rete:', error);
                 showToast('Errore di rete: ' + error.message, 'error');
@@ -644,6 +737,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Handle remove highlight product links
     removeHighlightProductLinks.forEach(link => {
         link.addEventListener('click', async function(event) {
             event.preventDefault();
@@ -654,22 +748,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 const response = await fetch(`/rest/api/products/${productId}/remove-highlight`, {
                     method: 'POST',
                     headers: {
+                        'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
                     }
                 });
 
+                if (!response.ok) {
+                    let errorData;
+                    try {
+                        errorData = await response.json();
+                    } catch (e) {
+                        console.error('Risposta non JSON:', await response.text());
+                        throw new Error('Errore del server: risposta non valida.');
+                    }
+                    console.error('Errore server:', errorData);
+                    throw new Error(errorData.message || 'Errore durante la rimozione dell\'evidenza.');
+                }
+
                 const responseData = await response.json();
                 console.log('Risposta da /rest/api/products/remove-highlight:', responseData);
-
-                if (response.ok) {
-                    showToast(responseData.message || 'Evidenza rimossa con successo!', 'success');
-                    const result = await checkFeaturedLimit();
-                    console.log('Risultato di checkFeaturedLimit dopo rimozione:', result);
-                    setTimeout(() => window.location.href = window.location.href + '?t=' + new Date().getTime(), 1500);
-                } else {
-                    console.error('Errore server:', responseData.message);
-                    showToast(responseData.message || 'Errore durante la rimozione dell\'evidenza.', 'error');
-                }
+                showToast(responseData.message || 'Evidenza rimossa con successo!', 'success');
+                await checkFeaturedLimit();
+                setTimeout(() => {
+                    const baseUrl = window.location.pathname;
+                    window.location.href = baseUrl + '?t=' + new Date().getTime();
+                }, 1500);
             } catch (error) {
                 console.error('Errore di rete durante la rimozione dell\'evidenza:', error);
                 showToast('Errore di rete: ' + error.message, 'error');
@@ -677,10 +780,96 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Handle carousel navigation for dealer images
+    const dealerCarousel = document.querySelector('.dealer-carousel');
+    if (dealerCarousel) {
+        const items = dealerCarousel.querySelectorAll('.dealer-image-item');
+        const dots = dealerCarousel.querySelectorAll('.dots .dot');
+        const prevBtn = dealerCarousel.querySelector('.carousel-btn.prev');
+        const nextBtn = dealerCarousel.querySelector('.carousel-btn.next');
+
+        if (items.length > 1 && prevBtn && nextBtn) {
+            let currentIndex = 0;
+
+            const updateCarousel = () => {
+                items.forEach((item, index) => {
+                    item.classList.toggle('active', index === currentIndex);
+                    if (dots[index]) dots[index].classList.toggle('active', index === currentIndex);
+                });
+                dealerCarousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+            };
+
+            prevBtn.addEventListener('click', () => {
+                currentIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+                updateCarousel();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                currentIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+                updateCarousel();
+            });
+
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    currentIndex = index;
+                    updateCarousel();
+                });
+            });
+
+            updateCarousel();
+        } else {
+            console.log('Dealer carousel non inizializzato: una sola immagine o pulsanti di navigazione mancanti');
+        }
+    } else {
+        console.log('Dealer carousel non trovato nel DOM');
+    }
+
+    // Handle carousel navigation for product images
+    document.querySelectorAll('.car-grid .carousel').forEach(carousel => {
+        const items = carousel.querySelectorAll('.category-item');
+        const dots = carousel.querySelectorAll('.dots .dot');
+        const prevBtn = carousel.querySelector('.carousel-btn.prev');
+        const nextBtn = carousel.querySelector('.carousel-btn.next');
+
+        if (items.length > 1 && prevBtn && nextBtn) {
+            let currentIndex = 0;
+
+            const updateProductCarousel = () => {
+                items.forEach((item, index) => {
+                    item.classList.toggle('active', index === currentIndex);
+                    if (dots[index]) dots[index].classList.toggle('active', index === currentIndex);
+                });
+                carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+            };
+
+            prevBtn.addEventListener('click', () => {
+                currentIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+                updateProductCarousel();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                currentIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+                updateProductCarousel();
+            });
+
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    currentIndex = index;
+                    updateProductCarousel();
+                });
+            });
+
+            updateProductCarousel();
+        } else {
+            console.log('Product carousel non inizializzato: una sola immagine o pulsanti di navigazione mancanti');
+        }
+    });
+
+    // Animate sections and product cards
     const animatedSections = document.querySelectorAll('.animated-section');
     animatedSections.forEach(section => section.classList.add('visible'));
 
-    const productCards = document.querySelectorAll('.product-card');
+    const productCards = document.querySelectorAll('.car-card');
     console.log(`Trovate ${productCards.length} card di prodotti`);
     productCards.forEach((card, index) => {
         setTimeout(() => card.classList.add('visible'), index * 100);

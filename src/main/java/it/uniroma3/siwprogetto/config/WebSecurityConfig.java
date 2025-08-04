@@ -28,9 +28,9 @@ public class WebSecurityConfig {
     private final PasswordEncoder passwordEncoder;
 
     public WebSecurityConfig(CustomUserDetailsService customUserDetailsService,
-                            AuthenticationSuccessHandler customAuthenticationSuccessHandler,
-                            AuthenticationFailureHandler customAuthenticationFailureHandler,
-                            PasswordEncoder passwordEncoder) {
+                             AuthenticationSuccessHandler customAuthenticationSuccessHandler,
+                             AuthenticationFailureHandler customAuthenticationFailureHandler,
+                             PasswordEncoder passwordEncoder) {
         this.customUserDetailsService = customUserDetailsService;
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
@@ -41,10 +41,11 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/forgot-password", "/reset-password", "/index", "/login", "/register", "/products/**", "/dealers/**", "/css/**", "/image/**", "/js/**", "/favicon.ico","rest/dealers/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/login", "/register", "/forgot-password", "/reset-password").permitAll()
-                        .requestMatchers("/cart/**").permitAll()
+                        .requestMatchers("/", "/forgot-password", "/reset-password", "/index", "/login", "/register","/rest/dealers/**", "/products/**", "/dealers/**", "/css/**", "/image/**", "/js/**", "/favicon.ico","/rest/api/images/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login", "/register", "/forgot-password", "/reset-password", "/rest/dealers/**", "/rest/api/dealers/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/rest/api/dealers/**").permitAll() //
                         .requestMatchers(HttpMethod.POST, "/cart/**").permitAll()
+                        .requestMatchers("/cart/**").permitAll()
                         .requestMatchers("/account").authenticated()
                         .requestMatchers("/manutenzione/private").hasAnyAuthority(SecurityConstants.PRIVATE_ROLE)
                         .requestMatchers("/manutenzione/dealer").hasAuthority(SecurityConstants.DEALER_ROLE)
@@ -93,4 +94,5 @@ public class WebSecurityConfig {
     @Autowired
     public void setUserService(UserService userService) {
     }
+
 }

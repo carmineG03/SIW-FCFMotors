@@ -1,5 +1,6 @@
 package it.uniroma3.siwprogetto.service;
 
+import it.uniroma3.siwprogetto.model.Image;
 import it.uniroma3.siwprogetto.model.Product;
 import it.uniroma3.siwprogetto.model.Subscription;
 import it.uniroma3.siwprogetto.model.User;
@@ -11,7 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -31,28 +35,28 @@ public class ProductService {
     @Autowired
     private UserRepository userRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(ProductService.class); // Fixed: Use ProductService logger
+    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
-    // Trova tutti i prodotti
+    @Transactional
     public List<Product> findAll() {
         return productRepository.findAll();
     }
 
-    // Trova prodotti per categoria
+    @Transactional
     public List<Product> findByCategory(String category) {
         return productRepository.findByCategory(category);
     }
 
-    // Trova tutte le categorie
+    @Transactional
     public List<String> findAllCategories() {
         return productRepository.findAllCategories();
     }
 
-    // Trova tutte le marche
+    @Transactional
     public List<String> findAllBrands() {
         return productRepository.findAll().stream()
                 .map(Product::getBrand)
@@ -60,22 +64,22 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    // Trova modelli per marca
+    @Transactional
     public List<String> findModelsByBrand(String brand) {
         return productRepository.findModelsByBrand(brand);
     }
 
-    // Trova tutti i tipi di carburante
+    @Transactional
     public List<String> findAllFuelTypes() {
         return productRepository.findAllFuelTypes();
     }
 
-    // Trova tutte le trasmissioni
+    @Transactional
     public List<String> findAllTransmissions() {
         return productRepository.findAllTransmissions();
     }
 
-    // Trova prodotti con filtri
+    @Transactional
     public List<Product> findByFilters(String category, String brand, String selectedModel,
                                        BigDecimal minPrice, BigDecimal maxPrice,
                                        Integer minMileage, Integer maxMileage,
@@ -84,29 +88,25 @@ public class ProductService {
         logger.debug("Filtri applicati: category={}, brand={}, model={}, minPrice={}, maxPrice={}, minMileage={}, maxMileage={}, minYear={}, maxYear={}, fuelType={}, transmission={}, query={}",
                 category, brand, selectedModel, minPrice, maxPrice, minMileage, maxMileage, minYear, maxYear, fuelType, transmission, query);
 
-        // Fetch products using the repository without the query parameter
         List<Product> results = productRepository.findByFilters(category, brand, selectedModel,
                 minPrice, maxPrice, minMileage, maxMileage,
                 minYear, maxYear, fuelType, transmission);
 
-        // Apply query filter in Java if query is not null or empty
         if (query != null && !query.trim().isEmpty()) {
-            // Split the query into terms (e.g., "Fiat 500" -> ["fiat", "500"])
             String[] searchTerms = query.trim().toLowerCase().split("\\s+");
             logger.debug("Termini di ricerca: {}", Arrays.toString(searchTerms));
 
             results = results.stream()
                     .filter(p -> {
-                        // Check if all terms match in brand, model, or category
                         for (String term : searchTerms) {
                             boolean termMatches = (p.getBrand() != null && p.getBrand().toLowerCase().contains(term)) ||
                                     (p.getModel() != null && p.getModel().toLowerCase().contains(term)) ||
                                     (p.getCategory() != null && p.getCategory().toLowerCase().contains(term));
                             if (!termMatches) {
-                                return false; // If any term doesn't match, exclude the product
+                                return false;
                             }
                         }
-                        return true; // All terms match
+                        return true;
                     })
                     .collect(Collectors.toList());
         }
@@ -116,30 +116,32 @@ public class ProductService {
         return results;
     }
 
-    // Trova un prodotto per ID
+    @Transactional
     public Optional<Product> findById(Long id) {
         return productRepository.findById(id);
     }
 
+    @Transactional
     public Product findById1(Long id) {
         return productRepository.findById(id).orElse(null);
     }
 
-    // Salva un prodotto
+    @Transactional
     public Product save(Product product) {
         return productRepository.save(product);
     }
 
-    // Elimina un prodotto per ID
+    @Transactional
     public void deleteById(Long id) {
         productRepository.deleteById(id);
     }
 
-    // Trova prodotti per ID del venditore
+    @Transactional
     public List<Product> findBySellerId(Long sellerId) {
         return productRepository.findBySellerId(sellerId);
     }
 
+    @Transactional
     public boolean canAddFeaturedCar(User user, Product product) {
         User fullUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> {
@@ -185,5 +187,18 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    @Transactional
+    public Image saveImageFile(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            logger.warn("File immagine non valido o vuoto");
+            throw new IllegalArgumentException("File immagine non valido");
+        }
 
+        Image image = new Image();
+        image.setData(file.getBytes());
+        image.setContentType(file.getContentType());
+        logger.info("Immagine preparata per il salvataggio: size={} bytes, contentType={}",
+                file.getBytes().length, file.getContentType());
+        return image;
+    }
 }
