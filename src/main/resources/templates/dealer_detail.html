@@ -20,6 +20,7 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="/image/favicon.png"/>
   <!-- Preload CSS -->
+  <link rel="stylesheet" href="/css/main.css">
   <link rel="preload" href="/css/styles.css" as="style"/>
   <link rel="stylesheet" href="/css/styles.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
@@ -49,132 +50,6 @@
   </script>
   <title th:text="${dealer.name} + ' - FCF Motors'">Dettagli Concessionario - FCF Motors</title>
   <style>
-    /* Stile per la header */
-    #main-header {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      height: 80px;
-      background-color: #010A33 !important;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-    }
-    /* Stile per il menu a tendina */
-    .dropdown {
-      position: relative;
-      display: inline-block;
-      z-index: 1002;
-    }
-    .dropdown-toggle {
-      background: linear-gradient(45deg, #F5A623, #E59400);
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.3s ease, background 0.3s ease;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      z-index: 1003;
-    }
-    .dropdown-toggle:hover {
-      transform: scale(1.1);
-      background: linear-gradient(45deg, #E59400, #F5A623);
-    }
-    .dropdown-toggle i {
-      font-size: 1.2rem;
-      color: #FFFFFF;
-      transition: transform 0.3s ease;
-    }
-    .dropdown-toggle.open i.fa-bars {
-      transform: rotate(90deg);
-    }
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 50px;
-      right: 0;
-      background: #FFFFFF;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-      border-radius: 8px;
-      z-index: 1004;
-      min-width: 180px;
-      padding: 8px 0;
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    .dropdown-menu.show {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .dropdown-menu a {
-      display: flex;
-      align-items: center;
-      padding: 10px 16px;
-      color: #333;
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-      transition: background 0.2s ease, color 0.2s ease;
-    }
-    .dropdown-menu a i {
-      margin-right: 8px;
-      font-size: 1rem;
-      color: #F5A623;
-    }
-    .dropdown-menu a:hover {
-      background: #F5A623;
-      color: #FFFFFF;
-    }
-    .dropdown-menu a:hover i {
-      color: #FFFFFF;
-    }
-    /* Posizionamento del menu */
-    .header-right {
-      position: absolute;
-      top: 50%;
-      right: 20px;
-      transform: translateY(-50%);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      z-index: 1000;
-    }
-    /* Responsive header */
-    @media (max-width: 768px) {
-      #main-header {
-        height: 60px;
-      }
-      .dropdown-menu {
-        min-width: 160px;
-      }
-      .dropdown-toggle {
-        width: 36px;
-        height: 36px;
-      }
-      .dropdown-toggle i {
-        font-size: 1rem;
-      }
-      .dropdown-menu {
-        top: 40px;
-      }
-      .dropdown-menu a {
-        padding: 8px 12px;
-        font-size: 0.85rem;
-      }
-      .header-right {
-        right: 10px;
-        gap: 5px;
-      }
-    }
     /* Stili per la pagina */
     body {
       background-color: #F5F6F5;

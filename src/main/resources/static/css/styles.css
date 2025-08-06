@@ -31,7 +31,7 @@ main,
     display: block;
 }
 
-/* Header */
+/* Header 
 header {
     display: flex;
     justify-content: space-between;
@@ -154,7 +154,7 @@ header h2 {
 .header-transparent .icon-button {
     background-color: rgba(255, 255, 255, 0.2);
     padding: 5px 8px;
-}
+}*/
 
 /* Categories Section */
 .categories-section {
@@ -2737,7 +2737,7 @@ header h2 {
     }
 }
 
-/* Footer */
+/* Footer 
 footer {
     background-color: rgb(1, 10, 51);
     color: #FFFFFF;
@@ -2798,7 +2798,7 @@ footer {
     padding-top: 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     font-size: 0.9rem;
-}
+}*/
 
 .back-button {
     display: inline-flex;
@@ -2843,7 +2843,7 @@ footer {
     }
 }
 @media (max-width: 1024px) {
-    .logo {
+    /*.logo {
         height: 50px;
     }
     .main-title {
@@ -2856,7 +2856,7 @@ footer {
     }
     .title-container {
         gap: 15px;
-    }
+    }*/
     .hero-content {
         padding: 25px 40px;
     }
@@ -2875,7 +2875,7 @@ footer {
 }
 
 @media (max-width: 768px) {
-    .logo {
+    /*.logo {
         height: 40px;
     }
     .main-title {
@@ -2888,7 +2888,7 @@ footer {
     }
     .title-container {
         gap: 10px;
-    }
+    }*/
     .hero-section {
         height: 70vh;
         background-attachment: scroll;
@@ -2927,12 +2927,12 @@ footer {
     .feature-item {
         padding: 15px;
     }
-    .footer-content {
+    /*.footer-content {
         flex-direction: column;
     }
     .footer-section {
         margin-bottom: 20px;
-    }
+    }*/
     .dealers-section h2 {
         font-size: 2rem;
 
@@ -2957,7 +2957,7 @@ footer {
 }
 
 @media (max-width: 480px) {
-    .logo {
+    /*.logo {
         height: clamp(30px, 8vw, 35px);
     }
     .main-title {
@@ -2967,7 +2967,7 @@ footer {
     .dealers-button {
         font-size: clamp(12px, 3.5vw, 13px);
         padding: clamp(4px, 1.5vw, 5px) clamp(8px, 2.5vw, 10px);
-    }
+    }*/
     .hero-content {
         padding: clamp(10px, 4vw, 15px);
     }

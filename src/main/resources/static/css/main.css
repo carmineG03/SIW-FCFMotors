@@ -1,0 +1,430 @@
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: rgb(1, 10, 51);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #E5E5E5;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    height: 75px;
+}
+
+header h2 {
+    color: #FFFFFF;
+    font-size: 2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.header-transparent {
+    background-color: rgba(0, 48, 135, 0.3);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header-left,
+.logo-link,
+.logo-container,
+.title-container,
+.nav-container,
+.nav-bar {
+    display: flex;
+    align-items: center;
+}
+
+.logo-link {
+    text-decoration: none;
+}
+
+.logo-container {
+    flex-direction: column;
+}
+
+.logo {
+    height: 55px;
+    width: auto;
+    margin-bottom: 1px;
+}
+
+.title-container {
+    gap: 20px;
+}
+
+.main-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    font-family: 'Bungee Spice', sans-serif;
+    color: #F5A623;
+    margin: 0 0 0 10px;
+    line-height: 1;
+}
+
+.products-button,
+.dealers-button,
+.icon-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.products-button {
+    background-color: #F5A623;
+    color: #FFFFFF;
+}
+
+.products-button:hover {
+    background-color: #E59400;
+}
+
+.dealers-button {
+    background-color: #003087;
+    color: #FFFFFF;
+}
+
+.dealers-button:hover {
+    background-color: #002066;
+}
+
+.products-button i,
+.dealers-button i {
+    margin-right: 8px;
+}
+
+.icon-button {
+    font-size: 20px;
+    color: #F5A623;
+    margin-left: 15px;
+    padding: 5px 8px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.icon-button:hover,
+.header-transparent .icon-button:hover {
+    color: #E59400;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.header-transparent .icon-button {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 5px 8px;
+}
+
+/* Dropdown Menu */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, background 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-toggle:hover {
+    transform: scale(1.1);
+    background: linear-gradient(45deg, #E59400, #F5A623);
+}
+
+.dropdown-toggle i {
+    font-size: 1.2rem;
+    color: #FFFFFF;
+    transition: transform 0.3s ease;
+}
+
+.dropdown-toggle.open i.fa-bars {
+    transform: rotate(90deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    z-index: 1000;
+    min-width: 200px;
+    padding: 10px 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.dropdown-menu.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.dropdown-menu a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.dropdown-menu a i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+    color: #F5A623;
+}
+
+.dropdown-menu a:hover {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+    color: #FFFFFF;
+    transform: translateX(5px);
+    border-left: 3px solid #FFFFFF;
+}
+
+.dropdown-menu a:hover i {
+    color: #FFFFFF;
+}
+
+/* Header Right positioning */
+.header-right {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Body per il sticky footer */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Main content che si espande per spingere il footer in basso */
+main,
+.main-content,
+.wrapper,
+.cart-section,
+.dealers-section,
+.maintenance-section,
+.products-page {
+    flex: 1;
+}
+
+/* Footer */
+footer {
+    background-color: rgb(1, 10, 51);
+    color: #FFFFFF;
+    padding: 40px 20px;
+    text-align: center;
+    border-top: 1px solid #E5E5E5;
+    margin-top: auto; 
+    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-section h4 {
+    font-size: 1.2rem;
+    color: #F5A623;
+    margin-bottom: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section ul li a {
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.footer-section ul li a:hover {
+    color: #F5A623;
+}
+
+.footer-section p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #F5A623;
+    color: #FFFFFF;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.social-icon:hover {
+    background: #E59400;
+    transform: translateY(-2px);
+}
+
+.footer-bottom {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .logo {
+        height: 50px;
+    }
+    .main-title {
+        font-size: 2.2rem;
+    }
+    .products-button,
+    .dealers-button {
+        font-size: 15px;
+        padding: 7px 14px;
+    }
+    .title-container {
+        gap: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    #main-header {
+        height: 60px;
+    }
+    .dropdown-menu {
+        min-width: 180px;
+    }
+    .dropdown-toggle {
+        width: 36px;
+        height: 36px;
+    }
+    .dropdown-toggle i {
+        font-size: 1rem;
+    }
+    .dropdown-menu {
+        top: 40px;
+    }
+    .dropdown-menu a {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+    .header-right {
+        right: 10px;
+        gap: 5px;
+    }
+    .logo {
+        height: 40px;
+    }
+    .main-title {
+        font-size: 1.8rem;
+    }
+    .products-button,
+    .dealers-button {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+    .title-container {
+        gap: 10px;
+    }
+    .footer-content {
+        flex-direction: column;
+    }
+    .footer-section {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dropdown-menu {
+        min-width: 160px;
+    }
+    .dropdown-toggle {
+        width: 32px;
+        height: 32px;
+    }
+    .dropdown-toggle i {
+        font-size: 0.9rem;
+    }
+    .dropdown-menu {
+        top: 35px;
+    }
+    .dropdown-menu a {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    .header-right {
+        right: 8px;
+        gap: 3px;
+    }
+    .logo {
+        height: clamp(30px, 8vw, 35px);
+    }
+    .main-title {
+        font-size: clamp(1.2rem, 5vw, 1.5rem);
+    }
+    .products-button,
+    .dealers-button {
+        font-size: clamp(12px, 3.5vw, 13px);
+        padding: clamp(4px, 1.5vw, 5px) clamp(8px, 2.5vw, 10px);
+    }
+}
