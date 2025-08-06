@@ -6,133 +6,227 @@
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Richieste di Preventivo - FCF Motors</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Override globale per rimuovere margini e limiti di larghezza */
-        html, body {
+        /* Stile generale per la pagina */
+        body {
+            background: linear-gradient(135deg, #010A33, #003087);
+            color: #FFFFFF;
+            font-family: 'Open Sans', sans-serif;
             margin: 0;
             padding: 0;
-            width: 100%;
-            overflow-x: hidden;
         }
 
-        /* Header a tutta larghezza */
-        .header-transparent {
-            width: 100%;
-            padding: 20px 40px;
-            box-sizing: border-box;
+        /* Header styles - uniforme alla pagina account */
+        #main-header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-           
+            position: relative;
+            height: 70px;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 20px;
         }
 
-        .logo-container img {
-            height: 50px;
+        .logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo-container {
+            margin-right: 15px;
+        }
+
+        .logo {
+            height: 40px;
+            width: auto;
         }
 
         .title-container {
             display: flex;
             align-items: center;
-            gap: 15px;
         }
 
         .main-title {
-            color: #FFFFFF;
-            font-size: 1.8rem;
-            margin: 0;
-        }
-
-        .products-button,
-        .dealers-button {
-            color: #FFFFFF;
-            text-decoration: none;
-            font-size: 1.1rem;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background 0.3s ease;
-        }
-
-        .products-button:hover,
-        .dealers-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .nav-container .nav-bar {
-            display: flex;
-            gap: 15px;
-        }
-
-        .icon-button {
-            color: #FFFFFF;
-            font-size: 1.2rem;
-            text-decoration: none;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background 0.3s ease;
-        }
-
-        .icon-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Nuova classe per la sezione principale, evitando conflitti con .hero-content */
-        .full-width-hero {
-            padding: 40px 0; /* Rimuovo padding laterali */
-            min-height: 100vh;
-            background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
-            color: #FFFFFF;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            margin: 0;
-            
-        }
-
-        .full-width-hero h2 {
-            font-size: 2.5rem;
-            margin-bottom: 30px;
             color: #F5A623;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-            font-weight: 700;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0;
         }
 
-        /* Layout a due colonne con CSS Grid, a tutta larghezza */
-        .full-width-hero .quote-requests-container {
+        .nav-container {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-bar {
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, #F5A623, #E59400, #F5A623);
+            border-radius: 2px;
+            box-shadow: 0 2px 10px rgba(245, 166, 35, 0.5);
+        }
+
+        .header-right {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1010;
+        }
+
+        /* Dropdown functionality */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .dropdown-toggle:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #E59400, #F5A623);
+        }
+
+        .dropdown-toggle i {
+            font-size: 1.2rem;
+            color: #FFFFFF;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-toggle.open i.fa-bars {
+            transform: rotate(90deg);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            z-index: 1000;
+            min-width: 200px;
+            padding: 10px 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .dropdown-menu a i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            color: #F5A623;
+        }
+
+        .dropdown-menu a:hover {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            transform: translateX(5px);
+            border-left: 3px solid #FFFFFF;
+        }
+
+        .dropdown-menu a:hover i {
+            color: #FFFFFF;
+        }
+
+        /* Main content area */
+        main {
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Quote requests container */
+        .quote-requests-section {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .quote-requests-section h2 {
+            color: #F5A623;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Layout a due colonne */
+        .quote-requests-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
-            width: 100%; /* Tutta la larghezza */
-            padding: 0 40px; /* Padding laterale per non toccare i bordi */
-            box-sizing: border-box;
-            margin: 0;
-            
+            margin-bottom: 30px;
         }
 
-        .quote-requests-container .column {
-            padding: 20px;
+        .column {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 25px;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
-            width: 100%; /* Assicuro che la colonna prenda tutta la larghezza disponibile */
-            box-sizing: border-box;
-            margin: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .column:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
 
         .column h3 {
@@ -144,23 +238,21 @@
         }
 
         /* Stile per le card delle richieste */
-        .column .quote-request-card {
-            border: none;
+        .quote-request-card {
+            background: rgba(255, 255, 255, 0.08);
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 10px;
-            background: linear-gradient(145deg, #2a2a2a, #3a3a3a);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
-            width: 100%; /* Card a tutta larghezza */
-            box-sizing: border-box;
         }
 
         .quote-request-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
         .quote-request-card::before {
@@ -168,7 +260,7 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 5px;
+            width: 4px;
             height: 100%;
             background: linear-gradient(180deg, #F5A623, #E59400);
         }
@@ -176,7 +268,8 @@
         .quote-request-card .info-row {
             margin-bottom: 12px;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
         }
 
         .quote-request-card .info-row .label {
@@ -184,52 +277,58 @@
             margin-right: 10px;
             color: #F5A623;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            min-width: 120px;
+            flex-shrink: 0;
         }
 
         .quote-request-card .info-row .value {
             color: #FFFFFF;
+            word-break: break-word;
+            flex: 1;
         }
 
-        /* Stile per il form di risposta */
-        .quote-request-card .form-actions {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-
+        /* Form di risposta */
         .respond-quote-form {
             width: 100%;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .respond-quote-form .input-field {
             margin-bottom: 15px;
-            width: 100%;
         }
 
         .respond-quote-form label {
             display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #F5A623;
             margin-bottom: 8px;
+            color: #F5A623;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
 
         .respond-quote-form textarea {
             width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
             color: #FFFFFF;
             resize: vertical;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
             box-sizing: border-box;
+            font-family: inherit;
         }
 
         .respond-quote-form textarea:focus {
             border-color: #F5A623;
+            background: rgba(0, 0, 0, 0.5);
             outline: none;
+            box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.2);
+        }
+
+        .respond-quote-form textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .respond-quote-form .modern-button {
@@ -237,116 +336,121 @@
             color: #FFFFFF;
             padding: 12px 20px;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            font-weight: 600;
+            width: 100%;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: background 0.3s ease, transform 0.2s ease;
-            width: 100%; /* Pulsante a tutta larghezza */
             justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
         }
 
         .respond-quote-form .modern-button:hover {
-            background: linear-gradient(45deg, #E59400, #D68F1D);
             transform: translateY(-2px);
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
         }
 
-        /* Stile per il messaggio di assenza richieste */
-        .column .no-requests {
+        /* Messaggio di assenza richieste */
+        .no-requests {
             text-align: center;
             color: #FFFFFF;
-            font-size: 1.2rem;
-            padding: 20px;
+            font-size: 1.1rem;
+            padding: 30px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .no-requests-icon {
-            font-size: 2rem;
+            font-size: 2.5rem;
             color: #F5A623;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            display: block;
         }
 
-        /* Stile per il pulsante "Torna indietro" */
-        .full-width-hero .form-actions {
-            width: 100%;
+        /* Back button */
+        .back-button-container {
             text-align: center;
-            padding: 0 40px;
-            box-sizing: border-box;
+            margin-top: 30px;
         }
 
-        .form-actions .back-button {
+        .back-button {
             background: linear-gradient(45deg, #003087, #0059b3);
             color: #FFFFFF;
-            padding: 12px 20px;
-            border-radius: 5px;
+            padding: 12px 25px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            transition: background 0.3s ease, transform 0.2s ease;
-            width: 100%;
-            max-width: 300px; /* Limite massimo per estetica */
-            justify-content: center;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .form-actions .back-button:hover {
-            background: linear-gradient(45deg, #002066, #004080);
+        .back-button:hover {
             transform: translateY(-2px);
+            background: linear-gradient(45deg, #002066, #004080);
+            box-shadow: 0 4px 15px rgba(0, 48, 135, 0.4);
         }
 
-        /* Animazione di caricamento */
-        .full-width-hero .loading-spinner {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            width: 100%;
+        /* Footer styles */
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 40px 20px 20px;
+            margin-top: 50px;
         }
 
-        .loading-spinner.active {
-            display: block;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #F5A623;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .footer-content {
+            max-width: 1200px;
             margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .footer-section h4 {
+            color: #F5A623;
+            margin-bottom: 15px;
         }
 
-        
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul li a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: #F5A623;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .full-width-hero .quote-requests-container {
-                grid-template-columns: 1fr; /* Impila le colonne */
-                padding: 0 20px; /* Riduco il padding laterale */
-            }
-
-            .quote-requests-container .column {
-                margin-bottom: 20px;
-            }
-
-            .header-transparent {
-                padding: 20px;
+            #main-header {
+                height: 60px;
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
+                padding: 10px 15px;
             }
 
             .header-left {
@@ -354,64 +458,99 @@
                 align-items: flex-start;
             }
 
-            .title-container {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-
             .nav-container {
-                width: 100%;
-                display: flex;
-                justify-content: flex-end;
+                position: relative;
+                left: auto;
+                top: auto;
+                transform: none;
+                margin: 10px 0;
             }
 
-           
+            .header-right {
+                position: relative;
+                right: auto;
+                top: auto;
+                transform: none;
+            }
+
+            .quote-requests-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .column {
+                margin-bottom: 20px;
+            }
+
+            .dropdown-menu {
+                min-width: 180px;
+            }
+
+            .dropdown-toggle {
+                width: 36px;
+                height: 36px;
+            }
+
+            .dropdown-toggle i {
+                font-size: 1rem;
+            }
+
+            .dropdown-menu {
+                top: 40px;
+            }
+
+            .dropdown-menu a {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+
+            .quote-request-card .info-row {
+                flex-direction: column;
+            }
+
+            .quote-request-card .info-row .label {
+                min-width: auto;
+                margin-bottom: 5px;
+            }
         }
     </style>
 </head>
 <body>
-<header class="header-transparent">
+<header>
     <div class="header-left">
         <a href="/" class="logo-link">
             <div class="logo-container">
                 <img src="/image/logo1.png" alt="Logo" class="logo">
             </div>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
+            </div>
         </a>
-        <div class="title-container">
-            <h2 class="main-title">FCF MOTORS</h2>
-            <a th:href="@{/products}" class="products-button">
-                <i class="fas fa-car"></i> Prodotti
-            </a>
-            <a th:href="@{/dealers}" class="dealers-button">
-                <i class="fas fa-store"></i> Concessionari
-            </a>
-        </div>
     </div>
-    <div class="nav-container">
-        <nav class="nav-bar">
-            <a th:href="@{/cart}" class="icon-button">
-                <i class="fas fa-shopping-cart"></i>
-            </a>
-            <a th:href="@{/account}" class="icon-button">
-                <i class="fas fa-user"></i>
-            </a>
-        </nav>
+    <div class="header-right">
+        <div class="dropdown">
+            <button class="dropdown-toggle" aria-label="Menu" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu" role="menu">
+                <a th:href="@{/products}" role="menuitem"><i class="fas fa-car"></i> Trova Auto</a>
+                <a th:href="@{/dealers}" role="menuitem"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:href="@{/cart}" role="menuitem"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                <a th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+            </div>
+        </div>
     </div>
 </header>
 
 <main>
-    <section class="full-width-hero">
+    <section class="quote-requests-section">
         <h2>Richieste di Preventivo</h2>
-        <div class="loading-spinner" id="loading-spinner">
-            <div class="spinner"></div>
-        </div>
-        <div class="quote-requests-container" id="quote-requests-container">
+
+        <div class="quote-requests-container">
             <!-- Colonna Sinistra: Da Rispondere -->
             <div class="column pending-column">
                 <h3>Da Rispondere</h3>
                 <div th:if="${quoteRequests != null and not #lists.isEmpty(quoteRequests)}">
-                    <!-- Contatore per le richieste PENDING -->
                     <th:block th:with="pendingCount=${#lists.size(quoteRequests.?[status == 'PENDING'])}">
                         <div th:if="${pendingCount > 0}">
                             <div th:each="request : ${quoteRequests}" th:if="${request.status == 'PENDING'}" class="quote-request-card pending-card">
@@ -427,18 +566,15 @@
                                     <span class="label">Stato:</span>
                                     <span class="value" th:text="${request.status}"></span>
                                 </div>
-                                <div class="form-actions">
-                                    <form th:action="@{'/rest/dealer/quote-requests/respond/' + ${request.id}}" method="post" class="respond-quote-form" onsubmit="handleSubmit(event, this)">
-                                        <div class="input-field">
-                                            <label th:for="'responseMessage-' + ${request.id}">Messaggio di Risposta</label>
-                                            <textarea th:id="'responseMessage-' + ${request.id}" name="responseMessage" rows="4" required></textarea>
-                                        </div>
-                                        <button type="submit" class="modern-button">
-                                            <i class="fas fa-envelope"></i> Invia Risposta
-                                            <span class="spinner"></span>
-                                        </button>
-                                    </form>
-                                </div>
+                                <form th:action="@{'/rest/dealer/quote-requests/respond/' + ${request.id}}" method="post" class="respond-quote-form">
+                                    <div class="input-field">
+                                        <label th:for="'responseMessage-' + ${request.id}">Messaggio di Risposta</label>
+                                        <textarea th:id="'responseMessage-' + ${request.id}" name="responseMessage" rows="4" required></textarea>
+                                    </div>
+                                    <button type="submit" class="modern-button">
+                                        <i class="fas fa-envelope"></i> Invia Risposta
+                                    </button>
+                                </form>
                             </div>
                         </div>
                         <div th:if="${pendingCount == 0}" class="no-requests">
@@ -457,7 +593,6 @@
             <div class="column responded-column">
                 <h3>Risposte</h3>
                 <div th:if="${quoteRequests != null and not #lists.isEmpty(quoteRequests)}">
-                    <!-- Contatore per le richieste RESPONDED -->
                     <th:block th:with="respondedCount=${#lists.size(quoteRequests.?[status == 'RESPONDED'])}">
                         <div th:if="${respondedCount > 0}">
                             <div th:each="request : ${quoteRequests}" th:if="${request.status == 'RESPONDED'}" class="quote-request-card responded-card">
@@ -491,8 +626,11 @@
                 </div>
             </div>
         </div>
-        <div class="form-actions">
-            <a th:href="@{'/rest/dealers/manage'}" class="back-button"><i class="fas fa-arrow-left"></i> Torna alla Gestione Concessionario</a>
+
+        <div class="back-button-container">
+            <a th:href="@{'/rest/dealers/manage'}" class="back-button">
+                <i class="fas fa-arrow-left"></i> Torna alla Gestione Concessionario
+            </a>
         </div>
     </section>
 </main>
@@ -500,7 +638,7 @@
 <footer>
     <div class="footer-content">
         <div class="footer-section">
-            <h4>Link Utili</h4>
+            <h4>Navigazione</h4>
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/products">Trova Auto</a></li>
@@ -515,14 +653,6 @@
             <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
         </div>
         <div class="footer-section">
-            <h4>Seguici</h4>
-            <div class="social-links">
-                <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-                <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
-            </div>
-        </div>
-        <div class="footer-section">
             <h4>Informazioni</h4>
             <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
         </div>
@@ -533,30 +663,26 @@
 </footer>
 
 <script>
-    // Mostra lo spinner di caricamento all'avvio
-    document.addEventListener('DOMContentLoaded', () => {
-        const spinner = document.getElementById('loading-spinner');
-        const container = document.getElementById('quote-requests-container');
-        spinner.classList.add('active');
-        setTimeout(() => {
-            spinner.classList.remove('active');
-            container.style.opacity = '1';
-        }, 1000); // Simula un caricamento di 1 secondo
+    document.addEventListener('DOMContentLoaded', function() {
+        // Dropdown functionality - copiato da manage_dealer.html
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+
+        if (dropdownToggle && dropdownMenu) {
+            dropdownToggle.addEventListener('click', function() {
+                const isOpen = dropdownMenu.classList.contains('show');
+                dropdownMenu.classList.toggle('show');
+                dropdownToggle.classList.toggle('open', !isOpen);
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                    dropdownMenu.classList.remove('show');
+                    dropdownToggle.classList.remove('open');
+                }
+            });
+        }
     });
-
-    // Gestione dell'invio del form con feedback visivo
-    function handleSubmit(event, form) {
-        event.preventDefault();
-        const button = form.querySelector('button[type="submit"]');
-        const spinner = button.querySelector('.spinner');
-        button.disabled = true;
-        spinner.classList.add('active');
-
-        // Simula l'invio del form (sostituisci con una vera chiamata AJAX se necessario)
-        setTimeout(() => {
-            form.submit(); // Invia il form
-        }, 1000); // Simula un ritardo di 1 secondo
-    }
 </script>
 </body>
 </html>

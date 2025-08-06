@@ -9,6 +9,7 @@ import it.uniroma3.siwprogetto.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class PrivateMessageController {
 	private ProductRepository productRepository;
 
 	@GetMapping
+	@Transactional
 	public String showMessages(Authentication authentication, Model model) {
 		User user = userService.findByUsername(authentication.getName());
 		List<QuoteRequest> messages = quoteRequestService.getPrivateMessagesForUser(user);
@@ -36,6 +38,7 @@ public class PrivateMessageController {
 	}
 
 	@GetMapping("/send/{productId}")
+	@Transactional
 	public String showSendMessageForm(@PathVariable Long productId, Model model) {
 		Product product = productRepository.findById(productId)
 				.orElseThrow(() -> new IllegalArgumentException("Product not found"));
@@ -49,6 +52,7 @@ public class PrivateMessageController {
 	}
 
 	@PostMapping("/send")
+	@Transactional
 	public String sendMessage(@RequestParam Long productId, @RequestParam String message, Authentication authentication) {
 		try {
 			User user = userService.findByUsername(authentication.getName());
@@ -62,6 +66,7 @@ public class PrivateMessageController {
 	}
 
 	@PostMapping("/respond/{id}")
+	@Transactional
 	public String respondToMessage(@PathVariable Long id, @RequestParam String responseMessage, Authentication authentication) {
 		try {
 			User user = userService.findByUsername(authentication.getName());

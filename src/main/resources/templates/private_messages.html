@@ -1,132 +1,220 @@
 <!DOCTYPE html>
-<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Messaggi Privati - FCF Motors</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Stili identici a quote_requests.html */
-        html, body {
+        /* Stile generale per la pagina */
+
+        body {
+            background: linear-gradient(135deg, #010A33, #003087) !important;
+            color: #FFFFFF;
+            font-family: 'Open Sans', sans-serif;
             margin: 0;
             padding: 0;
-            width: 100%;
-            overflow-x: hidden;
         }
-
-        .header-transparent {
-            width: 100%;
-            padding: 20px 40px;
-            box-sizing: border-box;
+/*background-color: rgb(1, 10, 51);*/
+        
+        #main-header {
+           background-color: rgb(1, 10, 51);
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
+            height: 70px;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 20px;
         }
 
-        .logo-container img {
-            height: 50px;
+        .logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo-container {
+            margin-right: 15px;
+        }
+
+        .logo {
+            height: 40px;
+            width: auto;
         }
 
         .title-container {
             display: flex;
             align-items: center;
-            gap: 15px;
         }
 
         .main-title {
-            color: #FFFFFF;
-            font-size: 1.8rem;
-            margin: 0;
-        }
-
-        .products-button,
-        .dealers-button {
-            color: #FFFFFF;
-            text-decoration: none;
-            font-size: 1.1rem;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background 0.3s ease;
-        }
-
-        .products-button:hover,
-        .dealers-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .nav-container .nav-bar {
-            display: flex;
-            gap: 15px;
-        }
-
-        .icon-button {
-            color: #FFFFFF;
-            font-size: 1.2rem;
-            text-decoration: none;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background 0.3s ease;
-        }
-
-        .icon-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .full-width-hero {
-            padding: 40px 0;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
-            color: #FFFFFF;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            margin: 0;
-        }
-
-        .full-width-hero h2 {
-            font-size: 2.5rem;
-            margin-bottom: 30px;
             color: #F5A623;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-            font-weight: 700;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0;
         }
 
-        .full-width-hero .messages-container {
+        .nav-container {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            flex: 1;
+            justify-content: center;
+        }
+
+    
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1010;
+        }
+
+        /* Dropdown functionality */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .dropdown-toggle:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #E59400, #F5A623);
+        }
+
+        .dropdown-toggle i {
+            font-size: 1.2rem;
+            color: #FFFFFF;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-toggle.open i.fa-bars {
+            transform: rotate(90deg);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            z-index: 1000;
+            min-width: 200px;
+            padding: 10px 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .dropdown-menu a i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            color: #F5A623;
+        }
+
+        .dropdown-menu a:hover {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            transform: translateX(5px);
+            border-left: 3px solid #FFFFFF;
+        }
+
+        .dropdown-menu a:hover i {
+            color: #FFFFFF;
+        }
+
+        /* Main content area */
+        main {
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Quote requests container */
+        .quote-requests-section {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .quote-requests-section h2 {
+            color: #F5A623;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Layout a due colonne */
+        .quote-requests-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
-            width: 100%;
-            padding: 0 40px;
-            box-sizing: border-box;
-            margin: 0;
+            margin-bottom: 30px;
         }
 
-        .messages-container .column {
-            padding: 20px;
+        .column {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 25px;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
-            width: 100%;
-            box-sizing: border-box;
-            margin: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .column:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
 
         .column h3 {
@@ -137,202 +225,220 @@
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
-        .column .message-card {
-            border: none;
+        /* Stile per le card delle richieste */
+        .quote-request-card {
+            background: rgba(255, 255, 255, 0.08);
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 10px;
-            background: linear-gradient(145deg, #2a2a2a, #3a3a3a);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
-            width: 100%;
-            box-sizing: border-box;
         }
 
-        .message-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        .quote-request-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .message-card::before {
+        .quote-request-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 5px;
+            width: 4px;
             height: 100%;
             background: linear-gradient(180deg, #F5A623, #E59400);
         }
 
-        .message-card .info-row {
+        .quote-request-card .info-row {
             margin-bottom: 12px;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
         }
 
-        .message-card .info-row .label {
+        .quote-request-card .info-row .label {
             font-weight: 600;
             margin-right: 10px;
             color: #F5A623;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            min-width: 120px;
+            flex-shrink: 0;
         }
 
-        .message-card .info-row .value {
+        .quote-request-card .info-row .value {
             color: #FFFFFF;
+            word-break: break-word;
+            flex: 1;
         }
 
-        .message-card .form-actions {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
+        /* Form di risposta */
+        .respond-quote-form {
             width: 100%;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .respond-message-form {
-            width: 100%;
-        }
-
-        .respond-message-form .input-field {
+        .respond-quote-form .input-field {
             margin-bottom: 15px;
-            width: 100%;
         }
 
-        .respond-message-form label {
+        .respond-quote-form label {
             display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #F5A623;
             margin-bottom: 8px;
+            color: #F5A623;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
 
-        .respond-message-form textarea {
+        .respond-quote-form textarea {
             width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
             color: #FFFFFF;
             resize: vertical;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
             box-sizing: border-box;
+            font-family: inherit;
         }
 
-        .respond-message-form textarea:focus {
+        .respond-quote-form textarea:focus {
             border-color: #F5A623;
+            background: rgba(0, 0, 0, 0.5);
             outline: none;
+            box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.2);
         }
 
-        .respond-message-form .modern-button {
+        .respond-quote-form textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .respond-quote-form .modern-button {
             background: linear-gradient(45deg, #F5A623, #E59400);
             color: #FFFFFF;
             padding: 12px 20px;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            font-weight: 600;
+            width: 100%;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: background 0.3s ease, transform 0.2s ease;
-            width: 100%;
             justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
         }
 
-        .respond-message-form .modern-button:hover {
-            background: linear-gradient(45deg, #E59400, #D68F1D);
+        .respond-quote-form .modern-button:hover {
             transform: translateY(-2px);
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
         }
 
-        .column .no-messages {
+        /* Messaggio di assenza richieste */
+        .no-requests {
             text-align: center;
             color: #FFFFFF;
-            font-size: 1.2rem;
-            padding: 20px;
+            font-size: 1.1rem;
+            padding: 30px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .no-messages-icon {
-            font-size: 2rem;
+        .no-requests-icon {
+            font-size: 2.5rem;
             color: #F5A623;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            display: block;
         }
 
-        .full-width-hero .form-actions {
-            width: 100%;
+        /* Back button */
+        .back-button-container {
             text-align: center;
-            padding: 0 40px;
-            box-sizing: border-box;
+            margin-top: 30px;
         }
 
-        .form-actions .back-button {
+        .back-button {
             background: linear-gradient(45deg, #003087, #0059b3);
             color: #FFFFFF;
-            padding: 12px 20px;
-            border-radius: 5px;
+            padding: 12px 25px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            transition: background 0.3s ease, transform 0.2s ease;
-            width: 100%;
-            max-width: 300px;
-            justify-content: center;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .form-actions .back-button:hover {
-            background: linear-gradient(45deg, #002066, #004080);
+        .back-button:hover {
             transform: translateY(-2px);
+            background: linear-gradient(45deg, #002066, #004080);
+            box-shadow: 0 4px 15px rgba(0, 48, 135, 0.4);
         }
 
-        .full-width-hero .loading-spinner {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            width: 100%;
+        /* Footer styles */
+        footer {
+            background-color: rgb(1, 10, 51);
+            color: #fff;
+            padding: 40px 20px 20px;
+            margin-top: 50px;
         }
 
-        .loading-spinner.active {
-            display: block;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #F5A623;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .footer-content {
+            max-width: 1200px;
             margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .footer-section h4 {
+            color: #F5A623;
+            margin-bottom: 15px;
         }
 
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul li a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: #F5A623;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .full-width-hero .messages-container {
-                grid-template-columns: 1fr;
-                padding: 0 20px;
-            }
-
-            .messages-container .column {
-                margin-bottom: 20px;
-            }
-
-            .header-transparent {
-                padding: 20px;
+            #main-header {
+                height: 60px;
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
+                padding: 10px 15px;
             }
 
             .header-left {
@@ -340,64 +446,105 @@
                 align-items: flex-start;
             }
 
-            .title-container {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
+            .nav-container {
+                position: relative;
+                left: auto;
+                top: auto;
+                transform: none;
+                margin: 10px 0;
             }
 
-            .nav-container {
-                width: 100%;
-                display: flex;
-                justify-content: flex-end;
+            .header-right {
+                position: relative;
+                right: auto;
+                top: auto;
+                transform: none;
+            }
+
+            .quote-requests-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .column {
+                margin-bottom: 20px;
+            }
+
+            .dropdown-menu {
+                min-width: 180px;
+            }
+
+            .dropdown-toggle {
+                width: 36px;
+                height: 36px;
+            }
+
+            .dropdown-toggle i {
+                font-size: 1rem;
+            }
+
+            .dropdown-menu {
+                top: 40px;
+            }
+
+            .dropdown-menu a {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+
+            .quote-request-card .info-row {
+                flex-direction: column;
+            }
+
+            .quote-request-card .info-row .label {
+                min-width: auto;
+                margin-bottom: 5px;
             }
         }
     </style>
 </head>
 <body>
-<header class="header-transparent">
+<header id="main-header">
     <div class="header-left">
         <a href="/" class="logo-link">
             <div class="logo-container">
                 <img src="/image/logo1.png" alt="Logo" class="logo">
             </div>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
+            </div>
         </a>
-        <div class="title-container">
-            <h2 class="main-title">FCF MOTORS</h2>
-            <a th:href="@{/products}" class="products-button">
-                <i class="fas fa-car"></i> Prodotti
-            </a>
-            <a th:href="@{/dealers}" class="dealers-button">
-                <i class="fas fa-store"></i> Concessionari
-            </a>
-        </div>
     </div>
     <div class="nav-container">
-        <nav class="nav-bar">
-            <a th:href="@{/cart}" class="icon-button">
-                <i class="fas fa-shopping-cart"></i>
-            </a>
-            <a th:href="@{/account}" class="icon-button">
-                <i class="fas fa-user"></i>
-            </a>
-        </nav>
+        <div class="nav-bar"></div>
+    </div>
+    <div class="header-right">
+        <div class="dropdown">
+            <button class="dropdown-toggle" aria-label="Menu" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu" role="menu">
+                <a th:href="@{/products}" role="menuitem"><i class="fas fa-car"></i> Trova Auto</a>
+                <a th:href="@{/dealers}" role="menuitem"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:href="@{/cart}" role="menuitem"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                <a th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+            </div>
+        </div>
     </div>
 </header>
 
 <main>
-    <section class="full-width-hero">
+    <section class="quote-requests-section">
         <h2>Messaggi Privati</h2>
-        <div class="loading-spinner" id="loading-spinner">
-            <div class="spinner"></div>
-        </div>
-        <div class="messages-container" id="messages-container">
+
+        <div class="quote-requests-container">
             <!-- Colonna Sinistra: Messaggi in Attesa -->
             <div class="column pending-column">
                 <h3>Messaggi in Attesa</h3>
                 <div th:if="${messages != null and not #lists.isEmpty(messages)}">
                     <th:block th:with="pendingCount=${#lists.size(messages.?[status == 'PENDING'])}">
                         <div th:if="${pendingCount > 0}">
-                            <div th:each="message : ${messages}" th:if="${message.status == 'PENDING' and message.requestType == 'PRIVATE'}" class="message-card pending-card">
+                            <div th:each="message : ${messages}" th:if="${message.status == 'PENDING' and message.requestType == 'PRIVATE'}" class="quote-request-card pending-card">
                                 <div class="info-row">
                                     <span class="label">Prodotto:</span>
                                     <span class="value" th:text="${message.product.brand} + ' ' + ${message.product.model}"></span>
@@ -405,10 +552,6 @@
                                 <div class="info-row">
                                     <span class="label">Da:</span>
                                     <span class="value" th:text="${message.userEmail}"></span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="label">A:</span>
-                                    <span class="value" th:text="${message.recipientEmail}"></span>
                                 </div>
                                 <div class="info-row">
                                     <span class="label">Data Invio:</span>
@@ -422,39 +565,36 @@
                                     <span class="label">Stato:</span>
                                     <span class="value" th:text="${message.status}"></span>
                                 </div>
-                                <div class="form-actions">
-                                    <form th:action="@{/private/messages/respond/{id}(id=${message.id})}" method="post" class="respond-message-form" onsubmit="handleSubmit(event, this)">
-                                        <div class="input-field">
-                                            <label th:for="'responseMessage-' + ${message.id}">Risposta</label>
-                                            <textarea th:id="'responseMessage-' + ${message.id}" name="responseMessage" rows="4" required></textarea>
-                                        </div>
-                                        <button type="submit" class="modern-button">
-                                            <i class="fas fa-envelope"></i> Invia Risposta
-                                            <span class="spinner"></span>
-                                        </button>
-                                    </form>
-                                </div>
+                                <form th:action="@{/private/messages/respond/{id}(id=${message.id})}" method="post" class="respond-quote-form">
+                                    <div class="input-field">
+                                        <label th:for="'responseMessage-' + ${message.id}">Messaggio di Risposta</label>
+                                        <textarea th:id="'responseMessage-' + ${message.id}" name="responseMessage" rows="4" required></textarea>
+                                    </div>
+                                    <button type="submit" class="modern-button">
+                                        <i class="fas fa-envelope"></i> Invia Risposta
+                                    </button>
+                                </form>
                             </div>
                         </div>
-                        <div th:if="${pendingCount == 0}" class="no-messages">
-                            <i class="fas fa-envelope no-messages-icon"></i>
+                        <div th:if="${pendingCount == 0}" class="no-requests">
+                            <i class="fas fa-envelope no-requests-icon"></i>
                             Nessun messaggio in attesa.
                         </div>
                     </th:block>
                 </div>
-                <div th:if="${messages == null or #lists.isEmpty(messages)}" class="no-messages">
-                    <i class="fas fa-envelope no-messages-icon"></i>
+                <div th:if="${messages == null or #lists.isEmpty(messages)}" class="no-requests">
+                    <i class="fas fa-envelope no-requests-icon"></i>
                     Nessun messaggio in attesa.
                 </div>
             </div>
 
             <!-- Colonna Destra: Messaggi Risposti -->
             <div class="column responded-column">
-                <h3>Messaggi Risposti</h3>
+                <h3>Risposte</h3>
                 <div th:if="${messages != null and not #lists.isEmpty(messages)}">
                     <th:block th:with="respondedCount=${#lists.size(messages.?[status == 'RESPONDED'])}">
                         <div th:if="${respondedCount > 0}">
-                            <div th:each="message : ${messages}" th:if="${message.status == 'RESPONDED' and message.requestType == 'PRIVATE'}" class="message-card responded-card">
+                            <div th:each="message : ${messages}" th:if="${message.status == 'RESPONDED' and message.requestType == 'PRIVATE'}" class="quote-request-card responded-card">
                                 <div class="info-row">
                                     <span class="label">Prodotto:</span>
                                     <span class="value" th:text="${message.product.brand} + ' ' + ${message.product.model}"></span>
@@ -464,37 +604,40 @@
                                     <span class="value" th:text="${message.userEmail}"></span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="label">A:</span>
-                                    <span class="value" th:text="${message.recipientEmail}"></span>
-                                </div>
-                                <div class="info-row">
                                     <span class="label">Data Invio:</span>
                                     <span class="value" th:text="${#temporals.format(message.requestDate, 'dd/MM/yyyy HH:mm')}"></span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="label">Messaggio:</span>
+                                    <span class="label">Messaggio Originale:</span>
                                     <span class="value" th:text="${message.responseMessage}"></span>
                                 </div>
                                 <div class="info-row">
                                     <span class="label">Stato:</span>
                                     <span class="value" th:text="${message.status}"></span>
                                 </div>
+                                <div class="info-row">
+                                    <span class="label">Messaggio di Risposta:</span>
+                                    <span class="value" th:text="${message.responseMessage} ?: 'N/A'"></span>
+                                </div>
                             </div>
                         </div>
-                        <div th:if="${respondedCount == 0}" class="no-messages">
-                            <i class="fas fa-envelope no-messages-icon"></i>
+                        <div th:if="${respondedCount == 0}" class="no-requests">
+                            <i class="fas fa-envelope no-requests-icon"></i>
                             Nessun messaggio risposto.
                         </div>
                     </th:block>
                 </div>
-                <div th:if="${messages == null or #lists.isEmpty(messages)}" class="no-messages">
-                    <i class="fas fa-envelope no-messages-icon"></i>
+                <div th:if="${messages == null or #lists.isEmpty(messages)}" class="no-requests">
+                    <i class="fas fa-envelope no-requests-icon"></i>
                     Nessun messaggio risposto.
                 </div>
             </div>
         </div>
-        <div class="form-actions">
-            <a th:href="@{/private/maintenance}" class="back-button"><i class="fas fa-arrow-left"></i> Torna alla Gestione Auto</a>
+
+        <div class="back-button-container">
+            <a th:href="@{/private/maintenance}" class="back-button">
+                <i class="fas fa-arrow-left"></i> Torna alla Manutenzione
+            </a>
         </div>
     </section>
 </main>
@@ -502,7 +645,7 @@
 <footer>
     <div class="footer-content">
         <div class="footer-section">
-            <h4>Link Utili</h4>
+            <h4>Navigazione</h4>
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/products">Trova Auto</a></li>
@@ -517,14 +660,6 @@
             <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
         </div>
         <div class="footer-section">
-            <h4>Seguici</h4>
-            <div class="social-links">
-                <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-                <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
-            </div>
-        </div>
-        <div class="footer-section">
             <h4>Informazioni</h4>
             <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
         </div>
@@ -535,26 +670,26 @@
 </footer>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const spinner = document.getElementById('loading-spinner');
-        const container = document.getElementById('messages-container');
-        spinner.classList.add('active');
-        setTimeout(() => {
-            spinner.classList.remove('active');
-            container.style.opacity = '1';
-        }, 1000);
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Dropdown functionality
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
 
-    function handleSubmit(event, form) {
-        event.preventDefault();
-        const button = form.querySelector('button[type="submit"]');
-        const spinner = button.querySelector('.spinner');
-        button.disabled = true;
-        spinner.classList.add('active');
-        setTimeout(() => {
-            form.submit();
-        }, 1000);
-    }
+        if (dropdownToggle && dropdownMenu) {
+            dropdownToggle.addEventListener('click', function() {
+                const isOpen = dropdownMenu.classList.contains('show');
+                dropdownMenu.classList.toggle('show');
+                dropdownToggle.classList.toggle('open', !isOpen);
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                    dropdownMenu.classList.remove('show');
+                    dropdownToggle.classList.remove('open');
+                }
+            });
+        }
+    });
 </script>
 </body>
 </html>

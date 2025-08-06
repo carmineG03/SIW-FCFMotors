@@ -20,4 +20,6 @@ public interface QuoteRequestRepository extends JpaRepository<QuoteRequest, Long
 	boolean existsByUserIdAndProductIdAndStatus(Long userId, Long productId, String status);
 
 	List<QuoteRequest> findByUserId(Long id);
+
+	List<QuoteRequest> findByProductId(Long productId);
 }

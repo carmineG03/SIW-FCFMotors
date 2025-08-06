@@ -1,388 +1,572 @@
 <!DOCTYPE html>
 <html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="_csrf" th:content="${_csrf.token}"/>
-  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-  <title>Invia Messaggio - FCF Motors</title>
-  <link rel="stylesheet" th:href="@{/css/styles.css}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      overflow-x: hidden;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Invia Messaggio - FCF Motors</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Stile generale per la pagina - IDENTICO A QUOTE_REQUESTS */
+        body {
+            background: linear-gradient(135deg, #010A33, #003087) !important;
+            color: #FFFFFF;
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
-    .header-transparent {
-      width: 100%;
-      padding: 20px 40px;
-      box-sizing: border-box;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(10px);
-    }
+        
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
+        /* Header styles - IDENTICO A QUOTE_REQUESTS */
+        header {
+            background-color: rgb(1, 10, 51);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
 
-    .logo-container img {
-      height: 50px;
-    }
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
 
-    .title-container {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
+        .header-right {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1010;
+        }
 
-    .main-title {
-      color: #FFFFFF;
-      font-size: 1.8rem;
-      margin: 0;
-    }
+        .logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
 
-    .products-button,
-    .dealers-button {
-      color: #FFFFFF;
-      text-decoration: none;
-      font-size: 1.1rem;
-      padding: 8px 15px;
-      border-radius: 5px;
-      transition: background 0.3s ease;
-    }
+        .logo-container {
+            margin-right: 15px;
+        }
 
-    .products-button:hover,
-    .dealers-button:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
+        .logo {
+            height: 40px;
+            width: auto;
+        }
 
-    .nav-container .nav-bar {
-      display: flex;
-      gap: 15px;
-    }
+        .title-container {
+            margin-left: 10px;
+        }
 
-    .icon-button {
-      color: #FFFFFF;
-      font-size: 1.2rem;
-      text-decoration: none;
-      padding: 8px;
-      border-radius: 50%;
-      transition: background 0.3s ease;
-    }
+        .main-title {
+            color: #F5A623;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0;
+        }
 
-    .icon-button:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .full-width-hero {
-      padding: 40px 0;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
-      color: #FFFFFF;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      margin: 0;
-    }
+        /* Dropdown functionality - IDENTICO A QUOTE_REQUESTS */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
 
-    .full-width-hero h2 {
-      font-size: 2.5rem;
-      margin-bottom: 30px;
-      color: #F5A623;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-      font-weight: 700;
-    }
+        .dropdown-toggle {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
 
-    .send-message-container {
-      width: 100%;
-      max-width: 600px;
-      padding: 0 40px;
-      box-sizing: border-box;
-    }
+        .dropdown-toggle:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #E59400, #F5A623);
+        }
 
-    .message-form-card {
-      background: linear-gradient(145deg, #2a2a2a, #3a3a3a);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      width: 100%;
-    }
+        .dropdown-toggle i {
+            font-size: 1.2rem;
+            color: #FFFFFF;
+            transition: transform 0.3s ease;
+        }
 
-    .message-form-card .info-row {
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-    }
+        .dropdown-toggle.open i.fa-bars {
+            transform: rotate(90deg);
+        }
 
-    .info-row .label {
-      font-weight: 600;
-      margin-right: 10px;
-      color: #F5A623;
-    }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            z-index: 1000;
+            min-width: 200px;
+            padding: 10px 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
 
-    .info-row .value {
-      color: #FFFFFF;
-    }
+        .dropdown-menu.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-    .message-form-card .input-field {
-      margin-bottom: 15px;
-      width: 100%;
-    }
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+            border-left: 3px solid transparent;
+        }
 
-    .message-form-card label {
-      display: block;
-      font-size: 14px;
-      font-weight: 600;
-      color: #F5A623;
-      margin-bottom: 8px;
-    }
+        .dropdown-menu a i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            color: #F5A623;
+        }
 
-    .message-form-card textarea {
-      width: 100%;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.1);
-      color: #FFFFFF;
-      resize: vertical;
-      transition: border-color 0.3s ease;
-      box-sizing: border-box;
-    }
+        .dropdown-menu a:hover {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            transform: translateX(5px);
+            border-left: 3px solid #FFFFFF;
+        }
 
-    .message-form-card textarea:focus {
-      border-color: #F5A623;
-      outline: none;
-    }
+        .dropdown-menu a:hover i {
+            color: #FFFFFF;
+        }
 
-    .message-form-card .modern-button {
-      background: linear-gradient(45deg, #F5A623, #E59400);
-      color: #FFFFFF;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: background 0.3s ease, transform 0.2s ease;
-      width: 100%;
-      justify-content: center;
-    }
+               /* Wrapper - FORZA IL TUO STILE */
+        .wrapper {
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            padding: 20px !important;
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
 
-    .message-form-card .modern-button:hover {
-      background: linear-gradient(45deg, #E59400, #D68F1D);
-      transform: translateY(-2px);
-    }
+        /* Main content area - FORZA LO STILE */
+        main {
+            min-height: 100vh !important;
+            padding: 20px 0 !important;
+            background: none !important;
+        }
 
-    .form-actions {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-    }
+        /* Send message container */
+        .send-message-section {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-    .back-button {
-      background: linear-gradient(45deg, #003087, #0059b3);
-      color: #FFFFFF;
-      padding: 12px 20px;
-      border-radius: 5px;
-      font-size: 16px;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: background 0.3s ease, transform 0.2s ease;
-      width: 100%;
-      max-width: 300px;
-      justify-content: center;
-    }
+        .send-message-section h2 {
+            color: #F5A623;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
 
-    .back-button:hover {
-      background: linear-gradient(45deg, #002066, #004080);
-      transform: translateY(-2px);
-    }
+        /* Message form card - STILE DA QUOTE_REQUESTS */
+        .message-form-card {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
 
-    .alert-success {
-      color: #28a745;
-      background: rgba(40, 167, 69, 0.1);
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 15px;
-      text-align: center;
-    }
+        .message-form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #F5A623, #E59400);
+        }
 
-    .alert-error {
-      color: #ff3333;
-      background: rgba(255, 51, 51, 0.1);
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 15px;
-      text-align: center;
-    }
+        .message-form-card .info-row {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
 
-    @media (max-width: 768px) {
-      .send-message-container {
-        padding: 0 20px;
-      }
+        .message-form-card .info-row .label {
+            font-weight: 600;
+            margin-right: 10px;
+            color: #F5A623;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            min-width: 120px;
+            flex-shrink: 0;
+        }
 
-      .form-actions {
-        flex-direction: column;
-        align-items: center;
-      }
+        .message-form-card .info-row .value {
+            color: #FFFFFF;
+            word-break: break-word;
+            flex: 1;
+            font-size: 1.1rem;
+        }
 
-      .modern-button,
-      .back-button {
-        max-width: 100%;
-      }
+        /* Form styles - IDENTICO A QUOTE_REQUESTS */
+        .send-message-form {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-      .header-transparent {
-        padding: 20px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-      }
+        .send-message-form .input-field {
+            margin-bottom: 20px;
+        }
 
-      .header-left {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+        .send-message-form label {
+            display: block;
+            margin-bottom: 8px;
+            color: #F5A623;
+            font-weight: 600;
+            font-size: 1rem;
+        }
 
-      .title-container {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
+        .send-message-form textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #FFFFFF;
+            resize: vertical;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 1rem;
+            min-height: 120px;
+        }
 
-      .nav-container {
-        width: 100%;
-        display: flex;
-        justify-content: flex-end;
-      }
-    }
-  </style>
+        .send-message-form textarea:focus {
+            border-color: #F5A623;
+            background: rgba(0, 0, 0, 0.5);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.2);
+        }
+
+        .send-message-form textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .send-message-form .modern-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            font-weight: 600;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        .send-message-form .modern-button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
+        }
+
+        /* Alert messages */
+        .alert-success {
+            background: rgba(40, 167, 69, 0.2);
+            color: #4caf50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            text-align: center;
+        }
+
+        .alert-error {
+            background: rgba(220, 53, 69, 0.2);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            text-align: center;
+        }
+
+        /* Back button - IDENTICO A QUOTE_REQUESTS */
+        .back-button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-button {
+            background: linear-gradient(45deg, #003087, #0059b3);
+            color: #FFFFFF;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(45deg, #002066, #004080);
+            box-shadow: 0 4px 15px rgba(0, 48, 135, 0.4);
+        }
+
+        /* Footer styles - IDENTICO A QUOTE_REQUESTS */
+        footer {
+            background-color: rgb(1, 10, 51);
+            color: #fff;
+            padding: 40px 20px 20px;
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .footer-section h4 {
+            color: #F5A623;
+            margin-bottom: 15px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul li a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: #F5A623;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive Design - IDENTICO A QUOTE_REQUESTS */
+        @media (max-width: 768px) {
+            .send-message-section {
+                margin: 0 10px;
+                padding: 20px;
+            }
+
+            .message-form-card {
+                padding: 20px;
+            }
+
+            .dropdown-menu {
+                min-width: 180px;
+            }
+
+            .dropdown-toggle {
+                width: 36px;
+                height: 36px;
+            }
+
+            .dropdown-toggle i {
+                font-size: 1rem;
+            }
+
+            .dropdown-menu {
+                top: 40px;
+            }
+
+            .dropdown-menu a {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+
+            .message-form-card .info-row {
+                flex-direction: column;
+            }
+
+            .message-form-card .info-row .label {
+                min-width: auto;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
-<header class="header-transparent">
-  <div class="header-left">
-    <a href="/" class="logo-link">
-      <div class="logo-container">
-        <img src="/image/logo1.png" alt="Logo" class="logo">
-      </div>
-    </a>
-    <div class="title-container">
-      <h2 class="main-title">FCF MOTORS</h2>
-      <a th:href="@{/products}" class="products-button">
-        <i class="fas fa-car"></i> Prodotti
-      </a>
-      <a th:href="@{/dealers}" class="dealers-button">
-        <i class="fas fa-store"></i> Concessionari
-      </a>
+<header>
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img src="/image/logo1.png" alt="Logo" class="logo">
+            </div>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
+            </div>
+        </a>
     </div>
-  </div>
-  <div class="nav-container">
-    <nav class="nav-bar">
-      <a th:href="@{/cart}" class="icon-button">
-        <i class="fas fa-shopping-cart"></i>
-      </a>
-      <a th:href="@{/account}" class="icon-button">
-        <i class="fas fa-user"></i>
-      </a>
-    </nav>
-  </div>
+    <div class="header-right">
+        <div class="dropdown">
+            <button class="dropdown-toggle" aria-label="Menu" aria-expanded="false" onclick="toggleDropdownMenu(event)">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu" role="menu">
+                <a th:href="@{/products}" role="menuitem"><i class="fas fa-car"></i> Trova Auto</a>
+                <a th:href="@{/dealers}" role="menuitem"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:href="@{/cart}" role="menuitem"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                <a th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+            </div>
+        </div>
+    </div>
 </header>
 
 <main>
-  <section class="full-width-hero">
-    <h2>Invia Messaggio</h2>
-    <div class="send-message-container">
-      <div class="message-form-card">
-        <div th:if="${success}" class="alert-success" th:text="${success}"></div>
-        <div th:if="${error}" class="alert-error" th:text="${error}"></div>
-        <div class="info-row">
-          <span class="label">Prodotto:</span>
-          <span class="value" th:text="${product.brand} + ' ' + ${product.model}"></span>
-        </div>
-        <div class="info-row">
-          <span class="label">Destinatario:</span>
-          <span class="value" th:text="${recipientEmail}"></span>
-        </div>
-        <form th:action="@{/private/messages/send}" method="post" class="send-message-form" onsubmit="handleSubmit(event, this)">
-          <input type="hidden" name="productId" th:value="${product.id}"/>
-          <div class="input-field">
-            <label for="message">Messaggio</label>
-            <textarea id="message" name="message" rows="4" required></textarea>
-          </div>
-          <button type="submit" class="modern-button">
-            <i class="fas fa-envelope"></i> Invia Messaggio
-            <span class="spinner"></span>
-          </button>
-        </form>
-      </div>
+    <div class="wrapper">
+        <section class="send-message-section">
+            <h2>Invia Messaggio</h2>
+
+            <div class="message-form-card">
+                <div th:if="${success}" class="alert-success" th:text="${success}"></div>
+                <div th:if="${error}" class="alert-error" th:text="${error}"></div>
+
+                <div class="info-row">
+                    <span class="label">Prodotto:</span>
+                    <span class="value" th:text="${product.brand} + ' ' + ${product.model}"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Destinatario:</span>
+                    <span class="value" th:text="${recipientEmail}"></span>
+                </div>
+
+                <form th:action="@{/private/messages/send}" method="post" class="send-message-form">
+                    <input type="hidden" name="productId" th:value="${product.id}"/>
+                    <div class="input-field">
+                        <label for="message">Messaggio</label>
+                        <textarea id="message" name="message" rows="6" required
+                                  placeholder="Scrivi qui il tuo messaggio..."></textarea>
+                    </div>
+                    <button type="submit" class="modern-button">
+                        <i class="fas fa-envelope"></i> Invia Messaggio
+                    </button>
+                </form>
+            </div>
+
+            <div class="back-button-container">
+                <a th:href="@{/products}" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Torna ai Prodotti
+                </a>
+            </div>
+        </section>
     </div>
-    <div class="form-actions">
-      <a th:href="@{/products}" class="back-button"><i class="fas fa-arrow-left"></i> Torna ai Prodotti</a>
-    </div>
-  </section>
 </main>
 
 <footer>
-  <div class="footer-content">
-    <div class="footer-section">
-      <h4>Link Utili</h4>
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/products">Trova Auto</a></li>
-        <li><a href="/dealers">Concessionari</a></li>
-        <li><a href="/cart">Carrello</a></li>
-      </ul>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Navigazione</h4>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Trova Auto</a></li>
+                <li><a href="/dealers">Concessionari</a></li>
+                <li><a href="/cart">Carrello</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contatti</h4>
+            <p>Email: info@fcfmotors.com</p>
+            <p>Telefono: +39 123 456 7890</p>
+            <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+        </div>
+        <div class="footer-section">
+            <h4>Informazioni</h4>
+            <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+        </div>
     </div>
-    <div class="footer-section">
-      <h4>Contatti</h4>
-      <p>Email: info@fcfmotors.com</p>
-      <p>Telefono: +39 123 456 7890</p>
-      <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+    <div class="footer-bottom">
+        <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
     </div>
-    <div class="footer-section">
-      <h4>Seguici</h4>
-      <div class="social-links">
-        <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-        <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
-      </div>
-    </div>
-    <div class="footer-section">
-      <h4>Informazioni</h4>
-      <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
-  </div>
 </footer>
 
 <script>
-  function handleSubmit(event, form) {
-    event.preventDefault();
-    const button = form.querySelector('button[type="submit"]');
-    const spinner = button.querySelector('.spinner');
-    button.disabled = true;
-    spinner.classList.add('active');
-    setTimeout(() => {
-      form.submit();
-    }, 1000);
-  }
+    function toggleDropdownMenu(event) {
+        event.stopPropagation();
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        if (dropdownMenu && dropdownToggle) {
+            const isOpen = dropdownMenu.classList.contains('show');
+            dropdownMenu.classList.toggle('show');
+            dropdownToggle.classList.toggle('open', !isOpen);
+        }
+    }
+
+    document.addEventListener('click', function(event) {
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        if (dropdownMenu && dropdownToggle && !dropdownMenu.contains(event.target) && !dropdownToggle.contains(event.target)) {
+            dropdownMenu.classList.remove('show');
+            dropdownToggle.classList.remove('open');
+        }
+    });
 </script>
 </body>
 </html>

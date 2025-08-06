@@ -270,90 +270,120 @@ public class DealerService {
         }
     }
 
-    @Transactional
+        @Transactional
     public void deleteProduct(Long id) {
         logger.debug("Deleting product: id={}", id);
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Product not found: id={}", id);
-                    return new IllegalStateException("Prodotto non trovato");
-                });
-        productRepository.delete(product);
-        logger.info("Product deleted: id={}", id);
-    }
-
-    @Transactional
-    public void deleteDealer(Long id) {
-        logger.info("Attempting to delete dealer with ID: {}", id);
-
-        if (id == null || id <= 0) {
-            logger.error("Invalid dealer ID: {}", id);
-            throw new IllegalArgumentException("ID del concessionario non valido.");
-        }
-
-        if (!dealerRepository.existsById(id)) {
-            logger.error("Dealer not found with ID: {}", id);
-            throw new IllegalArgumentException("Concessionario non trovato con ID: " + id);
-        }
-
+        
         try {
-            Dealer dealer = dealerRepository.findById(id)
+            Product product = productRepository.findById(id)
                     .orElseThrow(() -> {
-                        logger.error("Dealer not found during retrieval: {}", id);
-                        return new IllegalStateException("Concessionario non trovato durante il recupero: " + id);
+                        logger.error("Product not found: id={}", id);
+                        return new IllegalStateException("Prodotto non trovato");
                     });
-            logger.debug("Dealer found: id={}, name={}", dealer.getId(), dealer.getName());
-
-            logger.info("Deleting quote requests associated with products of dealer ID: {}", id);
-            Query deleteQuoteRequestsByProductsQuery = entityManager.createQuery(
-                    "DELETE FROM QuoteRequest qr WHERE qr.product.seller = :owner"
-            );
-            deleteQuoteRequestsByProductsQuery.setParameter("owner", dealer.getOwner());
-            int quoteRequestsByProductsDeleted = deleteQuoteRequestsByProductsQuery.executeUpdate();
-            logger.debug("Deleted {} quote requests associated with products", quoteRequestsByProductsDeleted);
+    
+            // Step 1: Elimina TUTTE le quote_requests associate ai prodotti del dealer
+        try {
+            Query deleteAllQuoteRequests = entityManager.createNativeQuery("DELETE FROM quote_requests WHERE product_id IN (SELECT id FROM product WHERE seller_id = ?)");
+            deleteAllQuoteRequests.setParameter(1, product.getSeller().getId());
+            int deletedQuotes = deleteAllQuoteRequests.executeUpdate();
+            logger.debug("Deleted {} quote requests for all products", deletedQuotes);
+            
+            // Flush per assicurarsi che siano eliminate
             entityManager.flush();
-
-            logger.info("Deleting products associated with dealer ID: {}", id);
-            Query deleteProductsQuery = entityManager.createQuery(
-                    "DELETE FROM Product p WHERE p.seller = :owner"
-            );
-            deleteProductsQuery.setParameter("owner", dealer.getOwner());
-            int productsDeleted = deleteProductsQuery.executeUpdate();
-            logger.debug("Deleted {} products", productsDeleted);
-            entityManager.flush();
-
-            logger.info("Deleting quote requests directly associated with dealer ID: {}", id);
-            Query deleteQuoteRequestsByDealerQuery = entityManager.createQuery(
-                    "DELETE FROM QuoteRequest qr WHERE qr.dealer.id = :dealerId"
-            );
-            deleteQuoteRequestsByDealerQuery.setParameter("dealerId", id);
-            int quoteRequestsByDealerDeleted = deleteQuoteRequestsByDealerQuery.executeUpdate();
-            logger.debug("Deleted {} quote requests directly associated with dealer", quoteRequestsByDealerDeleted);
-            entityManager.flush();
-
-            logger.info("Deleting dealer with ID: {}", id);
-            Query deleteDealerQuery = entityManager.createQuery(
-                    "DELETE FROM Dealer d WHERE d.id = :id"
-            );
-            deleteDealerQuery.setParameter("id", id);
-            int dealersDeleted = deleteDealerQuery.executeUpdate();
-            logger.debug("Deleted {} dealers", dealersDeleted);
-            entityManager.flush();
-
-            if (dealerRepository.existsById(id)) {
-                logger.error("Failed to delete dealer: still exists with ID: {}", id);
-                throw new IllegalStateException("Eliminazione non riuscita: il concessionario esiste ancora.");
-            }
-
-            logger.info("Dealer with ID: {} deleted successfully", id);
-        } catch (DataIntegrityViolationException e) {
-            logger.error("Data integrity violation while deleting dealer ID: {}. Possible foreign key constraints.", id, e);
-            throw new IllegalStateException("Impossibile eliminare il concessionario: esistono vincoli di integrità (es. entità correlate non eliminate).", e);
         } catch (Exception e) {
-            logger.error("Unexpected error while deleting dealer ID: {}", id, e);
-            throw new IllegalStateException("Errore durante l'eliminazione del concessionario: " + e.getMessage(), e);
+            logger.warn("Could not delete quote_requests: {}", e.getMessage());
+        }
+    
+            // Step 2: Flush per assicurarsi che le quote_requests siano eliminate
+            entityManager.flush();
+    
+            // Step 3: Elimina il prodotto
+            productRepository.delete(product);
+            logger.info("Product deleted: id={}", id);
+            
+        } catch (Exception e) {
+            logger.error("Error deleting product: id={}, error={}", id, e.getMessage());
+            throw new RuntimeException("Errore durante l'eliminazione del prodotto: " + e.getMessage(), e);
         }
     }
+
+        
+             @Transactional
+        public void deleteDealer(Long id) {
+            logger.info("Attempting to delete dealer with ID: {}", id);
+        
+            if (id == null || id <= 0) {
+                logger.error("Invalid dealer ID: {}", id);
+                throw new IllegalArgumentException("ID del concessionario non valido.");
+            }
+        
+            try {
+                Dealer dealer = dealerRepository.findById(id)
+                    .orElseThrow(() -> {
+                        logger.error("Dealer not found: {}", id);
+                        return new IllegalArgumentException("Concessionario non trovato con ID: " + id);
+                    });
+        
+                logger.debug("Dealer found: id={}, name={}, owner={}", dealer.getId(), dealer.getName(), dealer.getOwner().getUsername());
+        
+                // Step 1: Elimina manualmente le quote_requests se esistono
+                try {
+                    Query deleteQuoteRequests = entityManager.createNativeQuery("DELETE FROM quote_requests WHERE product_id IN (SELECT id FROM product WHERE seller_id = ?)");
+                    deleteQuoteRequests.setParameter(1, dealer.getOwner().getId());
+                    int deletedQuotes = deleteQuoteRequests.executeUpdate();
+                    logger.debug("Deleted {} quote requests", deletedQuotes);
+                } catch (Exception e) {
+                    logger.warn("Could not delete quote_requests (table might not exist): {}", e.getMessage());
+                }
+        
+                // Step 2: Usa il service per eliminare i singoli prodotti
+                List<Product> products = productRepository.findBySellerId(dealer.getOwner().getId());
+                for (Product product : products) {
+                    try {
+                        deleteProduct(product.getId());
+                        logger.debug("Deleted product: {}", product.getId());
+                    } catch (Exception e) {
+                        logger.warn("Could not delete product {}: {}", product.getId(), e.getMessage());
+                    }
+                }
+        
+                // Step 3: Elimina le immagini del dealer
+                try {
+                    Query deleteDealerImages = entityManager.createNativeQuery("DELETE FROM image WHERE dealer_id = ?");
+                    deleteDealerImages.setParameter(1, id);
+                    int deletedImages = deleteDealerImages.executeUpdate();
+                    logger.debug("Deleted {} dealer images", deletedImages);
+                } catch (Exception e) {
+                    logger.warn("Could not delete dealer images: {}", e.getMessage());
+                }
+        
+                // Step 4: Flush per assicurarsi che tutto sia eliminato
+                entityManager.flush();
+        
+                // Step 5: Elimina il dealer usando query SQL nativa per essere sicuri
+                logger.info("Deleting dealer with native query: {}", id);
+                Query deleteDealerQuery = entityManager.createNativeQuery("DELETE FROM dealer WHERE id = ?");
+                deleteDealerQuery.setParameter(1, id);
+                int deletedRows = deleteDealerQuery.executeUpdate();
+                logger.info("Dealer deletion query executed: {} rows affected", deletedRows);
+        
+                // Step 6: Flush finale
+                entityManager.flush();
+        
+                // Step 7: Verifica che il dealer sia stato eliminato
+                boolean dealerExists = dealerRepository.existsById(id);
+                if (dealerExists) {
+                    logger.error("FALLIMENTO: Il dealer esiste ancora dopo l'eliminazione: {}", id);
+                    throw new RuntimeException("Errore: il concessionario non è stato eliminato correttamente");
+                }
+        
+                logger.info("SUCCESS: Dealer with ID: {} deleted successfully and verified", id);
+        
+            } catch (Exception e) {
+                logger.error("Error deleting dealer ID: {}", id, e);
+                throw new RuntimeException("Errore durante l'eliminazione del concessionario: " + e.getMessage(), e);
+            }
+        }
 
     @Transactional(readOnly = true)
     public Dealer findByOwnerUsername(String username) {

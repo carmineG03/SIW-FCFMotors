@@ -36,6 +36,12 @@ package it.uniroma3.siwprogetto.service;
 	    @Autowired
 	    private SubscriptionRepository subscriptionRepository;
 
+		@Autowired
+		private DealerService dealerService;
+
+		@Autowired
+		private UserService userService;
+
 	    // Trova un prodotto per ID
 	    @PreAuthorize("hasRole('ADMIN')")
 	    public Optional<Product> findProductById(Long id) {
@@ -75,21 +81,27 @@ package it.uniroma3.siwprogetto.service;
 	        return savedProduct;
 	    }
 
-	    // Rimuove un prodotto (auto) di qualsiasi utente
-	    @Transactional
-	    @PreAuthorize("hasRole('ADMIN')")
-	    public void deleteProduct(Long productId) {
-	        logger.debug("Admin deleting product: id={}", productId);
+	    // Rimuove un prodotto (auto) di qualsiasi utente - AGGIORNATO
+		@Transactional
+		@PreAuthorize("hasRole('ADMIN')")
+		public void deleteProduct(Long productId) {
+			logger.debug("Admin deleting product: id={}", productId);
 
-	        Product product = productRepository.findById(productId)
-	                .orElseThrow(() -> {
-	                    logger.error("Product not found: id={}", productId);
-	                    return new IllegalStateException("Prodotto non trovato");
-	                });
+			Product product = productRepository.findById(productId)
+					.orElseThrow(() -> {
+						logger.error("Product not found: id={}", productId);
+						return new IllegalStateException("Prodotto non trovato");
+					});
 
-	        productRepository.delete(product);
-	        logger.info("Product deleted by admin: id={}", productId);
-	    }
+			// Usa il service del dealer che gestisce correttamente le dipendenze
+			try {
+				dealerService.deleteProduct(productId);
+				logger.info("Product deleted by admin: id={}", productId);
+			} catch (Exception e) {
+				logger.error("Error deleting product via dealerService: id={}", productId, e);
+				throw new RuntimeException("Errore durante l'eliminazione del prodotto: " + e.getMessage(), e);
+			}
+		}
 
 	    // Modifica un concessionario
 	    @Transactional
@@ -117,24 +129,25 @@ package it.uniroma3.siwprogetto.service;
 
 	    // Rimuove un concessionario e i suoi prodotti associati
 	    @Transactional
-	    @PreAuthorize("hasRole('ADMIN')")
-	    public void deleteDealer(Long dealerId) {
-	        logger.debug("Admin deleting dealer: id={}", dealerId);
+		@PreAuthorize("hasRole('ADMIN')")
+		public void deleteDealer(Long dealerId) {
+			logger.debug("Admin deleting dealer: id={}", dealerId);
 
-	        Dealer dealer = dealerRepository.findById(dealerId)
-	                .orElseThrow(() -> {
-	                    logger.error("Dealer not found: id={}", dealerId);
-	                    return new IllegalStateException("Concessionario non trovato");
-	                });
+			Dealer dealer = dealerRepository.findById(dealerId)
+					.orElseThrow(() -> {
+						logger.error("Dealer not found: id={}", dealerId);
+						return new IllegalStateException("Concessionario non trovato");
+					});
 
-	        // Cancella tutti i prodotti associati
-	        List<Product> products = productRepository.findBySeller(dealer.getOwner());
-	        productRepository.deleteAll(products);
-
-	        // Cancella il concessionario
-	        dealerRepository.delete(dealer);
-	        logger.info("Dealer deleted by admin: id={}", dealerId);
-	    }
+			// Usa il service del dealer che gestisce correttamente le dipendenze
+			try {
+				dealerService.deleteDealer(dealerId);
+				logger.info("Dealer deleted by admin: id={}", dealerId);
+			} catch (Exception e) {
+				logger.error("Error deleting dealer via dealerService: id={}", dealerId, e);
+				throw new RuntimeException("Errore durante l'eliminazione del concessionario: " + e.getMessage(), e);
+			}
+		}
 
 	    // Modifica un account utente
 	    @Transactional
@@ -157,30 +170,48 @@ package it.uniroma3.siwprogetto.service;
 	        return savedUser;
 	    }
 
-	    // Rimuove un account utente e i suoi dati associati
-	    @Transactional
-	    @PreAuthorize("hasRole('ADMIN')")
-	    public void deleteUser(Long userId) {
-	        logger.debug("Admin deleting user: id={}", userId);
+	;
 
-	        User user = userRepository.findById(userId)
-	                .orElseThrow(() -> {
-	                    logger.error("User not found: id={}", userId);
-	                    return new IllegalStateException("Utente non trovato");
-	                });
+		// Versione semplificata che evita il problema delle subscription
+		@Transactional
+		@PreAuthorize("hasRole('ADMIN')")
+		public void deleteUser(Long userId) {
+			logger.debug("Admin deleting user: id={}", userId);
 
-	        // Cancella i prodotti associati
-	        List<Product> products = productRepository.findBySeller(user);
-	        productRepository.deleteAll(products);
+			User user = userRepository.findById(userId)
+					.orElseThrow(() -> {
+						logger.error("User not found: id={}", userId);
+						return new IllegalStateException("Utente non trovato");
+					});
 
-	        // Cancella il concessionario associato, se presente
-	        Optional<Dealer> dealer = dealerRepository.findByOwner(user);
-	        dealer.ifPresent(dealerRepository::delete);
+			try {
+				// Step 1: Elimina il concessionario associato (questo eliminerà anche i prodotti)
+				Optional<Dealer> dealer = dealerRepository.findByOwner(user);
+				if (dealer.isPresent()) {
+					logger.debug("Deleting dealer for user: userId={}, dealerId={}", userId, dealer.get().getId());
+					dealerService.deleteDealer(dealer.get().getId());
+				}
 
-	        // Cancella l'utente
-	        userRepository.delete(user);
-	        logger.info("User deleted by admin: id={}", userId);
-	    }
+				// Step 2: Elimina i prodotti rimanenti (se non associati a un dealer)
+				List<Product> products = productRepository.findBySeller(user);
+				for (Product product : products) {
+					try {
+						logger.debug("Deleting remaining product: {}", product.getId());
+						dealerService.deleteProduct(product.getId());
+					} catch (Exception e) {
+						logger.warn("Could not delete product {}: {}", product.getId(), e.getMessage());
+					}
+				}
+
+				// Step 3: Elimina l'utente (le subscription verranno gestite da cascade o constraint)
+				userRepository.delete(user);
+				logger.info("User deleted by admin: id={}", userId);
+
+			} catch (Exception e) {
+				logger.error("Error deleting user: id={}", userId, e);
+				throw new RuntimeException("Errore durante l'eliminazione dell'utente: " + e.getMessage(), e);
+			}
+		}
 
 	    // Recupera tutti i prodotti
 	    @PreAuthorize("hasRole('ADMIN')")

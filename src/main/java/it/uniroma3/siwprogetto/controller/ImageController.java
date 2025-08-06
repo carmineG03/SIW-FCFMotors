@@ -18,7 +18,7 @@ public class ImageController {
 	public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
 		return imageRepository.findById(id)
 				.map(image -> ResponseEntity.ok()
-						.contentType(MediaType.IMAGE_JPEG) // Cambia il tipo in base al formato
+						.contentType(MediaType.parseMediaType(image.getContentType())) // Usa il Content-Type dell'immagine
 						.body(image.getData()))
 				.orElse(ResponseEntity.notFound().build());
 	}

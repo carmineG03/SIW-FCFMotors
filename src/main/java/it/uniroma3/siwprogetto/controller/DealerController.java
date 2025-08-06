@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -585,27 +586,35 @@ public class DealerController {
     }
 
     @GetMapping("/manutenzione/dealer/delete_dealer/{id}")
-    @Transactional
-    public String deleteDealer(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+    public String deleteDealer(@PathVariable("id") Long id, 
+                            RedirectAttributes redirectAttributes, 
+                            Authentication authentication) {
         logger.info("Received GET /rest/manutenzione/dealer/delete_dealer/{}", id);
+        
         try {
+            // Verifica che l'utente sia autorizzato
+            String currentUsername = authentication.getName();
+            Dealer dealer = dealerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Concessionario non trovato"));
+            
+            if (!dealer.getOwner().getUsername().equals(currentUsername)) {
+                logger.warn("Utente {} non autorizzato a eliminare il concessionario {}", currentUsername, id);
+                redirectAttributes.addFlashAttribute("errorMessage", "Non sei autorizzato a eliminare questo concessionario");
+                return "redirect:/rest/dealers/manage";
+            }
+
+            // Chiama il service per eliminare il dealer
             dealerService.deleteDealer(id);
+            
             redirectAttributes.addFlashAttribute("successMessage", "Concessionario eliminato con successo.");
-            return "redirect:/rest/dealers/create";
-        } catch (IllegalArgumentException e) {
-            logger.warn("Error deleting dealer: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/rest/dealers/create";
-        } catch (IllegalStateException e) {
-            logger.error("State error deleting dealer: id={}, error={}", id, e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Impossibile eliminare il concessionario: " + e.getMessage());
-            return "redirect:/rest/dealers/create";
+            return "redirect:/"; // Torna alla home
+            
         } catch (Exception e) {
-            logger.error("Unexpected error deleting dealer: id={}, error={}", id, e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Errore durante l'eliminazione del concessionario.");
-            return "redirect:/rest/dealers/create";
+            logger.error("Error deleting dealer: id={}, error={}", id, e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Errore durante l'eliminazione del concessionario: " + e.getMessage());
+            return "redirect:/rest/dealers/manage";
         }
-    }
+    }   
 
     @PostMapping("/api/products/{productId}/highlight")
     @ResponseBody
