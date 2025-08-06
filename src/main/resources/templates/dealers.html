@@ -21,6 +21,7 @@
     <link rel="icon" type="image/png" href="/image/favicon.png"/>
     <!-- Preload CSS -->
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/allert.css"> 
     <link rel="preload" href="/css/styles.css" as="style"/>
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
@@ -50,17 +51,6 @@
     </script>
     <title>FCF Motors - Concessionari</title>
     <style>
-        /* Stile per il messaggio di errore */
-        .error-message {
-            color: red;
-            font-weight: bold;
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #ffe6e6;
-            border: 1px solid #ffcccc;
-            border-radius: 5px;
-            text-align: center;
-        }
         /* Correzione per il carousel dei concessionari - Immagine a schermo intero */
         .dealer-carousel-container {
             position: relative;
@@ -329,7 +319,7 @@
     <section class="dealers-section">
         <h2>Elenco Concessionari</h2>
         <p class="section-subtitle">Scopri tutti i concessionari FCF Motors e trova quello più vicino a te.</p>
-        <p th:if="${errorMessage != null}" th:text="${errorMessage}" class="error-message"></p>
+        <div th:if="${errorMessage != null}" class="alert alert-danger" th:text="${errorMessage}"></div>
         <div id="dealers-list" class="dealers-list">
             <div th:if="${dealers == null or dealers.isEmpty()}">
                 <p id="no-dealers-message">Nessun concessionario disponibile al momento.</p>

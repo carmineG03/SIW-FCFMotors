@@ -7,6 +7,7 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Crea Concessionario - FCF Motors</title>
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/allert.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -225,27 +226,6 @@
             box-shadow: 0 4px 15px rgba(0, 48, 135, 0.4);
         }
 
-        /* Messages */
-        .error-message {
-            color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.1);
-            border: 1px solid rgba(255, 107, 107, 0.3);
-            border-radius: 8px;
-            padding: 12px;
-            margin: 15px 0;
-            font-weight: 500;
-        }
-
-        .success-message {
-            color: #51cf66;
-            background: rgba(81, 207, 102, 0.1);
-            border: 1px solid rgba(81, 207, 102, 0.3);
-            border-radius: 8px;
-            padding: 12px;
-            margin: 15px 0;
-            font-weight: 500;
-        }
-
         /* Spinner */
         .spinner {
             display: none;
@@ -414,8 +394,8 @@
                 </div>
             </form>
 
-            <div id="errorMessage" class="error-message" style="display: none;"></div>
-            <div id="successMessage" class="success-message" style="display: none;"></div>
+            <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+            <div id="successMessage" class="alert alert-success" style="display: none;"></div>
         </div>
     </div>
 </main>

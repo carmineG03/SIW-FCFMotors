@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <title>Applica Sconto - FCF Motors</title>
   <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/allert.css">
   <link rel="stylesheet" href="/css/styles.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -90,10 +91,6 @@
       background: #bbb;
       transform: translateY(-3px);
     }
-    .error-message {
-      color: #ff4d4d;
-      margin-bottom: 15px;
-    }
   </style>
 </head>
 <body>
@@ -129,7 +126,7 @@
 <div class="wrapper">
   <form th:action="@{/admin/subscription/{id}/discount(id=${subscription.id})}" method="post" class="auth-form">
     <h2>Applica Sconto a <span th:text="${subscription.name}"></span></h2>
-    <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
     <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
     <div class="input-field">
       <input type="number" id="discount" name="discount" step="0.01" required placeholder=" "/>

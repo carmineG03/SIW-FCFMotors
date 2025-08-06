@@ -21,6 +21,7 @@
   <link rel="icon" type="image/png" href="/image/favicon.png"/>
   <!-- Preload CSS -->
   <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/allert.css">
   <link rel="preload" href="/css/styles.css" as="style"/>
   <link rel="stylesheet" href="/css/styles.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
@@ -74,12 +75,6 @@
       margin-bottom: 20px;
       text-transform: uppercase;
       letter-spacing: 1px;
-    }
-    .error-message {
-      color: #D32F2F;
-      font-size: 1rem;
-      margin: 10px 0;
-      text-align: center;
     }
     .dealer-content .main-image-container {
       width: 100%;
@@ -552,7 +547,7 @@
       <div class="thumbnails-container">
         <img th:each="image, iterStat : ${dealer.images}" th:if="${iterStat.index > 0}" th:src="@{'/rest/api/images/' + ${image.id}}" th:alt="'Miniatura concessionario ' + ${dealer.name}" onclick="changeMainImage(this)"/>
       </div>
-      <p th:if="${errorMessage != null}" th:text="${errorMessage}" class="error-message"></p>
+      <div th:if="${errorMessage != null}" class="alert alert-danger" th:text="${errorMessage}"></div>
       <div class="description-container">
         <div class="description-item">
           <i class="fas fa-info-circle"></i>

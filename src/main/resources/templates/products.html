@@ -7,20 +7,10 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Prodotti - FCF Motors</title>
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/allert.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Stile per il messaggio di errore */
-        .error-message {
-            color: red;
-            font-weight: bold;
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #ffe6e6;
-            border: 1px solid #ffcccc;
-            border-radius: 5px;
-            text-align: center;
-        }
         /* Stile per rimuovere la striscia blu sui link delle auto */
         .car-link {
             text-decoration: none;
@@ -248,10 +238,7 @@
 
 <section class="products-page">
     <div class="cars-grid">
-        <!-- Messaggio di errore -->
-        <div th:if="${error}" class="error-message">
-            <p th:text="${error}"></p>
-        </div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
         <div th:each="product : ${products}" th:if="${products != null and not #lists.isEmpty(products)}" class="car-item" th:classappend="${product.isFeatured and product.isFeaturedActive} ? 'highlighted'">
             <a th:href="@{'/products/' + ${product.id}}" class="car-link">
                 <div class="product-carousel-container">

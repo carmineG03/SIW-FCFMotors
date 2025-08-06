@@ -7,6 +7,7 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Aggiungi Auto - FCF Motors</title>
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/allert.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap">
@@ -152,24 +153,6 @@
             cursor: not-allowed;
         }
 
-        .error-message {
-            background: rgba(220, 53, 69, 0.2);
-            color: #ff6b6b;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border: 1px solid rgba(220, 53, 69, 0.3);
-        }
-
-        .success-message {
-            background: rgba(40, 167, 69, 0.2);
-            color: #4caf50;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border: 1px solid rgba(40, 167, 69, 0.3);
-        }
-
         .preview-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -308,25 +291,25 @@
     </div>
 
     <!-- Messaggi di feedback -->
-    <div th:if="${param.error}" class="error-message">
-        <strong>Errore:</strong>
-        <span th:switch="${param.error}">
-            <span th:case="'already_has_car'">Hai già una macchina associata!</span>
-            <span th:case="'no_images'">Devi caricare almeno un'immagine!</span>
-            <span th:case="'missing_brand'">La marca è obbligatoria!</span>
-            <span th:case="'missing_model'">Il modello è obbligatorio!</span>
-            <span th:case="'missing_category'">La categoria è obbligatoria!</span>
-            <span th:case="'missing_fuel_type'">Il tipo di carburante è obbligatorio!</span>
-            <span th:case="'missing_transmission'">La trasmissione è obbligatoria!</span>
-            <span th:case="'missing_description'">La descrizione è obbligatoria!</span>
-            <span th:case="'invalid_price'">Il prezzo deve essere maggiore di 0!</span>
-            <span th:case="'invalid_year'">Anno non valido!</span>
-            <span th:case="'invalid_mileage'">Chilometraggio non valido!</span>
-            <span th:case="'no_valid_images'">Nessuna immagine valida processata!</span>
-            <span th:case="'add_failed'">Impossibile aggiungere l'auto!</span>
-            <span th:case="*">Si è verificato un errore!</span>
-        </span>
-    </div>
+    <div th:if="${param.error}" class="alert alert-danger">
+    <strong>Errore:</strong>
+    <span th:switch="${param.error}">
+        <span th:case="'already_has_car'">Hai già una macchina associata!</span>
+        <span th:case="'no_images'">Devi caricare almeno un'immagine!</span>
+        <span th:case="'missing_brand'">La marca è obbligatoria!</span>
+        <span th:case="'missing_model'">Il modello è obbligatorio!</span>
+        <span th:case="'missing_category'">La categoria è obbligatoria!</span>
+        <span th:case="'missing_fuel_type'">Il tipo di carburante è obbligatorio!</span>
+        <span th:case="'missing_transmission'">La trasmissione è obbligatoria!</span>
+        <span th:case="'missing_description'">La descrizione è obbligatoria!</span>
+        <span th:case="'invalid_price'">Il prezzo deve essere maggiore di 0!</span>
+        <span th:case="'invalid_year'">Anno non valido!</span>
+        <span th:case="'invalid_mileage'">Chilometraggio non valido!</span>
+        <span th:case="'no_valid_images'">Nessuna immagine valida processata!</span>
+        <span th:case="'add_failed'">Impossibile aggiungere l'auto!</span>
+        <span th:case="*">Si è verificato un errore!</span>
+    </span>
+</div>
 
 
 

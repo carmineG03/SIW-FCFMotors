@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>Modifica Prodotto - FCF Motors</title>
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/allert.css">
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -90,10 +91,6 @@
             background: #bbb;
             transform: translateY(-3px);
         }
-        .error-message {
-            color: #ff4d4d;
-            margin-bottom: 15px;
-        }
     </style>
 </head>
 <body>
@@ -129,7 +126,7 @@
 <div class="wrapper">
     <form th:action="@{/admin/product/{id}/update(id=${product.id})}" th:object="${product}" method="post" class="auth-form">
         <h2>Modifica Prodotto</h2>
-        <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
         <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
         <input type="hidden" th:field="*{id}"/>
         <div class="input-field">

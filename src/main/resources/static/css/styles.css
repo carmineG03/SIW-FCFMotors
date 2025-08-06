@@ -22,15 +22,6 @@ main,
     margin-top: 75px;
 }
 
-/* Error Message */
-.error-message {
-    color: #D32F2F;
-    font-size: 1rem;
-    margin: 10px 0;
-    text-align: center;
-    display: block;
-}
-
 /* Categories Section */
 .categories-section {
     background-color: #faf1e0;
@@ -159,34 +150,6 @@ main,
     }
 }
 
-/* Toast */
-.toast {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 15px 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    color: #FFFFFF;
-    font-size: 16px;
-    font-weight: 500;
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 1000;
-}
-
-.toast.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.toast.success {
-    background: linear-gradient(45deg, #28A745, #218838);
-}
-
-.toast.error {
-    background: linear-gradient(45deg, #D32F2F, #B71C1C);
-}
 
 /* Hero Section */
 .hero-section {
@@ -612,12 +575,7 @@ main,
     max-width: fit-content;
 }
 
-.add-car-page .success-message {
-    color: #28A745;
-    font-size: 1rem;
-    margin: 10px 0;
-    text-align: center;
-}
+
 
 .add-car-page .ui-autocomplete {
     max-height: 250px;
@@ -716,11 +674,7 @@ main,
     resize: vertical;
 }
 
-.modern-form .input-field .error-message {
-    color: #D32F2F;
-    font-size: 12px;
-    margin-top: 5px;
-}
+
 
 .add-car-page .modern-form .input-field {
     position: relative;
@@ -1894,11 +1848,7 @@ main,
     font-weight: 600;
 }
 
-.account-details .error-message {
-    color: #D32F2F;
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-}
+
 
 .account-actions {
     display: flex;
@@ -2347,25 +2297,6 @@ main,
     text-transform: uppercase;
 }
 
-.alert {
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-weight: 500;
-    text-align: center;
-    color: #FFFFFF;
-}
-
-.alert-success {
-    background: linear-gradient(45deg, #28A745, #218838);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.alert-danger {
-    background: linear-gradient(45deg, #D32F2F, #B71C1C);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
 .active-subscriptions ul {
     list-style: none;
     padding: 0;
@@ -2771,19 +2702,6 @@ main,
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
 }
 
-.modern-form .input-field input.invalid,
-.modern-form .input-field textarea.invalid {
-    border-color: #D32F2F;
-    box-shadow: 0 0 8px rgba(211, 47, 47, 0.3);
-    animation: shake 0.3s ease;
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
-}
 
 /* Two Column Container */
 .two-column-container.shared-background {
@@ -3380,12 +3298,6 @@ main,
 
 .remove-filters-button:hover {
     background-color: #c82333;
-}
-
-.alert-error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
 }
 
 .modern-button {
