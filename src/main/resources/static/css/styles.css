@@ -31,131 +31,6 @@ main,
     display: block;
 }
 
-/* Header 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: rgb(1, 10, 51);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid #E5E5E5;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-    height: 75px;
-}
-
-header h2 {
-    color: #FFFFFF;
-    font-size: 2rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.header-transparent {
-    background-color: rgba(0, 48, 135, 0.3);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
-}
-
-.header-left,
-.logo-link,
-.logo-container,
-.title-container,
-.nav-container,
-.nav-bar {
-    display: flex;
-    align-items: center;
-}
-
-.logo-link {
-    text-decoration: none;
-}
-
-.logo-container {
-    flex-direction: column;
-}
-
-.logo {
-    height: 55px;
-    width: auto;
-    margin-bottom: 1px;
-}
-
-.title-container {
-    gap: 20px;
-}
-
-.main-title {
-    text-align: center;
-    font-size: 2.5rem;
-    font-weight: bold;
-    font-family: 'Bungee Spice', sans-serif;
-    color: #F5A623;
-    margin: 0 0 0 10px;
-    line-height: 1;
-}
-
-.products-button,
-.dealers-button,
-.icon-button {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 16px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 600;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.products-button {
-    background-color: #F5A623;
-    color: #FFFFFF;
-}
-
-.products-button:hover {
-    background-color: #E59400;
-}
-
-.dealers-button {
-    background-color: #003087;
-    color: #FFFFFF;
-}
-
-.dealers-button:hover {
-    background-color: #002066;
-}
-
-.products-button i,
-.dealers-button i {
-    margin-right: 8px;
-}
-
-.icon-button {
-    font-size: 20px;
-    color: #F5A623;
-    margin-left: 15px;
-    padding: 5px 8px;
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-.icon-button:hover,
-.header-transparent .icon-button:hover {
-    color: #E59400;
-    background-color: rgba(255, 255, 255, 0.3);
-}
-
-.header-transparent .icon-button {
-    background-color: rgba(255, 255, 255, 0.2);
-    padding: 5px 8px;
-}*/
-
 /* Categories Section */
 .categories-section {
     background-color: #faf1e0;
@@ -2737,69 +2612,6 @@ header h2 {
     }
 }
 
-/* Footer 
-footer {
-    background-color: rgb(1, 10, 51);
-    color: #FFFFFF;
-    padding: 40px 20px;
-    text-align: center;
-    border-top: 1px solid #E5E5E5;
-}
-
-.footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-.footer-section {
-    flex: 1;
-    min-width: 200px;
-}
-
-.footer-section h4 {
-    font-size: 1.2rem;
-    color: #F5A623;
-    margin-bottom: 15px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.footer-section ul {
-    list-style: none;
-    padding: 0;
-}
-
-.footer-section ul li {
-    margin-bottom: 10px;
-}
-
-.footer-section ul li a {
-    color: #FFFFFF;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.3s ease;
-}
-
-.footer-section ul li a:hover {
-    color: #F5A623;
-}
-
-.footer-section p {
-    font-size: 0.9rem;
-    line-height: 1.5;
-}
-
-.footer-bottom {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    font-size: 0.9rem;
-}*/
-
 .back-button {
     display: inline-flex;
     align-items: center;
@@ -2843,20 +2655,6 @@ footer {
     }
 }
 @media (max-width: 1024px) {
-    /*.logo {
-        height: 50px;
-    }
-    .main-title {
-        font-size: 2.2rem;
-    }
-    .products-button,
-    .dealers-button {
-        font-size: 15px;
-        padding: 7px 14px;
-    }
-    .title-container {
-        gap: 15px;
-    }*/
     .hero-content {
         padding: 25px 40px;
     }
@@ -2875,20 +2673,6 @@ footer {
 }
 
 @media (max-width: 768px) {
-    /*.logo {
-        height: 40px;
-    }
-    .main-title {
-        font-size: 1.8rem;
-    }
-    .products-button,
-    .dealers-button {
-        font-size: 14px;
-        padding: 6px 12px;
-    }
-    .title-container {
-        gap: 10px;
-    }*/
     .hero-section {
         height: 70vh;
         background-attachment: scroll;
@@ -2927,12 +2711,6 @@ footer {
     .feature-item {
         padding: 15px;
     }
-    /*.footer-content {
-        flex-direction: column;
-    }
-    .footer-section {
-        margin-bottom: 20px;
-    }*/
     .dealers-section h2 {
         font-size: 2rem;
 
@@ -2957,17 +2735,6 @@ footer {
 }
 
 @media (max-width: 480px) {
-    /*.logo {
-        height: clamp(30px, 8vw, 35px);
-    }
-    .main-title {
-        font-size: clamp(1.2rem, 5vw, 1.5rem);
-    }
-    .products-button,
-    .dealers-button {
-        font-size: clamp(12px, 3.5vw, 13px);
-        padding: clamp(4px, 1.5vw, 5px) clamp(8px, 2.5vw, 10px);
-    }*/
     .hero-content {
         padding: clamp(10px, 4vw, 15px);
     }
