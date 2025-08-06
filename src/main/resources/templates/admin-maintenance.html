@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <title>Manutenzione Admin - FCF Motors</title>
     <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/allert.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/alerts.css">
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -105,6 +106,196 @@
         .edit-button i, .delete-button i, .add-button i, .discount-button i, .remove-discount-button i {
             margin-right: 6px;
         }
+
+        /* POPUP STYLES */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 10000;
+            backdrop-filter: blur(3px);
+        }
+        
+        .popup-overlay.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .popup-content {
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #F5A623;
+        }
+        
+        .popup-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .popup-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        
+        .popup-close:hover {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .popup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .popup-form .input-field {
+            position: relative;
+        }
+        
+        .popup-form .input-field input,
+        .popup-form .input-field textarea,
+        .popup-form .input-field select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .popup-form .input-field input:focus,
+        .popup-form .input-field textarea:focus,
+        .popup-form .input-field select:focus {
+            border-color: #F5A623;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.2);
+        }
+        
+        .popup-form .input-field label {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            color: #666;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            padding: 0 5px;
+        }
+        
+        .popup-form .input-field input:focus + label,
+        .popup-form .input-field input:not(:placeholder-shown) + label,
+        .popup-form .input-field textarea:focus + label,
+        .popup-form .input-field textarea:not(:placeholder-shown) + label,
+        .popup-form .input-field select:focus + label,
+        .popup-form .input-field select:not([value=""]) + label {
+            top: -10px;
+            left: 10px;
+            font-size: 0.8rem;
+            color: #F5A623;
+            font-weight: 600;
+        }
+        
+        .popup-form .input-field textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .popup-form .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+        
+        .popup-form .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+        
+        .popup-form .btn-primary {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+        }
+        
+        .popup-form .btn-primary:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
+        }
+        
+        .popup-form .btn-secondary {
+            background: #6c757d;
+            color: #FFFFFF;
+        }
+        
+        .popup-form .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-30px) scale(0.9);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
         @media (max-width: 768px) {
             .admin-maintenance-container {
                 padding: 20px;
@@ -117,9 +308,13 @@
                 padding: 6px 12px;
                 font-size: 0.8rem;
             }
-            .header-right {
-                right: 10px;
-                gap: 5px;
+            .popup-content {
+                width: 95%;
+                padding: 20px;
+                margin: 10px;
+            }
+            .popup-header h3 {
+                font-size: 1.3rem;
             }
         }
     </style>
@@ -173,10 +368,23 @@
                     <tbody>
                     <tr th:each="product : ${products}">
                         <td th:text="${product.id}"></td>
+                        <td th:text="${product.brand + ' ' + product.model}"></td>
                         <td th:text="${product.seller?.username}"></td>
-                        <td th:text="${product.sellerType}"></td>
                         <td>
-                            <a th:href="@{/admin/product/{id}/edit(id=${product.id})}" class="edit-button"><i class="fas fa-edit"></i> Modifica</a>
+                            <button class="edit-button" 
+                                    th:data-id="${product.id}"
+                                    th:data-description="${product.description}"
+                                    th:data-price="${product.price}"
+                                    th:data-category="${product.category}"
+                                    th:data-brand="${product.brand}"
+                                    th:data-model="${product.model}"
+                                    th:data-mileage="${product.mileage}"
+                                    th:data-year="${product.year}"
+                                    th:data-fuel="${product.fuelType}"
+                                    th:data-transmission="${product.transmission}"
+                                    onclick="openEditProductPopup(this)">
+                                <i class="fas fa-edit"></i> Modifica
+                            </button>
                             <form th:action="@{/admin/product/{id}/delete(id=${product.id})}" method="post" style="display:inline;">
                                 <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
                                 <input type="hidden" name="id" th:value="${product.id}"/>
@@ -211,7 +419,16 @@
                         <td th:text="${dealer.name}"></td>
                         <td th:text="${dealer.address}"></td>
                         <td>
-                            <a th:href="@{/admin/dealer/{id}/edit(id=${dealer.id})}" class="edit-button"><i class="fas fa-edit"></i> Modifica</a>
+                            <button class="edit-button"
+                                    th:data-id="${dealer.id}"
+                                    th:data-name="${dealer.name}"
+                                    th:data-description="${dealer.description}"
+                                    th:data-address="${dealer.address}"
+                                    th:data-email="${dealer.email}"
+                                    th:data-phone="${dealer.phone}"
+                                    onclick="openEditDealerPopup(this)">
+                                <i class="fas fa-edit"></i> Modifica
+                            </button>
                             <form th:action="@{/admin/dealer/{id}/delete(id=${dealer.id})}" method="post" style="display:inline;">
                                 <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
                                 <input type="hidden" name="id" th:value="${dealer.id}"/>
@@ -266,7 +483,7 @@
         <!-- Sezione 4: Gestione Abbonamenti -->
         <div class="admin-section">
             <h3>Gestione Abbonamenti</h3>
-            <a href="/admin/subscription/add" class="add-button"><i class="fas fa-plus"></i> Aggiungi Abbonamento</a>
+            <button class="add-button" onclick="openAddSubscriptionPopup()"><i class="fas fa-plus"></i> Aggiungi Abbonamento</button>
             <div th:if="${subscriptions != null and !#lists.isEmpty(subscriptions)}" class="subscriptions-list">
                 <table class="admin-table">
                     <thead>
@@ -291,9 +508,25 @@
                         <td th:text="${subscription.discountExpiry != null} ? ${subscription.discountExpiry} : '-'"></td>
                         <td th:text="${subscription.maxFeaturedCars}"></td>
                         <td>
-                            <a th:href="@{/admin/subscription/{id}/edit(id=${subscription.id})}" class="edit-button"><i class="fas fa-edit"></i> Modifica</a>
-                            <a th:if="${subscription.discount == null or subscription.discountExpiry == null or subscription.discountExpiry.isBefore(T(java.time.LocalDate).now())}"
-                               th:href="@{/admin/subscription/{id}/discount(id=${subscription.id})}" class="discount-button"><i class="fas fa-tag"></i> Applica Sconto</a>
+                            <button class="edit-button"
+                                    th:data-id="${subscription.id}"
+                                    th:data-name="${subscription.name}"
+                                    th:data-description="${subscription.description}"
+                                    th:data-price="${subscription.price}"
+                                    th:data-discount="${subscription.discount}"
+                                    th:data-expiry="${subscription.discountExpiry}"
+                                    th:data-duration="${subscription.durationDays}"
+                                    th:data-maxcars="${subscription.maxFeaturedCars}"
+                                    onclick="openEditSubscriptionPopup(this)">
+                                <i class="fas fa-edit"></i> Modifica
+                            </button>
+                            <button th:if="${subscription.discount == null or subscription.discountExpiry == null or subscription.discountExpiry.isBefore(T(java.time.LocalDate).now())}"
+                                    class="discount-button"
+                                    th:data-id="${subscription.id}"
+                                    th:data-name="${subscription.name}"
+                                    onclick="openDiscountPopup(this)">
+                                <i class="fas fa-tag"></i> Applica Sconto
+                            </button>
                             <form th:if="${subscription.discount != null and subscription.discountExpiry != null and subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}"
                                   th:action="@{/admin/subscription/{id}/remove-discount(id=${subscription.id})}" method="post" style="display:inline;">
                                 <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
@@ -314,6 +547,241 @@
                 <p>Nessun abbonamento presente.</p>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- POPUP PER MODIFICA PRODOTTO -->
+<div id="editProductPopup" class="popup-overlay">
+    <div class="popup-content">
+        <div class="popup-header">
+            <h3>Modifica Prodotto</h3>
+            <button class="popup-close" onclick="closePopup('editProductPopup')">&times;</button>
+        </div>
+        <form id="editProductForm" class="popup-form" method="post">
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+            <input type="hidden" id="editProductId" name="id"/>
+            
+            <div class="input-field">
+                <textarea id="editProductDescription" name="description" placeholder=" "></textarea>
+                <label for="editProductDescription">Descrizione</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="number" step="0.01" id="editProductPrice" name="price" required placeholder=" "/>
+                <label for="editProductPrice">Prezzo</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="text" id="editProductCategory" name="category" placeholder=" "/>
+                <label for="editProductCategory">Categoria</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="text" id="editProductBrand" name="brand" required placeholder=" "/>
+                <label for="editProductBrand">Marca</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="text" id="editProductModel" name="model" required placeholder=" "/>
+                <label for="editProductModel">Modello</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="number" id="editProductMileage" name="mileage" placeholder=" "/>
+                <label for="editProductMileage">Chilometraggio</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="number" id="editProductYear" name="year" placeholder=" "/>
+                <label for="editProductYear">Anno</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="text" id="editProductFuelType" name="fuelType" placeholder=" "/>
+                <label for="editProductFuelType">Tipo di carburante</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="text" id="editProductTransmission" name="transmission" placeholder=" "/>
+                <label for="editProductTransmission">Trasmissione</label>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Salva Modifiche</button>
+                <button type="button" class="btn btn-secondary" onclick="closePopup('editProductPopup')">Annulla</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- POPUP PER MODIFICA CONCESSIONARIO -->
+<div id="editDealerPopup" class="popup-overlay">
+    <div class="popup-content">
+        <div class="popup-header">
+            <h3>Modifica Concessionario</h3>
+            <button class="popup-close" onclick="closePopup('editDealerPopup')">&times;</button>
+        </div>
+        <form id="editDealerForm" class="popup-form" method="post">
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+            <input type="hidden" id="editDealerId" name="id"/>
+            
+            <div class="input-field">
+                <input type="text" id="editDealerName" name="name" required placeholder=" "/>
+                <label for="editDealerName">Nome</label>
+            </div>
+            
+            <div class="input-field">
+                <textarea id="editDealerDescription" name="description" placeholder=" "></textarea>
+                <label for="editDealerDescription">Descrizione</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="text" id="editDealerAddress" name="address" required placeholder=" "/>
+                <label for="editDealerAddress">Indirizzo</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="email" id="editDealerEmail" name="email" placeholder=" "/>
+                <label for="editDealerEmail">Email</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="tel" id="editDealerPhone" name="phone" placeholder=" "/>
+                <label for="editDealerPhone">Telefono</label>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Salva Modifiche</button>
+                <button type="button" class="btn btn-secondary" onclick="closePopup('editDealerPopup')">Annulla</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- POPUP PER AGGIUNGI ABBONAMENTO -->
+<div id="addSubscriptionPopup" class="popup-overlay">
+    <div class="popup-content">
+        <div class="popup-header">
+            <h3>Aggiungi Abbonamento</h3>
+            <button class="popup-close" onclick="closePopup('addSubscriptionPopup')">&times;</button>
+        </div>
+        <form action="/admin/subscription/add" class="popup-form" method="post">
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+            
+            <div class="input-field">
+                <input type="text" id="addSubscriptionName" name="name" required placeholder=" "/>
+                <label for="addSubscriptionName">Nome</label>
+            </div>
+            
+            <div class="input-field">
+                <textarea id="addSubscriptionDescription" name="description" required placeholder=" "></textarea>
+                <label for="addSubscriptionDescription">Descrizione</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="number" step="0.01" id="addSubscriptionPrice" name="price" required placeholder=" "/>
+                <label for="addSubscriptionPrice">Prezzo (€)</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="number" id="addSubscriptionDuration" name="durationDays" min="1" required placeholder=" "/>
+                <label for="addSubscriptionDuration">Durata (in giorni)</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="number" id="addSubscriptionMaxCars" name="maxFeaturedCars" min="0" required placeholder=" "/>
+                <label for="addSubscriptionMaxCars">Macchine in Evidenza Massime</label>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Aggiungi</button>
+                <button type="button" class="btn btn-secondary" onclick="closePopup('addSubscriptionPopup')">Annulla</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- POPUP PER MODIFICA ABBONAMENTO -->
+<div id="editSubscriptionPopup" class="popup-overlay">
+    <div class="popup-content">
+        <div class="popup-header">
+            <h3>Modifica Abbonamento</h3>
+            <button class="popup-close" onclick="closePopup('editSubscriptionPopup')">&times;</button>
+        </div>
+        <form id="editSubscriptionForm" class="popup-form" method="post">
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+            <input type="hidden" id="editSubscriptionId" name="id"/>
+            
+            <div class="input-field">
+                <input type="text" id="editSubscriptionName" name="name" required placeholder=" "/>
+                <label for="editSubscriptionName">Nome</label>
+            </div>
+            
+            <div class="input-field">
+                <textarea id="editSubscriptionDescription" name="description" required placeholder=" "></textarea>
+                <label for="editSubscriptionDescription">Descrizione</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="number" step="0.01" id="editSubscriptionPrice" name="price" required placeholder=" "/>
+                <label for="editSubscriptionPrice">Prezzo (€)</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="number" step="0.01" id="editSubscriptionDiscount" name="discount" placeholder=" "/>
+                <label for="editSubscriptionDiscount">Sconto (%)</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="date" id="editSubscriptionDiscountExpiry" name="discountExpiry" placeholder=" "/>
+                <label for="editSubscriptionDiscountExpiry">Scadenza Sconto</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="number" id="editSubscriptionDuration" name="durationDays" min="1" required placeholder=" "/>
+                <label for="editSubscriptionDuration">Durata (in giorni)</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="number" id="editSubscriptionMaxCars" name="maxFeaturedCars" min="0" required placeholder=" "/>
+                <label for="editSubscriptionMaxCars">Macchine in Evidenza Massime</label>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Salva</button>
+                <button type="button" class="btn btn-secondary" onclick="closePopup('editSubscriptionPopup')">Annulla</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- POPUP PER APPLICA SCONTO -->
+<div id="discountPopup" class="popup-overlay">
+    <div class="popup-content">
+        <div class="popup-header">
+            <h3>Applica Sconto</h3>
+            <button class="popup-close" onclick="closePopup('discountPopup')">&times;</button>
+        </div>
+        <form id="discountForm" class="popup-form" method="post">
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+            
+            <p>Applica sconto a: <strong id="discountSubscriptionName"></strong></p>
+            
+            <div class="input-field">
+                <input type="number" id="discountAmount" name="discount" step="0.01" min="0" max="100" required placeholder=" "/>
+                <label for="discountAmount">Sconto (%)</label>
+            </div>
+            
+            <div class="input-field">
+                <input type="date" id="discountExpiry" name="discountExpiry" required placeholder=" "/>
+                <label for="discountExpiry">Scadenza Sconto</label>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Applica Sconto</button>
+                <button type="button" class="btn btn-secondary" onclick="closePopup('discountPopup')">Annulla</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -369,6 +837,166 @@
                 dropdownToggle.classList.toggle('open');
             }
         });
+    });
+
+    // FUNZIONI POPUP CON DATA ATTRIBUTES
+    function openEditProductPopup(button) {
+        const id = button.dataset.id;
+        const description = button.dataset.description || '';
+        const price = button.dataset.price || '';
+        const category = button.dataset.category || '';
+        const brand = button.dataset.brand || '';
+        const model = button.dataset.model || '';
+        const mileage = button.dataset.mileage || '';
+        const year = button.dataset.year || '';
+        const fuelType = button.dataset.fuel || '';
+        const transmission = button.dataset.transmission || '';
+        
+        console.log('Opening product popup for ID:', id);
+        
+        document.getElementById('editProductId').value = id;
+        document.getElementById('editProductDescription').value = description;
+        document.getElementById('editProductPrice').value = price;
+        document.getElementById('editProductCategory').value = category;
+        document.getElementById('editProductBrand').value = brand;
+        document.getElementById('editProductModel').value = model;
+        document.getElementById('editProductMileage').value = mileage;
+        document.getElementById('editProductYear').value = year;
+        document.getElementById('editProductFuelType').value = fuelType;
+        document.getElementById('editProductTransmission').value = transmission;
+        
+        document.getElementById('editProductForm').action = `/admin/product/${id}/update`;
+        document.getElementById('editProductPopup').classList.add('show');
+        
+        triggerLabelAnimation('editProductPopup');
+    }
+
+    function openEditDealerPopup(button) {
+        const id = button.dataset.id;
+        const name = button.dataset.name || '';
+        const description = button.dataset.description || '';
+        const address = button.dataset.address || '';
+        const email = button.dataset.email || '';
+        const phone = button.dataset.phone || '';
+        
+        console.log('Opening dealer popup for ID:', id);
+        
+        document.getElementById('editDealerId').value = id;
+        document.getElementById('editDealerName').value = name;
+        document.getElementById('editDealerDescription').value = description;
+        document.getElementById('editDealerAddress').value = address;
+        document.getElementById('editDealerEmail').value = email;
+        document.getElementById('editDealerPhone').value = phone;
+        
+        document.getElementById('editDealerForm').action = `/admin/dealer/${id}/update`;
+        document.getElementById('editDealerPopup').classList.add('show');
+        
+        triggerLabelAnimation('editDealerPopup');
+    }
+
+    function openAddSubscriptionPopup() {
+        document.getElementById('addSubscriptionPopup').classList.add('show');
+    }
+
+    function openEditSubscriptionPopup(button) {
+        const id = button.dataset.id;
+        const name = button.dataset.name || '';
+        const description = button.dataset.description || '';
+        const price = button.dataset.price || '';
+        const discount = button.dataset.discount || '';
+        const discountExpiry = button.dataset.expiry || '';
+        const durationDays = button.dataset.duration || '';
+        const maxFeaturedCars = button.dataset.maxcars || '';
+        
+        console.log('Opening subscription popup for ID:', id);
+        
+        document.getElementById('editSubscriptionId').value = id;
+        document.getElementById('editSubscriptionName').value = name;
+        document.getElementById('editSubscriptionDescription').value = description;
+        document.getElementById('editSubscriptionPrice').value = price;
+        document.getElementById('editSubscriptionDiscount').value = (discount && discount !== 'null') ? discount : '';
+        document.getElementById('editSubscriptionDiscountExpiry').value = discountExpiry || '';
+        document.getElementById('editSubscriptionDuration').value = durationDays;
+        document.getElementById('editSubscriptionMaxCars').value = maxFeaturedCars;
+        
+        document.getElementById('editSubscriptionForm').action = `/admin/subscription/${id}/update`;
+        document.getElementById('editSubscriptionPopup').classList.add('show');
+        
+        triggerLabelAnimation('editSubscriptionPopup');
+    }
+
+    function openDiscountPopup(button) {
+        const id = button.dataset.id;
+        const name = button.dataset.name || '';
+        
+        console.log('Opening discount popup for subscription:', id, name);
+        
+        document.getElementById('discountSubscriptionName').textContent = name;
+        document.getElementById('discountForm').action = `/admin/subscription/${id}/discount`;
+        
+        // Reset dei campi
+        document.getElementById('discountAmount').value = '';
+        document.getElementById('discountExpiry').value = '';
+        
+        // Imposta data minima come oggi
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('discountExpiry').min = today;
+        
+        document.getElementById('discountPopup').classList.add('show');
+    }
+
+    function triggerLabelAnimation(popupId) {
+        setTimeout(() => {
+            document.querySelectorAll(`#${popupId} .input-field input, #${popupId} .input-field textarea`).forEach(input => {
+                if (input.value && input.value.trim() !== '') {
+                    const label = input.nextElementSibling;
+                    if (label && label.tagName === 'LABEL') {
+                        label.style.top = '-10px';
+                        label.style.left = '10px';
+                        label.style.fontSize = '0.8rem';
+                        label.style.color = '#F5A623';
+                        label.style.fontWeight = '600';
+                    }
+                }
+            });
+        }, 100);
+    }
+
+    function closePopup(popupId) {
+        document.getElementById(popupId).classList.remove('show');
+        
+        // Reset form
+        const form = document.querySelector(`#${popupId} form`);
+        if (form) {
+            form.reset();
+            // Reset label positions
+            form.querySelectorAll('.input-field input, .input-field textarea').forEach(input => {
+                const label = input.nextElementSibling;
+                if (label && label.tagName === 'LABEL') {
+                    label.style.top = '12px';
+                    label.style.left = '15px';
+                    label.style.fontSize = '1rem';
+                    label.style.color = '#666';
+                    label.style.fontWeight = 'normal';
+                }
+            });
+        }
+    }
+
+    // Chiudi popup cliccando fuori
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('popup-overlay')) {
+            event.target.classList.remove('show');
+        }
+    });
+
+    // Chiudi popup con ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            document.querySelectorAll('.popup-overlay.show').forEach(popup => {
+                popup.classList.remove('show');
+            });
+        }
     });
 </script>
 </body>
