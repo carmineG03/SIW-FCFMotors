@@ -2,53 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Scopri i dettagli del concessionario FCF Motors e tutte le auto disponibili."/>
-  <meta name="keywords" content="concessionario auto, FCF Motors, auto nuove, auto usate, dettagli concessionario"/>
-  <meta name="robots" content="index, follow"/>
-  <!-- Open Graph -->
-  <meta property="og:title" content="Dettagli Concessionario - FCF Motors"/>
-  <meta property="og:description" content="Scopri i dettagli del concessionario FCF Motors e tutte le auto disponibili."/>
-  <meta property="og:image" content="https://www.fcfmotors.com/image/logo1.png"/>
-  <meta property="og:url" content="https://www.fcfmotors.com/dealers"/>
-  <meta property="og:type" content="website"/>
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="Dettagli Concessionario - FCF Motors"/>
-  <meta name="twitter:description" content="Scopri i dettagli del concessionario FCF Motors e tutte le auto disponibili."/>
-  <meta name="twitter:image" content="https://www.fcfmotors.com/image/logo1.png"/>
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="/image/favicon.png"/>
-  <!-- Preload CSS -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/allert.css">
-  <link rel="preload" href="/css/styles.css" as="style"/>
   <link rel="stylesheet" href="/css/styles.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Open+Sans:wght@400;600;700&display=swap"/>
-  <!-- Dati strutturati -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "FCF Motors",
-      "url": "https://www.fcfmotors.com",
-      "logo": "https://www.fcfmotors.com/image/logo1.png",
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+39-123-456-7890",
-        "contactType": "customer service",
-        "email": "info@fcfmotors.com",
-        "areaServed": "IT"
-      },
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Via Auto, 123",
-        "addressLocality": "Milano",
-        "addressCountry": "IT"
-      }
-    }
-  </script>
+  
   <title th:text="${dealer.name} + ' - FCF Motors'">Dettagli Concessionario - FCF Motors</title>
   <style>
     /* Stili per la pagina */
@@ -530,6 +489,9 @@
         <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
         <a sec:authorize="!isAuthenticated()" th:href="@{/login}"><i class="fas fa-user"></i> Login</a>
         <a sec:authorize="isAuthenticated()" th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+        <a sec:authorize="hasRole('PRIVATE')" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
+        <a sec:authorize="hasRole('DEALER')" th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i> Manutenzione Dealer</a>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i> Manutenzione Admin</a>
       </div>
     </div>
   </div>

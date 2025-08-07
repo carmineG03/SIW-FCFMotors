@@ -47,6 +47,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/cart/**").permitAll()
                         .requestMatchers("/cart/**").permitAll()
                         .requestMatchers("/account").authenticated()
+                        .requestMatchers("/private/messages/**").authenticated()
                         .requestMatchers("/private/**").hasAnyAuthority(SecurityConstants.PRIVATE_ROLE)
                         .requestMatchers("/manutenzione/private").hasAnyAuthority(SecurityConstants.PRIVATE_ROLE)
                         .requestMatchers("/manutenzione/dealer").hasAuthority(SecurityConstants.DEALER_ROLE)
