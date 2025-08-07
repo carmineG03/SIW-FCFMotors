@@ -95,7 +95,7 @@ public class DealerController {
         }
     }
 
-    @PostMapping("/api/dealers")
+        @PostMapping("/api/dealers")
     @ResponseBody
     @Transactional
     public ResponseEntity<?> createOrUpdateDealer(
@@ -106,15 +106,15 @@ public class DealerController {
             @RequestParam(required = false) String email,
             @RequestParam(required = false) Boolean isUpdate,
             @RequestParam(value = "images", required = false) List<MultipartFile> images) {
-
+    
         logger.info("POST /rest/api/dealers - name: {}, isUpdate: {}, images: {}",
                 name, isUpdate, images != null ? images.size() : 0);
-
+    
         if (!StringUtils.hasText(name)) {
             logger.warn("Nome concessionario mancante");
             return badRequest().body(Map.of("message", "Il nome del concessionario è obbligatorio"));
         }
-
+    
         try {
             Dealer dealer = new Dealer();
             dealer.setName(name.trim());
@@ -122,34 +122,24 @@ public class DealerController {
             dealer.setAddress(StringUtils.hasText(address) ? address.trim() : null);
             dealer.setPhone(StringUtils.hasText(phone) ? phone.trim() : null);
             dealer.setEmail(StringUtils.hasText(email) ? email.trim() : null);
-
+    
             List<Image> imageEntities = new ArrayList<>();
-            if (Boolean.TRUE.equals(isUpdate)) {
-                if (images != null && !images.isEmpty()) {
-                    if (images.size() > 4) {
-                        logger.warn("Superato il limite di 4 immagini: {}", images.size());
-                        return badRequest().body(Map.of("message", "Massimo 4 immagini per il concessionario"));
-                    }
-                    for (MultipartFile file : images) {
-                        if (!file.isEmpty()) {
-                            logger.info("Processing image: {} (size: {} bytes)", file.getOriginalFilename(), file.getSize());
-                            Image img = dealerService.saveImageFile(file);
-                            img.setDealer(dealer);
-                            imageEntities.add(img);
-                        } else {
-                            logger.warn("Empty file received: {}", file.getOriginalFilename());
-                        }
-                    }
-                }
-            } else {
+            
+            // Per creazione (non update), le immagini sono obbligatorie
+            if (!Boolean.TRUE.equals(isUpdate)) {
                 if (images == null || images.isEmpty()) {
                     logger.info("No images provided for dealer creation: {}", name);
                     return badRequest().body(Map.of("message", "Seleziona almeno un'immagine per il concessionario"));
                 }
+            }
+            
+            // Processa le immagini se presenti
+            if (images != null && !images.isEmpty()) {
                 if (images.size() > 4) {
                     logger.warn("Superato il limite di 4 immagini: {}", images.size());
                     return badRequest().body(Map.of("message", "Massimo 4 immagini per il concessionario"));
                 }
+                
                 for (MultipartFile file : images) {
                     if (!file.isEmpty()) {
                         logger.info("Processing image: {} (size: {} bytes)", file.getOriginalFilename(), file.getSize());
@@ -161,15 +151,22 @@ public class DealerController {
                     }
                 }
             }
+            
             dealer.setImages(imageEntities);
-
+    
             Dealer savedDealer = dealerService.saveDealer(dealer, Boolean.TRUE.equals(isUpdate));
-            logger.info("Dealer saved: id={}, name={}, images={}", savedDealer.getId(), savedDealer.getName(), savedDealer.getImages().size());
-            return ok(Map.of(
-                    "id", savedDealer.getId(),
-                    "name", savedDealer.getName(),
-                    "images", savedDealer.getImages().stream().map(Image::getId).toList()
-            ));
+            logger.info("Dealer saved successfully: id={}, name={}, images={}", 
+                       savedDealer.getId(), savedDealer.getName(), savedDealer.getImages().size());
+            
+            // IMPORTANTE: Assicurati che la risposta contenga l'ID del dealer
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Concessionario creato con successo!");
+            response.put("id", savedDealer.getId());
+            response.put("name", savedDealer.getName());
+            response.put("images", savedDealer.getImages().stream().map(Image::getId).toList());
+            
+            return ok(response);
+            
         } catch (Exception e) {
             logger.error("Errore salvataggio dealer: {}", e.getMessage(), e);
             return status(HttpStatus.INTERNAL_SERVER_ERROR)
