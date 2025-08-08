@@ -11,6 +11,8 @@ import it.uniroma3.siwprogetto.service.CartService;
 import it.uniroma3.siwprogetto.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +30,7 @@ import java.util.List;
 import static it.uniroma3.siwprogetto.util.SecurityUtils.hasRole;
 
 @Controller
+@Transactional
 public class AccountController {
 
 
@@ -51,6 +54,7 @@ public class AccountController {
 
 
     @GetMapping("/account")
+    @Transactional
     public String showAccount(Model model, Principal principal) {
         if (principal == null) {
             return "redirect:/login";
@@ -78,6 +82,7 @@ public class AccountController {
     }
 
     @GetMapping("/account/edit")
+    @Transactional
     public String editAccount(Model model, Principal principal) {
         if (principal == null) {
             return "redirect:/login";
@@ -102,6 +107,7 @@ public class AccountController {
     }
 
     @PostMapping("/account")
+    @Transactional
     public String saveAccountInformation(@ModelAttribute AccountInformation formAI, Principal principal) {
         if (principal == null) {
             return "redirect:/login";
@@ -129,6 +135,7 @@ public class AccountController {
     }
 
     @GetMapping("/subscriptions")
+    @Transactional
     public String showSubscriptionsPage(Model model) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 

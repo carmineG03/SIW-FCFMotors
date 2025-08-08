@@ -1,0 +1,1252 @@
+/* ===========================================
+   AUTHENTICATION & ACCOUNT PAGES CSS
+   (login, register, forgot-password, reset-password, account)
+   =========================================== */
+
+/* Import Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@200;300;400;500;600;700&family=Bungee+Spice&display=swap");
+
+/* General Reset for Auth Pages */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+}
+
+/* Body */
+body {
+    background-size: auto 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Wrapper (Login, Register, Account Pages) */
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: url('/image/account.jpg') no-repeat center center / cover;
+    padding-top: 60px;
+}
+
+.wrapper .auth-form {
+    border: 2px solid #F5A623;
+    border-radius: 10px;
+    padding: 30px;
+    background: rgba(0, 0, 0, 0.8);
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.wrapper form h2 {
+    color: #F5A623;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+    font-family: "Bungee Spice", sans-serif;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Input Fields */
+.input-field {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.input-field label {
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    width: 100%;
+    text-align: center;
+}
+
+.wrapper form .input-field input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 10px 0;
+    font-size: 16px;
+    color: #FFFFFF;
+    outline: none;
+    transition: border-color 0.3s ease;
+    width: 80%;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.input-field input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    text-align: center;
+}
+
+.wrapper form .input-field input:focus {
+    border-bottom-color: #FFFFFF;
+}
+
+/* Forget/Remember Section */
+.forget {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.forget label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #FFFFFF;
+    font-size: 14px;
+}
+
+.forget label p {
+    margin: 0;
+}
+
+.forget input[type="checkbox"] {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+}
+
+.forget input[type="checkbox"]:checked {
+    background: #F5A623;
+    border-color: #F5A623;
+}
+
+.forget input[type="checkbox"]:checked::after {
+    content: '\f00c';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #FFFFFF;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+}
+
+.forget a {
+    color: #F5A623;
+    font-size: 14px;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+.forget a:hover {
+    text-decoration: underline;
+}
+
+/* Submit Button */
+.wrapper form button {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    width: 80%;
+    margin: 20px auto 0;
+}
+
+.wrapper form button:hover {
+    background: linear-gradient(45deg, #E59400, #D68F1D);
+    transform: translateY(-2px);
+}
+
+/* Login/Register Links */
+.login,
+.register {
+    margin-top: 20px;
+    color: #FFFFFF;
+    font-size: 14px;
+    text-align: center;
+}
+
+.login a,
+.register a {
+    color: #F5A623;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login a:hover,
+.register a:hover {
+    text-decoration: underline;
+}
+
+/* Back Button Icon */
+.wrapper .icon-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    color: #F5A623;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.wrapper .icon-button:hover {
+    color: #E59400;
+}
+
+/* Alert Messages */
+.alert {
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.alert-danger {
+    background-color: rgba(248, 215, 218, 0.9);
+    border-color: rgba(245, 198, 203, 0.9);
+    color: #721c24;
+}
+
+.alert-info {
+    background-color: rgba(209, 236, 241, 0.9);
+    border-color: rgba(180, 216, 226, 0.9);
+    color: #055160;
+}
+
+.alert-success {
+    background-color: rgba(212, 237, 218, 0.9);
+    border-color: rgba(186, 218, 198, 0.9);
+    color: #0f5132;
+}
+
+/* ===========================================
+   ACCOUNT PAGE SPECIFIC STYLES
+   =========================================== */
+
+/* Account Container Layout */
+.account-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    margin: 20px 0;
+    align-items: flex-start;
+}
+
+.account-details-container, 
+.subscriptions-container {
+    flex: 1;
+    width: 48%;
+    min-width: 300px;
+    max-width: 48%;
+    box-sizing: border-box;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+    max-height: 500px;
+    overflow-y: auto;
+    margin: 0;
+}
+
+.account-details-container h2, 
+.subscriptions-container h2 {
+    color: #ddd;
+    font-size: 1.5rem;
+    margin: 0 0 15px 0;
+    flex-shrink: 0;
+}
+
+/* Account Details */
+.account-details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0;
+}
+
+.account-details p {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    color: #ddd;
+    margin: 5px 0;
+    font-size: 1rem;
+}
+
+.account-details p strong {
+    color: #fff;
+}
+
+.account-details .error-message {
+    color: #ff4d4d;
+}
+
+/* Account Actions */
+.account-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.edit-button, 
+.logout-button,
+.delete-account-button {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background 0.2s ease, transform 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logout-button {
+    width: 100px;
+    text-align: center;
+}
+
+.edit-button:hover, 
+.logout-button:hover {
+    background: linear-gradient(45deg, #E59400, #F5A623);
+    transform: translateY(-2px);
+}
+
+.delete-account-button {
+    background: linear-gradient(45deg, #ff4d4d, #cc0000);
+}
+
+.delete-account-button:hover {
+    background: linear-gradient(45deg, #cc0000, #ff4d4d);
+    transform: translateY(-2px);
+}
+
+/* Subscriptions */
+.subscriptions-container {
+    margin: 0;
+}
+
+.subscriptions-container h2 {
+    color: #ddd;
+    font-size: 1.5rem;
+    margin: 0 0 15px 0;
+}
+
+.active-subscriptions, 
+.no-subscriptions {
+    background: linear-gradient(145deg, #f9f9f9, #ececec);
+    border-radius: 16px;
+    padding: 25px;
+    margin: 0;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+.active-subscriptions::before, 
+.no-subscriptions::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(245, 166, 35, 0.2) 0%, transparent 25%);
+    animation: glow 10s linear infinite;
+    pointer-events: none;
+}
+
+.active-subscriptions:hover, 
+.no-subscriptions:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.active-subscriptions p, 
+.no-subscriptions p {
+    font-size: 1.2rem;
+    color: #333;
+    margin: 10px 0;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.no-subscriptions p {
+    margin-top: 50px;
+}
+
+.active-subscriptions p:hover, 
+.no-subscriptions p:hover {
+    color: #F5A623;
+}
+
+.active-subscriptions i, 
+.no-subscriptions i {
+    color: #F5A623;
+    margin-right: 8px;
+}
+
+/* Subscription Items */
+.subscription-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.subscription-item h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 10px 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.subscription-item p {
+    font-size: 1rem;
+    color: #666;
+    margin: 5px 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.subscription-item .description {
+    color: #333;
+    font-size: 0.95rem;
+    margin-top: 10px;
+}
+
+.subscription-item .featured-cars {
+    display: inline-block;
+    background: #F5A623;
+    color: #FFFFFF;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.auto-renew-warning {
+    background: linear-gradient(45deg, #ff4d4d, #cc0000);
+    color: #FFFFFF;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Subscription Buttons */
+.subscribe-button, 
+.toggle-auto-renew-button, 
+.become-private-button, 
+.remove-private-button {
+    display: inline-block;
+    padding: 12px 25px;
+    color: #FFFFFF;
+    text-decoration: none;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 15px 0;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 10px rgba(245, 166, 35, 0.4);
+}
+
+.subscribe-button {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+}
+
+.subscribe-button:hover {
+    background: linear-gradient(45deg, #E59400, #F5A623);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
+}
+
+.toggle-auto-renew-button.disable {
+    background: linear-gradient(45deg, #ff4d4d, #cc0000);
+}
+
+.toggle-auto-renew-button.disable:hover {
+    background: linear-gradient(45deg, #cc0000, #ff4d4d);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(255, 77, 77, 0.6);
+}
+
+.toggle-auto-renew-button.enable {
+    background: linear-gradient(45deg, #28a745, #218838);
+}
+
+.toggle-auto-renew-button.enable:hover {
+    background: linear-gradient(45deg, #218838, #28a745);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.6);
+}
+
+.become-private-button, 
+.remove-private-button {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+}
+
+.become-private-button:hover, 
+.remove-private-button:hover {
+    background: linear-gradient(45deg, #E59400, #F5A623);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+    border-radius: 12px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    position: relative;
+    transform: translateY(-50px);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+.modal.show .modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.modal-content h3 {
+    margin: 0 0 15px;
+    color: #333;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.modal-content .form-group {
+    margin-bottom: 15px;
+}
+
+.modal-content label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: 500;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+}
+
+.modal-content .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-content button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.modal-content .confirm-button, 
+.modal-content .save-button {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+    color: #FFFFFF;
+}
+
+.modal-content .confirm-button:hover, 
+.modal-content .save-button:hover {
+    background: linear-gradient(45deg, #E59400, #F5A623);
+    transform: translateY(-2px);
+}
+
+.modal-content .cancel-button {
+    background: #ccc;
+    color: #333;
+}
+
+.modal-content .cancel-button:hover {
+    background: #bbb;
+    transform: translateY(-2px);
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    color: #F5A623;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.close-modal:hover {
+    color: #E59400;
+    transform: scale(1.1);
+}
+
+/* Animation Keyframes */
+@keyframes glow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .wrapper {
+        padding: 40px 15px;
+    }
+    
+    .wrapper .auth-form {
+        padding: 25px;
+        max-width: 350px;
+    }
+    
+    .wrapper form h2 {
+        font-size: 1.3rem;
+        margin-bottom: 25px;
+    }
+    
+    .wrapper form .input-field input {
+        font-size: 15px;
+        padding: 8px 0;
+    }
+    
+    .input-field label {
+        font-size: 13px;
+    }
+    
+    .wrapper form button {
+        font-size: 15px;
+        padding: 9px;
+        width: 85%;
+    }
+    
+    .forget {
+        font-size: 13px;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .forget a {
+        margin-left: 0;
+        margin-top: 5px;
+    }
+    
+    .login,
+    .register {
+        font-size: 13px;
+        margin-top: 15px;
+    }
+    
+    .wrapper .icon-button {
+        font-size: 22px;
+        top: 15px;
+        left: 15px;
+    }
+    
+    .alert {
+        font-size: 13px;
+        padding: 10px 12px;
+    }
+
+    /* Account specific responsive */
+    .account-container {
+        flex-direction: column;
+    }
+    
+    .account-details-container, 
+    .subscriptions-container {
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+        min-height: auto;
+        max-height: none;
+        overflow-y: visible;
+    }
+    
+    .account-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .edit-button,
+    .logout-button,
+    .delete-account-button {
+        width: 100%;
+        max-width: 200px;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .wrapper {
+        padding: 30px 10px;
+        min-height: 100vh;
+    }
+    
+    .wrapper .auth-form {
+        padding: 20px;
+        max-width: 300px;
+        width: 95%;
+    }
+    
+    .wrapper form h2 {
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
+    }
+    
+    .wrapper form .input-field input {
+        font-size: 14px;
+        padding: 7px 0;
+        width: 90%;
+    }
+    
+    .input-field label {
+        font-size: 12px;
+    }
+    
+    .wrapper form button {
+        font-size: 14px;
+        padding: 8px;
+        width: 90%;
+        margin: 15px auto 0;
+    }
+    
+    .forget {
+        font-size: 12px;
+        margin-top: 8px;
+    }
+    
+    .forget input[type="checkbox"] {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .forget input[type="checkbox"]:checked::after {
+        font-size: 8px;
+    }
+    
+    .login,
+    .register {
+        font-size: 12px;
+        margin-top: 12px;
+    }
+    
+    .wrapper .icon-button {
+        font-size: 20px;
+        top: 12px;
+        left: 12px;
+    }
+    
+    .alert {
+        font-size: 12px;
+        padding: 8px 10px;
+        margin-bottom: 15px;
+    }
+
+    /* Account specific responsive */
+    .account-details-container,
+    .subscriptions-container {
+        padding: clamp(10px, 4vw, 15px);
+    }
+    
+    .account-details-container h2,
+    .subscriptions-container h2 {
+        font-size: clamp(1.1rem, 4.5vw, 1.3rem);
+    }
+    
+    .edit-button,
+    .logout-button,
+    .delete-account-button {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Focus and Accessibility */
+.wrapper form .input-field input:focus,
+.wrapper form button:focus,
+.forget input[type="checkbox"]:focus,
+.forget a:focus,
+.login a:focus,
+.register a:focus,
+.wrapper .icon-button:focus,
+.edit-button:focus,
+.logout-button:focus,
+.delete-account-button:focus {
+    outline: 2px solid #F5A623;
+    outline-offset: 2px;
+}
+
+/* Smooth Transitions */
+.wrapper .auth-form {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.wrapper .auth-form:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Error States */
+.input-field input:invalid:not(:focus):not(:placeholder-shown) {
+    border-bottom-color: #dc3545;
+}
+
+.input-field input:valid:not(:focus):not(:placeholder-shown) {
+    border-bottom-color: #28a745;
+}
+
+.modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            position: relative;
+            transform: translateY(-50px);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+        .modal.show .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .modal-content h3 {
+            margin: 0 0 15px;
+            color: #333;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        .modal-content .form-group {
+            margin-bottom: 15px;
+        }
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+        .modal-content .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-content button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .modal-content .confirm-button, .modal-content .save-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+        }
+        .modal-content .confirm-button:hover, .modal-content .save-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-2px);
+        }
+        .modal-content .cancel-button {
+            background: #ccc;
+            color: #333;
+        }
+        .modal-content .cancel-button:hover {
+            background: #bbb;
+            transform: translateY(-2px);
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            color: #F5A623;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .close-modal:hover {
+            color: #E59400;
+            transform: scale(1.1);
+        }
+        .delete-account-button, .edit-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        /* Stile separato per logout-button */
+        .logout-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.2s ease;
+            text-decoration: none;
+            display: inline-flex; /* Usa flex per centrare il testo */
+            align-items: center; /* Centra verticalmente */
+            justify-content: center; /* Centra orizzontalmente */
+            width: 100px; /* Larghezza fissa per uniformità */
+            text-align: center; /* Fallback per centramento testo */
+        }
+        .delete-account-button:hover, .edit-button:hover, .logout-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-2px);
+        }
+        .delete-account-button {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+        }
+        .delete-account-button:hover {
+            background: linear-gradient(45deg, #cc0000, #ff4d4d);
+        }
+        .subscriptions-container {
+            margin: 0;
+        }
+        .subscriptions-container h2 {
+            color: #ddd;
+            font-size: 1.5rem;
+            margin: 0 0 15px 0;
+        }
+        .active-subscriptions, .no-subscriptions {
+            background: linear-gradient(145deg, #f9f9f9, #ececec);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+        .active-subscriptions::before, .no-subscriptions::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(245, 166, 35, 0.2) 0%, transparent 25%);
+            animation: glow 10s linear infinite;
+            pointer-events: none;
+        }
+        .active-subscriptions:hover, .no-subscriptions:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        .active-subscriptions p, .no-subscriptions p {
+            font-size: 1.2rem;
+            color: #333;
+            margin: 10px 0;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .active-subscriptions p:hover, .no-subscriptions p:hover {
+            color: #F5A623;
+        }
+        .active-subscriptions i, .no-subscriptions i {
+            color: #F5A623;
+            margin-right: 8px;
+        }
+        .subscription-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .subscription-item h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 10px 0;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .subscription-item p {
+            font-size: 1rem;
+            color: #666;
+            margin: 5px 0;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .subscription-item .description {
+            color: #333;
+            font-size: 0.95rem;
+            margin-top: 10px;
+        }
+        .subscription-item .featured-cars {
+            display: inline-block;
+            background: #F5A623;
+            color: #FFFFFF;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .auto-renew-warning {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+            color: #FFFFFF;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .subscribe-button, .toggle-auto-renew-button, .become-private-button, .remove-private-button {
+            display: inline-block;
+            padding: 12px 25px;
+            color: #FFFFFF;
+            text-decoration: none;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 10px rgba(245, 166, 35, 0.4);
+        }
+        .subscribe-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+        }
+        .subscribe-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
+        }
+        .toggle-auto-renew-button.disable {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+        }
+        .toggle-auto-renew-button.disable:hover {
+            background: linear-gradient(45deg, #cc0000, #ff4d4d);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(255, 77, 77, 0.6);
+        }
+        .toggle-auto-renew-button.enable {
+            background: linear-gradient(45deg, #28a745, #218838);
+        }
+        .toggle-auto-renew-button.enable:hover {
+            background: linear-gradient(45deg, #218838, #28a745);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.6);
+        }
+        .become-private-button, .remove-private-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+        }
+        .become-private-button:hover, .remove-private-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
+        }
+        @keyframes glow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .account-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+            margin: 20px 0;
+            align-items: flex-start;
+        }
+        .account-details-container, .subscriptions-container {
+            flex: 1;
+            width: 48%;
+            min-width: 300px;
+            max-width: 48%;
+            box-sizing: border-box;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+            max-height: 500px;
+            overflow-y: auto;
+            margin: 0;
+        }
+        .account-details-container h2, .subscriptions-container h2 {
+            color: #ddd;
+            font-size: 1.5rem;
+            margin: 0 0 15px 0;
+            flex-shrink: 0;
+        }
+        .account-details p {
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            color: #ddd;
+            margin: 5px 0;
+            font-size: 1rem;
+        }
+        .no-subscriptions p {
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            color: #333;
+            margin: 5px 0;
+            font-size: 1rem;
+            margin-top: 50px;
+        }
+        .subscription-item p {
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            color: #666;
+            margin: 5px 0;
+            font-size: 1rem;
+        }
+        .account-details p strong {
+            color: #fff;
+        }
+        .account-details .error-message {
+            color: #ff4d4d;
+        }
+        .account-details, .active-subscriptions, .no-subscriptions {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            margin: 0;
+        }
+        .account-details {
+            padding: 0;
+        }
+        @media (max-width: 768px) {
+            .account-container {
+                flex-direction: column;
+            }
+            .account-details-container, .subscriptions-container {
+                width: 100%;
+                max-width: 100%;
+                min-width: 100%;
+                min-height: auto;
+                max-height: none;
+                overflow-y: visible;
+            }
+        }

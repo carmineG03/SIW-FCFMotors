@@ -1,4 +1,7 @@
-/* Import Fonts */
+/* ===========================================
+   GENERAL STYLES FILE
+   =========================================== */
+
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@200;300;400;500;600;700&family=Bungee+Spice&display=swap");
 
 /* General Styles */
@@ -16,7 +19,6 @@ body {
 /* Margin for Main Sections */
 main,
 .cart-section,
-.wrapper,
 .dealers-section,
 .maintenance-section {
     margin-top: 75px;
@@ -701,7 +703,7 @@ main,
     text-align: center;
 }
 
-/* Maintenance Button */
+/* Maintenance Button 
 .maintenance-button {
     display: inline-flex;
     align-items: center;
@@ -774,7 +776,7 @@ main,
     .maintenance-button i {
         font-size: 14px;
     }
-}
+} DA CAPIRE!!!!*/
 
 
 /* Brands Section */
@@ -893,7 +895,20 @@ main,
     line-height: 1.5;
 }
 
-/* Products Hero Section */
+
+
+/* ===========================================
+   PRODUCTS STYLE SECTION
+   =========================================== */
+
+
+.products-section {
+    padding: 40px 20px;
+    text-align: center;
+    background-color: #F5F6F5;
+}
+
+/* PRODUCTS Hero Section */
 .products-hero {
     position: relative;
     height: 60vh;
@@ -926,12 +941,6 @@ main,
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-/* Products Section */
-.products-section {
-    padding: 40px 20px;
-    text-align: center;
-    background-color: #F5F6F5;
-}
 
 .spinner {
     display: flex;
@@ -1085,7 +1094,7 @@ main,
     font-style: italic;
 }
 
-/* Search Section */
+/* PRODUCTS Search Section */
 .search-section {
     position: relative;
     width: 100%;
@@ -1323,7 +1332,7 @@ main,
     }
 }
 
-/* Cars Grid */
+/* PRODUCTS Cars Grid */
 .cars-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -1411,7 +1420,7 @@ main,
     grid-column: 1 / -1;
 }
 
-/* Responsive Cars Grid */
+/* PRODUCTS Responsive Cars Grid */
 @media (max-width: 1200px) {
     .cars-grid {
         grid-template-columns: repeat(4, 1fr);
@@ -1466,8 +1475,251 @@ main,
         padding: 5px;
     }
 }
+/* PRDOUCTS Stile per rimuovere la striscia blu sui link delle auto */
+        .car-link {
+            text-decoration: none;
+            color: inherit;
+            border: none;
+            outline: none;
+        }
+        .car-link:hover,
+        .car-link:focus,
+        .car-link:active {
+            text-decoration: none;
+            border: none;
+            outline: none;
+        }
+        /* PRDOUCTS Stile per il carousel dei prodotti */
+        .product-carousel-container {
+            position: relative;
+            max-width: 300px;
+            border-radius: 10px;
+            height: 200px;
+            margin: 20px auto;
+            overflow: hidden;
+            background: #faf1e0;
+        }
+        .product-carousel {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+        }
+        .product-image-item {
+            flex: 0 0 100%;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            border: 1px solid #E59400;
+            display: flex;
+            align-items: flex-end;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        .product-image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        @media (max-width: 768px) {
+            .product-carousel-container {
+                max-width: 100%;
+                padding: 0 10px;
+            }
+            .product-image-item {
+                height: 150px;
+            }
+        }
+        @media (max-width: 480px) {
+            .product-carousel-container {
+                height: 120px;
+            }
+            .product-image-item {
+                height: 100px;
+            }
+        }
+        /* PRODUCTS Stile per il popup dei filtri */
+        .filter-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .filter-popup.show {
+            display: flex;
+        }
+        .filter-popup-content {
+            background: #000000;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 750px;
+            width: 100%;
+            position: relative;
+        }
+        .close-popup {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
 
-/* Dealers Section */
+/* ===========================================
+   PRDUCT DETAIL STYLES SECTION
+   =========================================== */
+
+/* Stili per il carosello delle immagini */
+        .carousel {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .carousel-inner {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+        .carousel-item {
+            display: none;
+            position: relative;
+            width: 100%;
+        }
+        .carousel-item.active {
+            display: block;
+        }
+        .carousel-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .carousel-thumbnails {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        .carousel-thumbnails img {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            margin: 0 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border 0.3s ease;
+        }
+        .carousel-thumbnails img.active {
+            border: 2px solid #F5A623;
+        }
+        .carousel-control-prev, .carousel-control-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: #FFFFFF;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 1;
+        }
+        .carousel-control-prev {
+            left: 10px;
+        }
+        .carousel-control-next {
+            right: 10px;
+        }
+        /* Stili per la pagina dei dettagli del prodotto */
+        .product-details-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            margin-top: 100px;
+        }
+        .product-details-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .product-image-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        .highlight-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .product-info-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        .product-info-container h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .product-info-container .price {
+            font-size: 1.5rem;
+            color: #F5A623;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .product-info-container p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .product-info-container .detail-label {
+            font-weight: bold;
+            color: #333;
+        }
+        .button-group {
+            margin-top: 20px;
+        }
+        .button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1rem;
+            transition: transform 0.2s ease, background 0.2s ease;
+            cursor: pointer;
+        }
+        .button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #E59400, #F5A623);
+        }
+        @media (max-width: 768px) {
+            .product-details-container {
+                flex-direction: column;
+            }
+            .product-image-container,
+            .product-info-container {
+                min-width: 100%;
+            }
+        }
+
+/*--------------------------------------------*/
+
+/* ===========================================
+   DEALERS STYLES SECTION
+   =========================================== */
+
+
 .dealers-section {
     padding: 20px;
     max-width: 1200px;
@@ -1549,6 +1801,236 @@ main,
     color: #666;
 }
 
+        .dealer-carousel-container {
+            position: relative;
+            max-width: 600px;
+            border-radius: 15px;
+            height: 300px;
+            margin: 20px auto;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 2px solid #F5A623;
+            padding: 0; 
+        }
+
+        .dealer-carousel {
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            width: 100%;
+            height: 100%; 
+        }
+
+        .dealer-image-item {
+            flex: 0 0 100%;
+            height: 100%; 
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            border: none; 
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .dealer-image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+            filter: brightness(0.9);
+            margin-left: 140px;
+        }
+
+        .dealer-image-item:hover img {
+            transform: scale(1.05);
+            filter: brightness(1);
+        }
+
+       
+        .dealer-image-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.3) 100%);
+            pointer-events: none;
+            border-radius: 15px;
+        }
+
+        
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 15px;
+            pointer-events: none;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+
+        .carousel-btn {
+            background: linear-gradient(135deg, rgba(245, 166, 35, 0.9), rgba(229, 148, 0, 0.9));
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
+            backdrop-filter: blur(10px);
+            opacity: 0.8;
+        }
+
+        .carousel-btn:hover {
+            background: linear-gradient(135deg, #F5A623, #E59400);
+            transform: scale(1.1);
+            opacity: 1;
+            box-shadow: 0 6px 20px rgba(245, 166, 35, 0.6);
+        }
+
+        .carousel-btn i {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+       
+        .dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .dot:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: scale(1.2);
+        }
+
+        .dot.active {
+            background: #F5A623;
+            transform: scale(1.3);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(245, 166, 35, 0.5);
+        }
+
+        
+        .image-counter {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        
+        .no-image-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #6c757d;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border-radius: 15px;
+        }
+
+        .no-image-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        
+        @media (max-width: 768px) {
+            .dealer-carousel-container {
+                max-width: 100%;
+                height: 250px;
+                margin: 15px auto;
+                border-radius: 12px;
+            }
+
+            .carousel-btn {
+                width: 40px;
+                height: 40px;
+            }
+
+            .carousel-btn i {
+                font-size: 1rem;
+            }
+
+            .dot {
+                width: 10px;
+                height: 10px;
+            }
+
+            .dots {
+                gap: 8px;
+                bottom: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dealer-carousel-container {
+                height: 200px;
+                border-radius: 10px;
+                margin: 10px auto;
+            }
+
+            .carousel-btn {
+                width: 35px;
+                height: 35px;
+            }
+
+            .carousel-btn i {
+                font-size: 0.9rem;
+            }
+
+            .carousel-nav {
+                padding: 0 10px;
+            }
+
+            .dots {
+                bottom: 8px;
+            }
+        }
+
 .navigate-button {
     display: inline-block;
     margin-top: 10px;
@@ -1614,977 +2096,6 @@ main,
     background-color: #e69500;
 }
 
-/* Wrapper (Login, Register, Account Pages) */
-.wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: url('/image/account.jpg') no-repeat center center / cover;
-    padding-top: 60px;
-}
-
-.wrapper .auth-form {
-    border: 2px solid #F5A623;
-    border-radius: 10px;
-    padding: 30px;
-    background: rgba(0, 0, 0, 0.8);
-    max-width: 400px;
-    width: 90%;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.wrapper form h2 {
-    color: #F5A623;
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 30px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-align: center;
-    font-family: "Bungee Spice", sans-serif;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.input-field {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.input-field label {
-    color: #FFFFFF;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    width: 100%;
-    text-align: center;
-}
-
-.wrapper form .input-field input {
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-    padding: 10px 0;
-    font-size: 16px;
-    color: #FFFFFF;
-    outline: none;
-    transition: border-color 0.3s ease;
-    width: 80%;
-    text-align: center;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.input-field input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 14px;
-    text-align: center;
-}
-
-.wrapper form .input-field input:focus {
-    border-bottom-color: #FFFFFF;
-}
-
-.forget {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10px;
-    width: 100%;
-}
-
-.forget label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    color: #FFFFFF;
-    font-size: 14px;
-}
-
-.forget label p {
-    margin: 0;
-}
-
-.forget input[type="checkbox"] {
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 3px;
-    cursor: pointer;
-    position: relative;
-}
-
-.forget input[type="checkbox"]:checked {
-    background: #F5A623;
-    border-color: #F5A623;
-}
-
-.forget input[type="checkbox"]:checked::after {
-    content: '\f00c';
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    color: #FFFFFF;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 10px;
-}
-
-.forget a {
-    color: #F5A623;
-    font-size: 14px;
-    text-decoration: none;
-    margin-left: 10px;
-}
-
-.forget a:hover {
-    text-decoration: underline;
-}
-
-.wrapper form button {
-    background: linear-gradient(45deg, #F5A623, #E59400);
-    border: none;
-    border-radius: 5px;
-    padding: 10px;
-    color: #FFFFFF;
-    font-size: 16px;
-    font-weight: 600;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-    width: 80%;
-    margin: 20px auto 0;
-}
-
-.wrapper form button:hover {
-    background: linear-gradient(45deg, #E59400, #D68F1D);
-    transform: translateY(-2px);
-}
-
-.login,
-.register {
-    margin-top: 20px;
-    color: #FFFFFF;
-    font-size: 14px;
-    text-align: center;
-}
-
-.login a,
-.register a {
-    color: #F5A623;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.login a:hover,
-.register a:hover {
-    text-decoration: underline;
-}
-
-.wrapper .icon-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 24px;
-    color: #F5A623;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.wrapper .icon-button:hover {
-    color: #E59400;
-}
-
-/* Account Page */
-.account-container {
-    display: flex;
-    justify-content: space-between;
-    max-width: 1000px;
-    width: 90%;
-    gap: 20px;
-    margin: 0 auto;
-    flex-wrap: wrap; /* Permette di adattarsi meglio su schermi piccoli */
-}
-
-.account-details-container {
-    background: rgba(0, 0, 0, 0.6); /* Leggermente più opaco per maggiore contrasto */
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    padding: 30px;
-    width: 50%;
-    text-align: left;
-    color: #FFFFFF;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    min-width: 300px; /* Assicura che non si restringa troppo su schermi piccoli */
-}
-
-.account-details-container h2 {
-    font-family: 'Bungee Spice', sans-serif;
-    font-size: 2rem;
-    color: #F5A623;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    margin-bottom: 20px;
-    font-weight: 700;
-}
-
-.account-details p {
-    font-size: 1rem;
-    margin-bottom: 10px;
-    line-height: 1.5;
-    opacity: 0.9; /* Leggermente più chiaro per migliorare la leggibilità */
-}
-
-.account-details p strong {
-    color: #F5A623;
-    font-weight: 600;
-}
-
-
-
-.account-actions {
-    display: flex;
-    justify-content: center; /* Centra i bottoni */
-    gap: 20px; /* Spaziatura tra i bottoni */
-    margin-top: 20px;
-    flex-wrap: wrap; /* Permette ai bottoni di andare a capo su schermi piccoli */
-}
-
-/* Stili aggiornati per i pulsanti */
-.edit-button, .logout-button {
-    font-size: 1rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: #FFFFFF;
-    font-weight: 600;
-    text-transform: uppercase;
-    cursor: pointer;
-    background: linear-gradient(45deg, #F5A623, #E59400);
-    padding: 0 20px;
-    height: 40px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    animation: fadeIn 0.5s ease-out forwards;
-    min-width: 120px;
-    box-sizing: border-box;
-    line-height: 1.5;
-    border: none;
-}
-.edit-button:hover, .logout-button:hover {
-    background: linear-gradient(45deg, #E59400, #F5A623);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-.edit-button:active, .logout-button:active {
-    transform: scale(0.95);
-}
-.edit-button:focus, .logout-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.5);
-}
-.logout-form {
-    display: inline-block;
-    margin: 0;
-    padding: 0;
-}
-.account-actions {
-    display: flex;
-    justify-content: flex-start;
-    gap: 15px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-.delete-account-button {
-    background: linear-gradient(45deg, #ff4d4d, #cc0000);
-    color: #FFFFFF;
-    padding: 0 20px;
-    height: 40px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    transition: background 0.2s ease, transform 0.2s ease;
-    min-width: 120px;
-    box-sizing: border-box;
-    line-height: 1.5;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-.delete-account-button:hover {
-    background: linear-gradient(45deg, #cc0000, #ff4d4d);
-    transform: translateY(-2px);
-}
-/* Stili per il form di modifica (invariati) */
-.edit-form-container {
-    width: 100%;
-}
-.edit-form .form-group {
-    margin-bottom: 20px;
-    text-align: left;
-}
-.edit-form .form-group label {
-    display: block;
-    font-size: 0.9rem;
-    color: #FFFFFF;
-    font-weight: 600;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    transition: color 0.3s ease;
-}
-.edit-form .form-group input,
-.edit-form .form-group textarea {
-    width: 100%;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 5px;
-    font-size: 1rem;
-    color: #FFFFFF;
-    outline: none;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-.edit-form .form-group input:focus,
-.edit-form .form-group textarea:focus {
-    border-color: #F5A623;
-    box-shadow: 0 0 8px rgba(245, 166, 35, 0.3);
-}
-.edit-form .form-group textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-.form-actions {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-}
-.save-button,
-.cancel-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-}
-
-.save-button {
-    background: linear-gradient(45deg, #F5A623, #E59400); /* Gradiente arancione */
-    color: #FFFFFF;
-}
-
-.save-button:hover {
-    background: linear-gradient(45deg, #E59400, #D68F1D);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.cancel-button {
-    background: linear-gradient(45deg, #757575, #616161); /* Gradiente grigio */
-    color: #FFFFFF;
-    text-decoration: none;
-}
-
-.cancel-button:hover {
-    background: linear-gradient(45deg, #616161, #4e4e4e);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-
-/* Pulsante Cancella Account */
-.delete-account-button {
-    font-size: 1rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: #FFFFFF;
-    font-weight: 600;
-    text-transform: uppercase;
-    cursor: pointer;
-    background: linear-gradient(45deg, #D32F2F, #B71C1C);
-    padding: 10px 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    animation: fadeIn 0.5s ease-out forwards;
-    min-width: 120px;
-}
-
-.delete-account-button:hover {
-    background: linear-gradient(45deg, #B71C1C, #9A0007);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.delete-account-button:active {
-    transform: scale(0.95);
-}
-
-.delete-account-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.5);
-}
-
-/* Popup per la cancellazione dell'account */
-.delete-account-popup {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
-
-.delete-account-popup-content {
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 30px;
-    border-radius: 10px;
-    max-width: 500px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    position: relative;
-    color: #FFFFFF;
-    text-align: center;
-}
-
-.delete-account-popup-content h3 {
-    font-size: 1.8rem;
-    color: #F5A623;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    margin-bottom: 20px;
-}
-
-.delete-account-popup-content p {
-    font-size: 1rem;
-    margin-bottom: 20px;
-}
-
-.delete-account-popup-content .form-group {
-    margin-bottom: 20px;
-}
-
-.delete-account-popup-content .form-group label {
-    display: block;
-    font-size: 0.9rem;
-    color: #FFFFFF;
-    font-weight: 600;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-}
-.delete-account-popup-content .form-group input {
-    width: 100%;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 5px;
-    font-size: 1rem;
-    color: #FFFFFF;
-    outline: none;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.delete-account-popup-content .form-group input:focus {
-    border-color: #F5A623;
-    box-shadow: 0 0 8px rgba(245, 166, 35, 0.3);
-}
-
-.delete-account-popup-content .form-actions {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.confirm-delete-button,
-.cancel-delete-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-}
-
-.confirm-delete-button {
-    background: linear-gradient(45deg, #D32F2F, #B71C1C);
-    color: #FFFFFF;
-}
-
-.confirm-delete-button:hover {
-    background: linear-gradient(45deg, #B71C1C, #9A0007);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.cancel-delete-button {
-    background: linear-gradient(45deg, #757575, #616161);
-    color: #FFFFFF;
-}
-
-.cancel-delete-button:hover {
-    background: linear-gradient(45deg, #616161, #4e4e4e);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.close-popup {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 28px;
-    cursor: pointer;
-    color: #F5A623;
-    transition: color 0.3s ease;
-}
-
-.close-popup:hover {
-    color: #E59400;
-}
-
-/* Responsive per il popup */
-@media (max-width: 768px) {
-    .delete-account-popup-content {
-        padding: 20px;
-    }
-    .delete-account-popup-content h3 {
-        font-size: 1.5rem;
-    }
-    .delete-account-popup-content p {
-        font-size: 0.9rem;
-    }
-    .confirm-delete-button,
-    .cancel-delete-button {
-        padding: 8px 15px;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .delete-account-popup-content {
-        padding: 15px;
-    }
-    .delete-account-popup-content h3 {
-        font-size: 1.3rem;
-    }
-    .delete-account-popup-content p {
-        font-size: 0.85rem;
-    }
-    .confirm-delete-button,
-    .cancel-delete-button {
-        padding: 6px 12px;
-        font-size: 0.85rem;
-    }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .account-container {
-        flex-direction: column;
-        align-items: center;
-    }
-    .account-details-container {
-        width: 90%;
-        padding: 20px;
-    }
-    .account-details-container h2 {
-        font-size: 1.8rem;
-    }
-    .account-details p {
-        font-size: 0.95rem;
-    }
-    .account-actions {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-    .edit-button,
-    .logout-button {
-        width: 100%;
-        max-width: 200px;
-        padding: 8px 15px;
-        font-size: 0.9rem;
-    }
-    .save-button,
-    .cancel-button {
-        padding: 8px 15px;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .account-details-container {
-        padding: 15px;
-    }
-    .account-details-container h2 {
-        font-size: 1.5rem;
-    }
-    .account-details p {
-        font-size: 0.9rem;
-    }
-    .edit-button,
-    .logout-button {
-        padding: 6px 12px;
-        font-size: 0.85rem;
-    }
-    .save-button,
-    .cancel-button {
-        padding: 6px 12px;
-        font-size: 0.85rem;
-    }
-}
-
-/* Subscriptions Container */
-.subscriptions-container {
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    padding: 40px;
-    max-width: 1200px;
-    color: #FFFFFF;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-
-
-@supports not (backdrop-filter: blur(10px)) {
-    .subscriptions-container {
-        background: rgba(0, 0, 0, 0.8);
-    }
-}
-
-.subscriptions-container h2 {
-    font-family: 'Bungee Spice', sans-serif;
-    font-size: 2.5rem;
-    color: #F5A623;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    margin-bottom: 30px;
-    text-align: center;
-}
-
-.subscriptions-container h3 {
-    font-size: 1.8rem;
-    color: #FFFFFF;
-    margin-bottom: 20px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.active-subscriptions ul {
-    list-style: none;
-    padding: 0;
-}
-
-.active-subscriptions li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.active-subscriptions li:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-}
-
-.active-subscriptions li strong {
-    color: #F5A623;
-    font-weight: 600;
-}
-
-.active-subscriptions li span {
-    color: #FFFFFF;
-    font-size: 1rem;
-}
-.cancel-subscription-button {
-    background: linear-gradient(45deg, #D32F2F, #B71C1C);
-    color: #FFFFFF;
-    padding: 8px 16px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.cancel-subscription-button:hover {
-    background: linear-gradient(45deg, #B71C1C, #9A0007);
-    transform: translateY(-2px);
-}
-
-.available-subscriptions {
-    overflow-x: auto;
-    padding-bottom: 10px;
-    text-align: center;
-}
-
-.available-subscriptions {
-    overflow-x: auto;
-    padding-bottom: 10px;
-    text-align: center;
-}
-
-.subscription-boxes {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 20px;
-    overflow-x: auto;
-    padding: 0 40px 20px 40px; /* Aumentato il padding sinistro per il primo elemento */
-    scrollbar-width: thin;
-    scrollbar-color: #F5A623 rgba(255, 255, 255, 0.2);
-    justify-content: flex-start;
-    position: relative;
-    /* Aggiunto padding extra per garantire visibilità */
-    padding-left: 10px; /* Padding extra a sinistra per il primo elemento */
-}
-
-.subscription-boxes::-webkit-scrollbar {
-    height: 8px;
-}
-
-.subscription-boxes::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    margin: 40px;
-}
-
-.subscription-boxes::-webkit-scrollbar-thumb {
-    background: #F5A623;
-    border-radius: 4px;
-}
-
-.subscription-boxes::-webkit-scrollbar-thumb:hover {
-    background: #E59400;
-}
-
-.subscription-box {
-    flex: 0 0 300px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    padding: 25px;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Assicura che il primo e l'ultimo box siano visibili */
-.subscription-box:first-child {
-    margin-left: 20px; /* Margine extra per il primo elemento */
-}
-
-.subscription-box:last-child {
-    margin-right: 20px; /* Margine extra per l'ultimo elemento */
-}
-
-.subscription-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    background: rgba(255, 255, 255, 0.15);
-}
-
-.subscription-box h4 {
-    font-family: 'Bungee Spice', sans-serif;
-    font-size: 1.6rem;
-    color: #ffffff;
-    margin-bottom: 15px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.subscription-box p {
-    font-size: 0.95rem;
-    color: #F5A623;
-    margin-bottom: 50px;
-    min-height: 60px;
-}
-
-.subscription-box p s {
-    color: #999999;
-    margin-right: 10px;
-}
-
-.subscription-box p span {
-    color: #ffffff;
-    font-weight: 600;
-}
-
-.subscribe-button {
-    background-color: #28a745;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 1em;
-    transition: background-color 0.3s;
-    margin-top: 30px;
-
-}
-
-.subscribe-button:hover {
-    background-color: #218838;
-}
-
-/* Responsive Subscriptions */
-@media (max-width: 1024px) {
-    .subscriptions-container {
-        padding: 30px;
-        margin: 75px auto;
-    }
-    .subscriptions-container h2 {
-        font-size: 2.2rem;
-    }
-    .subscriptions-container h3 {
-        font-size: 1.6rem;
-    }
-    .subscription-box {
-        flex: 0 0 280px;
-        padding: 20px;
-    }
-    .subscription-box h4 {
-        font-size: 1.4rem;
-    }
-    .subscription-box p {
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .subscriptions-container {
-        padding: 20px;
-        width: 90%;
-    }
-    .subscriptions-container h2 {
-        font-size: 1.8rem;
-    }
-    .subscriptions-container h3 {
-        font-size: 1.4rem;
-    }
-    .active-subscriptions li {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 10px;
-    }
-    .cancel-subscription-button {
-        width: 100%;
-        text-align: center;
-    }
-    .subscription-box {
-        flex: 0 0 260px;
-        padding: 15px;
-    }
-    .subscription-box h4 {
-        font-size: 1.3rem;
-    }
-    .subscription-box p {
-        font-size: 0.85rem;
-        min-height: 50px;
-    }
-}
-
-@media (max-width: 480px) {
-    .subscriptions-container {
-        padding: 15px;
-    }
-    .subscriptions-container h2 {
-        font-size: 1.5rem;
-    }
-    .subscriptions-container h3 {
-        font-size: 1.2rem;
-    }
-    .active-subscriptions li {
-        font-size: 0.9rem;
-    }
-    .subscription-box {
-        flex: 0 0 240px;
-        padding: 10px;
-    }
-    .subscription-box h4 {
-        font-size: 1.2rem;
-    }
-    .subscription-box p {
-        font-size: 0.8rem;
-        min-height: 40px;
-    }
-    .subscribe-button {
-        font-size: 0.9rem;
-        padding: 8px;
-
-    }
-}
-
-.back-button {
-    display: inline-flex;
-    align-items: center;
-    margin-top: 30px;
-    padding: 10px 20px;
-    background-color: #003087;
-    color: #FFFFFF;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
-}
-
-.back-button:hover {
-    background-color: #002066;
-}
-
-.back-button i {
-    margin-right: 8px;
-}
-
-/* Responsive Design */
-@media (max-width: 1200px) {
-    .account-container {
-        gap: 15px;
-    }
-    .account-details-container,
-    .subscriptions-container {
-        width: 50%;
-        padding: 25px;
-    }
-    .account-details-container h2,
-    .subscriptions-container h2 {
-        font-size: 1.8rem;
-    }
-    .account-details p,
-    .subscriptions-container p,
-    .subscriptions-container ul li {
-        font-size: 0.95rem;
-    }
-}
 @media (max-width: 1024px) {
     .hero-content {
         padding: 25px 40px;
@@ -2646,23 +2157,6 @@ main,
         font-size: 2rem;
 
     }
-    .account-container {
-        flex-direction: column;
-        align-items: center;
-    }
-    .account-details-container,
-    .subscriptions-container {
-        width: 90%;
-        padding: clamp(15px, 5vw, 20px);
-    }
-    .account-details-container h2,
-    .subscriptions-container h2 {
-        font-size: clamp(1.3rem, 5vw, 1.5rem);
-    }
-    .account-actions {
-        flex-direction: column;
-        align-items: flex-start;
-    }
 }
 
 @media (max-width: 480px) {
@@ -2675,15 +2169,9 @@ main,
     .hero-subtitle {
         font-size: clamp(0.8rem, 3.5vw, 0.9rem);
     }
-    .account-details-container,
-    .subscriptions-container {
-        padding: clamp(10px, 4vw, 15px);
-    }
-    .account-details-container h2,
-    .subscriptions-container h2 {
-        font-size: clamp(1.1rem, 4.5vw, 1.3rem);
-    }
 }
+
+
 
 /* Animations */
 .animated-section {
@@ -2792,12 +2280,12 @@ main,
     }
     .dealer-details-column .hero-content .input-field.display-field span {
         padding: 12px 12px 12px 35px;
-        font-size: 18px; /* Aumentato per schermi grandi */
+        font-size: 18px; 
         min-height: 40px;
         line-height: 1.5;
     }
     .dealer-details-column .hero-content .input-field.display-field label {
-        font-size: 16px; /* Aumentato per schermi grandi */
+        font-size: 16px; 
         top: -14px;
         left: 14px;
         padding: 0 8px;
@@ -2928,107 +2416,109 @@ main,
     }
 }
 
+
+
 /* Image Container */
 /* Aggiornamenti per il contenitore dell'immagine */
 .dealer-details-column .image-container {
     width: 100%;
-    max-width: 500px; /* Aumentato ulteriormente */
+    max-width: 500px; 
     margin: 0 auto;
 }
 
 .dealer-details-column .image-container img {
-    width: 100%; /* Adatta la larghezza al contenitore */
-    height: auto; /* Mantiene le proporzioni */
+    width: 100%; 
+    height: auto; 
     object-fit: cover;
     border-radius: 8px;
-    margin-right: 0; /* Rimosso margine eccessivo */
+    margin-right: 0; 
 }
 
 /* Media Query per Schermi Molto Grandi */
 @media (min-width: 1400px) {
     .dealer-details-column .hero-content,
     .add-car-column .hero-content {
-        max-width: 750px; /* Aumentato */
-        padding: 35px 50px; /* Aumentato */
+        max-width: 750px; 
+        padding: 35px 50px; 
     }
     .dealer-details-column .image-container {
-        max-width: 500px; /* Aumentato ulteriormente */
+        max-width: 500px;
     }
     .dealer-details-column .image-container img {
-        height: 250px; /* Aumentato ulteriormente */
+        height: 250px; 
     }
     .dealer-details-column .hero-content .input-field.display-field {
-        padding: 14px; /* Aumentato */
+        padding: 14px; 
     }
     .dealer-details-column .hero-content .input-field.display-field span {
-        padding: 12px 12px 12px 35px; /* Aumentato */
-        font-size: 16px; /* Aumentato */
-        min-height: 40px; /* Aumentato */
+        padding: 12px 12px 12px 35px; 
+        font-size: 16px; 
+        min-height: 40px;
     }
 }
 
 @media (max-width: 1024px) {
     .dealer-details-column .hero-content,
     .add-car-column .hero-content {
-        padding: 30px 40px; /* Aumentato */
-        max-width: 650px; /* Aumentato */
+        padding: 30px 40px; 
+        max-width: 650px; 
     }
     .dealer-details-column .image-container {
-        max-width: 300px; /* Aumentato ulteriormente */
+        max-width: 300px; 
     }
     .dealer-details-column .image-container img {
-        height: 180px; /* Aumentato ulteriormente */
+        height: 180px; 
     }
 }
 
 @media (max-width: 768px) {
     .dealer-details-column .hero-content,
     .add-car-column .hero-content {
-        padding: 25px 35px; /* Aumentato */
+        padding: 25px 35px;
         max-width: 100%;
     }
     .dealer-details-column .hero-content .input-field.display-field {
-        padding: 12px; /* Aumentato */
+        padding: 12px; 
     }
     .dealer-details-column .hero-content .input-field.display-field span {
-        padding: 10px 10px 10px 30px; /* Aumentato */
-        font-size: 16px; /* Aumentato */
-        min-height: 36px; /* Aumentato */
+        padding: 10px 10px 10px 30px; 
+        font-size: 16px; 
+        min-height: 36px; 
     }
     .dealer-details-column .hero-content .input-field.display-field label {
-        font-size: 13px; /* Aumentato */
+        font-size: 13px; 
     }
     .dealer-details-column .image-container {
-        max-width: 260px; /* Aumentato ulteriormente */
+        max-width: 260px; 
     }
     .dealer-details-column .image-container img {
-        height: 160px; /* Aumentato ulteriormente */
+        height: 160px;
     }
 }
 
 @media (max-width: 480px) {
     .dealer-details-column .hero-content,
     .add-car-column .hero-content {
-        padding: 20px 25px; /* Aumentato */
+        padding: 20px 25px; 
     }
     .dealer-details-column .hero-content .input-field.display-field {
-        padding: 10px; /* Aumentato */
-        margin-bottom: 14px; /* Aumentato */
+        padding: 10px; 
+        margin-bottom: 14px; 
     }
     .dealer-details-column .hero-content .input-field.display-field span {
-        padding: 8px 8px 8px 25px; /* Aumentato */
-        font-size: 15px; /* Aumentato */
-        min-height: 34px; /* Aumentato */
+        padding: 8px 8px 8px 25px; 
+        font-size: 15px; 
+        min-height: 34px; 
     }
     .dealer-details-column .hero-content .input-field.display-field label {
-        font-size: 12px; /* Aumentato */
+        font-size: 12px; 
         left: 8px;
     }
     .dealer-details-column .image-container {
-        max-width: 230px; /* Aumentato ulteriormente */
+        max-width: 230px; 
     }
     .dealer-details-column .image-container img {
-        height: 140px; /* Aumentato ulteriormente */
+        height: 140px; 
     }
 }
 
@@ -3080,6 +2570,463 @@ main,
         padding: 15px 20px;
     }
 }
+
+/* ===========================================
+   DEALER DETAIL STYLES SECTION
+   =========================================== */
+
+   /* Stili per la pagina */
+    body {
+      background-color: #F5F6F5;
+      margin: 0;
+      font-family: 'Open Sans', sans-serif;
+      color: #333;
+    }
+    .dealer-details-section {
+      padding: 40px 20px;
+      max-width: 1200px;
+      margin: 100px auto 0;
+      background-color: #F5F6F5;
+    }
+    .dealer-content {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    .dealer-content h2 {
+      font-family: 'Bungee Spice', sans-serif;
+      font-size: 2.8rem;
+      color: #F5A623;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .dealer-content .main-image-container {
+      width: 100%;
+      max-height: 400px;
+      margin-bottom: 20px;
+    }
+    .dealer-content .main-image-container img {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .dealer-content .thumbnails-container {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .dealer-content .thumbnails-container img {
+      width: 120px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .dealer-content .thumbnails-container img:hover {
+      transform: scale(1.05);
+    }
+    .dealer-content .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .detail-item {
+      background: #FFFFFF;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .detail-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .detail-item i {
+      color: #F5A623;
+      font-size: 1.2rem;
+      margin-right: 8px;
+    }
+    .detail-item span, .detail-item a {
+      font-size: 0.95rem;
+      color: #333;
+      font-weight: 600;
+    }
+    .detail-item a {
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .detail-item a:hover {
+      color: #F5A623;
+    }
+    .navigate-button {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: linear-gradient(45deg, #F5A623, #E59400);
+      color: #FFFFFF;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .navigate-button:hover {
+      background: linear-gradient(45deg, #E59400, #D68F1D);
+      transform: translateY(-2px);
+    }
+    .navigate-button i {
+      margin-right: 8px;
+    }
+    /* Stili per la sezione auto */
+    .cars-section {
+      margin-top: 40px;
+    }
+    .cars-section h2 {
+      font-family: 'Bungee Spice', sans-serif;
+      font-size: 2.2rem;
+      color: #003087;
+      text-align: center;
+      margin-bottom: 30px;
+      text-transform: uppercase;
+    }
+    .no-products {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #666;
+      margin: 20px 0;
+    }
+    .car-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 33.3%);
+      gap: 25px;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    @media (max-width: 1024px) {
+      .car-grid {
+        grid-template-columns: repeat(2, 50%);
+      }
+    }
+    @media (max-width: 768px) {
+      .car-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .car-card {
+      background: #FFFFFF;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+    .car-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    .car-card.highlighted {
+      border: 2px solid #FFD700;
+    }
+    .car-image {
+      position: relative;
+      width: 100%;
+      height: 160px;
+    }
+    .car-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .car-card:hover .car-image img {
+      transform: scale(1.03);
+    }
+    .car-image .highlight-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #FFD700;
+      color: #333;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .car-info {
+      padding: 15px;
+      text-align: center;
+    }
+    .car-info h4 {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #003087;
+      margin-bottom: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .car-info .price {
+      font-size: 1.2rem;
+      color: #F5A623;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .car-info .details {
+      font-size: 0.9rem;
+      color: #666;
+      line-height: 1.4;
+    }
+    .car-actions {
+      padding: 10px;
+      text-align: center;
+    }
+    .car-actions .modern-button {
+      background: linear-gradient(45deg, #F5A623, #E59400);
+      color: #FFFFFF;
+      padding: 10px 50px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .car-actions .modern-button:hover {
+      background: linear-gradient(45deg, #E59400, #D68F1D);
+      transform: translateY(-2px);
+    }
+    /* Stili per il popup */
+    .car-details-popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(3px);
+    }
+    .car-details-popup.show {
+      display: flex;
+    }
+    .car-details-popup-content {
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 1000px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      position: relative;
+      animation: fadeIn 0.3s ease-in-out;
+      scrollbar-width: none;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .car-details-popup-content h3 {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #003087;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .car-details-popup-content .carousel {
+      position: relative;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .car-details-popup-content .carousel-inner {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+    }
+    .car-details-popup-content .carousel-item {
+      display: none;
+      position: relative;
+      width: 100%;
+    }
+    .car-details-popup-content .carousel-item.active {
+      display: block;
+    }
+    .car-details-popup-content .carousel-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .car-details-popup-content .carousel-thumbnails {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .car-details-popup-content .carousel-thumbnails img {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      margin: 0 5px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border 0.3s ease;
+    }
+    .car-details-popup-content .carousel-thumbnails img.active {
+      border: 2px solid #F5A623;
+    }
+    .car-details-popup-content .carousel-control-prev, .car-details-popup-content .carousel-control-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: #FFFFFF;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      z-index: 1;
+    }
+    .car-details-popup-content .carousel-control-prev {
+      left: 10px;
+    }
+    .car-details-popup-content .carousel-control-next {
+      right: 10px;
+    }
+    .car-details-popup-content .detail-field {
+      margin-bottom: 12px;
+    }
+    .car-details-popup-content .detail-field label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #F5A623;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+    .car-details-popup-content .detail-field label i {
+      color: #003087;
+    }
+    .car-details-popup-content .detail-field p {
+      font-size: 0.95rem;
+      color: #333;
+      margin: 0;
+      line-height: 1.4;
+    }
+    .close-popup {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      color: #F5A623;
+      cursor: pointer;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+    .close-popup:hover {
+      color: #E59400;
+      transform: scale(1.1);
+    }
+    .car-details-popup-content::-webkit-scrollbar {
+      width: 5px;
+    }
+    .car-details-popup-content::-webkit-scrollbar-track {
+      background: #F5F6F5;
+      border-radius: 3px;
+    }
+    .car-details-popup-content::-webkit-scrollbar-thumb {
+      background: #F5A623;
+      border-radius: 3px;
+    }
+    .car-details-popup-content::-webkit-scrollbar-thumb:hover {
+      background: #E59400;
+    }
+    /* Responsive popup */
+    @media (max-width: 768px) {
+      .car-details-popup-content {
+        padding: 20px;
+        max-width: 90%;
+      }
+      .car-details-popup-content h3 {
+        font-size: 1.5rem;
+      }
+      .car-details-popup-content .detail-field label {
+        font-size: 0.85rem;
+      }
+      .car-details-popup-content .detail-field p {
+        font-size: 0.9rem;
+      }
+    }
+    @media (max-width: 480px) {
+      .car-details-popup-content {
+        padding: 15px;
+      }
+      .car-details-popup-content h3 {
+        font-size: 1.3rem;
+      }
+      .car-details-popup-content .detail-field label {
+        font-size: 0.8rem;
+      }
+      .car-details-popup-content .detail-field p {
+        font-size: 0.85rem;
+      }
+    }
+    /* Responsive layout */
+    @media (max-width: 1024px) {
+      .car-grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+      .dealer-content h2 {
+        font-size: 2.5rem;
+      }
+      .cars-section h2 {
+        font-size: 2rem;
+      }
+    }
+    @media (max-width: 768px) {
+      .car-grid {
+        grid-template-columns: 1fr;
+      }
+      .dealer-content .details-grid {
+        grid-template-columns: 1fr;
+      }
+      .dealer-content .main-image-container {
+        max-height: 300px;
+      }
+      .dealer-content .thumbnails-container {
+        flex-wrap: wrap;
+      }
+      .car-image {
+        height: 140px;
+      }
+      .car-info h4 {
+        font-size: 1.2rem;
+      }
+      .car-info .price {
+        font-size: 1.1rem;
+      }
+      .car-info .details {
+        font-size: 0.85rem;
+      }
+    }
+
+/*--------------------------------------------*/
 
 /* Additional Styles */
 .hero-section.private-edit-hero {
@@ -3319,3 +3266,436 @@ main,
         height: 36px;
     }
 }
+
+/* ===========================================
+   CART STYLES SECTION
+   =========================================== */
+
+   .cart-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            margin-top: 80px;
+            font-family: Arial, sans-serif;
+        }
+        .cart-items {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .cart-item {
+            display: flex;
+            gap: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .cart-item img {
+            width: 150px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .cart-item-details {
+            flex: 1;
+        }
+        .cart-item-details h3 {
+            margin: 0 0 10px;
+            font-size: 1.2em;
+            color: #333;
+        }
+        .cart-item-details p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .remove-button {
+            background-color: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .remove-button:hover {
+            background-color: #c82333;
+        }
+        .cart-summary {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            text-align: right;
+        }
+        .cart-summary p {
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+        .checkout-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+        .checkout-button:hover {
+            background-color: #0056b3;
+        }
+        .price-discounted {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .price-original {
+            text-decoration: line-through;
+            color: #666;
+            margin-right: 10px;
+        }
+
+    /*-----------------------------------*/
+
+/* ===========================================
+   ERROR STYLES SECTION
+=========================================== */
+
+        .error-section {
+            background: rgba(0, 0, 0, 0.5);
+            min-height: 60vh;
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+        .error-content {
+            text-align: center;
+            max-width: 800px;
+            color: #FFFFFF;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        .error-content h2 {
+            font-size: 3rem;
+            color: #F5A623;
+            font-family: 'Bungee Spice', sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin-bottom: 20px;
+        }
+        .error-content p {
+            font-size: 1.2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            line-height: 1.5;
+            margin-bottom: 20px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .error-content .error-code {
+            font-size: 1.5rem;
+            color: #F5A623;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        @media (max-width: 768px) {
+            .error-content h2 {
+                font-size: 2rem;
+            }
+            .error-content p {
+                font-size: 1rem;
+            }
+            .error-content .error-code {
+                font-size: 1.2rem;
+            }
+            .error-content {
+                padding: 20px;
+            }
+        }
+
+    /*-----------------------------------*/
+
+/* ===========================================
+   PAYMENT STYLES SECTION
+=========================================== */
+
+body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .payment-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+        .payment-card:hover {
+            transform: translateY(-5px);
+        }
+        .payment-card h2 {
+            margin: 0 0 20px;
+            font-size: 1.8rem;
+            color: #333;
+            text-align: center;
+        }
+        .total-amount {
+            font-size: 1.2rem;
+            color: #F5A623;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.95rem;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background: #f9f9f9;
+        }
+        .form-group input:focus {
+            border-color: #F5A623;
+            box-shadow: 0 0 8px rgba(245, 166, 35, 0.3);
+            outline: none;
+        }
+        .submit-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #F5A623, #E59400);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .submit-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            .payment-card {
+                padding: 20px;
+            }
+            .payment-card h2 {
+                font-size: 1.5rem;
+            }
+        }
+/*-----------------------------------*/
+
+/* ===========================================
+   SUBSCRIPTIONS STYLES SECTION
+=========================================== */
+
+body {
+            background: linear-gradient(135deg, #f5f6f5, #e9ecef);
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            margin-top: 40px;
+        }
+        .subscriptions-page {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .subscriptions-page h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #222;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .subscriptions-page .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        .active-subscriptions, .available-subscriptions {
+            margin-bottom: 40px;
+        }
+        .active-subscriptions h2, .available-subscriptions h2 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .active-subscriptions ul {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .subscription-item, .subscription-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .subscription-item:hover, .subscription-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .subscription-item h3, .subscription-box h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #222;
+            margin: 0 0 15px 0;
+            text-align: center;
+        }
+        .subscription-item p, .subscription-box p {
+            font-size: 1rem;
+            color: #555;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .subscription-box p span {
+            color: #333333;
+            font-weight: 600;
+        }
+
+        .subscription-item p i, .subscription-box p i {
+            color: #F5A623;
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        .subscription-item .description, .subscription-box .description {
+            color: #333;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .subscription-item .featured-cars, .subscription-box .featured-cars {
+            display: inline-block;
+            background: #F5A623;
+            color: #FFFFFF;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .subscription-box .price s {
+            color: #888;
+            margin-right: 8px;
+        }
+        .subscription-box .price span {
+            color: #F5A623;
+            font-weight: 600;
+        }
+        .auto-renew-warning {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+            color: #FFFFFF;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .subscribe-button, .toggle-auto-renew-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            color: #FFFFFF;
+            text-decoration: none;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 15px 0 0;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            box-shadow: 0 2px 10px rgba(245, 166, 35, 0.4);
+            text-align: center;
+        }
+        .subscribe-button {
+            background: linear-gradient(45deg, #F5A623, #E59400);
+        }
+        .subscribe-button:hover {
+            background: linear-gradient(45deg, #E59400, #F5A623);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.6);
+        }
+        .toggle-auto-renew-button.disable {
+            background: linear-gradient(45deg, #ff4d4d, #cc0000);
+        }
+        .toggle-auto-renew-button.disable:hover {
+            background: linear-gradient(45deg, #cc0000, #ff4d4d);
+            box-shadow: 0 4px 15px rgba(255, 77, 77, 0.6);
+            transform: translateY(-3px);
+        }
+        .toggle-auto-renew-button.enable {
+            background: linear-gradient(45deg, #28a745, #218838);
+        }
+        .toggle-auto-renew-button.enable:hover {
+            background: linear-gradient(45deg, #218838, #28a745);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.6);
+            transform: translateY(-3px);
+        }
+        .subscription-boxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .subscriptions-page {
+                padding: 0 15px;
+            }
+            .subscriptions-page h1 {
+                font-size: 2rem;
+            }
+            .subscriptions-page .subtitle {
+                font-size: 1rem;
+            }
+            .active-subscriptions h2, .available-subscriptions h2 {
+                font-size: 1.5rem;
+            }
+            .subscription-boxes {
+                grid-template-columns: 1fr;
+            }
+        }
+
+/*-----------------------------------*/
