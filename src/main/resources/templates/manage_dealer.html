@@ -617,23 +617,16 @@
     </div>
 </footer>
 <script src="/js/dropdown.js"></script>
+<script src="/js/popup-manager.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔧 Inizializzazione manage_dealer.html');
+
     // Elements
     const editDealerButton = document.getElementById('edit-dealer-button');
-    const editDealerModal = document.getElementById('edit-dealer-modal');
-    const closeEditDealerButton = document.getElementById('close-edit-dealer');
-    const editDealerForm = document.getElementById('edit-dealer-form');
-
     const addCarButton = document.getElementById('add-car-button');
-    const addCarModal = document.getElementById('add-car-modal');
-    const closeAddCarButton = document.getElementById('close-add-car');
-    const addCarForm = document.getElementById('dealer-add-car-form');
-
-    const editProductModal = document.getElementById('edit-product-modal');
-    const closeEditProductButton = document.getElementById('close-edit-product');
-    const editProductForm = document.getElementById('edit-product-form');
-
+    const viewQuotesButton = document.getElementById('view-quotes-button');
+    const deleteDealerButton = document.getElementById('delete-dealer-button');
     const toast = document.getElementById('toast');
     const isFeaturedCheckbox = document.getElementById('dealer-car-highlighted');
     const featureDurationField = document.getElementById('dealer-car-feature-duration-field');
@@ -655,42 +648,53 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Modal functions
-    function showModal(modal) {
-        if (modal) {
-            modal.classList.add('show');
-        }
-    }
-
-    function hideModal(modal) {
-        if (modal) {
-            modal.classList.remove('show');
-        }
-    }
-
-    window.closeModal = function(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) hideModal(modal);
-    };
-
-    // Edit dealer functionality
-    if (editDealerButton && editDealerModal) {
+    // Event listeners per i pulsanti principali
+    if (editDealerButton) {
         editDealerButton.addEventListener('click', function() {
-            showModal(editDealerModal);
+            console.log('🖱️ Click su modifica dealer');
+            openEditDealerModal();
         });
     }
 
-    if (closeEditDealerButton && editDealerModal) {
-        closeEditDealerButton.addEventListener('click', function() {
-            hideModal(editDealerModal);
+    if (addCarButton) {
+        addCarButton.addEventListener('click', function() {
+            console.log('🖱️ Click su aggiungi auto');
+            openAddCarModal();
         });
     }
 
-    // Edit dealer form submission
+    if (viewQuotesButton) {
+        viewQuotesButton.addEventListener('click', function() {
+            const dealerId = document.querySelector('input[name="dealerId"]').value;
+            window.location.href = `/rest/dealer/quote-requests/${dealerId}`;
+        });
+    }
+
+    if (deleteDealerButton) {
+        deleteDealerButton.addEventListener('click', function() {
+            if (confirm('Sei sicuro di voler eliminare definitivamente questo concessionario? Questa azione non può essere annullata.')) {
+                const dealerId = document.querySelector('input[name="dealerId"]').value;
+                window.location.href = `/rest/manutenzione/dealer/delete_dealer/${dealerId}`;
+            }
+        });
+    }
+
+    // Featured checkbox functionality
+    if (isFeaturedCheckbox && featureDurationField) {
+        isFeaturedCheckbox.addEventListener('change', function() {
+            featureDurationField.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+
+    // Form submissions
+    const editDealerForm = document.getElementById('edit-dealer-form');
+    const addCarForm = document.getElementById('dealer-add-car-form');
+    const editProductForm = document.getElementById('edit-product-form');
+
     if (editDealerForm) {
         editDealerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-
+            
             const formData = new FormData(this);
             const spinner = this.querySelector('.spinner');
             const submitButton = this.querySelector('button[type="submit"]');
@@ -711,7 +715,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (response.ok) {
                     showToast(data.message || 'Concessionario modificato con successo!', 'success');
-                    hideModal(editDealerModal);
+                    closeModal('edit-dealer-modal');
                     setTimeout(() => location.reload(), 1500);
                 } else {
                     showToast(data.message || 'Errore durante la modifica', 'error');
@@ -725,27 +729,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Add car modal functionality
-    if (addCarButton && addCarModal) {
-        addCarButton.addEventListener('click', function() {
-            showModal(addCarModal);
-        });
-    }
-
-    if (closeAddCarButton && addCarModal) {
-        closeAddCarButton.addEventListener('click', function() {
-            hideModal(addCarModal);
-        });
-    }
-
-    // Featured checkbox functionality
-    if (isFeaturedCheckbox && featureDurationField) {
-        isFeaturedCheckbox.addEventListener('change', function() {
-            featureDurationField.style.display = this.checked ? 'block' : 'none';
-        });
-    }
-
-    // Add car form submission
     if (addCarForm) {
         addCarForm.addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -770,7 +753,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (response.ok) {
                     showToast(data.message || 'Auto aggiunta con successo!', 'success');
-                    hideModal(addCarModal);
+                    closeModal('add-car-modal');
                     this.reset();
                     setTimeout(() => location.reload(), 1500);
                 } else {
@@ -785,20 +768,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Edit product functionality
+    // Product management
     const editProductLinks = document.querySelectorAll('.edit-product-link');
     const deleteProductLinks = document.querySelectorAll('.delete-product-link');
     const highlightProductLinks = document.querySelectorAll('.highlight-product-link');
     const removeHighlightProductLinks = document.querySelectorAll('.remove-highlight-product-link');
 
-    // Edit product modal
-    if (closeEditProductButton && editProductModal) {
-        closeEditProductButton.addEventListener('click', function() {
-            hideModal(editProductModal);
+    // Edit product functionality
+    editProductLinks.forEach(link => {
+        link.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+            if (productId) {
+                await populateEditForm(productId);
+            }
         });
-    }
+    });
 
-    // Populate edit form
     async function populateEditForm(productId) {
         try {
             const response = await fetch(`/rest/api/products/${productId}`, {
@@ -831,7 +817,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (element) element.value = value;
                     }
 
-                    showModal(editProductModal);
+                    showModal('edit-product-modal');
                 }
             } else {
                 const data = await response.json();
@@ -842,55 +828,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Edit product links
-    editProductLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const productId = this.getAttribute('data-product-id');
-            if (productId) populateEditForm(productId);
-        });
-    });
-
-    // Edit product form submission
-    if (editProductForm) {
-        editProductForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(this);
-            const spinner = this.querySelector('.spinner');
-            const submitButton = this.querySelector('button[type="submit"]');
-
-            if (spinner) spinner.classList.add('active');
-            if (submitButton) submitButton.disabled = true;
-
-            try {
-                const response = await fetch(this.action, {
-                    method: 'PUT',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
-                    }
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    showToast(data.message || 'Auto modificata con successo!', 'success');
-                    hideModal(editProductModal);
-                    setTimeout(() => location.reload(), 1500);
-                } else {
-                    showToast(data.message || 'Errore durante la modifica', 'error');
-                }
-            } catch (error) {
-                showToast('Errore di rete: ' + error.message, 'error');
-            } finally {
-                if (spinner) spinner.classList.remove('active');
-                if (submitButton) submitButton.disabled = false;
-            }
-        });
-    }
-
-    // Delete product links
+    // Delete, highlight, remove highlight functionality...
     deleteProductLinks.forEach(link => {
         link.addEventListener('click', async function(e) {
             e.preventDefault();
@@ -920,139 +858,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Highlight product links
-    highlightProductLinks.forEach(link => {
-        link.addEventListener('click', async function(e) {
-            e.preventDefault();
-            const productId = this.getAttribute('data-product-id');
-
-            const duration = prompt('Inserisci la durata in giorni per l\'evidenza (es. 7):');
-            if (!duration || isNaN(duration) || parseInt(duration) <= 0) {
-                showToast('Inserisci una durata valida', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch(`/rest/api/products/${productId}/highlight`, {
-                    method: 'POST',
-                    body: JSON.stringify({ duration: parseInt(duration) }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
-                    }
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    showToast(data.message || 'Auto messa in evidenza con successo!', 'success');
-                    setTimeout(() => location.reload(), 1500);
-                } else {
-                    showToast(data.message || 'Errore durante la messa in evidenza', 'error');
-                }
-            } catch (error) {
-                showToast('Errore di rete: ' + error.message, 'error');
-            }
-        });
-    });
-
-    // Remove highlight product links
-    removeHighlightProductLinks.forEach(link => {
-        link.addEventListener('click', async function(e) {
-            e.preventDefault();
-            const productId = this.getAttribute('data-product-id');
-
-            try {
-                const response = await fetch(`/rest/api/products/${productId}/remove-highlight`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
-                    }
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    showToast(data.message || 'Evidenza rimossa con successo!', 'success');
-                    setTimeout(() => location.reload(), 1500);
-                } else {
-                    showToast(data.message || 'Errore durante la rimozione dell\'evidenza', 'error');
-                }
-            } catch (error) {
-                showToast('Errore di rete: ' + error.message, 'error');
-            }
-        });
-    });
-
-    // View quotes functionality
-    const viewQuotesButton = document.getElementById('view-quotes-button');
-    if (viewQuotesButton) {
-        viewQuotesButton.addEventListener('click', function() {
-            const dealerId = document.querySelector('input[name="dealerId"]').value;
-            window.location.href = `/rest/dealer/quote-requests/${dealerId}`;
-        });
-    }
-
-    // Delete dealer functionality
-    const deleteDealerButton = document.getElementById('delete-dealer-button');
-    if (deleteDealerButton) {
-        deleteDealerButton.addEventListener('click', function() {
-            if (confirm('Sei sicuro di voler eliminare definitivamente questo concessionario? Questa azione non può essere annullata.')) {
-                const dealerId = document.querySelector('input[name="dealerId"]').value;
-                window.location.href = `/rest/manutenzione/dealer/delete_dealer/${dealerId}`;
-            }
-        });
-    }
-
-    // Carousel functionality
-    function initializeCarousels() {
-        document.querySelectorAll('.image-carousel').forEach(carousel => {
-            const items = carousel.querySelectorAll('.image-item');
-            const dots = carousel.querySelectorAll('.carousel-dot');
-            const prevBtn = carousel.querySelector('.carousel-btn.prev');
-            const nextBtn = carousel.querySelector('.carousel-btn.next');
-
-            if (items.length > 1 && prevBtn && nextBtn) {
-                let currentIndex = 0;
-
-                const updateCarousel = () => {
-                    items.forEach((item, index) => {
-                        item.classList.toggle('active', index === currentIndex);
-                    });
-                    dots.forEach((dot, index) => {
-                        dot.classList.toggle('active', index === currentIndex);
-                    });
-                };
-
-                prevBtn.addEventListener('click', () => {
-                    currentIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
-                    updateCarousel();
-                });
-
-                nextBtn.addEventListener('click', () => {
-                    currentIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
-                    updateCarousel();
-                });
-
-                dots.forEach((dot, index) => {
-                    dot.addEventListener('click', () => {
-                        currentIndex = index;
-                        updateCarousel();
-                    });
-                });
-            }
-        });
-    }
-
-    // Initialize carousels
-    initializeCarousels();
-
     // Image preview functions
     window.previewDealerImages = function(input) {
         const previewContainer = document.getElementById('dealer-image-preview');
-        const navElements = previewContainer.querySelector('.carousel-nav');
-        const dotsContainer = previewContainer.querySelector('.carousel-dots');
         
         if (input.files && input.files.length > 0) {
             previewContainer.innerHTML = '';
@@ -1067,7 +875,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         previewContainer.appendChild(imageItem);
                         
                         if (index === input.files.length - 1) {
-                            // Add navigation if multiple images
                             if (input.files.length > 1) {
                                 const nav = document.createElement('div');
                                 nav.className = 'carousel-nav';
@@ -1085,8 +892,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 previewContainer.appendChild(dots);
                             }
                             
-                            // Reinitialize carousel functionality
-                            initializeCarousels();
+                            // Reinitialize carousel con PopupManager
+                            PopupManager.initializeCarousel(previewContainer);
                         }
                     };
                     reader.readAsDataURL(file);
@@ -1128,7 +935,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 previewContainer.appendChild(dots);
                             }
                             
-                            initializeCarousels();
+                            PopupManager.initializeCarousel(previewContainer);
                         }
                     };
                     reader.readAsDataURL(file);
@@ -1170,7 +977,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 previewContainer.appendChild(dots);
                             }
                             
-                            initializeCarousels();
+                            PopupManager.initializeCarousel(previewContainer);
                         }
                     };
                     reader.readAsDataURL(file);
@@ -1179,20 +986,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Close modals when clicking outside
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('modal-overlay')) {
-            hideModal(e.target);
-        }
-    });
-
-    // Close modals on Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const openModal = document.querySelector('.modal-overlay.show');
-            if (openModal) hideModal(openModal);
-        }
-    });
+    console.log('✅ manage_dealer.html inizializzato completamente!');
 });
 </script>
 </body>

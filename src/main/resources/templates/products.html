@@ -228,21 +228,8 @@
     </div>
 </footer>
 <script src="/js/dropdown.js"></script>
+<script src="/js/popup-manager.js"></script>
 <script>
-    function openFilterPopup() {
-        const popup = document.getElementById('filterPopup');
-        if (popup) {
-            popup.classList.add('show');
-        }
-    }
-
-    function closeFilterPopup() {
-        const popup = document.getElementById('filterPopup');
-        if (popup) {
-            popup.classList.remove('show');
-        }
-    }
-
     function validateSearch() {
         const searchInput = document.getElementById('new-search-input');
         if (!searchInput.value.trim()) {

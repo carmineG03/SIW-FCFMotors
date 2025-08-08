@@ -2727,7 +2727,6 @@ main,
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       cursor: pointer;
-      width: 100000px;
     }
     .car-card:hover {
       transform: translateY(-5px);
@@ -2823,7 +2822,7 @@ main,
       backdrop-filter: blur(3px);
     }
     .car-details-popup.show {
-      display: flex;
+      display: flex !important;
     }
     .car-details-popup-content {
       background: #FFFFFF;
@@ -3699,3 +3698,278 @@ body {
         }
 
 /*-----------------------------------*/
+
+/* ===========================================
+   FIX AUTOCOMPLETE - VERSIONE AGGRESSIVA
+   =========================================== */
+
+/* Nasconde tutti i dropdown di autocomplete */
+.ui-autocomplete,
+.ui-menu,
+.ui-helper-hidden-accessible,
+.ui-widget,
+input[type="text"]::-webkit-credentials-auto-fill-button,
+input[type="text"]::-webkit-contacts-auto-fill-button,
+input[type="email"]::-webkit-credentials-auto-fill-button,
+input[type="email"]::-webkit-contacts-auto-fill-button {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    z-index: -1 !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Forza lo stile sui campi input nei popup */
+.modal input,
+.modal textarea,
+.modal-overlay input,
+.modal-overlay textarea,
+.popup input,
+.popup textarea {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    border-radius: 8px !important;
+    color: #FFFFFF !important;
+    padding: 12px !important;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.modal input:focus,
+.modal textarea:focus,
+.modal-overlay input:focus,
+.modal-overlay textarea:focus,
+.popup input:focus,
+.popup textarea:focus {
+    outline: none !important;
+    border-color: #F5A623 !important;
+    box-shadow: 0 0 8px rgba(245, 166, 35, 0.3) !important;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Previeni animazioni indesiderate */
+.modal *,
+.modal-overlay *,
+.popup * {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
+}
+
+/* Override per jQuery UI */
+body .ui-autocomplete {
+    display: none !important;
+}
+
+/* --------------------------------- */
+
+/* ===========================================
+   ACCOUNT PAGE MODAL STYLES - FIX
+   =========================================== */
+
+/* Stili per i modal della pagina account */
+#editAccountModal,
+#deleteAccountModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px);
+}
+
+#editAccountModal.show,
+#deleteAccountModal.show {
+    display: flex !important;
+}
+
+#editAccountModal .modal-content,
+#deleteAccountModal .modal-content {
+    background: #FFFFFF !important;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
+    color: #333333 !important;
+}
+
+#editAccountModal .modal-content h3,
+#deleteAccountModal .modal-content h3 {
+    color: #003087 !important;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid #F5A623;
+    padding-bottom: 10px;
+}
+
+#editAccountModal .modal-content p,
+#deleteAccountModal .modal-content p {
+    color: #333333 !important;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+#editAccountModal .form-group,
+#deleteAccountModal .form-group {
+    margin-bottom: 20px;
+}
+
+#editAccountModal .form-group label,
+#deleteAccountModal .form-group label {
+    display: block;
+    color: #333333 !important;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+#editAccountModal .form-group input,
+#deleteAccountModal .form-group input {
+    width: 100% !important;
+    padding: 12px !important;
+    background: #f8f9fa !important;
+    border: 2px solid #e9ecef !important;
+    border-radius: 8px !important;
+    font-size: 16px !important;
+    color: #333333 !important;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#editAccountModal .form-group input:focus,
+#deleteAccountModal .form-group input:focus {
+    border-color: #F5A623 !important;
+    box-shadow: 0 0 8px rgba(245, 166, 35, 0.3) !important;
+    outline: none !important;
+    background: #ffffff !important;
+}
+
+#editAccountModal .form-group input::placeholder,
+#deleteAccountModal .form-group input::placeholder {
+    color: #6c757d !important;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    color: #F5A623 !important;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.close-modal:hover {
+    color: #E59400 !important;
+    transform: scale(1.1);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 25px;
+}
+
+.modal-actions .save-button,
+.modal-actions .confirm-button {
+    background: linear-gradient(45deg, #F5A623, #E59400) !important;
+    color: #FFFFFF !important;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.modal-actions .save-button:hover,
+.modal-actions .confirm-button:hover {
+    background: linear-gradient(45deg, #E59400, #D68F1D) !important;
+    transform: translateY(-2px);
+}
+
+.modal-actions .cancel-button {
+    background: #6c757d !important;
+    color: #FFFFFF !important;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.modal-actions .cancel-button:hover {
+    background: #5a6268 !important;
+    transform: translateY(-2px);
+}
+
+/* Fix per prevenire override dei CSS generici */
+#editAccountModal *,
+#deleteAccountModal * {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #editAccountModal .modal-content,
+    #deleteAccountModal .modal-content {
+        padding: 20px;
+        width: 95%;
+    }
+    
+    #editAccountModal .modal-content h3,
+    #deleteAccountModal .modal-content h3 {
+        font-size: 1.5rem;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .modal-actions .save-button,
+    .modal-actions .confirm-button,
+    .modal-actions .cancel-button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* Override per disabilitare completamente l'autocomplete jQuery */
+#editAccountModal .ui-autocomplete,
+#deleteAccountModal .ui-autocomplete,
+#editAccountModal .ui-menu,
+#deleteAccountModal .ui-menu,
+#editAccountModal .ui-helper-hidden-accessible,
+#deleteAccountModal .ui-helper-hidden-accessible {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    z-index: -1 !important;
+}
+
+/* --------------------------------- */

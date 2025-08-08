@@ -196,105 +196,185 @@
   </div>
 </footer>
 <script src="/js/dropdown.js"></script>
+<script src="/js/popup-manager.js"></script>
 <script>
-  // Funzione per cambiare l'immagine principale
-  function changeMainImage(thumbnail) {
-    const mainImage = document.querySelector('.main-image-container img');
-    mainImage.src = thumbnail.src;
-    mainImage.alt = thumbnail.alt;
-  }
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔧 Inizializzazione dealer_detail.html');
 
-  // Gestione del popup
-  document.addEventListener('click', function(event) {
-    const viewDetailsButton = event.target.closest('.view-details');
-    const closePopup = event.target.closest('.close-popup');
-    const popups = document.querySelectorAll('.car-details-popup');
-
-    if (viewDetailsButton) {
-      event.preventDefault();
-      const productId = viewDetailsButton.getAttribute('data-id');
-      const popup = document.getElementById(`popup-${productId}`);
-      if (popup) {
-        popups.forEach(p => p.classList.remove('show'));
-        popup.classList.add('show');
-        initializeCarousel(popup);
-      } else {
-        console.error(`Popup with ID popup-${productId} not found`);
-      }
-    }
-
-    if (closePopup) {
-      popups.forEach(p => p.classList.remove('show'));
-    } else {
-      popups.forEach(popup => {
-        if (event.target === popup && !popup.querySelector('.car-details-popup-content').contains(event.target)) {
-          popup.classList.remove('show');
+    // Funzione per cambiare l'immagine principale del dealer
+    window.changeMainImage = function(thumbnail) {
+        const mainImage = document.querySelector('.main-image-container img');
+        if (mainImage && thumbnail) {
+            mainImage.src = thumbnail.src;
+            mainImage.alt = thumbnail.alt;
+            console.log('📸 Immagine principale cambiata');
         }
-      });
-    }
-  });
-
-  // Chiusura del popup con il tasto Esc
-  document.addEventListener('keydown', function(event) {
-    const popups = document.querySelectorAll('.car-details-popup');
-    if (event.key === 'Escape') {
-      popups.forEach(p => p.classList.remove('show'));
-    }
-  });
-
-  // Funzione per inizializzare il carosello in ogni popup
-  function initializeCarousel(popup) {
-    const carousel = popup.querySelector('.carousel');
-    if (!carousel) return;
-
-    let currentIndex = 0;
-    const items = carousel.querySelectorAll('.carousel-item');
-    const thumbnails = carousel.querySelectorAll('.carousel-thumbnails img');
-    const prevBtn = carousel.querySelector('.carousel-control-prev');
-    const nextBtn = carousel.querySelector('.carousel-control-next');
-
-    if (items.length <= 1 || !prevBtn || !nextBtn) {
-      if (prevBtn) prevBtn.style.display = 'none';
-      if (nextBtn) nextBtn.style.display = 'none';
-      return;
-    }
-
-    const updateCarousel = () => {
-      items.forEach((item, index) => {
-        item.classList.toggle('active', index === currentIndex);
-      });
-      thumbnails.forEach((thumb, index) => {
-        thumb.classList.toggle('active', index === currentIndex);
-      });
     };
 
-    prevBtn.addEventListener('click', (event) => {
-      event.stopPropagation();
-      currentIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
-      updateCarousel();
+    // Funzioni per il carousel dei popup auto
+    window.showImage = function(thumbnail, event) {
+        if (event) event.stopPropagation();
+        
+        const carousel = thumbnail.closest('.carousel');
+        const items = carousel.querySelectorAll('.carousel-item');
+        const thumbnails = carousel.querySelectorAll('.carousel-thumbnails img');
+        
+        // Trova l'indice della thumbnail cliccata
+        const clickedIndex = Array.from(thumbnails).indexOf(thumbnail);
+        
+        if (clickedIndex !== -1) {
+            // Rimuovi active da tutti gli elementi
+            items.forEach(item => item.classList.remove('active'));
+            thumbnails.forEach(thumb => thumb.classList.remove('active'));
+            
+            // Aggiungi active agli elementi correnti
+            if (items[clickedIndex]) items[clickedIndex].classList.add('active');
+            thumbnail.classList.add('active');
+            
+            console.log(`📸 Immagine carousel cambiata a indice: ${clickedIndex}`);
+        }
+    };
+
+    window.prevImage = function(event) {
+        if (event) event.stopPropagation();
+        
+        const button = event.target.closest('.carousel-control-prev');
+        const carousel = button.closest('.carousel');
+        const items = carousel.querySelectorAll('.carousel-item');
+        const thumbnails = carousel.querySelectorAll('.carousel-thumbnails img');
+        
+        // Trova l'indice corrente
+        let currentIndex = Array.from(items).findIndex(item => item.classList.contains('active'));
+        
+        // Calcola il nuovo indice (ciclo all'indietro)
+        const newIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+        
+        // Aggiorna le classi active
+        items.forEach(item => item.classList.remove('active'));
+        thumbnails.forEach(thumb => thumb.classList.remove('active'));
+        
+        if (items[newIndex]) items[newIndex].classList.add('active');
+        if (thumbnails[newIndex]) thumbnails[newIndex].classList.add('active');
+        
+        console.log(`⬅️ Immagine precedente: ${newIndex}`);
+    };
+
+    window.nextImage = function(event) {
+        if (event) event.stopPropagation();
+        
+        const button = event.target.closest('.carousel-control-next');
+        const carousel = button.closest('.carousel');
+        const items = carousel.querySelectorAll('.carousel-item');
+        const thumbnails = carousel.querySelectorAll('.carousel-thumbnails img');
+        
+        // Trova l'indice corrente
+        let currentIndex = Array.from(items).findIndex(item => item.classList.contains('active'));
+        
+        // Calcola il nuovo indice (ciclo in avanti)
+        const newIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+        
+        // Aggiorna le classi active
+        items.forEach(item => item.classList.remove('active'));
+        thumbnails.forEach(thumb => thumb.classList.remove('active'));
+        
+        if (items[newIndex]) items[newIndex].classList.add('active');
+        if (thumbnails[newIndex]) thumbnails[newIndex].classList.add('active');
+        
+        console.log(`➡️ Immagine successiva: ${newIndex}`);
+    };
+
+    // Gestione apertura popup dettagli auto - VERSIONE CORRETTA
+    document.addEventListener('click', function(event) {
+        const viewDetailsButton = event.target.closest('.view-details');
+        
+        if (viewDetailsButton) {
+            event.preventDefault();
+            const productId = viewDetailsButton.getAttribute('data-id');
+            const popup = document.getElementById(`popup-${productId}`);
+            
+            if (popup) {
+                console.log(`🔧 Apertura popup dettagli auto ID: ${productId}`);
+                
+                // Chiudi tutti gli altri popup aperti
+                document.querySelectorAll('.car-details-popup').forEach(p => {
+                    p.classList.remove('show');
+                    p.classList.remove('active');
+                    p.setAttribute('aria-hidden', 'true');
+                });
+                
+                // Apri il popup specifico
+                popup.classList.add('show');
+                popup.classList.add('active');
+                popup.setAttribute('aria-hidden', 'false');
+                
+                // Blocca lo scroll del body
+                document.body.style.overflow = 'hidden';
+                
+                // Assicurati che la prima immagine sia attiva
+                const firstItem = popup.querySelector('.carousel-item');
+                const firstThumb = popup.querySelector('.carousel-thumbnails img');
+                
+                if (firstItem && firstThumb) {
+                    // Reset di tutte le immagini
+                    popup.querySelectorAll('.carousel-item').forEach(item => item.classList.remove('active'));
+                    popup.querySelectorAll('.carousel-thumbnails img').forEach(thumb => thumb.classList.remove('active'));
+                    
+                    // Attiva la prima
+                    firstItem.classList.add('active');
+                    firstThumb.classList.add('active');
+                }
+                
+                console.log(`✅ Popup ${productId} aperto con successo`);
+                
+            } else {
+                console.error(`❌ Popup popup-${productId} non trovato`);
+            }
+        }
     });
 
-    nextBtn.addEventListener('click', (event) => {
-      event.stopPropagation();
-      currentIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
-      updateCarousel();
+    // Gestione chiusura popup con bottone X
+    document.addEventListener('click', function(event) {
+        const closeButton = event.target.closest('.close-popup');
+        
+        if (closeButton) {
+            const popup = closeButton.closest('.car-details-popup');
+            if (popup) {
+                console.log(`🔴 Chiusura popup tramite bottone X: ${popup.id}`);
+                popup.classList.remove('show');
+                popup.classList.remove('active');
+                popup.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            }
+        }
     });
 
-    thumbnails.forEach((thumb, index) => {
-      thumb.addEventListener('click', (event) => {
-        event.stopPropagation();
-        currentIndex = index;
-        updateCarousel();
-      });
+    // Gestione chiusura popup con click fuori
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('car-details-popup')) {
+            console.log(`🔴 Chiusura popup tramite click fuori: ${event.target.id}`);
+            event.target.classList.remove('show');
+            event.target.classList.remove('active');
+            event.target.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
     });
 
-    updateCarousel();
-  }
+    // Gestione chiusura popup con tasto ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            const openPopup = document.querySelector('.car-details-popup.show');
+            if (openPopup) {
+                console.log(`🔴 Chiusura popup tramite ESC: ${openPopup.id}`);
+                openPopup.classList.remove('show');
+                openPopup.classList.remove('active');
+                openPopup.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            }
+        }
+    });
 
-  // Inizializza i caroselli per ogni popup all'avvio
-  document.querySelectorAll('.car-details-popup').forEach(popup => {
-    initializeCarousel(popup);
-  });
+    console.log('✅ dealer_detail.html inizializzato completamente!');
+});
 </script>
 </body>
 </html>

@@ -187,47 +187,6 @@
     </div>
 </footer>
 <script src="/js/dropdown.js"></script>
-<script>
-    function openEditModal() {
-        const modal = document.getElementById('editAccountModal');
-        modal.classList.add('show');
-    }
-
-    function closeEditModal() {
-        const modal = document.getElementById('editAccountModal');
-        modal.classList.remove('show');
-    }
-
-    function openDeleteModal() {
-        const modal = document.getElementById('deleteAccountModal');
-        modal.classList.add('show');
-    }
-
-    function closeDeleteModal() {
-        const modal = document.getElementById('deleteAccountModal');
-        modal.classList.remove('show');
-    }
-
-    document.addEventListener('click', function(event) {
-        const editModal = document.getElementById('editAccountModal');
-        const editModalContent = editModal.querySelector('.modal-content');
-        const deleteModal = document.getElementById('deleteAccountModal');
-        const deleteModalContent = deleteModal.querySelector('.modal-content');
-
-        if (editModal.classList.contains('show') && !editModalContent.contains(event.target) && !event.target.classList.contains('edit-button')) {
-            closeEditModal();
-        }
-        if (deleteModal.classList.contains('show') && !deleteModalContent.contains(event.target) && !event.target.classList.contains('delete-account-button')) {
-            closeDeleteModal();
-        }
-    });
-
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closeEditModal();
-            closeDeleteModal();
-        }
-    });
-</script>
+<script src="/js/popup-manager.js"></script>
 </body>
 </html>
