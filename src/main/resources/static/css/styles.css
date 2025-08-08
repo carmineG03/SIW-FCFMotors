@@ -2722,12 +2722,12 @@ main,
       }
     }
     .car-card {
-      background: #FFFFFF;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       cursor: pointer;
+      width: 100000px;
     }
     .car-card:hover {
       transform: translateY(-5px);

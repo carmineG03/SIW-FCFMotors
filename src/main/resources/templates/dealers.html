@@ -127,48 +127,8 @@
         <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
     </div>
 </footer>
-
+<script src="/js/dropdown.js"></script>
 <script>
-    // Listener separato per il menu a tendina
-    document.addEventListener('click', function(event) {
-        const dropdownToggle = event.target.closest('.dropdown-toggle');
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-
-        if (!dropdownToggle || !dropdownMenu) return;
-
-        if (dropdownToggle) {
-            event.stopPropagation();
-            console.log('Click sul pulsante toggle');
-            const isOpen = dropdownMenu.classList.contains('show');
-            dropdownMenu.classList.toggle('show');
-            dropdownToggle.classList.toggle('open', !isOpen);
-            return;
-        }
-
-        if (!dropdownMenu.contains(event.target)) {
-            console.log('Click fuori dal menu, chiusura');
-            dropdownMenu.classList.remove('show');
-            const toggle = document.querySelector('.dropdown-toggle');
-            if (toggle) toggle.classList.remove('open');
-        }
-    });
-
-    // Gestione tastiera per il menu a tendina
-    document.addEventListener('keydown', function(event) {
-        const dropdownToggle = event.target.closest('.dropdown-toggle');
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-
-        if (!dropdownToggle || !dropdownMenu) return;
-
-        if ((event.key === 'Enter' || event.key === ' ') && event.target === dropdownToggle) {
-            event.preventDefault();
-            console.log('Tasto Enter o Spazio premuto');
-            const isOpen = dropdownMenu.classList.contains('show');
-            dropdownMenu.classList.toggle('show');
-            dropdownToggle.classList.toggle('open', !isOpen);
-        }
-    });
-
     // Handle carousel navigation for dealer images
     // Correzione per il carousel delle immagini dei concessionari
     document.querySelectorAll('.dealer-item').forEach(dealerItem => {

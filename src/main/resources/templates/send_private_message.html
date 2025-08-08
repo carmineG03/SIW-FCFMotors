@@ -108,27 +108,6 @@
         <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
     </div>
 </footer>
-
-<script>
-    function toggleDropdownMenu(event) {
-        event.stopPropagation();
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-        const dropdownToggle = document.querySelector('.dropdown-toggle');
-        if (dropdownMenu && dropdownToggle) {
-            const isOpen = dropdownMenu.classList.contains('show');
-            dropdownMenu.classList.toggle('show');
-            dropdownToggle.classList.toggle('open', !isOpen);
-        }
-    }
-
-    document.addEventListener('click', function(event) {
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-        const dropdownToggle = document.querySelector('.dropdown-toggle');
-        if (dropdownMenu && dropdownToggle && !dropdownMenu.contains(event.target) && !dropdownToggle.contains(event.target)) {
-            dropdownMenu.classList.remove('show');
-            dropdownToggle.classList.remove('open');
-        }
-    });
-</script>
+<script src="/js/dropdown.js"></script>
 </body>
 </html>

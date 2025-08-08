@@ -195,44 +195,8 @@
     <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
   </div>
 </footer>
-
+<script src="/js/dropdown.js"></script>
 <script>
-  // Gestione del menu a tendina
-  document.addEventListener('click', function(event) {
-    const dropdownToggle = event.target.closest('.dropdown-toggle');
-    const dropdownMenu = document.querySelector('.dropdown-menu');
-
-    if (!dropdownToggle || !dropdownMenu) return;
-
-    if (dropdownToggle) {
-      event.stopPropagation();
-      const isOpen = dropdownMenu.classList.contains('show');
-      dropdownMenu.classList.toggle('show', !isOpen);
-      dropdownToggle.classList.toggle('open', !isOpen);
-      return;
-    }
-
-    if (!dropdownMenu.contains(event.target)) {
-      dropdownMenu.classList.remove('show');
-      const toggleButton = document.querySelector('.dropdown-toggle');
-      if (toggleButton) toggleButton.classList.remove('open');
-    }
-  });
-
-  document.addEventListener('keydown', function(event) {
-    const dropdownToggle = event.target.closest('.dropdown-toggle');
-    const dropdownMenu = document.querySelector('.dropdown-menu');
-
-    if (!dropdownToggle || !dropdownMenu) return;
-
-    if ((event.key === 'Enter' || event.key === ' ') && event.target === dropdownToggle) {
-      event.preventDefault();
-      const isOpen = dropdownMenu.classList.contains('show');
-      dropdownMenu.classList.toggle('show', !isOpen);
-      dropdownToggle.classList.toggle('open', !isOpen);
-    }
-  });
-
   // Funzione per cambiare l'immagine principale
   function changeMainImage(thumbnail) {
     const mainImage = document.querySelector('.main-image-container img');

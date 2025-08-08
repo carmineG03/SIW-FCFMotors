@@ -30,13 +30,13 @@
     </div>
     <div class="header-right">
         <div class="dropdown">
-            <button class="dropdown-toggle" aria-label="Menu" onclick="toggleDropdownMenu(event)">
+            <button class="dropdown-toggle" aria-label="Menu">
                 <i class="fas fa-bars"></i>
             </button>
             <div class="dropdown-menu">
                 <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
                 <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
-                <a th:href="@{/cart}" class="cart-item"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
                 <a th:if="${!isAuthenticated}" th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Login</a>
                 <a th:if="${isAuthenticated}" th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
                 <a sec:authorize="hasRole('PRIVATE')" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
@@ -128,45 +128,8 @@
         <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
     </div>
 </footer>
-
+<script src="/js/dropdown.js"></script>
 <script>
-    function toggleDropdownMenu(event) {
-        event.stopPropagation();
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-        const dropdownToggle = document.querySelector('.dropdown-toggle');
-        if (dropdownMenu && dropdownToggle) {
-            console.log('Click sul pulsante toggle');
-            const isOpen = dropdownMenu.classList.contains('show');
-            dropdownMenu.classList.toggle('show');
-            dropdownToggle.classList.toggle('open', !isOpen);
-        } else {
-            console.error('Errore: Elementi del menu a tendina non trovati.');
-        }
-    }
-
-    document.addEventListener('click', function(event) {
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-        const dropdownToggle = document.querySelector('.dropdown-toggle');
-        if (dropdownMenu && dropdownToggle && !dropdownMenu.contains(event.target) && !dropdownToggle.contains(event.target)) {
-            console.log('Click fuori dal menu, chiusura');
-            dropdownMenu.classList.remove('show');
-            dropdownToggle.classList.remove('open');
-        }
-    });
-
-    document.addEventListener('keydown', function(event) {
-        const dropdownToggle = document.querySelector('.dropdown-toggle');
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-        if (!dropdownToggle || !dropdownMenu) return;
-
-        if ((event.key === 'Enter' || event.key === ' ') && event.target === dropdownToggle) {
-            event.preventDefault();
-            console.log('Tasto Enter o Spazio premuto');
-            const isOpen = dropdownMenu.classList.contains('show');
-            dropdownMenu.classList.toggle('show');
-            dropdownToggle.classList.toggle('open', !isOpen);
-        }
-    });
 
     let currentIndex = 0;
     const items = document.querySelectorAll('.carousel-item');

@@ -616,7 +616,7 @@
         <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
     </div>
 </footer>
-
+<script src="/js/dropdown.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Elements
@@ -637,33 +637,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const toast = document.getElementById('toast');
     const isFeaturedCheckbox = document.getElementById('dealer-car-highlighted');
     const featureDurationField = document.getElementById('dealer-car-feature-duration-field');
-
-    // Dropdown functionality
-    const dropdownToggle = document.querySelector('.dropdown-toggle');
-    const dropdownMenu = document.querySelector('.dropdown-menu');
-
-    if (dropdownToggle && dropdownMenu) {
-        dropdownToggle.addEventListener('click', function() {
-            const isOpen = dropdownMenu.classList.contains('show');
-            dropdownMenu.classList.toggle('show');
-            dropdownToggle.classList.toggle('open', !isOpen);
-        });
-
-        document.addEventListener('click', function(event) {
-            if (!dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
-                dropdownMenu.classList.remove('show');
-                dropdownToggle.classList.remove('open');
-            }
-        });
-
-        dropdownToggle.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                dropdownMenu.classList.toggle('show');
-                dropdownToggle.classList.toggle('open');
-            }
-        });
-    }
 
     // Toast function
     function showToast(message, type = 'success') {
