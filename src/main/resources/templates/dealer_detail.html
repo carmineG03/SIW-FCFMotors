@@ -271,7 +271,7 @@
         let currentIndex = Array.from(items).findIndex(item => item.classList.contains('active'));
 
         // Calcola il nuovo indice (ciclo all'indietro)
-        const newIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+        const newIndex = currentIndex >= 0 ? currentIndex - 1 : items.length - 1;
 
         // Aggiorna le classi active
         items.forEach(item => item.classList.remove('active'));
