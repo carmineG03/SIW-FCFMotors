@@ -1,192 +1,211 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8" />
     <title>Informazioni Account - FCF Motors</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/allert.css">
-    <link rel="stylesheet" href="/css/auth.css"/>
-    <link rel="stylesheet" href="/css/styles.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <link rel="stylesheet" href="/css/auth.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 </head>
+
 <body>
-<header id="main-header">
-    <div class="header-left">
-        <a href="/" class="logo-link">
-            <div class="logo-container">
-                <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
-            </div>
-        </a>
-        <div class="title-container">
-            <h1 class="main-title">FCF MOTORS</h1>
-        </div>
-    </div>
-    <div class="nav-container">
-        <div class="nav-bar"></div>
-    </div>
-    <div class="header-right">
-        <div class="dropdown">
-            <button class="dropdown-toggle" aria-label="Menu">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="dropdown-menu">
-                <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
-                <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
-                <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
-                <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
-                <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('DEALER')}" th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i> Manutenzione Dealer</a>
-                <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('ADMIN')}" th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i> Manutenzione Admin</a>
+    <header id="main-header">
+        <div class="header-left">
+            <a href="/" class="logo-link">
+                <div class="logo-container">
+                    <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo" />
+                </div>
+            </a>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
             </div>
         </div>
-    </div>
-</header>
-
-<div class="wrapper">
-    <div class="account-container">
-        <div class="account-details-container">
-            <h2>Informazioni Account</h2>
-            <div class="account-details">
-                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-                <p th:if="${user != null}"><strong>Username:</strong> <span th:text="${user.username}"></span></p>
-                <p th:if="${user != null}"><strong>Email:</strong> <span th:text="${user.email}"></span></p>
-                <p th:if="${accountInformation != null}"><strong>Nome:</strong> <span th:text="${accountInformation.firstName}"></span></p>
-                <p th:if="${accountInformation != null}"><strong>Cognome:</strong> <span th:text="${accountInformation.lastName}"></span></p>
-                <p th:if="${accountInformation != null}"><strong>Data di nascita:</strong> <span th:text="${accountInformation.birthDate}"></span></p>
-                <p th:if="${accountInformation != null}"><strong>Indirizzo:</strong> <span th:text="${accountInformation.address}"></span></p>
-                <p th:if="${accountInformation != null}"><strong>Numero di telefono:</strong> <span th:text="${accountInformation.phoneNumber}"></span></p>
-                <div class="account-actions">
-                    <button class="edit-button" onclick="openEditModal()">Modifica</button>
-                    <form id="logoutForm" th:action="@{/logout}" method="post" style="display:inline;">
-                        <a href="#" class="logout-button" onclick="event.preventDefault(); document.getElementById('logoutForm').submit()">Esci</a>
-                    </form>
-                    <button class="delete-account-button" onclick="openDeleteModal()">Cancella Account</button>
+        <div class="nav-container">
+            <div class="nav-bar"></div>
+        </div>
+        <div class="header-right">
+            <div class="dropdown">
+                <button class="dropdown-toggle" aria-label="Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                    <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                    <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                    <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}"
+                        th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
+                    <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('DEALER')}"
+                        th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i> Manutenzione Dealer</a>
+                    <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('ADMIN')}"
+                        th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i> Manutenzione Admin</a>
                 </div>
             </div>
         </div>
+    </header>
 
-        <div class="subscriptions-container">
-            <h2>Abbonamenti</h2>
-            <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}" class="active-subscriptions">
-                <p><i class="fas fa-check-circle"></i> I tuoi abbonamenti attivi</p>
-                <div th:each="userSubscription : ${activeSubscriptions}" class="subscription-item">
-                    <h4 th:text="${userSubscription.subscription.name}"></h4>
-                    <p><i class="fas fa-calendar-alt"></i> Scade il: <span th:text="${userSubscription.expiryDate}"></span></p>
-                    <p><i class="fas fa-sync-alt"></i> Rinnovo automatico: <span th:text="${userSubscription.autoRenew} ? 'Attivo' : 'Disattivato'"></span></p>
-                    <p><i class="fas fa-car"></i> Macchine in evidenza: <span class="featured-cars" th:text="${userSubscription.subscription.maxFeaturedCars}"></span></p>
-                    <p class="description" th:text="${userSubscription.subscription.description}"></p>
-                    <div th:if="${!userSubscription.autoRenew}" class="auto-renew-warning">
-                        <i class="fas fa-exclamation-triangle"></i> Questo abbonamento si disattiverà alla scadenza, se vuoi continuare ad usarlo riattivalo!
+    <div class="wrapper">
+        <div class="account-container">
+            <div class="account-details-container">
+                <h2>Informazioni Account</h2>
+                <div class="account-details">
+                    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                    <p th:if="${user != null}"><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+                    <p th:if="${user != null}"><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+                    <p th:if="${accountInformation != null}"><strong>Nome:</strong> <span
+                            th:text="${accountInformation.firstName}"></span></p>
+                    <p th:if="${accountInformation != null}"><strong>Cognome:</strong> <span
+                            th:text="${accountInformation.lastName}"></span></p>
+                    <p th:if="${accountInformation != null}"><strong>Data di nascita:</strong> <span
+                            th:text="${accountInformation.birthDate}"></span></p>
+                    <p th:if="${accountInformation != null}"><strong>Indirizzo:</strong> <span
+                            th:text="${accountInformation.address}"></span></p>
+                    <p th:if="${accountInformation != null}"><strong>Numero di telefono:</strong> <span
+                            th:text="${accountInformation.phoneNumber}"></span></p>
+                    <div class="account-actions">
+                        <button class="edit-button" onclick="openEditModal()">Modifica</button>
+                        <form id="logoutForm" th:action="@{/logout}" method="post" style="display:inline;">
+                            <a href="#" class="logout-button"
+                                onclick="event.preventDefault(); document.getElementById('logoutForm').submit()">Esci</a>
+                        </form>
+                        <button class="delete-account-button" onclick="openDeleteModal()">Cancella Account</button>
                     </div>
-                    <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
-                       th:classappend="${userSubscription.autoRenew} ? 'toggle-auto-renew-button disable' : 'toggle-auto-renew-button enable'"
-                       th:text="${userSubscription.autoRenew} ? 'Disattiva Rinnovo' : 'Riattiva Rinnovo'"
-                       th:onclick="${userSubscription.autoRenew} ? 'return confirm(\'Sei sicuro di voler disattivare il rinnovo automatico di questo abbonamento? L\\\'abbonamento si disattiverà alla scadenza.\')' : 'return confirm(\'Sei sicuro di voler riattivare il rinnovo automatico di questo abbonamento?\')'">
-                    </a>
                 </div>
             </div>
-            <div th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}" class="no-subscriptions">
-                <p><i class="fas fa-info-circle"></i> Nessun abbonamento attivo.</p>
-                <a href="/subscriptions" class="subscribe-button">Scopri Abbonamenti</a>
-                <div th:if="${user != null and user.rolesString != null and user.rolesString.contains('USER')}">
-                    <p><i class="fas fa-car"></i> Vuoi vendere la tua auto?</p>
-                    <form th:action="@{/account/become-private}" method="post">
-                        <button type="submit" class="become-private-button">Vendi la tua auto</button>
-                    </form>
+
+            <div class="subscriptions-container">
+                <h2>Abbonamenti</h2>
+                <div th:if="${activeSubscriptions != null and !#lists.isEmpty(activeSubscriptions)}"
+                    class="active-subscriptions">
+                    <p><i class="fas fa-check-circle"></i> I tuoi abbonamenti attivi</p>
+                    <div th:each="userSubscription : ${activeSubscriptions}" class="subscription-item">
+                        <h4 th:text="${userSubscription.subscription.name}"></h4>
+                        <p><i class="fas fa-calendar-alt"></i> Scade il: <span
+                                th:text="${userSubscription.expiryDate}"></span></p>
+                        <p><i class="fas fa-sync-alt"></i> Rinnovo automatico: <span
+                                th:text="${userSubscription.autoRenew} ? 'Attivo' : 'Disattivato'"></span></p>
+                        <p><i class="fas fa-car"></i> Macchine in evidenza: <span class="featured-cars"
+                                th:text="${userSubscription.subscription.maxFeaturedCars}"></span></p>
+                        <p class="description" th:text="${userSubscription.subscription.description}"></p>
+                        <div th:if="${!userSubscription.autoRenew}" class="auto-renew-warning">
+                            <i class="fas fa-exclamation-triangle"></i> Questo abbonamento si disattiverà alla scadenza,
+                            se vuoi continuare ad usarlo riattivalo!
+                        </div>
+                        <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
+                            th:classappend="${userSubscription.autoRenew} ? 'toggle-auto-renew-button disable' : 'toggle-auto-renew-button enable'"
+                            th:text="${userSubscription.autoRenew} ? 'Disattiva Rinnovo' : 'Riattiva Rinnovo'"
+                            th:onclick="${userSubscription.autoRenew} ? 'return confirm(\'Sei sicuro di voler disattivare il rinnovo automatico di questo abbonamento? L\\\'abbonamento si disattiverà alla scadenza.\')' : 'return confirm(\'Sei sicuro di voler riattivare il rinnovo automatico di questo abbonamento?\')'">
+                        </a>
+                    </div>
                 </div>
-                <div th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}">
-                    <p><i class="fas fa-user-alt-slash"></i> Smetti di vendere la tua auto?</p>
-                    <form th:action="@{/account/remove-private}" method="post">
-                        <button type="submit" class="remove-private-button"
+                <div th:if="${activeSubscriptions == null or #lists.isEmpty(activeSubscriptions)}"
+                    class="no-subscriptions">
+                    <p><i class="fas fa-info-circle"></i> Nessun abbonamento attivo.</p>
+                    <a href="/subscriptions" class="subscribe-button">Scopri Abbonamenti</a>
+                    <div th:if="${user != null and user.rolesString != null and user.rolesString.contains('USER')}">
+                        <p><i class="fas fa-car"></i> Vuoi vendere la tua auto?</p>
+                        <form th:action="@{/account/become-private}" method="post">
+                            <button type="submit" class="become-private-button">Vendi la tua auto</button>
+                        </form>
+                    </div>
+                    <div th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}">
+                        <p><i class="fas fa-user-alt-slash"></i> Smetti di vendere la tua auto?</p>
+                        <form th:action="@{/account/remove-private}" method="post">
+                            <button type="submit" class="remove-private-button"
                                 onclick="return confirm('Sei sicuro di voler cancellare la tua auto? Questa azione è irreversibile.');">
-                            Rimuovi Auto
-                        </button>
-                    </form>
+                                Rimuovi Auto
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div id="editAccountModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeEditModal()">×</span>
-        <h3>Modifica Account</h3>
-        <form th:action="@{/account}" method="post" th:object="${accountInformation}" id="editAccountForm">
-            <div class="form-group">
-                <label for="firstName">Nome:</label>
-                <input type="text" id="firstName" th:field="*{firstName}" required />
-            </div>
-            <div class="form-group">
-                <label for="lastName">Cognome:</label>
-                <input type="text" id="lastName" th:field="*{lastName}" required />
-            </div>
-            <div class="form-group">
-                <label for="birthDate">Data di nascita:</label>
-                <input type="date" id="birthDate" th:field="*{birthDate}"
-                       th:value="${accountInformation.birthDate != null} ? ${accountInformation.birthDate} : ''"
-                       required />
-            </div>
-            <div class="form-group">
-                <label for="address">Indirizzo:</label>
-                <input type="text" id="address" th:field="*{address}" required />
-            </div>
-            <div class="form-group">
-                <label for="phoneNumber">Numero di telefono:</label>
-                <input type="text" id="phoneNumber" th:field="*{phoneNumber}" required />
-            </div>
-            <div class="modal-actions">
-                <button type="submit" class="save-button">Salva</button>
-                <button type="button" class="cancel-button" onclick="closeEditModal()">Annulla</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div id="deleteAccountModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeDeleteModal()">×</span>
-        <h3>Conferma Cancellazione Account</h3>
-        <p>Sei sicuro di voler cancellare il tuo account? Questa azione è irreversibile e cancellerà tutti i tuoi dati, compreso l'abbonamento.</p>
-        <form th:action="@{/account/delete}" method="post" id="deleteAccountForm">
-            <div class="form-group">
-                <label for="password">Conferma Password:</label>
-                <input type="password" id="password" name="password" required />
-            </div>
-            <div class="modal-actions">
-                <button type="submit" class="confirm-button">Conferma</button>
-                <button type="button" class="cancel-button" onclick="closeDeleteModal()">Annulla</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<footer>
-    <div class="footer-content">
-        <div class="footer-section">
-            <h4>Navigazione</h4>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/products">Trova Auto</a></li>
-                <li><a href="/dealers">Concessionari</a></li>
-                <li><a href="/cart">Carrello</a></li>
-            </ul>
-        </div>
-        <div class="footer-section">
-            <h4>Contatti</h4>
-            <p>Email: info@fcfmotors.com</p>
-            <p>Telefono: +39 123 456 7890</p>
-            <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
-        </div>
-        <div class="footer-section">
-            <h4>Informazioni</h4>
-            <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+    <div id="editAccountModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeEditModal()">×</span>
+            <h3>Modifica Account</h3>
+            <form th:action="@{/account}" method="post" th:object="${accountInformation}" id="editAccountForm">
+                <div class="form-group">
+                    <label for="firstName">Nome:</label>
+                    <input type="text" id="firstName" th:field="*{firstName}" required />
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Cognome:</label>
+                    <input type="text" id="lastName" th:field="*{lastName}" required />
+                </div>
+                <div class="form-group">
+                    <label for="birthDate">Data di nascita:</label>
+                    <input type="date" id="birthDate" th:field="*{birthDate}"
+                        th:value="${accountInformation.birthDate != null} ? ${accountInformation.birthDate} : ''"
+                        required />
+                </div>
+                <div class="form-group">
+                    <label for="address">Indirizzo:</label>
+                    <input type="text" id="address" th:field="*{address}" required />
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber">Numero di telefono:</label>
+                    <input type="text" id="phoneNumber" th:field="*{phoneNumber}" required />
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="save-button">Salva</button>
+                    <button type="button" class="cancel-button" onclick="closeEditModal()">Annulla</button>
+                </div>
+            </form>
         </div>
     </div>
-    <div class="footer-bottom">
-        <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+
+    <div id="deleteAccountModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeDeleteModal()">×</span>
+            <h3>Conferma Cancellazione Account</h3>
+            <p>Sei sicuro di voler cancellare il tuo account? Questa azione è irreversibile e cancellerà tutti i tuoi
+                dati, compreso l'abbonamento.</p>
+            <form th:action="@{/account/delete}" method="post" id="deleteAccountForm">
+                <div class="form-group">
+                    <label for="password">Conferma Password:</label>
+                    <input type="password" id="password" name="password" required />
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="confirm-button">Conferma</button>
+                    <button type="button" class="cancel-button" onclick="closeDeleteModal()">Annulla</button>
+                </div>
+            </form>
+        </div>
     </div>
-</footer>
-<script src="/js/dropdown.js"></script>
-<script src="/js/popup-manager.js"></script>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Navigazione</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Trova Auto</a></li>
+                    <li><a href="/dealers">Concessionari</a></li>
+                    <li><a href="/cart">Carrello</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contatti</h4>
+                <p>Email: info@fcfmotors.com</p>
+                <p>Telefono: +39 123 456 7890</p>
+                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+            </div>
+            <div class="footer-section">
+                <h4>Informazioni</h4>
+                <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+    <script src="/js/dropdown.js"></script>
+    <script src="/js/popup-manager.js"></script>
 </body>
+
 </html>

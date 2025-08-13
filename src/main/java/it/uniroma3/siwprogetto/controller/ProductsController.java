@@ -1,15 +1,10 @@
 package it.uniroma3.siwprogetto.controller;
 
-import it.uniroma3.siwprogetto.model.Dealer;
-import it.uniroma3.siwprogetto.model.Product;
-import it.uniroma3.siwprogetto.model.QuoteRequest;
-import it.uniroma3.siwprogetto.model.User;
-import it.uniroma3.siwprogetto.repository.DealerRepository;
-import it.uniroma3.siwprogetto.repository.QuoteRequestRepository;
-import it.uniroma3.siwprogetto.repository.UserRepository;
-import it.uniroma3.siwprogetto.service.CartService;
-import it.uniroma3.siwprogetto.service.DealerService;
-import it.uniroma3.siwprogetto.service.ProductService;
+import it.uniroma3.siwprogetto.model.*;
+import it.uniroma3.siwprogetto.repository.*;
+import it.uniroma3.siwprogetto.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,29 +18,32 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
+/**
+ * Controller principale per la gestione dei prodotti
+ * Gestisce visualizzazione, ricerca, filtri e richieste di preventivo
+ */
 @Controller
 @RequestMapping("/products")
 public class ProductsController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProductsController.class);
+
     private final ProductService productService;
-    private final CartService cartService;
-
-    @Autowired
-    private QuoteRequestRepository quoteRequestRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private DealerService dealerService;
+    
+    @Autowired private QuoteRequestRepository quoteRequestRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private DealerService dealerService;
 
     public ProductsController(ProductService productService, CartService cartService) {
         this.productService = productService;
-        this.cartService = cartService;
     }
 
+    /**
+     * Pagina principale dei prodotti con sistema di filtri avanzato
+     * Supporta filtri per categoria, marca, prezzo, chilometraggio, anno, carburante, cambio
+     * e ricerca testuale
+     */
     @GetMapping
     public String showProductsPage(Model model,
                                    @RequestParam(value = "category", required = false) String category,
@@ -60,49 +58,169 @@ public class ProductsController {
                                    @RequestParam(value = "fuelType", required = false) String fuelType,
                                    @RequestParam(value = "transmission", required = false) String transmission,
                                    @RequestParam(value = "query", required = false) String query) {
-        // Normalize string values
-        category = category != null && !category.trim().isEmpty() ? category.trim() : null;
-        brand = brand != null && !brand.trim().isEmpty() ? brand.trim() : null;
-        selectedModel = selectedModel != null && !selectedModel.trim().isEmpty() ? selectedModel.trim() : null;
-        fuelType = fuelType != null && !fuelType.trim().isEmpty() ? fuelType.trim() : null;
-        transmission = transmission != null && !transmission.trim().isEmpty() ? transmission.trim() : null;
-        query = query != null && !query.trim().isEmpty() ? query.trim() : null; // Fixed: Removed dependency on category
+        
+        logger.debug("Richiesta pagina prodotti con filtri applicati");
 
-        // Validate numeric parameters
-        minPrice = minPrice != null && minPrice.compareTo(BigDecimal.ZERO) >= 0 ? minPrice : null;
-        maxPrice = maxPrice != null && maxPrice.compareTo(BigDecimal.ZERO) >= 0 ? maxPrice : null;
-        minMileage = minMileage != null && minMileage >= 0 ? minMileage : null;
-        maxMileage = maxMileage != null && maxMileage >= 0 ? maxMileage : null;
-        minYear = minYear != null && minYear >= 0 ? minYear : null;
-        maxYear = maxYear != null && maxYear >= 0 ? maxYear : null;
+        // === NORMALIZZAZIONE PARAMETRI STRINGA ===
+        // Rimuove spazi e converte stringhe vuote in null per filtri più efficaci
+        category = normalizeString(category);
+        brand = normalizeString(brand);
+        selectedModel = normalizeString(selectedModel);
+        fuelType = normalizeString(fuelType);
+        transmission = normalizeString(transmission);
+        query = normalizeString(query);
 
-        // Log received parameters
-        System.out.println("Parametri ricevuti: category=" + category + ", brand=" + brand + ", model=" + selectedModel +
-                ", minPrice=" + minPrice + ", maxPrice=" + maxPrice + ", minMileage=" + minMileage +
-                ", maxMileage=" + maxMileage + ", minYear=" + minYear + ", maxYear=" + maxYear +
-                ", fuelType=" + fuelType + ", transmission=" + transmission + ", query=" + query);
+        // === VALIDAZIONE PARAMETRI NUMERICI ===
+        // Assicura che i valori numerici siano validi (>= 0)
+        minPrice = validateNumericParam(minPrice);
+        maxPrice = validateNumericParam(maxPrice);
+        minMileage = validateIntegerParam(minMileage);
+        maxMileage = validateIntegerParam(maxMileage);
+        minYear = validateIntegerParam(minYear);
+        maxYear = validateIntegerParam(maxYear);
 
-        // Retrieve products with filters
+        // Log parametri per debugging
+        logger.debug("Filtri applicati - Category: {}, Brand: {}, Query: {}", category, brand, query);
+
+        // === RICERCA PRODOTTI CON FILTRI ===
         List<Product> products = productService.findByFilters(category, brand, selectedModel,
                 minPrice, maxPrice, minMileage, maxMileage,
                 minYear, maxYear, fuelType, transmission, query);
 
-        // Sort products: featured first
+        // === ORDINAMENTO PRODOTTI ===
+        // Priorità: 1) Prodotti in evidenza attivi, 2) Prodotti in evidenza, 3) Ordine alfabetico
         products.sort(Comparator.comparing(Product::isFeaturedActive, Comparator.reverseOrder())
                 .thenComparing(Product::isFeatured, Comparator.reverseOrder())
                 .thenComparing(Product::getModel, Comparator.nullsLast(String::compareTo)));
 
-        // Add sorted products to model
+        logger.info("Trovati {} prodotti con i filtri applicati", products.size());
+
+        // === PREPARAZIONE DATI PER LA VIEW ===
+        // Prodotti filtrati e ordinati
         model.addAttribute("products", products);
 
-        // Add dropdown values
+        // Valori per dropdown dei filtri
         model.addAttribute("categories", productService.findAllCategories());
         model.addAttribute("brands", productService.findAllBrands());
         model.addAttribute("models", brand != null ? productService.findModelsByBrand(brand) : null);
         model.addAttribute("fuelTypes", productService.findAllFuelTypes());
         model.addAttribute("transmissions", productService.findAllTransmissions());
 
-        // Add filter values to preserve them
+        // Conserva valori dei filtri per mantenere stato del form
+        addFilterAttributesToModel(model, category, brand, selectedModel, minPrice, maxPrice,
+                minMileage, maxMileage, minYear, maxYear, fuelType, transmission, query);
+
+        // Stato autenticazione utente
+        addAuthenticationStatus(model);
+
+        return "products";
+    }
+
+    /**
+     * Richiesta preventivo per un prodotto specifico
+     * Disponibile solo per utenti autenticati e prodotti venduti da dealer
+     */
+    @PostMapping("/request-quote/{productId}")
+    @Transactional
+    public String requestQuote(@PathVariable Long productId, 
+                             Authentication authentication, 
+                             RedirectAttributes redirectAttributes) {
+        
+        logger.info("Richiesta preventivo per prodotto ID: {}", productId);
+
+        // === VERIFICA AUTENTICAZIONE ===
+        if (authentication == null || "anonymousUser".equals(authentication.getName())) {
+            logger.warn("Tentativo di richiesta preventivo senza autenticazione");
+            redirectAttributes.addFlashAttribute("error", "Devi essere loggato per richiedere un preventivo.");
+            return "redirect:/login";
+        }
+
+        try {
+            // === RECUPERO ENTITÀ DAL DATABASE ===
+            String username = authentication.getName();
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new IllegalStateException("Utente non trovato: " + username));
+
+            Product product = productService.findById(productId)
+                    .orElseThrow(() -> new IllegalStateException("Prodotto non trovato: " + productId));
+
+            // === VALIDAZIONI BUSINESS LOGIC ===
+            // Verifica che il prodotto abbia un venditore
+            User seller = product.getSeller();
+            if (seller == null) {
+                logger.warn("Prodotto {} senza venditore associato", productId);
+                redirectAttributes.addFlashAttribute("error", "Nessun venditore associato al prodotto.");
+                return "redirect:/products";
+            }
+
+            // Verifica che il venditore sia un dealer (solo i dealer gestiscono preventivi)
+            if (!"DEALER".equalsIgnoreCase(product.getSellerType())) {
+                logger.warn("Tentativo preventivo su prodotto non-dealer: {}", productId);
+                redirectAttributes.addFlashAttribute("error", "Le richieste di preventivo sono disponibili solo per i prodotti venduti da dealer.");
+                return "redirect:/products";
+            }
+
+            // Recupera il Dealer associato al venditore
+            Dealer dealer = dealerService.findByOwnerUsername(seller.getUsername());
+            if (dealer == null) {
+                logger.error("Dealer non trovato per username: {}", seller.getUsername());
+                redirectAttributes.addFlashAttribute("error", "Nessun dealer associato al venditore.");
+                return "redirect:/products";
+            }
+
+            // === VERIFICA DUPLICATI ===
+            // Evita richieste multiple per lo stesso prodotto dallo stesso utente
+            if (quoteRequestRepository.existsByUserIdAndProductIdAndStatus(user.getId(), productId, "PENDING")) {
+                logger.warn("Richiesta preventivo duplicata - User: {}, Product: {}", user.getId(), productId);
+                redirectAttributes.addFlashAttribute("error", "Hai già una richiesta di preventivo in sospeso per questo prodotto. Attendi una risposta prima di inviarne un'altra.");
+                return "redirect:/products";
+            }
+
+            // === CREAZIONE RICHIESTA PREVENTIVO ===
+            QuoteRequest quoteRequest = createQuoteRequest(user, product, dealer);
+            quoteRequestRepository.save(quoteRequest);
+
+            logger.info("Preventivo creato con successo - ID: {}", quoteRequest.getId());
+            redirectAttributes.addFlashAttribute("success", "Richiesta di preventivo inviata con successo!");
+            return "redirect:/products";
+
+        } catch (Exception e) {
+            logger.error("Errore durante creazione preventivo: {}", e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("error", "Errore interno durante l'invio della richiesta.");
+            return "redirect:/products";
+        }
+    }
+
+    // === METODI HELPER PER PULIZIA CODICE ===
+
+    /**
+     * Normalizza stringa: rimuove spazi e converte vuote in null
+     */
+    private String normalizeString(String value) {
+        return value != null && !value.trim().isEmpty() ? value.trim() : null;
+    }
+
+    /**
+     * Valida parametri BigDecimal: deve essere >= 0
+     */
+    private BigDecimal validateNumericParam(BigDecimal value) {
+        return value != null && value.compareTo(BigDecimal.ZERO) >= 0 ? value : null;
+    }
+
+    /**
+     * Valida parametri Integer: deve essere >= 0
+     */
+    private Integer validateIntegerParam(Integer value) {
+        return value != null && value >= 0 ? value : null;
+    }
+
+    /**
+     * Aggiunge tutti gli attributi dei filtri al model
+     */
+    private void addFilterAttributesToModel(Model model, String category, String brand, String selectedModel,
+                                          BigDecimal minPrice, BigDecimal maxPrice, Integer minMileage,
+                                          Integer maxMileage, Integer minYear, Integer maxYear,
+                                          String fuelType, String transmission, String query) {
         model.addAttribute("category", category);
         model.addAttribute("brand", brand);
         model.addAttribute("selectedModel", selectedModel);
@@ -115,74 +233,21 @@ public class ProductsController {
         model.addAttribute("fuelType", fuelType);
         model.addAttribute("transmission", transmission);
         model.addAttribute("query", query);
+    }
 
-        // Add authentication status
+    /**
+     * Aggiunge stato autenticazione al model
+     */
+    private void addAuthenticationStatus(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal());
         model.addAttribute("isAuthenticated", isAuthenticated);
-
-        return "products";
-    }
-    @GetMapping("/search")
-    public String searchProducts(@RequestParam("query") String query) {
-        // Reindirizza a /products con il parametro query
-        return "redirect:/products?query=" + query;
     }
 
-    @GetMapping("/brand/{brand}")
-    public String getBrand(@PathVariable String brand) {
-        // Reindirizza a /products con il parametro brand
-        return "redirect:/products?brand=" + brand;
-    }
-
-    @GetMapping("/category/{category}")
-    public String getCategory(@PathVariable String category) {
-        // Reindirizza a /products con il parametro category
-        return "redirect:/products?category=" + category;
-    }
-
-
-    @PostMapping("/request-quote/{productId}")
-    @Transactional
-    public String requestQuote(@PathVariable Long productId, Authentication authentication, RedirectAttributes redirectAttributes) {
-        if (authentication == null || "anonymousUser".equals(authentication.getName())) {
-            redirectAttributes.addFlashAttribute("error", "Devi essere loggato per richiedere un preventivo.");
-            return "redirect:/login";
-        }
-
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalStateException("Utente non trovato"));
-
-        Product product = productService.findById(productId)
-                .orElseThrow(() -> new IllegalStateException("Prodotto non trovato"));
-
-        // Verifica che il prodotto abbia un venditore
-        User seller = product.getSeller();
-        if (seller == null) {
-            redirectAttributes.addFlashAttribute("error", "Nessun venditore associato al prodotto.");
-            return "redirect:/products";
-        }
-
-        // Verifica che il venditore sia un dealer
-        if (!"DEALER".equalsIgnoreCase(product.getSellerType())) {
-            redirectAttributes.addFlashAttribute("error", "Le richieste di preventivo sono disponibili solo per i prodotti venduti da dealer.");
-            return "redirect:/products";
-        }
-
-        // Recupera il Dealer associato al seller
-        Dealer dealer = dealerService.findByOwnerUsername(seller.getUsername());
-        if (dealer == null) {
-            redirectAttributes.addFlashAttribute("error", "Nessun dealer associato al venditore.");
-            return "redirect:/products";
-        }
-
-        // Verifica se l'utente ha già una richiesta in sospeso per questo prodotto
-        if (quoteRequestRepository.existsByUserIdAndProductIdAndStatus(user.getId(), productId, "PENDING")) {
-            redirectAttributes.addFlashAttribute("error", "Hai già una richiesta di preventivo in sospeso per questo prodotto. Attendi una risposta prima di inviarne un'altra.");
-            return "redirect:/products";
-        }
-
+    /**
+     * Crea una nuova richiesta di preventivo
+     */
+    private QuoteRequest createQuoteRequest(User user, Product product, Dealer dealer) {
         QuoteRequest quoteRequest = new QuoteRequest();
         quoteRequest.setProduct(product);
         quoteRequest.setUser(user);
@@ -190,13 +255,38 @@ public class ProductsController {
         quoteRequest.setUserEmail(user.getEmail());
         quoteRequest.setRequestDate(LocalDateTime.now());
         quoteRequest.setStatus("PENDING");
-
-        quoteRequestRepository.save(quoteRequest);
-
-        redirectAttributes.addFlashAttribute("success", "Richiesta di preventivo inviata con successo!");
-        return "redirect:/products";
+        return quoteRequest;
     }
 
+    // === ENDPOINT DI SUPPORTO ===
+    
+    /**
+     * Redirect per ricerche testuali
+     */
+    @GetMapping("/search")
+    public String searchProducts(@RequestParam("query") String query) {
+        return "redirect:/products?query=" + query;
+    }
+
+    /**
+     * Redirect per filtro per marca
+     */
+    @GetMapping("/brand/{brand}")
+    public String getBrand(@PathVariable String brand) {
+        return "redirect:/products?brand=" + brand;
+    }
+
+    /**
+     * Redirect per filtro per categoria
+     */
+    @GetMapping("/category/{category}")
+    public String getCategory(@PathVariable String category) {
+        return "redirect:/products?category=" + category;
+    }
+
+    /**
+     * Dettagli prodotto singolo
+     */
     @GetMapping("/{id}")
     public String getProductDetails(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         Product product = productService.findById(id).orElse(null);
@@ -204,14 +294,9 @@ public class ProductsController {
             redirectAttributes.addFlashAttribute("error", "Prodotto non trovato");
             return "redirect:/products";
         }
+        
         model.addAttribute("product", product);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAuthenticated = authentication != null && authentication.isAuthenticated() &&
-                !"anonymousUser".equals(authentication.getPrincipal());
-        model.addAttribute("isAuthenticated", isAuthenticated);
-
+        addAuthenticationStatus(model);
         return "product-detail";
     }
-
 }

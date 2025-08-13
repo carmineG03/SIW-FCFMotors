@@ -134,6 +134,7 @@ header h2 {
     display: inline-block;
 }
 
+
 .dropdown-toggle {
     background: linear-gradient(45deg, #F5A623, #E59400);
     border: none;
@@ -146,6 +147,7 @@ header h2 {
     justify-content: center;
     transition: transform 0.3s ease, background 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    pointer-events: auto !important;
 }
 
 .dropdown-toggle:hover {
@@ -180,7 +182,7 @@ header h2 {
 }
 
 .dropdown-menu.show {
-    display: block;
+    display: block !important;
     opacity: 1;
     transform: translateY(0);
 }
@@ -433,3 +435,4 @@ footer {
         padding: clamp(4px, 1.5vw, 5px) clamp(8px, 2.5vw, 10px);
     }
 }
+
