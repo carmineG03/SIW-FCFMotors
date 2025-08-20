@@ -570,8 +570,6 @@ public class UserService {
 
         // Subscription deactivation
         userSubscription.setAutoRenew(false); // Prevent future renewals
-        userSubscription.setActive(false); // Immediate deactivation
-        userSubscription.setExpiryDate(LocalDate.now()); // Immediate expiry
         userSubscriptionRepository.save(userSubscription);
         
         logger.info("Subscription cancelled: id={}, userId={}", userSubscriptionId, userId);
@@ -587,36 +585,6 @@ public class UserService {
         } catch (MessagingException e) {
             logger.error("Failed to send subscription cancellation email to {}: {}", 
                     userSubscription.getUser().getEmail(), e.getMessage());
-        }
-
-        // Role downgrade logic
-        User user = userSubscription.getUser();
-        List<UserSubscription> remainingActive = userSubscriptionRepository.findByUserAndActive(user, true);
-        
-        if (remainingActive.isEmpty()) {
-            logger.info("No remaining active subscriptions for user {}, performing role downgrade", userId);
-            
-            // Role and subscription clearance
-            user.setRolesString("USER");
-            user.setSubscription(null);
-            userRepository.save(user);
-            
-            // Dealer cleanup cascade
-            dealerRepository.findByOwner(user).ifPresent(dealer -> {
-                try {
-                    dealerService.deleteDealer(dealer.getId());
-                    logger.info("Dealer deleted for user: userId={}, dealerId={}", userId, dealer.getId());
-                } catch (IllegalArgumentException e) {
-                    logger.warn("Failed to delete dealer for user {}: {}", userId, e.getMessage());
-                }
-            });
-
-            // Products cleanup
-            List<Product> products = productRepository.findBySeller(user);
-            productRepository.deleteAll(products);
-            logger.info("Deleted {} products for user {}", products.size(), userId);
-        } else {
-            logger.info("User {} still has {} active subscriptions", userId, remainingActive.size());
         }
     }
 

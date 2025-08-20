@@ -93,10 +93,10 @@
                             <i class="fas fa-exclamation-triangle"></i> Questo abbonamento si disattiverà alla scadenza,
                             se vuoi continuare ad usarlo riattivalo!
                         </div>
-                        <a th:href="@{/cancel-subscription(userSubscriptionId=${userSubscription.id})}"
+                        <a th:href="@{/toggle-auto-renewal(userSubscriptionId=${userSubscription.id})}"
                             th:classappend="${userSubscription.autoRenew} ? 'toggle-auto-renew-button disable' : 'toggle-auto-renew-button enable'"
                             th:text="${userSubscription.autoRenew} ? 'Disattiva Rinnovo' : 'Riattiva Rinnovo'"
-                            th:onclick="${userSubscription.autoRenew} ? 'return confirm(\'Sei sicuro di voler disattivare il rinnovo automatico di questo abbonamento? L\\\'abbonamento si disattiverà alla scadenza.\')' : 'return confirm(\'Sei sicuro di voler riattivare il rinnovo automatico di questo abbonamento?\')'">
+                            th:onclick="${userSubscription.autoRenew} ? 'return confirm(\'Sei sicuro di voler disattivare il rinnovo automatico? L\\\'abbonamento rimarrà attivo fino alla scadenza.\')' : 'return confirm(\'Sei sicuro di voler riattivare il rinnovo automatico?\')'">
                         </a>
                     </div>
                 </div>

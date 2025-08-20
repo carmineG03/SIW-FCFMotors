@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -29,7 +30,8 @@ import java.util.List;
 
 /**
  * Controller per la gestione dell'account utente.
- * Gestisce visualizzazione, modifica, eliminazione account e gestione abbonamenti.
+ * Gestisce visualizzazione, modifica, eliminazione account e gestione
+ * abbonamenti.
  * 
  * @author FCF Motors Team
  * @version 1.0
@@ -66,11 +68,11 @@ public class AccountController {
      */
     @Autowired
     public AccountController(UserService userService,
-                           AccountInformationRepository accountInformationRepository,
-                           CartService cartService,
-                           UserRepository userRepository,
-                           UserSubscriptionRepository userSubscriptionRepository,
-                           SubscriptionRepository subscriptionRepository) {
+            AccountInformationRepository accountInformationRepository,
+            CartService cartService,
+            UserRepository userRepository,
+            UserSubscriptionRepository userSubscriptionRepository,
+            SubscriptionRepository subscriptionRepository) {
         this.userService = userService;
         this.accountInformationRepository = accountInformationRepository;
         this.cartService = cartService;
@@ -85,14 +87,14 @@ public class AccountController {
      * Mostra la pagina principale dell'account utente.
      * Include informazioni personali, abbonamenti attivi e disponibili.
      * 
-     * @param model Modello per la vista
+     * @param model     Modello per la vista
      * @param principal Utente autenticato corrente
      * @return Nome della vista account
      */
     @GetMapping("/account")
     public String showAccount(Model model, Principal principal) {
-        logger.info("Accesso alla pagina account per utente: {}", 
-                   principal != null ? principal.getName() : "non autenticato");
+        logger.info("Accesso alla pagina account per utente: {}",
+                principal != null ? principal.getName() : "non autenticato");
 
         // Verifica autenticazione
         if (principal == null) {
@@ -117,8 +119,8 @@ public class AccountController {
                     .orElse(new AccountInformation());
 
             // Carica abbonamenti attivi e disponibili
-            List<UserSubscription> activeSubscriptions = userService.getActiveSubscriptions(user.getId());
-            
+            List<UserSubscription> activeSubscriptions = userSubscriptionRepository.findByUserAndActive(user, true);
+
             // Popola il modello per la vista
             model.addAttribute("user", user);
             model.addAttribute("accountInformation", accountInformation);
@@ -126,14 +128,14 @@ public class AccountController {
             model.addAttribute("availableSubscriptions", userService.getAvailableSubscriptions());
             model.addAttribute("editMode", false);
 
-            logger.info("Pagina account caricata con successo per utente: {} (abbonamenti attivi: {})", 
-                       user.getUsername(), activeSubscriptions.size());
+            logger.info("Pagina account caricata con successo per utente: {} (abbonamenti attivi: {})",
+                    user.getUsername(), activeSubscriptions.size());
 
             return "account";
 
         } catch (Exception e) {
-            logger.error("Errore durante il caricamento della pagina account per utente: {}", 
-                        principal.getName(), e);
+            logger.error("Errore durante il caricamento della pagina account per utente: {}",
+                    principal.getName(), e);
             model.addAttribute("error", "Errore durante il caricamento delle informazioni account");
             model.addAttribute("accountInformation", new AccountInformation());
             model.addAttribute("editMode", false);
@@ -144,14 +146,14 @@ public class AccountController {
     /**
      * Mostra la pagina di modifica dell'account.
      * 
-     * @param model Modello per la vista
+     * @param model     Modello per la vista
      * @param principal Utente autenticato corrente
      * @return Nome della vista account in modalità modifica
      */
     @GetMapping("/account/edit")
     public String editAccount(Model model, Principal principal) {
-        logger.info("Accesso alla modalità modifica account per utente: {}", 
-                   principal != null ? principal.getName() : "non autenticato");
+        logger.info("Accesso alla modalità modifica account per utente: {}",
+                principal != null ? principal.getName() : "non autenticato");
 
         // Verifica autenticazione
         if (principal == null) {
@@ -182,8 +184,8 @@ public class AccountController {
             return "account";
 
         } catch (Exception e) {
-            logger.error("Errore durante l'attivazione della modalità modifica per utente: {}", 
-                        principal.getName(), e);
+            logger.error("Errore durante l'attivazione della modalità modifica per utente: {}",
+                    principal.getName(), e);
             model.addAttribute("error", "Errore durante il caricamento della modalità modifica");
             model.addAttribute("accountInformation", new AccountInformation());
             model.addAttribute("editMode", true);
@@ -196,14 +198,14 @@ public class AccountController {
     /**
      * Salva le informazioni dell'account modificate dall'utente.
      * 
-     * @param formAI Dati del form di modifica
+     * @param formAI    Dati del form di modifica
      * @param principal Utente autenticato corrente
      * @return Redirect alla pagina account
      */
     @PostMapping("/account")
     public String saveAccountInformation(@ModelAttribute AccountInformation formAI, Principal principal) {
-        logger.info("Tentativo di salvataggio informazioni account per utente: {}", 
-                   principal != null ? principal.getName() : "non autenticato");
+        logger.info("Tentativo di salvataggio informazioni account per utente: {}",
+                principal != null ? principal.getName() : "non autenticato");
 
         // Verifica autenticazione
         if (principal == null) {
@@ -240,8 +242,8 @@ public class AccountController {
             return "redirect:/account";
 
         } catch (Exception e) {
-            logger.error("Errore durante il salvataggio delle informazioni account per utente: {}", 
-                        principal.getName(), e);
+            logger.error("Errore durante il salvataggio delle informazioni account per utente: {}",
+                    principal.getName(), e);
             return "redirect:/account?error=Errore durante il salvataggio";
         }
     }
@@ -274,8 +276,8 @@ public class AccountController {
             model.addAttribute("activeSubscriptions", activeSubscriptions);
             model.addAttribute("availableSubscriptions", subscriptionRepository.findAll());
 
-            logger.info("Pagina abbonamenti caricata per utente: {} (abbonamenti attivi: {})", 
-                       username, activeSubscriptions.size());
+            logger.info("Pagina abbonamenti caricata per utente: {} (abbonamenti attivi: {})",
+                    username, activeSubscriptions.size());
 
             return "subscriptions";
 
@@ -290,13 +292,13 @@ public class AccountController {
      * Aggiunge un abbonamento al carrello dell'utente.
      * 
      * @param subscriptionId ID dell'abbonamento da aggiungere
-     * @param principal Utente autenticato corrente
+     * @param principal      Utente autenticato corrente
      * @return Redirect al carrello
      */
     @PostMapping("/subscribe")
     public String subscribe(@RequestParam("subscriptionId") Long subscriptionId, Principal principal) {
-        logger.info("Tentativo di aggiunta abbonamento al carrello: subscriptionId={}, utente={}", 
-                   subscriptionId, principal != null ? principal.getName() : "non autenticato");
+        logger.info("Tentativo di aggiunta abbonamento al carrello: subscriptionId={}, utente={}",
+                subscriptionId, principal != null ? principal.getName() : "non autenticato");
 
         // Verifica autenticazione
         if (principal == null) {
@@ -314,14 +316,14 @@ public class AccountController {
             // Aggiunge l'abbonamento al carrello
             cartService.addSubscriptionToCart(subscriptionId, user);
 
-            logger.info("Abbonamento aggiunto al carrello con successo: subscriptionId={}, utente={}", 
-                       subscriptionId, user.getUsername());
+            logger.info("Abbonamento aggiunto al carrello con successo: subscriptionId={}, utente={}",
+                    subscriptionId, user.getUsername());
 
             return "redirect:/cart?success=true";
 
         } catch (Exception e) {
-            logger.error("Errore durante l'aggiunta abbonamento al carrello: subscriptionId={}, utente={}", 
-                        subscriptionId, principal.getName(), e);
+            logger.error("Errore durante l'aggiunta abbonamento al carrello: subscriptionId={}, utente={}",
+                    subscriptionId, principal.getName(), e);
             return "redirect:/cart?error=Errore durante l'aggiunta dell'abbonamento";
         }
     }
@@ -332,13 +334,13 @@ public class AccountController {
      * Promuove un utente al ruolo PRIVATE per vendere auto.
      * 
      * @param principal Utente autenticato corrente
-     * @param model Modello per eventuali messaggi di errore
+     * @param model     Modello per eventuali messaggi di errore
      * @return Redirect alla pagina account con messaggio
      */
     @PostMapping("/account/become-private")
     public String becomePrivate(Principal principal, Model model) {
-        logger.info("Richiesta promozione a utente PRIVATE da: {}", 
-                   principal != null ? principal.getName() : "non autenticato");
+        logger.info("Richiesta promozione a utente PRIVATE da: {}",
+                principal != null ? principal.getName() : "non autenticato");
 
         // Verifica autenticazione
         if (principal == null) {
@@ -357,15 +359,15 @@ public class AccountController {
             // Verifica che l'utente abbia il ruolo USER e non abbia abbonamenti attivi
             if (user.getRolesString().contains("USER") && userService.getActiveSubscriptions(user.getId()).isEmpty()) {
                 userService.updateUserRole(user, "PRIVATE");
-                
+
                 logger.info("Utente promosso a PRIVATE con successo: {}", user.getUsername());
-                
+
                 return "redirect:/account?success=Ruolo aggiornato a PRIVATO. Ora puoi vendere la tua auto!";
             } else {
-                logger.warn("Promozione PRIVATE negata per utente: {} (ha abbonamenti attivi o ruolo diverso)", 
-                           user.getUsername());
-                model.addAttribute("error", 
-                    "Non puoi diventare PRIVATO: hai già un abbonamento attivo o un ruolo diverso.");
+                logger.warn("Promozione PRIVATE negata per utente: {} (ha abbonamenti attivi o ruolo diverso)",
+                        user.getUsername());
+                model.addAttribute("error",
+                        "Non puoi diventare PRIVATO: hai già un abbonamento attivo o un ruolo diverso.");
                 return "account";
             }
 
@@ -380,13 +382,13 @@ public class AccountController {
      * Rimuove il ruolo PRIVATE dall'utente e elimina l'auto in vendita.
      * 
      * @param principal Utente autenticato corrente
-     * @param model Modello per eventuali messaggi di errore
+     * @param model     Modello per eventuali messaggi di errore
      * @return Redirect alla pagina account con messaggio
      */
     @PostMapping("/account/remove-private")
     public String removePrivate(Principal principal, Model model) {
-        logger.info("Richiesta rimozione ruolo PRIVATE da: {}", 
-                   principal != null ? principal.getName() : "non autenticato");
+        logger.info("Richiesta rimozione ruolo PRIVATE da: {}",
+                principal != null ? principal.getName() : "non autenticato");
 
         // Verifica autenticazione
         if (principal == null) {
@@ -405,13 +407,13 @@ public class AccountController {
             // Verifica che l'utente abbia il ruolo PRIVATE
             if (user.getRolesString().contains("PRIVATE")) {
                 userService.removePrivateRoleAndCar(user);
-                
+
                 logger.info("Ruolo PRIVATE rimosso con successo per utente: {}", user.getUsername());
-                
+
                 return "redirect:/account?success=Ruolo PRIVATO rimosso. L'auto in vendita è stata eliminata.";
             } else {
-                logger.warn("Tentativo di rimozione ruolo PRIVATE su utente che non lo possiede: {}", 
-                           user.getUsername());
+                logger.warn("Tentativo di rimozione ruolo PRIVATE su utente che non lo possiede: {}",
+                        user.getUsername());
                 model.addAttribute("error", "Non puoi rimuovere il ruolo PRIVATO: non hai questo ruolo.");
                 return "account";
             }
@@ -433,16 +435,17 @@ public class AccountController {
      * Gestisce la cancellazione/riattivazione dell'auto-renewal degli abbonamenti.
      * 
      * @param userSubscriptionId ID dell'abbonamento utente
-     * @param principal Utente autenticato corrente
+     * @param principal          Utente autenticato corrente
+     * @param redirectAttributes Attributi per il redirect
      * @return Redirect alla pagina account con messaggio
      */
-    @GetMapping("/cancel-subscription")
-    public String cancelSubscription(@RequestParam("userSubscriptionId") Long userSubscriptionId, 
-                                   Principal principal) {
-        logger.info("Richiesta modifica auto-renewal abbonamento: userSubscriptionId={}, utente={}", 
-                   userSubscriptionId, principal != null ? principal.getName() : "non autenticato");
+    @GetMapping("/toggle-auto-renewal") 
+    public String toggleAutoRenewal(@RequestParam("userSubscriptionId") Long userSubscriptionId,
+            Principal principal,
+            RedirectAttributes redirectAttributes) {
+        logger.info("🔄 TOGGLE auto-renewal abbonamento: userSubscriptionId={}, utente={}",
+                userSubscriptionId, principal != null ? principal.getName() : "non autenticato");
 
-        // Verifica autenticazione
         if (principal == null) {
             logger.warn("Tentativo di modifica abbonamento senza autenticazione");
             return "redirect:/login";
@@ -459,32 +462,54 @@ public class AccountController {
             UserSubscription subscription = userSubscriptionRepository.findById(userSubscriptionId)
                     .orElseThrow(() -> new IllegalArgumentException("Abbonamento non trovato"));
 
+            // 🔍 DEBUG STATO PRIMA
+            logger.info("🔍 STATO PRIMA: id={}, active={}, autoRenew={}",
+                    subscription.getId(), subscription.isActive(), subscription.isAutoRenew());
+
             // Verifica autorizzazione
             if (!subscription.getUser().getId().equals(user.getId())) {
-                logger.warn("Tentativo non autorizzato di modifica abbonamento: utente={}, subscriptionId={}", 
-                           user.getUsername(), userSubscriptionId);
+                logger.warn("Tentativo non autorizzato di modifica abbonamento: utente={}, subscriptionId={}",
+                        user.getUsername(), userSubscriptionId);
                 throw new IllegalArgumentException("Non autorizzato");
             }
 
-            // Toggle dello stato auto-renewal
+            // SOLO TOGGLE AUTO-RENEWAL - NIENT'ALTRO!
             boolean newAutoRenewState = !subscription.isAutoRenew();
             subscription.setAutoRenew(newAutoRenewState);
+
+            // SAVE DIRETTO - NON CHIAMARE ALTRI METODI
             userSubscriptionRepository.save(subscription);
 
-            String successMessage = newAutoRenewState ? "Auto-renewal attivato" : "Auto-renewal disattivato";
-            
-            logger.info("Auto-renewal modificato per abbonamento: subscriptionId={}, utente={}, nuovoStato={}", 
-                       userSubscriptionId, user.getUsername(), newAutoRenewState);
+            // 🔍 DEBUG STATO DOPO
+            UserSubscription saved = userSubscriptionRepository.findById(userSubscriptionId).orElse(null);
+            logger.info("🔍 STATO DOPO: id={}, active={}, autoRenew={}",
+                    saved.getId(), saved.isActive(), saved.isAutoRenew());
 
-            return "redirect:/account?success=" + successMessage;
+            // Messaggio personalizzato
+            if (newAutoRenewState) {
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "✅ Rinnovo automatico riattivato! Il tuo abbonamento si rinnoverà automaticamente.");
+            } else {
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "⚠️ Rinnovo automatico disattivato. L'abbonamento rimarrà attivo fino al " +
+                                subscription.getExpiryDate() + " e poi scadrà.");
+            }
+
+            logger.info("✅ Auto-renewal modificato: subscriptionId={}, utente={}, nuovoStato={}",
+                    userSubscriptionId, user.getUsername(), newAutoRenewState);
+
+            return "redirect:/account";
 
         } catch (IllegalArgumentException e) {
-            logger.error("Errore di validazione durante modifica abbonamento: {}", e.getMessage());
-            return "redirect:/account?error=" + e.getMessage();
+            logger.error("❌ Errore validazione: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/account";
         } catch (Exception e) {
-            logger.error("Errore durante la modifica abbonamento: userSubscriptionId={}, utente={}", 
-                        userSubscriptionId, principal.getName(), e);
-            return "redirect:/account?error=Errore durante la modifica dell'abbonamento";
+            logger.error("❌ Errore toggle auto-renewal: userSubscriptionId={}, utente={}",
+                    userSubscriptionId, principal.getName(), e);
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Errore durante la modifica dell'abbonamento. Riprova più tardi.");
+            return "redirect:/account";
         }
     }
 
@@ -494,14 +519,14 @@ public class AccountController {
      * Gestisce la visualizzazione della home page.
      * Carica le informazioni utente se autenticato.
      * 
-     * @param model Modello per la vista
+     * @param model     Modello per la vista
      * @param principal Utente autenticato (opzionale)
      * @return Nome della vista index
      */
     @GetMapping("/")
     public String index(Model model, Principal principal) {
-        logger.debug("Accesso alla home page da utente: {}", 
-                    principal != null ? principal.getName() : "non autenticato");
+        logger.debug("Accesso alla home page da utente: {}",
+                principal != null ? principal.getName() : "non autenticato");
 
         try {
             // Se l'utente è autenticato, carica le sue informazioni
@@ -511,10 +536,10 @@ public class AccountController {
                     AccountInformation accountInformation = accountInformationRepository
                             .findByUserId(user.getId())
                             .orElse(new AccountInformation());
-                    
+
                     model.addAttribute("user", user);
                     model.addAttribute("accountInformation", accountInformation);
-                    
+
                     logger.debug("Informazioni utente caricate per home page: {}", user.getUsername());
                 }
             }
@@ -524,8 +549,8 @@ public class AccountController {
             return "index";
 
         } catch (Exception e) {
-            logger.error("Errore durante il caricamento della home page per utente: {}", 
-                        principal != null ? principal.getName() : "non autenticato", e);
+            logger.error("Errore durante il caricamento della home page per utente: {}",
+                    principal != null ? principal.getName() : "non autenticato", e);
             model.addAttribute("isAuthenticated", principal != null);
             return "index";
         }
@@ -534,15 +559,16 @@ public class AccountController {
     // === ROUTING MANUTENZIONE ===
 
     /**
-     * Reindirizza gli utenti alla pagina di manutenzione appropriata in base al ruolo.
+     * Reindirizza gli utenti alla pagina di manutenzione appropriata in base al
+     * ruolo.
      * 
      * @param auth Oggetto Authentication corrente
      * @return Redirect alla pagina appropriata
      */
     @GetMapping("/manutenzione")
     public String manutenzione(Authentication auth) {
-        logger.info("Accesso a manutenzione da utente con ruoli: {}", 
-                   auth != null ? auth.getAuthorities() : "non autenticato");
+        logger.info("Accesso a manutenzione da utente con ruoli: {}",
+                auth != null ? auth.getAuthorities() : "non autenticato");
 
         try {
             if (SecurityUtils.hasRole("ROLE_PRIVATE")) {
@@ -590,20 +616,20 @@ public class AccountController {
      * Elimina definitivamente l'account utente dopo verifica password.
      * 
      * @param principal Utente autenticato corrente
-     * @param password Password di conferma
-     * @param model Modello per eventuali messaggi di errore
-     * @param request Richiesta HTTP
-     * @param response Risposta HTTP
+     * @param password  Password di conferma
+     * @param model     Modello per eventuali messaggi di errore
+     * @param request   Richiesta HTTP
+     * @param response  Risposta HTTP
      * @return Redirect al login con messaggio di conferma
      */
     @PostMapping("/account/delete")
-    public String deleteAccount(Principal principal, 
-                              @RequestParam String password, 
-                              Model model,
-                              HttpServletRequest request, 
-                              HttpServletResponse response) {
-        logger.info("Richiesta eliminazione account da utente: {}", 
-                   principal != null ? principal.getName() : "non autenticato");
+    public String deleteAccount(Principal principal,
+            @RequestParam String password,
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        logger.info("Richiesta eliminazione account da utente: {}",
+                principal != null ? principal.getName() : "non autenticato");
 
         // Verifica autenticazione
         if (principal == null || principal.getName() == null) {
@@ -626,8 +652,8 @@ public class AccountController {
             userService.deleteUser(user, password);
 
             // Effettua il logout
-            new SecurityContextLogoutHandler().logout(request, response, 
-                SecurityContextHolder.getContext().getAuthentication());
+            new SecurityContextLogoutHandler().logout(request, response,
+                    SecurityContextHolder.getContext().getAuthentication());
 
             logger.info("Account eliminato con successo: {}", username);
 
@@ -640,7 +666,7 @@ public class AccountController {
             User user = userService.findByUsername(username);
             populateModelForAccountPage(model, user);
             model.addAttribute("error", e.getMessage());
-            
+
             return "account";
         }
     }
@@ -652,14 +678,14 @@ public class AccountController {
      * Utilizzato per evitare duplicazione di codice.
      * 
      * @param model Modello da popolare
-     * @param user Utente corrente (può essere null)
+     * @param user  Utente corrente (può essere null)
      */
     private void populateModelForAccountPage(Model model, User user) {
         if (user != null) {
             AccountInformation accountInfo = accountInformationRepository
                     .findByUserId(user.getId())
                     .orElse(new AccountInformation());
-            
+
             model.addAttribute("user", user);
             model.addAttribute("accountInformation", accountInfo);
             model.addAttribute("activeSubscriptions", userService.getActiveSubscriptions(user.getId()));
@@ -669,7 +695,7 @@ public class AccountController {
             model.addAttribute("activeSubscriptions", Collections.emptyList());
             model.addAttribute("availableSubscriptions", subscriptionRepository.findAll());
         }
-        
+
         model.addAttribute("editMode", false);
     }
 }
