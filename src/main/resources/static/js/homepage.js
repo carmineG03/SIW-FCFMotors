@@ -70,9 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
             carouselState.itemsPerSlide = 3;
         }
 
-        // Imposta la variabile CSS per il numero totale di elementi
+        // Imposta le variabili CSS per il numero totale di elementi e items per slide
         if (carouselElements.carousel) {
             carouselElements.carousel.style.setProperty('--total-items', carouselState.totalItems);
+            carouselElements.carousel.style.setProperty('--items-per-slide', carouselState.itemsPerSlide);
         }
 
         // Calcola nuovo indice valido per evitare overflow
