@@ -56,10 +56,17 @@
                 
                 <!-- Nuova barra di ricerca -->
                 <div class="new-search-bar">
-                    <form class="new-search-form" action="/products/search" method="get" onsubmit="return validateSearch()">
+                    <form class="new-search-form" action="/products" method="get">
                         <div class="new-search-input-wrapper">
                             <i class="fas fa-search search-icon"></i>
-                            <input type="text" name="query" id="new-search-input" placeholder="Cerca marca, modello o categoria..." required aria-label="Cerca auto per marca, modello o categoria"/>
+                            <input 
+                                type="text" 
+                                name="query" 
+                                id="search-input" 
+                                placeholder="Cerca marca, modello o categoria..." 
+                                autocomplete="off"
+                                aria-label="Cerca auto per marca, modello o categoria"/>
+                            <div id="autocomplete-results" class="autocomplete-results"></div>
                         </div>
                         <button type="submit" class="new-search-button" aria-label="Cerca auto">
                             Cerca

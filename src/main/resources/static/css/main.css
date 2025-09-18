@@ -245,6 +245,18 @@ main,
     flex: 1;
 }
 
+main {
+    margin-top: 0; /* Rimuove il margine superiore di main */
+    padding-top: 0; /* Rimuove il padding superiore di main */
+}
+
+/* Hero Section */
+.hero-section {
+    margin-top: 0;
+    position: relative;
+    top: -20px; /* Sposta leggermente verso l'alto per eliminare lo spazio */
+}
+
 /* Footer */
 footer {
     background-color: rgb(1, 10, 51);

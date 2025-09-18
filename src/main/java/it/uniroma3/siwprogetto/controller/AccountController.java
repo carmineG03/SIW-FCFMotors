@@ -207,7 +207,6 @@ public class AccountController {
         logger.info("Tentativo di salvataggio informazioni account per utente: {}",
                 principal != null ? principal.getName() : "non autenticato");
 
-        // Verifica autenticazione
         if (principal == null) {
             logger.warn("Tentativo di salvataggio senza autenticazione");
             return "redirect:/login";
@@ -220,30 +219,29 @@ public class AccountController {
                 return "redirect:/login";
             }
 
-            // Carica o crea nuove informazioni account
-            AccountInformation accountInformation = accountInformationRepository
+            // Carica le informazioni esistenti o crea una nuova istanza
+            AccountInformation existingInfo = accountInformationRepository
                     .findByUserId(user.getId())
                     .orElse(new AccountInformation());
 
-            // Aggiorna i campi con i dati del form
-            accountInformation.setFirstName(formAI.getFirstName());
-            accountInformation.setLastName(formAI.getLastName());
-            accountInformation.setBirthDate(formAI.getBirthDate());
-            accountInformation.setAddress(formAI.getAddress());
-            accountInformation.setPhoneNumber(formAI.getPhoneNumber());
-            accountInformation.setAdditionalInfo(formAI.getAdditionalInfo());
-            accountInformation.setUser(user);
+            // Aggiorna i campi mantenendo la version esistente
+            existingInfo.setFirstName(formAI.getFirstName());
+            existingInfo.setLastName(formAI.getLastName());
+            existingInfo.setBirthDate(formAI.getBirthDate());
+            existingInfo.setAddress(formAI.getAddress());
+            existingInfo.setPhoneNumber(formAI.getPhoneNumber());
+            existingInfo.setAdditionalInfo(formAI.getAdditionalInfo());
+            existingInfo.setUser(user);
 
             // Salva nel database
-            accountInformationRepository.save(accountInformation);
+            accountInformationRepository.save(existingInfo);
 
             logger.info("Informazioni account salvate con successo per utente: {}", user.getUsername());
-
             return "redirect:/account";
 
         } catch (Exception e) {
-            logger.error("Errore durante il salvataggio delle informazioni account per utente: {}",
-                    principal.getName(), e);
+            logger.error("Errore durante il salvataggio delle informazioni account per utente: {}", 
+                        principal.getName(), e);
             return "redirect:/account?error=Errore durante il salvataggio";
         }
     }

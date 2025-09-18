@@ -293,7 +293,7 @@ main,
     text-align: center;
     color: #faf1e0;
     background: url('/image/sfondosito1.jpg') no-repeat center center / cover, #333333;
-    padding-top: 80px;
+    padding-top: 60px;
 }
 .hero-section .search-form {
     display: flex;
@@ -2517,6 +2517,8 @@ body {
 .car-card.highlighted {
     border: 2px solid #FFD700;
 }
+
+
 .car-image {
     position: relative;
     width: 100%;
@@ -3293,7 +3295,7 @@ body {
 }
 .active-subscriptions,
 .available-subscriptions {
-    margin-bottom: 40px;
+    margin-bottom: 1px;
 }
 .active-subscriptions h2,
 .available-subscriptions h2 {
@@ -3315,7 +3317,7 @@ body {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    padding: 0.5px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -3424,6 +3426,7 @@ body {
 }
 .toggle-auto-renew-button.enable {
     background: linear-gradient(45deg, #28a745, #218838);
+    
 }
 .toggle-auto-renew-button.enable:hover {
     background: linear-gradient(45deg, #218838, #28a745);

@@ -238,11 +238,73 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function setupSearchFunctionality() {
         const searchInput = document.getElementById('search-input');
-        if (!searchInput) return;
+        const searchForm = document.querySelector('.new-search-form');
+        const autocompleteResults = document.getElementById('autocomplete-results');
+        let debounceTimer;
 
-        // Effetti focus/blur per migliorare UX
-        searchInput.addEventListener('focus', handleSearchFocus);
-        searchInput.addEventListener('blur', handleSearchBlur);
+        if (searchInput && searchForm) {
+            // Gestione submit del form
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const query = searchInput.value.trim();
+                if (query) {
+                    window.location.href = `/products?query=${encodeURIComponent(query)}`;
+                }
+            });
+
+            // Gestione autocompletamento
+            searchInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                const query = this.value.trim();
+                
+                if (query.length < 2) {
+                    autocompleteResults.innerHTML = '';
+                    autocompleteResults.style.display = 'none';
+                    return;
+                }
+
+                debounceTimer = setTimeout(() => {
+                    fetch(`/products/api/search?query=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            autocompleteResults.innerHTML = '';
+                            
+                            if (data.length > 0) {
+                                data.forEach(product => {
+                                    const div = document.createElement('div');
+                                    div.className = 'autocomplete-item';
+                                    div.innerHTML = `
+                                        <div class="product-info">
+                                            <div class="product-main">
+                                                <span class="product-brand">${product.brand || ''}</span>
+                                                <span class="product-model">${product.model || ''}</span>
+                                            </div>
+                                            <span class="product-price">€${product.price ? product.price.toLocaleString() : 'N/D'}</span>
+                                        </div>
+                                    `;
+                                    div.addEventListener('click', () => {
+                                        window.location.href = `/products/${product.id}`;
+                                    });
+                                    autocompleteResults.appendChild(div);
+                                });
+                                autocompleteResults.style.display = 'block';
+                            } else {
+                                autocompleteResults.style.display = 'none';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Errore nella ricerca:', error);
+                        });
+                }, 300);
+            });
+
+            // Chiudi i risultati quando si clicca fuori
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !autocompleteResults.contains(e.target)) {
+                    autocompleteResults.style.display = 'none';
+                }
+            });
+        }
 
         console.log('🔍 Funzionalità di ricerca configurata');
     }
