@@ -12,6 +12,9 @@ import java.util.List;
  * - Associazione con proprietario (User)
  * - Gallery immagini per presentazione
  * - Localizzazione geografica per ricerche
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Entity
 public class Dealer {

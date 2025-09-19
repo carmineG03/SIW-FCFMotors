@@ -31,6 +31,9 @@ import java.util.List;
  * - Product = veicolo in vendita con caratteristiche tecniche
  * - Featured products = evidenziati con subscription premium
  * - Filtri avanzati per ricerca veicoli specifici
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Repository
 public interface ProductRepository extends CrudRepository<Product, Long> {

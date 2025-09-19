@@ -27,6 +27,9 @@ import java.util.List;
  * - UserSubscription = istanza attiva di Subscription per User specifico
  * - Stato 'active' indica subscription correntemente utilizzabile
  * - ExpiryDate gestisce scadenza automatica
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 public interface UserSubscriptionRepository extends JpaRepository<UserSubscription, Long> {
 

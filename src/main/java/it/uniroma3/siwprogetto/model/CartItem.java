@@ -10,6 +10,9 @@ import jakarta.persistence.*;
  * - Collegamento a prodotti o abbonamenti
  * - Gestione quantità per prodotti multipli
  * - Associazione univoca con utente proprietario
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Entity
 public class CartItem {

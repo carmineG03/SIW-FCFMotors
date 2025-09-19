@@ -41,6 +41,9 @@ import java.util.stream.Collectors;
  * - Scheduling integration per automated processes
  * - Email notifications per user engagement
  * - Transaction management per consistenza dati complessa
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Service
 public class UserService {

@@ -36,6 +36,9 @@ import static org.springframework.http.ResponseEntity.*;
  * Controller REST per la gestione completa dei concessionari
  * Gestisce creazione, modifica, visualizzazione dealer e loro prodotti
  * Include sistema di preventivi, evidenziazione prodotti e gestione immagini
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Controller
 @RequestMapping("/rest")

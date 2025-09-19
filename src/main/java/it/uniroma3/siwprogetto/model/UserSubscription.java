@@ -12,6 +12,9 @@ import java.time.LocalDate;
  * - Gestisce rinnovo automatico
  * - Controlla stato attivazione
  * - Verifica scadenze
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Entity
 public class UserSubscription {

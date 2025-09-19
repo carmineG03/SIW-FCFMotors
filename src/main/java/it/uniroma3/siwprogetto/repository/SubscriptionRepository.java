@@ -23,6 +23,9 @@ import org.springframework.stereotype.Repository;
  * - Subscription rappresenta template/piano abbonamento
  * - UserSubscription collega User a Subscription specifica
  * - Separazione tra definizione piano e istanza attiva
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {

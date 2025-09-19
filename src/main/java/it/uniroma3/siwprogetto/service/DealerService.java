@@ -47,6 +47,9 @@ import java.util.Optional;
  * - Transaction management per operazioni complesse
  * - Native queries per performance critical operations
  * - Lazy loading optimization per relazioni
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Service
 public class DealerService {

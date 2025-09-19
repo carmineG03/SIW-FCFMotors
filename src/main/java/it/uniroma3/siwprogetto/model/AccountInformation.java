@@ -14,6 +14,9 @@ import java.time.LocalDate;
  * - Profilo utente completo
  * - Dati per fatturazione e spedizione
  * - Informazioni anagrafiche per verifiche
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Entity
 @Table(name = "account_information")

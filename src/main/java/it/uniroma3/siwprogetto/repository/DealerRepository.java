@@ -22,6 +22,9 @@ import java.util.Optional;
  * - Query derivate da nome metodo (Spring Data JPA)
  * - Transazioni gestite automaticamente da Spring
  * - Caching di primo livello Hibernate
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 public interface DealerRepository extends JpaRepository<Dealer, Long> {
     

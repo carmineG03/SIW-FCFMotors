@@ -23,6 +23,9 @@ import java.util.List;
  * - Riconciliazione pagamenti
  * - Gestione rimborsi e dispute
  * - Analytics revenue
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {

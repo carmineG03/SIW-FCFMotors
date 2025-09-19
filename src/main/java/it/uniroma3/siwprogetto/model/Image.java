@@ -11,6 +11,9 @@ import jakarta.persistence.*;
  * - Supporto per diversi tipi di contenuto (JPEG, PNG, GIF)
  * - Associazione flessibile con dealer o prodotti
  * - Metadati per tipo MIME e gestione cache
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Entity
 public class Image {

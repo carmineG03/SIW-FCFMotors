@@ -33,6 +33,9 @@ import java.time.LocalDate;
  * - Error handling standardizzato
  * - Integration testing facilitated
  * - Mock-able per unit tests
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Service
 public class EmailService {

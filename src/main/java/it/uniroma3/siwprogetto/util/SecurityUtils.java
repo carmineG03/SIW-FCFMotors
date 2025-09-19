@@ -14,6 +14,9 @@ import java.util.Collection;
  * 
  * Esempio d'uso:
  * if (SecurityUtils.hasRole("ROLE_ADMIN")) { ... }
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 public class SecurityUtils {
 

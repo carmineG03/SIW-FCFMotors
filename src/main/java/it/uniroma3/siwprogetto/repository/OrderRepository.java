@@ -23,6 +23,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * - Logistica e spedizioni
  * - Analytics e reporting vendite
  * - Customer care e assistenza
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 public interface OrderRepository extends JpaRepository<Order, Long> {
     

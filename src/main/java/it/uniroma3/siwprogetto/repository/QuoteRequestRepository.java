@@ -22,6 +22,9 @@ import java.util.List;
  * - Gestione automatica transazioni
  * - Caching JPA di primo livello
  * - Parametri named per sicurezza SQL injection
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 public interface QuoteRequestRepository extends JpaRepository<QuoteRequest, Long> {
 

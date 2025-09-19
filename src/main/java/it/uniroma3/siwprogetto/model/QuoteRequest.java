@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
  * 3. Sistema crea QuoteRequest e notifica dealer
  * 4. Dealer risponde con dettagli e offerta
  * 5. Sistema invia risposta via email al cliente
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Entity
 @Table(name = "quote_requests")

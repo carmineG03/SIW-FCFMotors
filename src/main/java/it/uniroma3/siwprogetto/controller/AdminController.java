@@ -25,6 +25,9 @@ import java.time.LocalDate;
  * Controller per la gestione dell'area amministrativa.
  * Fornisce funzionalità CRUD per prodotti, dealer, utenti e abbonamenti.
  * Accessibile solo agli utenti con ruolo ADMIN.
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Controller
 @RequestMapping("/admin")

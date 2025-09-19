@@ -15,6 +15,9 @@ import java.util.List;
  * - Gestione gallery fotografica
  * - Associazione con venditore
  * - Pricing e informazioni commerciali
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Entity
 @Table(name = "product")

@@ -26,6 +26,9 @@ import java.util.Optional;
  * - Password hash memorizzate (mai plaintext)
  * - Token reset temporanei e univoci
  * - Validazione unicità username/email
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {

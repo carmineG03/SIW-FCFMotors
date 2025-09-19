@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 /**
  * Controller per la gestione degli utenti
  * Gestisce registrazione e login degli utenti normali (non dealer)
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Controller
 public class UserController {

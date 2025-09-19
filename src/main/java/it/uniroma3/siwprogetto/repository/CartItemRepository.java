@@ -21,6 +21,9 @@ import java.util.List;
  * - Repository pattern per separazione concerns
  * - Active Record pattern tramite JpaRepository
  * - Unit of Work pattern per transazioni
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {

@@ -41,6 +41,9 @@ import java.util.Optional;
  * - Exception handling standardizzato
  * - Logging strutturato per debugging e audit
  * - Transactional boundary management
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Service
 public class AdminService {

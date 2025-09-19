@@ -32,6 +32,9 @@ import java.util.List;
  * - Integration layer con servizi esterni (email)
  * - Consistent error handling e logging
  * - Reusable messaging components
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Service
 public class QuoteRequestService {

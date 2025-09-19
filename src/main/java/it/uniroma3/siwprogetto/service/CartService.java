@@ -39,6 +39,9 @@ import java.util.List;
  * - Business logic centralizzata per pricing
  * - Integration con servizi esterni (payment, email)
  * - Validazioni business per autorizzazioni utente
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Service
 public class CartService {

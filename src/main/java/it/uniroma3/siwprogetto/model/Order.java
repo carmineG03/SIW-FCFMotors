@@ -15,6 +15,9 @@ import java.util.List;
  * - Calcolo totale automatico
  * - Tracciabilità acquisti utente
  * - Storico transazioni commerciali
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Entity
 @Table(name = "orders") // "order" è parola riservata SQL, usiamo "orders"

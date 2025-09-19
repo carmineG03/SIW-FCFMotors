@@ -35,6 +35,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * - Considerare paginazione per liste extensive
  * - Cache di primo livello Hibernate attivo
  * - Possibile implementazione cache Redis per serving
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  **/
 public interface ImageRepository extends JpaRepository<Image, Long> {
     

@@ -30,6 +30,9 @@ import java.util.List;
  * Gestisce l'aggiunta, modifica, eliminazione e visualizzazione delle auto
  * private
  * Gli utenti privati possono avere massimo 1 auto nel sistema
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Controller
 @RequestMapping("/private")

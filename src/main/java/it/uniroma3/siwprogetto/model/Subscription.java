@@ -12,6 +12,9 @@ import java.time.LocalDate;
  * - Sistema di sconti temporanei
  * - Limiti servizi per piano (auto in evidenza)
  * - Gestione catalogo abbonamenti
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Entity
 public class Subscription {

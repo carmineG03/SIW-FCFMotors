@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
  * 
  * Tabella: payments
  * Relazioni: ManyToOne con User (un utente può avere più pagamenti)
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Entity
 @Table(name = "payments")

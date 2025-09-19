@@ -20,6 +20,9 @@ import java.util.Optional;
  * - Query type-safe generate automaticamente
  * - Transazioni gestite da Spring
  * - Caching automatico di primo livello
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 public interface AccountInformationRepository extends JpaRepository<AccountInformation, Long> {
     

@@ -14,6 +14,9 @@ import java.util.List;
 /**
  * Controller pubblico per pagine accessibili senza autenticazione
  * Gestisce le pagine informative e di visualizzazione pubblica
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Controller
 public class PublicController {

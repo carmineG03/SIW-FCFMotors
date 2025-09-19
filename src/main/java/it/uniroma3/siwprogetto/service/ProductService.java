@@ -42,6 +42,9 @@ import java.util.stream.Collectors;
  * - Service layer intermedio tra Controller e Repository
  * - Gestione state consistency tramite transazioni
  * - Integration con altri services per operazioni complesse
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Service
 public class ProductService {

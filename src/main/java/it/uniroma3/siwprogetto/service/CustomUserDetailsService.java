@@ -41,6 +41,9 @@ import java.util.stream.Collectors;
  * - @Configuration + @Service per dual purpose
  * - Bean definition per dependency injection
  * - Integration con SecurityConfig
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Configuration
 @Service

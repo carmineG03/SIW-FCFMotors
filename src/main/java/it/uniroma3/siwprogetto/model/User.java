@@ -20,6 +20,9 @@ import java.util.*;
  * - Sistema di reset password
  * - Carrello acquisti personale
  * - Gestione abbonamenti attivi
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Entity
 @Table(name = "users")

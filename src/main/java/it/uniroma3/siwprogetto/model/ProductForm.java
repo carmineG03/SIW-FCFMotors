@@ -16,6 +16,9 @@ import java.math.BigDecimal;
  * - Campi ridotti ai soli essenziali per form
  * - Nessuna relazione JPA
  * - Focus su usabilità form frontend
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 public class ProductForm {
     

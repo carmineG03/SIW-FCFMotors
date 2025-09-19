@@ -22,6 +22,9 @@ import java.util.List;
  * Controller per la gestione dei messaggi tra utenti privati
  * Gestisce l'invio e la ricezione di messaggi diretti tra venditori privati e acquirenti
  * Diverso dal sistema di preventivi dei dealer - qui è una comunicazione diretta
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Controller
 @RequestMapping("/private/messages")

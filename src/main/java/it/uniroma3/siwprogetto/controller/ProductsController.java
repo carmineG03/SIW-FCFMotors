@@ -22,6 +22,9 @@ import java.util.List;
 /**
  * Controller principale per la gestione dei prodotti
  * Gestisce visualizzazione, ricerca, filtri e richieste di preventivo
+ * 
+ * @author FCF Motors Team
+ * @version 1.0
  */
 @Controller
 @RequestMapping("/products")
