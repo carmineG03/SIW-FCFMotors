@@ -105,8 +105,12 @@ public class AccountInformation {
      * 3. Tentativo salvataggio con version = N → OptimisticLockException
      */
     @Version
-    @Column(name = "version")
+    @Column(name = "version", nullable = false)
     private Long version;
+
+    public AccountInformation() {
+        this.version = 0L; // Inizializza sempre la version a 0
+    }
 
     // === RELAZIONE CON UTENTE ===
     
