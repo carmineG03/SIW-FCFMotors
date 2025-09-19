@@ -27,9 +27,6 @@ import java.util.UUID;
  * Controller per la gestione del carrello della spesa.
  * Gestisce visualizzazione, aggiunta, rimozione e checkout di prodotti e abbonamenti.
  * Supporta sia utenti autenticati che anonimi (carrello vuoto).
- * 
- * @author FCF Motors Team
- * @version 1.0
  */
 @Controller
 public class CartController {

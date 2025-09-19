@@ -32,9 +32,6 @@ import java.util.List;
  * Controller per la gestione dell'account utente.
  * Gestisce visualizzazione, modifica, eliminazione account e gestione
  * abbonamenti.
- * 
- * @author FCF Motors Team
- * @version 1.0
  */
 @Controller
 @Transactional
