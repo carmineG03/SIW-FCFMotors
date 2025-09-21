@@ -1,0 +1,349 @@
+/* ===========================================
+   ALERTS AND NOTIFICATIONS STYLES CSS
+   =========================================== */
+
+/* Base Alert Styles */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    text-align: center;
+    color: #FFFFFF;
+    font-size: 1rem;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Success Alerts */
+.alert-success,
+.success-message {
+    background: linear-gradient(45deg, #28A745, #218838);
+    border: 1px solid #28A745;
+    color: #FFFFFF;
+}
+
+.alert-success:before,
+.success-message:before {
+    content: '\f00c';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+/* Error/Danger Alerts */
+.alert-danger,
+.alert-error,
+.error-message {
+    background: linear-gradient(45deg, #D32F2F, #B71C1C);
+    border: 1px solid #D32F2F;
+    color: #FFFFFF;
+}
+
+.alert-danger:before,
+.alert-error:before,
+.error-message:before {
+    content: '\f06a';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+/* Warning Alerts */
+.alert-warning {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+    border: 1px solid #F5A623;
+    color: #FFFFFF;
+}
+
+.alert-warning:before {
+    content: '\f071';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+/* Info Alerts */
+.alert-info {
+    background: linear-gradient(45deg, #003087, #002066);
+    border: 1px solid #003087;
+    color: #FFFFFF;
+}
+
+.alert-info:before {
+    content: '\f05a';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+/* Toast Notifications */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+    min-width: 250px;
+    max-width: 400px;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast.success {
+    background: linear-gradient(45deg, #28A745, #218838);
+}
+
+.toast.error {
+    background: linear-gradient(45deg, #D32F2F, #B71C1C);
+}
+
+.toast.warning {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+}
+
+.toast.info {
+    background: linear-gradient(45deg, #003087, #002066);
+}
+
+/* Dismiss button for alerts */
+.alert-dismissible {
+    padding-right: 50px;
+}
+
+.alert-dismiss {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.alert-dismiss:hover {
+    opacity: 1;
+}
+
+/* Flash messages */
+.flash-message {
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 500;
+    z-index: 1001;
+    min-width: 300px;
+    max-width: 600px;
+    text-align: center;
+    animation: flashSlideIn 0.3s ease-out;
+}
+
+.flash-message.success {
+    background: linear-gradient(45deg, #28A745, #218838);
+}
+
+.flash-message.error {
+    background: linear-gradient(45deg, #D32F2F, #B71C1C);
+}
+
+.flash-message.warning {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+}
+
+.flash-message.info {
+    background: linear-gradient(45deg, #003087, #002066);
+}
+
+/* Form validation messages */
+.input-field .error-message {
+    color: #D32F2F;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+    font-weight: 500;
+}
+
+.input-field .error-message:before {
+    content: '\f06a';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 5px;
+    font-size: 10px;
+}
+
+.input-field input.invalid,
+.input-field textarea.invalid {
+    border-color: #D32F2F;
+    box-shadow: 0 0 8px rgba(211, 47, 47, 0.3);
+    animation: shake 0.3s ease;
+}
+
+.input-field input.valid,
+.input-field textarea.valid {
+    border-color: #28A745;
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.3);
+}
+
+/* Loading states */
+.alert.loading {
+    position: relative;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.alert.loading:after {
+    content: '';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #FFFFFF;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes flashSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .alert {
+        font-size: 0.9rem;
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+    
+    .toast {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        min-width: auto;
+        font-size: 14px;
+        padding: 12px 20px;
+    }
+    
+    .flash-message {
+        top: 80px;
+        left: 10px;
+        right: 10px;
+        transform: none;
+        min-width: auto;
+        font-size: 14px;
+        padding: 12px 20px;
+    }
+    
+    .input-field .error-message {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .alert {
+        font-size: 0.85rem;
+        padding: 10px;
+        margin-bottom: 12px;
+    }
+    
+    .toast {
+        font-size: 13px;
+        padding: 10px 15px;
+    }
+    
+    .flash-message {
+        font-size: 13px;
+        padding: 10px 15px;
+    }
+}
+
+/* Multiple alerts container */
+.alerts-container {
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1001;
+    width: 90%;
+    max-width: 600px;
+    pointer-events: none;
+}
+
+.alerts-container .alert {
+    pointer-events: auto;
+    margin-bottom: 10px;
+}
+
+/* Auto-hide alerts */
+.alert.auto-hide {
+    animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 4.7s;
+    animation-fill-mode: both;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}

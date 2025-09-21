@@ -2,29 +2,205 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>E-commerce Site</title>
+    <title>FCF Motors</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/allert.css">
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body>
-    <header>
-        <h1>E-commerce Site</h1>
-    </header>
-        <div class="nav-container">
-            <div class="nav-bar">
-                <a th:if="${!isAuthenticated}" href="/login" class="icon-button"><i class="fas fa-user"></i></a>
-                <a th:if="${isAuthenticated}" href="/account" class="icon-button"><i class="fas fa-user"></i></a>
+
+<body style="background: url('/image/sfondosito1.jpg') no-repeat center center fixed; background-size: cover;">
+    <header id="main-header">
+        <div class="header-left">
+            <a href="/" class="logo-link">
+                <div class="logo-container">
+                    <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
+                </div>
+            </a>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
+                <!-- Rimossi i pulsanti "Trova Auto" e "Concessionari" -->
             </div>
         </div>
+        <div class="nav-container">
+            <div class="nav-bar">
+                <!-- Rimossi i pulsanti "Account" e "Carrello" -->
+            </div>
+        </div>
+        <!-- Contenitore per il menu a tendina -->
+        <div class="header-right">
+            <!-- Menu a tendina con design moderno e accattivante -->
+            <div class="dropdown">
+                <button class="dropdown-toggle" aria-label="Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                    <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                    <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                    <a th:if="${!isAuthenticated}" th:href="@{/login}"><i class="fas fa-user"></i> Login</a>
+                    <a th:if="${isAuthenticated}" th:href="@{/account}"><i class="fas fa-user"></i> <span th:text="${user.username}"></span></a>
+                    <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('PRIVATE')}" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
+                    <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('DEALER')}" th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i> Manutenzione Dealer</a>
+                    <a th:if="${user != null and user.rolesString != null and user.rolesString.contains('ADMIN')}" th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i> Manutenzione Admin</a>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <aside id="sidebar">
-        <ul>
-            <li><a href="/manutenzione" class="button">Maintenance</a></li>
-            <li><a href="/products" class="button">Products</a></li>
-        </ul>
-    </aside>
     <main>
-        <!-- Da Aggiungere -->
+        <section class="hero-section" style="background: rgba(0, 0, 0, 0.5); min-height: 60vh; padding: 40px 20px; display: flex; align-items: center; justify-content: center;">
+            <div class="hero-content" style="text-align: center; max-width: 800px;">
+                <h2 class="hero-title" style="font-size: 3rem; color: #F5A623; font-family: 'Bungee Spice', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); margin-bottom: 15px;">Scopri la tua auto ideale oggi!</h2>
+                <p class="hero-subtitle" style="font-size: 1.2rem; color: #FFFFFF; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); line-height: 1.5; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">Esplora migliaia di auto nuove e usate, trova il modello perfetto per te.</p>
+                
+                <!-- Nuova barra di ricerca -->
+                <div class="new-search-bar">
+                    <form class="new-search-form" action="/products" method="get">
+                        <div class="new-search-input-wrapper">
+                            <i class="fas fa-search search-icon"></i>
+                            <input 
+                                type="text" 
+                                name="query" 
+                                id="search-input" 
+                                placeholder="Cerca marca, modello o categoria..." 
+                                autocomplete="off"
+                                aria-label="Cerca auto per marca, modello o categoria"/>
+                            <div id="autocomplete-results" class="autocomplete-results"></div>
+                        </div>
+                        <button type="submit" class="new-search-button" aria-label="Cerca auto">
+                            Cerca
+                        </button>
+                    </form>
+                </div>
+
+                <a href="/products" class="cta-button" 
+                   style="background: linear-gradient(45deg, #F5A623, #E59400); color: #FFFFFF; border: none; border-radius: 8px; padding: 12px 25px; font-size: 14px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); cursor: pointer;" 
+                   aria-label="Sfoglia tutte le auto disponibili">
+                    Sfoglia tutte le auto
+                </a>
+            </div>
+        </section>
+
+        <section class="brands-section">
+            <h3>Marche più popolari</h3>
+            <div class="brands-container">
+                <a href="/products/brand/Alfa Romeo" class="brand-item">
+                    <img th:src="@{/image/alfa-romeo-logo.png}" alt="Alfa Romeo"/>
+                    <p>Alfa Romeo</p>
+                </a>
+                <a href="/products/brand/Audi" class="brand-item">
+                    <img th:src="@{/image/audi-logo.png}" alt="Audi"/>
+                    <p>Audi</p>
+                </a>
+                <a href="/products/brand/BMW" class="brand-item">
+                    <img th:src="@{/image/bmw-logo.png}" alt="BMW"/>
+                    <p>BMW</p>
+                </a>
+                <a href="/products/brand/Fiat" class="brand-item">
+                    <img th:src="@{/image/fiat-logo.png}" alt="Fiat"/>
+                    <p>Fiat</p>
+                </a>
+                <a href="/products/brand/Mercedes-Benz" class="brand-item">
+                    <img th:src="@{/image/mercedes-benz-logo.png}" alt="Mercedes-Benz"/>
+                    <p>Mercedes-Benz</p>
+                </a>
+                <a href="/products/brand/Toyota" class="brand-item">
+                    <img th:src="@{/image/toyota-logo.png}" alt="Toyota"/>
+                    <p>Toyota</p>
+                </a>
+            </div>
+            <a href="/products" class="all-brands-link">Scopri tutte le marche <i class="fas fa-chevron-right"></i></a>
+        </section>
+
+        <section class="categories-section">
+            <h3>Le Nostre Categorie</h3>
+            <div class="categories-grid">
+                <div class="category-item" style="background-image: url('/image/berlina.png')">
+                    <p>Berlina</p>
+                </div>
+                <div class="category-item" style="background-image: url('/image/citycar.png')">
+                    <p>City Car</p>
+                </div>
+                <div class="category-item" style="background-image: url('/image/suv.png')">
+                    <p>Suv</p>
+                </div>
+                <div class="category-item" style="background-image: url('/image/sportiva.png')">
+                    <p>Sportiva</p>
+                </div>
+                <div class="category-item" style="background-image: url('/image/el.png')">
+                    <p>Elettrica</p>
+                </div>
+                <div class="category-item" style="background-image: url('/image/monovolume.png')">
+                    <p>Monovolume</p>
+                </div>
+                <div class="category-item" style="background-image: url('/image/stationwagon.png')">
+                    <p>Station Wagon</p>
+                </div>
+                <div class="category-item" style="background-image: url('/image/microc.png')">
+                    <p>Microcar</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="why-choose-us">
+            <h3>Perché scegliere FCF Motors?</h3>
+            <div class="features-container">
+                <div class="feature-item">
+                    <i class="fas fa-car"></i>
+                    <h4>Vasta selezione</h4>
+                    <p>Trova auto di ogni marca e modello, nuove o usate, tutte in un unico posto.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-handshake"></i>
+                    <h4>Acquisto sicuro</h4>
+                    <p>Garanzie certificate e supporto dedicato per un’esperienza senza pensieri.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h4>Concessionari vicini</h4>
+                    <p>Collabora con i migliori concessionari nella tua zona.</p>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Link Utili</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Trova Auto</a></li>
+                    <li><a href="/dealers">Concessionari</a></li>
+                    <li><a href="/cart">Carrello</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contatti</h4>
+                <p>Email: info@fcfmotors.com</p>
+                <p>Telefono: +39 123 456 7890</p>
+                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+            </div>
+            <div class="footer-section">
+                <h4>Seguici</h4>
+                <div class="social-links">
+                    <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Informazioni</h4>
+                <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+
+    <script src="/js/homepage.js" defer></script>
+    <script src="/js/dropdown.js"></script>
 </body>
 </html>

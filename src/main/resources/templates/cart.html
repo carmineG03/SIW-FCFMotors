@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Carrello - FCF Motors</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/allert.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<header>
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
+            </div>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
+            </div>
+        </a>
+    </div>
+    <div class="nav-container">
+        <nav class="nav-bar"></nav>
+    </div>
+    <div class="header-right">
+        <div class="dropdown">
+            <button class="dropdown-toggle" aria-label="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu">
+                <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                <a th:if="${!isAuthenticated}" th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a th:if="${isAuthenticated}" th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+                <a sec:authorize="hasRole('PRIVATE')" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i> Manutenzione Private</a>
+                <a sec:authorize="hasRole('DEALER')" th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i> Manutenzione Dealer</a>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i> Manutenzione Admin</a> </div>
+    
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="cart-section">
+    <h2>Il tuo Carrello</h2>
+    <div class="cart-items">
+        <div th:each="item : ${cartItems}" class="cart-item">
+            <img th:if="${item.product != null}" th:src="${item.product.imageUrl}" th:alt="'Immagine prodotto'"/>
+            <img th:if="${item.product == null}" th:src="@{/images/subscription-placeholder.png}"
+                 onerror="this.src='https://picsum.photos/150/100'" alt="Abbonamento"/>
+            <div class="cart-item-details">
+                <h3 th:text="${item.subscription != null ? item.subscription.name : item.product.name}"></h3>
+                <p th:if="${item.subscription != null}" th:text="'Durata: ' + ${item.subscription.durationDays} + ' giorni'"></p>
+                <p th:if="${item.subscription != null}">
+                    Prezzo:
+                    <span th:if="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                        <span class="price-original" th:text="${#numbers.formatDecimal(item.subscription.price, 1, 2, 'COMMA')} + ' €'"></span>
+                        <span class="price-discounted" th:text="${#numbers.formatDecimal(discountedPrices[item.id], 1, 2, 'COMMA')} + ' €'"></span>
+                    </span>
+                    <span th:unless="${item.subscription.discount != null and item.subscription.discountExpiry != null and item.subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}">
+                        <span th:text="${#numbers.formatDecimal(item.subscription.price, 1, 2, 'COMMA')} + ' €'"></span>
+                    </span>
+                </p>
+                <p th:if="${item.product != null && item.subscription == null}" th:text="'Prezzo: ' + ${#numbers.formatDecimal(item.product.price, 1, 2, 'COMMA')} + ' €'"></p>
+                <button class="remove-button" th:data-item-id="${item.id}">Rimuovi</button>
+            </div>
+        </div>
+        <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}">
+            <p>Il carrello è vuoto.</p>
+        </div>
+    </div>
+
+    <div class="cart-summary">
+        <p th:if="${originalTotal != null and discountedTotal != null and originalTotal.compareTo(discountedTotal) > 0}">
+            Subtotale originale: <span th:text="${#numbers.formatDecimal(originalTotal, 1, 2, 'COMMA')} + ' €'" class="price-original"></span>
+        </p>
+        <p id="subtotal">Subtotale: <span th:text="${#numbers.formatDecimal(discountedTotal, 1, 2, 'COMMA')} + ' €'"></span></p>
+        <form id="checkoutForm" th:action="@{/cart/checkout-subscriptions}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="checkout-button" th:disabled="${cartItems == null or #lists.isEmpty(cartItems)}">Procedi al Checkout</button>
+        </form>
+    </div>
+</section>
+
+<div id="toast" class="toast"></div>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Link Utili</h4>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Trova Auto</a></li>
+                <li><a href="/dealers">Concessionari</a></li>
+                <li><a href="/cart">Carrello</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contatti</h4>
+            <p>Email: info@fcfmotors.com</p>
+            <p>Telefono: +39 123 456 7890</p>
+            <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+        </div>
+        <div class="footer-section">
+            <h4>Seguici</h4>
+            <div class="social-links">
+                <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h4>Informazioni</h4>
+            <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+    </div>
+</footer>
+<script src="/js/dropdown.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const removeButtons = document.querySelectorAll('.remove-button');
+        const token = document.querySelector('meta[name="_csrf"]').content;
+        const header = document.querySelector('meta[name="_csrf_header"]').content;
+
+        // Handle remove item
+        removeButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const itemId = button.getAttribute('data-item-id');
+
+                fetch(`/cart/remove/${itemId}`, {
+                    method: 'POST',
+                    headers: {
+                        [header]: token
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            showToast('Errore durante la rimozione dell\'articolo');
+                        }
+                    })
+                    .catch(() => showToast('Errore durante la rimozione dell\'articolo'));
+            });
+        });
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Show toast if subscription added
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success')) {
+            showToast('Abbonamento aggiunto al carrello!');
+        }
+    });
+</script>
+</body>
+</html>

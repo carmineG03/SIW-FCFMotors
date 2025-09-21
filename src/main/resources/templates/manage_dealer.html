@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>Gestione Concessionario - FCF Motors</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/allert.css">
+    <link rel="stylesheet" href="/css/maintenance.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body class="maintenance-page">
+
+    <header id="main-header">
+        <div class="header-left">
+            <a href="/" class="logo-link">
+                <div class="logo-container">
+                    <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo" />
+                </div>
+            </a>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="dropdown">
+                <button class="dropdown-toggle" aria-label="Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                    <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                    <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                    <a th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-building"></i> Gestione Concessionario</h1>
+                <p>Gestisci il tuo concessionario e le auto in vendita</p>
+            </div>
+
+            <!-- Sezione Dettagli Concessionario -->
+            <div class="maintenance-section">
+                <h2><i class="fas fa-info-circle"></i> Dettagli Concessionario</h2>
+
+                <input type="hidden" name="dealerId" th:value="${dealer.id}" />
+
+                <!-- Carosello immagini del concessionario -->
+                <div th:if="${dealer.images != null and !dealer.images.isEmpty()}" class="image-carousel">
+                    <div th:each="image, iterStat : ${dealer.images}"
+                        th:class="${iterStat.index == 0} ? 'image-item active' : 'image-item'">
+                        <img th:src="@{/images/{id}(id=${image.id})}" th:alt="'Immagine ' + ${dealer.name}" />
+                    </div>
+                    <div class="carousel-nav">
+                        <button class="carousel-btn prev"><i class="fas fa-chevron-left"></i></button>
+                        <button class="carousel-btn next"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="carousel-dots">
+                        <span th:each="image, iterStat : ${dealer.images}"
+                            th:class="${iterStat.index == 0} ? 'carousel-dot active' : 'carousel-dot'"></span>
+                    </div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="label"><i class="fas fa-building"></i> Nome Concessionario</div>
+                        <div class="value" th:text="${dealer.name}">Nome Concessionario</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="label"><i class="fas fa-align-left"></i> Descrizione</div>
+                        <div class="value" th:text="${dealer.description} ?: 'Nessuna descrizione disponibile'">
+                            Descrizione concessionario</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="label"><i class="fas fa-map-marker-alt"></i> Indirizzo</div>
+                        <div class="value" th:text="${dealer.address} ?: 'Indirizzo non disponibile'">Via Roma 123</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="label"><i class="fas fa-phone"></i> Telefono</div>
+                        <div class="value" th:text="${dealer.phone} ?: 'Telefono non disponibile'">+39 123 456 789</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="label"><i class="fas fa-envelope"></i> Email</div>
+                        <div class="value" th:text="${dealer.email} ?: 'Email non disponibile'">info@dealer.com</div>
+                    </div>
+                </div>
+
+                <div class="dealer-actions">
+                    <button class="maintenance-btn btn-primary" id="edit-dealer-button">
+                        <i class="fas fa-edit"></i> Modifica Concessionario
+                    </button>
+                    <button class="maintenance-btn btn-danger" id="delete-dealer-button">
+                        <i class="fas fa-trash"></i> Elimina Concessionario
+                    </button>
+                    <button class="maintenance-btn" id="view-quotes-button"
+                        style="background: linear-gradient(45deg, #6f42c1, #5a3a9a);">
+                        <i class="fas fa-file-invoice"></i> Richieste Preventivo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sezione Gestione Auto -->
+            <div class="maintenance-section">
+                <h2><i class="fas fa-car"></i> Gestione Auto</h2>
+
+                <div class="action-buttons">
+                    <button class="maintenance-btn btn-success" id="add-car-button">
+                        <i class="fas fa-plus"></i> Aggiungi Auto
+                    </button>
+                </div>
+
+                <!-- Auto Aggiunte -->
+                <div th:if="${products == null or products.isEmpty()}" class="empty-state">
+                    <i class="fas fa-car-crash"></i>
+                    <p>Nessuna auto aggiunta al momento.</p>
+                </div>
+
+                <div th:unless="${products == null or products.isEmpty()}" class="car-grid">
+                    <div th:each="product : ${products}" class="car-card">
+                        <h3 th:text="${product.brand} + ' ' + ${product.model}">Brand Model</h3>
+
+                        <div class="image-carousel">
+                            <div th:each="image, iterStat : ${product.images}"
+                                th:class="${iterStat.index == 0} ? 'image-item active' : 'image-item'">
+                                <img th:src="@{/rest/api/images/{id}(id=${image.id})}"
+                                    th:alt="'Immagine ' + ${product.model}" />
+                            </div>
+                            <div th:if="${product.images == null or product.images.isEmpty()}"
+                                class="image-item active">
+                                <img src="https://via.placeholder.com/300x200?text=Immagine+Non+Disponibile"
+                                    alt="Immagine Non Disponibile" />
+                            </div>
+                            <div th:unless="${product.images == null or product.images.isEmpty()}" class="carousel-nav">
+                                <button class="carousel-btn prev"><i class="fas fa-chevron-left"></i></button>
+                                <button class="carousel-btn next"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                            <div th:unless="${product.images == null or product.images.isEmpty()}"
+                                class="carousel-dots">
+                                <span th:each="image, iterStat : ${product.images}"
+                                    th:class="${iterStat.index == 0} ? 'carousel-dot active' : 'carousel-dot'"></span>
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="label"><i class="fas fa-euro-sign"></i> Prezzo</div>
+                                <div class="value" th:text="'€' + ${product.price}">€25000</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="label"><i class="fas fa-tachometer-alt"></i> Chilometraggio</div>
+                                <div class="value" th:text="${product.mileage} + ' km' ?: 'Non specificato'">50000 km
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="label"><i class="fas fa-calendar"></i> Anno</div>
+                                <div class="value" th:text="${product.year} ?: 'Non specificato'">2020</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="label"><i class="fas fa-gas-pump"></i> Carburante</div>
+                                <div class="value" th:text="${product.fuelType} ?: 'Non specificato'">Benzina</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="label"><i class="fas fa-cogs"></i> Trasmissione</div>
+                                <div class="value" th:text="${product.transmission} ?: 'Non specificato'">Manuale</div>
+                            </div>
+                        </div>
+
+                        <p th:if="${product.description}" th:text="${product.description}">Descrizione prodotto</p>
+
+                        <div class="product-actions">
+                            <button class="maintenance-btn btn-primary edit-product-link"
+                                th:data-product-id="${product.id}">
+                                <i class="fas fa-edit"></i> Modifica
+                            </button>
+                            <button class="maintenance-btn btn-danger delete-product-link"
+                                th:data-product-id="${product.id}">
+                                <i class="fas fa-trash"></i> Elimina
+                            </button>
+                            <button th:if="${product.isFeatured == null or !product.isFeatured}"
+                                class="maintenance-btn highlight-product-link" th:data-product-id="${product.id}"
+                                style="background: linear-gradient(45deg, #ffc107, #e0a800);">
+                                <i class="fas fa-star"></i> Metti in Evidenza
+                            </button>
+                            <button th:if="${product.isFeatured != null and product.isFeatured}"
+                                class="maintenance-btn btn-secondary remove-highlight-product-link"
+                                th:data-product-id="${product.id}">
+                                <i class="fas fa-star-half-alt"></i> Rimuovi Evidenza
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL PER MODIFICA CONCESSIONARIO -->
+    <div id="edit-dealer-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" id="close-edit-dealer">&times;</span>
+            <h2>Modifica Concessionario</h2>
+
+            <!-- Preview immagini concessionario -->
+            <div id="dealer-image-preview" class="image-carousel">
+                <div class="image-item active">
+                    <div class="modal-image-placeholder"
+                        style="display: flex; align-items: center; justify-content: center; height: 200px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                        <div style="text-align: center; color: rgba(255,255,255,0.7);">
+                            <i class="fas fa-images" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                            Seleziona immagini per vedere l'anteprima
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-nav" style="display: none;">
+                    <button class="carousel-btn prev" type="button"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn next" type="button"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="carousel-dots" style="display: none;"></div>
+            </div>
+
+            <form id="edit-dealer-form" th:action="@{/rest/api/dealers/{id}(id=${dealer.id})}" method="post"
+                enctype="multipart/form-data" class="maintenance-form">
+                <input type="hidden" name="_method" value="PUT" />
+                <input type="hidden" name="id" th:value="${dealer.id}" />
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="edit-dealership-name"><i class="fas fa-building"></i> Nome *</label>
+                        <input type="text" id="edit-dealership-name" name="name" th:value="${dealer.name}" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="edit-dealership-description"><i class="fas fa-align-left"></i> Descrizione</label>
+                        <textarea id="edit-dealership-description" name="description"
+                            th:text="${dealer.description}"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-dealership-address"><i class="fas fa-map-marker-alt"></i> Indirizzo</label>
+                        <input type="text" id="edit-dealership-address" name="address" th:value="${dealer.address}" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-dealership-phone"><i class="fas fa-phone"></i> Telefono</label>
+                        <input type="text" id="edit-dealership-phone" name="phone" th:value="${dealer.phone}" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-dealership-email"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="edit-dealership-email" name="email" th:value="${dealer.email}" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width images-section">
+                        <label for="edit-dealership-images"><i class="fas fa-images"></i> Nuove Immagini (max 4)</label>
+                        <div class="file-upload">
+                            <input type="file" id="edit-dealership-images" name="images" multiple accept="image/*"
+                                onchange="previewDealerImages(this)" />
+                            <label for="edit-dealership-images">
+                                <i class="fas fa-cloud-upload-alt"></i><br>
+                                Clicca per caricare nuove immagini<br>
+                                <small>Sostituiranno quelle esistenti - Lascia vuoto per mantenerle</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="maintenance-btn btn-primary">
+                        <i class="fas fa-save"></i> Salva Modifiche
+                        <span class="spinner"></span>
+                    </button>
+                    <button type="button" class="maintenance-btn btn-secondary"
+                        onclick="closeModal('edit-dealer-modal')">
+                        <i class="fas fa-times"></i> Annulla
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PER AGGIUNGI AUTO -->
+    <div id="add-car-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" id="close-add-car">&times;</span>
+            <h2>Aggiungi Auto</h2>
+
+            <!-- Preview immagini auto -->
+            <div id="car-image-preview" class="image-carousel">
+                <div class="image-item active">
+                    <div class="modal-image-placeholder"
+                        style="display: flex; align-items: center; justify-content: center; height: 200px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                        <div style="text-align: center; color: rgba(255,255,255,0.7);">
+                            <i class="fas fa-car" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                            Seleziona immagini per vedere l'anteprima
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-nav" style="display: none;">
+                    <button class="carousel-btn prev" type="button"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn next" type="button"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="carousel-dots" style="display: none;"></div>
+            </div>
+
+            <form id="dealer-add-car-form" th:action="@{/rest/api/products}" method="post" enctype="multipart/form-data"
+                class="maintenance-form">
+                <input type="hidden" name="dealerId" th:value="${dealer.id}" />
+
+                <div class="form-section">
+                    <h3><i class="fas fa-info-circle"></i> Informazioni Base</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dealer-car-brand"><i class="fas fa-industry"></i> Marca</label>
+                            <input type="text" id="dealer-car-brand" name="brand" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dealer-car-model"><i class="fas fa-car"></i> Modello *</label>
+                            <input type="text" id="dealer-car-model" name="model" required />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dealer-car-category"><i class="fas fa-tags"></i> Categoria</label>
+                            <select id="dealer-car-category" name="category">
+                                <option value="">Seleziona categoria</option>
+                                <option value="City Car">City Car</option>
+                                <option value="Utilitaria">Utilitaria</option>
+                                <option value="Berlina">Berlina</option>
+                                <option value="Station Wagon">Station Wagon</option>
+                                <option value="SUV">SUV</option>
+                                <option value="Crossover">Crossover</option>
+                                <option value="Coupé">Coupé</option>
+                                <option value="Cabrio">Cabrio</option>
+                                <option value="Monovolume">Monovolume</option>
+                                <option value="Pick-up">Pick-up</option>
+                                <option value="Sportiva">Sportiva</option>
+                                <option value="Elettrica">Elettrica</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dealer-car-price"><i class="fas fa-euro-sign"></i> Prezzo (€) *</label>
+                            <input type="number" id="dealer-car-price" name="price" step="0.01" required />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dealer-car-year"><i class="fas fa-calendar"></i> Anno</label>
+                            <input type="number" id="dealer-car-year" name="year" min="1900" max="2025" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dealer-car-mileage"><i class="fas fa-tachometer-alt"></i> Chilometraggio</label>
+                            <input type="number" id="dealer-car-mileage" name="mileage" min="0" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dealer-car-fuelType"><i class="fas fa-gas-pump"></i> Carburante</label>
+                            <select id="dealer-car-fuelType" name="fuelType">
+                                <option value="">Seleziona carburante</option>
+                                <option value="Benzina">Benzina</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Ibrido">Ibrido</option>
+                                <option value="Elettrico">Elettrico</option>
+                                <option value="GPL">GPL</option>
+                                <option value="Metano">Metano</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dealer-car-transmission"><i class="fas fa-cogs"></i> Trasmissione</label>
+                            <select id="dealer-car-transmission" name="transmission">
+                                <option value="">Seleziona trasmissione</option>
+                                <option value="Manuale">Manuale</option>
+                                <option value="Automatica">Automatica</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="dealer-car-description"><i class="fas fa-align-left"></i> Descrizione</label>
+                            <textarea id="dealer-car-description" name="description" rows="4"
+                                placeholder="Descrivi l'auto: condizioni, optional, storia, ecc..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-images"></i> Immagini</h3>
+
+                    <div class="form-row">
+                        <div class="form-group full-width images-section">
+                            <div class="file-upload">
+                                <input type="file" id="dealer-car-images" name="images" multiple accept="image/*"
+                                    required onchange="previewCarImages(this)" />
+                                <label for="dealer-car-images">
+                                    <i class="fas fa-cloud-upload-alt"></i><br>
+                                    Clicca per caricare le immagini dell'auto<br>
+                                    <small>Massimo 10 immagini - Formati: JPG, PNG, WEBP</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="maintenance-btn btn-success">
+                        <i class="fas fa-plus"></i> Aggiungi Auto
+                        <span class="spinner"></span>
+                    </button>
+                    <button type="button" class="maintenance-btn btn-secondary" onclick="closeModal('add-car-modal')">
+                        <i class="fas fa-times"></i> Annulla
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PER MODIFICA AUTO -->
+    <div id="edit-product-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" id="close-edit-product">&times;</span>
+            <h2>Modifica Auto</h2>
+
+            <!-- Preview immagini auto da modificare -->
+            <div id="edit-car-image-preview" class="image-carousel">
+                <div class="image-item active">
+                    <div class="modal-image-placeholder"
+                        style="display: flex; align-items: center; justify-content: center; height: 200px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                        <div style="text-align: center; color: rgba(255,255,255,0.7);">
+                            <i class="fas fa-car" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                            Caricamento immagini attuali...
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-nav" style="display: none;">
+                    <button class="carousel-btn prev" type="button"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn next" type="button"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="carousel-dots" style="display: none;"></div>
+            </div>
+
+            <form id="edit-product-form" action="" method="post" enctype="multipart/form-data" class="maintenance-form">
+                <input type="hidden" name="_method" value="PUT" />
+                <input type="hidden" id="edit-product-id" name="id" />
+
+                <div class="form-section">
+                    <h3><i class="fas fa-info-circle"></i> Informazioni Base</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-product-brand"><i class="fas fa-industry"></i> Marca</label>
+                            <input type="text" id="edit-product-brand" name="brand" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-product-model"><i class="fas fa-car"></i> Modello *</label>
+                            <input type="text" id="edit-product-model" name="model" required />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-product-category"><i class="fas fa-tags"></i> Categoria</label>
+                            <select id="edit-product-category" name="category">
+                                <option value="">Seleziona categoria</option>
+                                <option value="City Car">City Car</option>
+                                <option value="Utilitaria">Utilitaria</option>
+                                <option value="Berlina">Berlina</option>
+                                <option value="Station Wagon">Station Wagon</option>
+                                <option value="SUV">SUV</option>
+                                <option value="Crossover">Crossover</option>
+                                <option value="Coupé">Coupé</option>
+                                <option value="Cabrio">Cabrio</option>
+                                <option value="Monovolume">Monovolume</option>
+                                <option value="Pick-up">Pick-up</option>
+                                <option value="Sportiva">Sportiva</option>
+                                <option value="Elettrica">Elettrica</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-product-price"><i class="fas fa-euro-sign"></i> Prezzo (€) *</label>
+                            <input type="number" id="edit-product-price" name="price" step="0.01" required />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-product-year"><i class="fas fa-calendar"></i> Anno</label>
+                            <input type="number" id="edit-product-year" name="year" min="1900" max="2025" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-product-mileage"><i class="fas fa-tachometer-alt"></i>
+                                Chilometraggio</label>
+                            <input type="number" id="edit-product-mileage" name="mileage" min="0" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-product-fuelType"><i class="fas fa-gas-pump"></i> Carburante</label>
+                            <select id="edit-product-fuelType" name="fuelType">
+                                <option value="">Seleziona carburante</option>
+                                <option value="Benzina">Benzina</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Ibrido">Ibrido</option>
+                                <option value="Elettrico">Elettrico</option>
+                                <option value="GPL">GPL</option>
+                                <option value="Metano">Metano</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-product-transmission"><i class="fas fa-cogs"></i> Trasmissione</label>
+                            <select id="edit-product-transmission" name="transmission">
+                                <option value="">Seleziona trasmissione</option>
+                                <option value="Manuale">Manuale</option>
+                                <option value="Automatica">Automatica</option>
+                                <option value="Semi-automatica">Semi-automatica</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="edit-product-description"><i class="fas fa-align-left"></i> Descrizione</label>
+                            <textarea id="edit-product-description" name="description" rows="4"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section images-section">
+                    <h3><i class="fas fa-images"></i> Immagini</h3>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <div class="file-upload">
+                                <input type="file" id="edit-product-images" name="images" multiple accept="image/*"
+                                    onchange="previewEditCarImages(this)" />
+                                <label for="edit-product-images">
+                                    <i class="fas fa-cloud-upload-alt"></i><br>
+                                    Clicca per caricare nuove immagini<br>
+                                    <small>Sostituiranno quelle esistenti - Lascia vuoto per mantenerle</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="maintenance-btn btn-primary">
+                        <i class="fas fa-save"></i> Salva Modifiche
+                        <span class="spinner"></span>
+                    </button>
+                    <button type="button" class="maintenance-btn btn-secondary"
+                        onclick="closeModal('edit-product-modal')">
+                        <i class="fas fa-times"></i> Annulla
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Navigazione</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Trova Auto</a></li>
+                    <li><a href="/dealers">Concessionari</a></li>
+                    <li><a href="/cart">Carrello</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contatti</h4>
+                <p>Email: info@fcfmotors.com</p>
+                <p>Telefono: +39 123 456 7890</p>
+                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+            </div>
+            <div class="footer-section">
+                <h4>Informazioni</h4>
+                <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+    <script src="/js/manage-dealer.js"></script>
+    <script src="/js/dropdown.js"></script>
+    <script src="/js/popup-manager.js"></script>
+</body>
+
+</html>

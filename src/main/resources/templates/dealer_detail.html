@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/allert.css">
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Open+Sans:wght@400;600;700&display=swap" />
+
+  <title th:text="${dealer.name} + ' - FCF Motors'">Dettagli Concessionario - FCF Motors</title>
+</head>
+
+<body>
+  <header id="main-header">
+    <div class="header-left">
+      <a href="/" class="logo-link">
+        <div class="logo-container">
+          <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo" />
+        </div>
+      </a>
+      <div class="title-container">
+        <h1 class="main-title">FCF MOTORS</h1>
+      </div>
+    </div>
+    <div class="nav-container">
+      <div class="nav-bar"></div>
+    </div>
+    <div class="header-right">
+      <div class="dropdown">
+        <button class="dropdown-toggle" aria-label="Menu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="dropdown-menu">
+          <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+          <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+          <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+          <a sec:authorize="!isAuthenticated()" th:href="@{/login}"><i class="fas fa-user"></i> Login</a>
+          <a sec:authorize="isAuthenticated()" th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+          <a sec:authorize="hasRole('PRIVATE')" th:href="@{/private/maintenance}"><i class="fas fa-tools"></i>
+            Manutenzione Private</a>
+          <a sec:authorize="hasRole('DEALER')" th:href="@{/rest/manutenzione/dealer}"><i class="fas fa-cogs"></i>
+            Manutenzione Dealer</a>
+          <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/maintenance}"><i class="fas fa-shield-alt"></i>
+            Manutenzione Admin</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="dealer-details-section">
+      <!-- Dealer Details -->
+      <div class="dealer-content">
+        <h2 th:text="${dealer.name} ?: 'Concessionario'">Concessionario</h2>
+        <div class="main-image-container">
+          <img th:if="${dealer.images != null and not dealer.images.isEmpty()}"
+            th:src="@{'/rest/api/images/' + ${dealer.images[0].id}}"
+            th:alt="'Immagine principale concessionario ' + ${dealer.name}" />
+          <img th:unless="${dealer.images != null and not dealer.images.isEmpty()}" src="/image/default-dealer.jpg"
+            alt="Immagine di default" />
+        </div>
+        <div class="thumbnails-container">
+          <img th:each="image, iterStat : ${dealer.images}" th:if="${iterStat.index > 0}"
+            th:src="@{'/rest/api/images/' + ${image.id}}" th:alt="'Miniatura concessionario ' + ${dealer.name}"
+            onclick="changeMainImage(this)" />
+        </div>
+        <div th:if="${errorMessage != null}" class="alert alert-danger" th:text="${errorMessage}"></div>
+        <div class="description-container">
+          <div class="description-item">
+            <i class="fas fa-info-circle"></i>
+            <span th:text="${dealer.description} ?: 'Nessuna descrizione disponibile'"></span>
+          </div>
+        </div>
+        <div class="details-grid">
+          <div class="detail-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span th:text="${dealer.address} ?: 'Indirizzo non disponibile'"></span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-phone"></i>
+            <a th:if="${dealer.phone != null}" th:href="'tel:' + ${dealer.phone}"
+              th:attr="aria-label='Chiama ' + ${dealer.phone}" th:text="${dealer.phone}"></a>
+            <span th:unless="${dealer.phone != null}" th:text="'Telefono non disponibile'"></span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-envelope"></i>
+            <a th:if="${dealer.email != null}" th:href="'mailto:' + ${dealer.email}"
+              th:attr="aria-label='Invia email a ' + ${dealer.email}" th:text="${dealer.email}"></a>
+            <span th:unless="${dealer.email != null}" th:text="'Email non disponibile'"></span>
+          </div>
+        </div>
+        <a th:if="${dealer.address != null}"
+          th:href="'https://www.google.com/maps/search/?api=1&query=' + ${#strings.escapeXml(dealer.address)}"
+          class="navigate-button" target="_blank" rel="noopener noreferrer">
+          <i class="fas fa-directions"></i> Raggiungi con il navigatore
+        </a>
+      </div>
+      <!-- Cars Section -->
+      <div class="cars-section">
+        <h2>Auto Disponibili</h2>
+        <p th:if="${products == null or products.isEmpty()}" class="no-products">Nessuna auto disponibile al momento.
+        </p>
+        <p th:if="${products != null}" th:text="'Auto trovate: ' + ${products.size()}"
+          style="text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 20px;"></p>
+        <div class="car-grid">
+          <div th:each="product : ${products}" class="car-card" th:classappend="${product.isFeatured} ? 'highlighted'"
+            th:data-id="${product.id}">
+            <div class="car-image">
+              <img th:src="@{'/rest/api/images/' + ${product.images[0].id} ?: '/image/default-car.jpg'}"
+                th:alt="'Immagine ' + ${product.model}" />
+              <span th:if="${product.isFeatured}" class="highlight-badge">In Evidenza</span>
+            </div>
+            <div class="car-info">
+              <h4 th:text="${product.brand} + ' ' + ${product.model} ?: 'Modello non disponibile'"></h4>
+              <p class="price" th:text="'€ ' + ${#numbers.formatCurrency(product.price)}"></p>
+              <p class="details">
+                <span th:if="${product.year != null}" th:text="${product.year} + ' | '"></span>
+                <span th:if="${product.mileage != null}"
+                  th:text="${#numbers.formatInteger(product.mileage, 0, 'COMMA')} + ' km | '"></span>
+                <span th:if="${product.fuelType != null}" th:text="${product.fuelType}"></span>
+              </p>
+            </div>
+            <div class="car-actions">
+              <a href="#" class="modern-button view-details" th:data-id="${product.id}">
+                <i class="fas fa-eye"></i> Dettagli
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- Popups per i dettagli delle auto -->
+        <div th:each="product : ${products}" class="car-details-popup" th:id="'popup-' + ${product.id}">
+          <div class="car-details-popup-content">
+            <span class="close-popup">×</span>
+            <h3 th:text="${product.brand} + ' ' + ${product.model} ?: 'Auto'"></h3>
+            <div class="carousel">
+              <div class="carousel-inner">
+                <div th:each="image, iterStat : ${product.images}" class="carousel-item"
+                  th:classappend="${iterStat.index == 0} ? 'active' : ''">
+                  <img th:src="@{'/rest/api/images/' + ${image.id}}" th:alt="'Immagine ' + ${product.model}" />
+                </div>
+                <div th:if="${product.images == null or product.images.isEmpty()}" class="carousel-item active">
+                  <img src="/image/default-car.jpg" th:alt="'Immagine ' + ${product.model}" />
+                </div>
+              </div>
+              <div class="carousel-thumbnails">
+                <img th:each="image, iterStat : ${product.images}" th:src="@{'/rest/api/images/' + ${image.id}}"
+                  th:alt="'Immagine ' + ${product.model}" th:classappend="${iterStat.index == 0} ? 'active' : ''"
+                  onclick="showImage(this, event)" />
+              </div>
+              <button class="carousel-control-prev" onclick="prevImage(event)">❮</button>
+              <button class="carousel-control-next" onclick="nextImage(event)">❯</button>
+            </div>
+            <div class="detail-field">
+              <label><i class="fas fa-euro-sign"></i> Prezzo</label>
+              <p th:text="'€ ' + ${#numbers.formatCurrency(product.price)}"></p>
+            </div>
+            <div class="detail-field">
+              <label><i class="fas fa-calendar-alt"></i> Anno</label>
+              <p th:text="${product.year} ?: 'Non specificato'"></p>
+            </div>
+            <div class="detail-field">
+              <label><i class="fas fa-tachometer-alt"></i> Chilometraggio</label>
+              <p
+                th:text="${product.mileage != null} ? ${#numbers.formatInteger(product.mileage, 0, 'COMMA')} + ' km' : 'Non specificato'">
+              </p>
+            </div>
+            <div class="detail-field">
+              <label><i class="fas fa-gas-pump"></i> Tipo di carburante</label>
+              <p th:text="${product.fuelType} ?: 'Non specificato'"></p>
+            </div>
+            <div class="detail-field">
+              <label><i class="fas fa-cogs"></i> Trasmissione</label>
+              <p th:text="${product.transmission} ?: 'Non specificato'"></p>
+            </div>
+            <div class="detail-field">
+              <label><i class="fas fa-info-circle"></i> Descrizione</label>
+              <p th:text="${product.description} ?: 'Nessuna descrizione disponibile'"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Link Utili</h4>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/products">Trova Auto</a></li>
+          <li><a href="/dealers">Concessionari</a></li>
+          <li><a href="/cart">Carrello</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Contatti</h4>
+        <p>Email: info@fcfmotors.com</p>
+        <p>Telefono: +39 123 456 7890</p>
+        <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+      </div>
+      <div class="footer-section">
+        <h4>Seguici</h4>
+        <div class="social-links">
+          <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+          <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+      <div class="footer-section">
+        <h4>Informazioni</h4>
+        <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+    </div>
+  </footer>
+  <script src="/js/dropdown.js"></script>
+  <script src="/js/popup-manager.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('🔧 Inizializzazione dealer_detail.html');
+
+      // Funzione per cambiare l'immagine principale del dealer
+      window.changeMainImage = function (thumbnail) {
+        const mainImage = document.querySelector('.main-image-container img');
+        if (mainImage && thumbnail) {
+          mainImage.src = thumbnail.src;
+          mainImage.alt = thumbnail.alt;
+          console.log('📸 Immagine principale cambiata');
+        }
+      };
+
+      // Funzioni per il carousel dei popup auto
+      window.showImage = function (thumbnail, event) {
+        if (event) event.stopPropagation();
+
+        const carousel = thumbnail.closest('.carousel');
+        const items = carousel.querySelectorAll('.carousel-item');
+        const thumbnails = carousel.querySelectorAll('.carousel-thumbnails img');
+
+        // Trova l'indice della thumbnail cliccata
+        const clickedIndex = Array.from(thumbnails).indexOf(thumbnail);
+
+        if (clickedIndex !== -1) {
+          // Rimuovi active da tutti gli elementi
+          items.forEach(item => item.classList.remove('active'));
+          thumbnails.forEach(thumb => thumb.classList.remove('active'));
+
+          // Aggiungi active agli elementi correnti
+          if (items[clickedIndex]) items[clickedIndex].classList.add('active');
+          thumbnail.classList.add('active');
+
+          console.log(`📸 Immagine carousel cambiata a indice: ${clickedIndex}`);
+        }
+      };
+
+      window.prevImage = function (event) {
+        if (event) event.stopPropagation();
+
+        const button = event.target.closest('.carousel-control-prev');
+        const carousel = button.closest('.carousel');
+        const items = carousel.querySelectorAll('.carousel-item');
+        const thumbnails = carousel.querySelectorAll('.carousel-thumbnails img');
+
+        // Trova l'indice corrente
+        let currentIndex = Array.from(items).findIndex(item => item.classList.contains('active'));
+
+        // Calcola il nuovo indice (ciclo all'indietro)
+        const newIndex = currentIndex >= 0 ? currentIndex - 1 : items.length - 1;
+
+        // Aggiorna le classi active
+        items.forEach(item => item.classList.remove('active'));
+        thumbnails.forEach(thumb => thumb.classList.remove('active'));
+
+        if (items[newIndex]) items[newIndex].classList.add('active');
+        if (thumbnails[newIndex]) thumbnails[newIndex].classList.add('active');
+
+        console.log(`⬅️ Immagine precedente: ${newIndex}`);
+      };
+
+      window.nextImage = function (event) {
+        if (event) event.stopPropagation();
+
+        const button = event.target.closest('.carousel-control-next');
+        const carousel = button.closest('.carousel');
+        const items = carousel.querySelectorAll('.carousel-item');
+        const thumbnails = carousel.querySelectorAll('.carousel-thumbnails img');
+
+        // Trova l'indice corrente
+        let currentIndex = Array.from(items).findIndex(item => item.classList.contains('active'));
+
+        // Calcola il nuovo indice (ciclo in avanti)
+        const newIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+
+        // Aggiorna le classi active
+        items.forEach(item => item.classList.remove('active'));
+        thumbnails.forEach(thumb => thumb.classList.remove('active'));
+
+        if (items[newIndex]) items[newIndex].classList.add('active');
+        if (thumbnails[newIndex]) thumbnails[newIndex].classList.add('active');
+
+        console.log(`➡️ Immagine successiva: ${newIndex}`);
+      };
+
+      // Gestione apertura popup dettagli auto - VERSIONE CORRETTA
+      document.addEventListener('click', function (event) {
+        const viewDetailsButton = event.target.closest('.view-details');
+
+        if (viewDetailsButton) {
+          event.preventDefault();
+          const productId = viewDetailsButton.getAttribute('data-id');
+          const popup = document.getElementById(`popup-${productId}`);
+
+          if (popup) {
+            console.log(`🔧 Apertura popup dettagli auto ID: ${productId}`);
+
+            // Chiudi tutti gli altri popup aperti
+            document.querySelectorAll('.car-details-popup').forEach(p => {
+              p.classList.remove('show');
+              p.classList.remove('active');
+              p.setAttribute('aria-hidden', 'true');
+            });
+
+            // Apri il popup specifico
+            popup.classList.add('show');
+            popup.classList.add('active');
+            popup.setAttribute('aria-hidden', 'false');
+
+            // Blocca lo scroll del body
+            document.body.style.overflow = 'hidden';
+
+            // Assicurati che la prima immagine sia attiva
+            const firstItem = popup.querySelector('.carousel-item');
+            const firstThumb = popup.querySelector('.carousel-thumbnails img');
+
+            if (firstItem && firstThumb) {
+              // Reset di tutte le immagini
+              popup.querySelectorAll('.carousel-item').forEach(item => item.classList.remove('active'));
+              popup.querySelectorAll('.carousel-thumbnails img').forEach(thumb => thumb.classList.remove('active'));
+
+              // Attiva la prima
+              firstItem.classList.add('active');
+              firstThumb.classList.add('active');
+            }
+
+            console.log(`✅ Popup ${productId} aperto con successo`);
+
+          } else {
+            console.error(`❌ Popup popup-${productId} non trovato`);
+          }
+        }
+      });
+
+      // Gestione chiusura popup con bottone X
+      document.addEventListener('click', function (event) {
+        const closeButton = event.target.closest('.close-popup');
+
+        if (closeButton) {
+          const popup = closeButton.closest('.car-details-popup');
+          if (popup) {
+            console.log(`🔴 Chiusura popup tramite bottone X: ${popup.id}`);
+            popup.classList.remove('show');
+            popup.classList.remove('active');
+            popup.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+          }
+        }
+      });
+
+      // Gestione chiusura popup con click fuori
+      document.addEventListener('click', function (event) {
+        if (event.target.classList.contains('car-details-popup')) {
+          console.log(`🔴 Chiusura popup tramite click fuori: ${event.target.id}`);
+          event.target.classList.remove('show');
+          event.target.classList.remove('active');
+          event.target.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      });
+
+      // Gestione chiusura popup con tasto ESC
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+          const openPopup = document.querySelector('.car-details-popup.show');
+          if (openPopup) {
+            console.log(`🔴 Chiusura popup tramite ESC: ${openPopup.id}`);
+            openPopup.classList.remove('show');
+            openPopup.classList.remove('active');
+            openPopup.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+          }
+        }
+      });
+
+      console.log('✅ dealer_detail.html inizializzato completamente!');
+    });
+  </script>
+</body>
+
+</html>

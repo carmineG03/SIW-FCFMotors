@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Manutenzione Admin - FCF Motors</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/alerts.css">
+    <link rel="stylesheet" href="/css/maintenance.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body class="maintenance-page">
+
+    <header id="main-header">
+        <div class="header-left">
+            <a href="/" class="logo-link">
+                <div class="logo-container">
+                    <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo" />
+                </div>
+            </a>
+            <div class="title-container">
+                <h1 class="main-title">FCF MOTORS</h1>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="dropdown">
+                <button class="dropdown-toggle" aria-label="Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                    <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                    <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                    <a th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="page-header">
+                <h1>Manutenzione Admin</h1>
+                <p>Gestisci tutti gli aspetti del sistema FCF Motors</p>
+            </div>
+
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+            <!-- Sezione 1: Gestione Auto -->
+            <div class="maintenance-section">
+                <h2><i class="fas fa-car"></i> Gestione Auto</h2>
+                <div th:if="${products != null and !#lists.isEmpty(products)}" class="products-list">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Proprietario</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="product : ${products}">
+                                    <td th:text="${product.id}"></td>
+                                    <td th:text="${product.brand + ' ' + product.model}"></td>
+                                    <td th:text="${product.seller?.username}"></td>
+                                    <td>
+                                        <button class="maintenance-btn btn-primary" th:data-id="${product.id}"
+                                            th:data-description="${product.description}"
+                                            th:data-price="${product.price}" th:data-category="${product.category}"
+                                            th:data-brand="${product.brand}" th:data-model="${product.model}"
+                                            th:data-mileage="${product.mileage}" th:data-year="${product.year}"
+                                            th:data-fuel="${product.fuelType}"
+                                            th:data-transmission="${product.transmission}"
+                                            onclick="openEditProductPopup(this)">
+                                            <i class="fas fa-edit"></i> Modifica
+                                        </button>
+                                        <form th:action="@{/admin/product/{id}/delete(id=${product.id})}" method="post"
+                                            style="display:inline;">
+                                            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                                            <input type="hidden" name="id" th:value="${product.id}" />
+                                            <button type="submit" class="maintenance-btn btn-danger"
+                                                onclick="return confirm('Sei sicuro di voler eliminare questo prodotto?');">
+                                                <i class="fas fa-trash"></i> Elimina
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div th:if="${products == null or #lists.isEmpty(products)}" class="empty-state">
+                    <i class="fas fa-car-crash"></i>
+                    <p>Nessun prodotto presente.</p>
+                </div>
+            </div>
+
+            <!-- Sezione 2: Gestione Concessionari -->
+            <div class="maintenance-section">
+                <h2><i class="fas fa-building"></i> Gestione Concessionari</h2>
+                <div th:if="${dealers != null and !#lists.isEmpty(dealers)}" class="dealers-list">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Indirizzo</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="dealer : ${dealers}">
+                                    <td th:text="${dealer.id}"></td>
+                                    <td th:text="${dealer.name}"></td>
+                                    <td th:text="${dealer.address}"></td>
+                                    <td>
+                                        <button class="maintenance-btn btn-primary" th:data-id="${dealer.id}"
+                                            th:data-name="${dealer.name}" th:data-description="${dealer.description}"
+                                            th:data-address="${dealer.address}" th:data-email="${dealer.email}"
+                                            th:data-phone="${dealer.phone}" onclick="openEditDealerPopup(this)">
+                                            <i class="fas fa-edit"></i> Modifica
+                                        </button>
+                                        <form th:action="@{/admin/dealer/{id}/delete(id=${dealer.id})}" method="post"
+                                            style="display:inline;">
+                                            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                                            <input type="hidden" name="id" th:value="${dealer.id}" />
+                                            <button type="submit" class="maintenance-btn btn-danger"
+                                                onclick="return confirm('Sei sicuro di voler eliminare questo concessionario?');">
+                                                <i class="fas fa-trash"></i> Elimina
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div th:if="${dealers == null or #lists.isEmpty(dealers)}" class="empty-state">
+                    <i class="fas fa-building"></i>
+                    <p>Nessun concessionario presente.</p>
+                </div>
+            </div>
+
+            <!-- Sezione 3: Gestione Account Utenti -->
+            <div class="maintenance-section">
+                <h2><i class="fas fa-users"></i> Gestione Account Utenti</h2>
+                <div th:if="${users != null and !#lists.isEmpty(users)}" class="users-list">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Ruoli</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="user : ${users}">
+                                    <td th:text="${user.id}"></td>
+                                    <td th:text="${user.username}"></td>
+                                    <td th:text="${user.email}"></td>
+                                    <td th:text="${user.rolesString}"></td>
+                                    <td>
+                                        <form th:action="@{/admin/user/{id}/delete(id=${user.id})}" method="post"
+                                            style="display:inline;">
+                                            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                                            <input type="hidden" name="id" th:value="${user.id}" />
+                                            <button type="submit" class="maintenance-btn btn-danger"
+                                                onclick="return confirm('Sei sicuro di voler eliminare questo utente?');">
+                                                <i class="fas fa-trash"></i> Elimina
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div th:if="${users == null or #lists.isEmpty(users)}" class="empty-state">
+                    <i class="fas fa-user-slash"></i>
+                    <p>Nessun utente presente.</p>
+                </div>
+            </div>
+
+            <!-- Sezione 4: Gestione Abbonamenti -->
+            <div class="maintenance-section">
+                <h2><i class="fas fa-credit-card"></i> Gestione Abbonamenti</h2>
+                <div class="action-buttons">
+                    <button class="maintenance-btn btn-success" onclick="openAddSubscriptionPopup()">
+                        <i class="fas fa-plus"></i> Aggiungi Abbonamento
+                    </button>
+                </div>
+                <div th:if="${subscriptions != null and !#lists.isEmpty(subscriptions)}" class="subscriptions-list">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Descrizione</th>
+                                    <th>Prezzo</th>
+                                    <th>Sconto</th>
+                                    <th>Scadenza Sconto</th>
+                                    <th>Macchine in Evidenza</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="subscription : ${subscriptions}">
+                                    <td th:text="${subscription.id}"></td>
+                                    <td th:text="${subscription.name}"></td>
+                                    <td th:text="${subscription.description}"></td>
+                                    <td th:text="${subscription.price}"></td>
+                                    <td
+                                        th:text="${subscription.discount != null} ? ${subscription.discount + '%'} : '-'">
+                                    </td>
+                                    <td
+                                        th:text="${subscription.discountExpiry != null} ? ${subscription.discountExpiry} : '-'">
+                                    </td>
+                                    <td th:text="${subscription.maxFeaturedCars}"></td>
+                                    <td>
+                                        <div class="table-actions">
+                                            <button class="maintenance-btn btn-primary" th:data-id="${subscription.id}"
+                                                th:data-name="${subscription.name}"
+                                                th:data-description="${subscription.description}"
+                                                th:data-price="${subscription.price}"
+                                                th:data-discount="${subscription.discount}"
+                                                th:data-expiry="${subscription.discountExpiry}"
+                                                th:data-duration="${subscription.durationDays}"
+                                                th:data-maxcars="${subscription.maxFeaturedCars}"
+                                                onclick="openEditSubscriptionPopup(this)">
+                                                <i class="fas fa-edit"></i> Modifica
+                                            </button>
+                                            <button
+                                                th:if="${subscription.discount == null or subscription.discountExpiry == null or subscription.discountExpiry.isBefore(T(java.time.LocalDate).now())}"
+                                                class="maintenance-btn"
+                                                style="background: linear-gradient(45deg, #ffc107, #e0a800);"
+                                                th:data-id="${subscription.id}" th:data-name="${subscription.name}"
+                                                onclick="openDiscountPopup(this)">
+                                                <i class="fas fa-tag"></i> Applica Sconto
+                                            </button>
+                                            <form
+                                                th:if="${subscription.discount != null and subscription.discountExpiry != null and subscription.discountExpiry.isAfter(T(java.time.LocalDate).now())}"
+                                                th:action="@{/admin/subscription/{id}/remove-discount(id=${subscription.id})}"
+                                                method="post" style="display:inline;">
+                                                <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                                                <input type="hidden" name="id" th:value="${subscription.id}" />
+                                                <button type="submit" class="maintenance-btn btn-danger"
+                                                    onclick="return confirm('Sei sicuro di voler rimuovere lo sconto?');">
+                                                    <i class="fas fa-times"></i> Rimuovi Sconto
+                                                </button>
+                                            </form>
+                                            <form th:action="@{/admin/subscription/{id}/delete(id=${subscription.id})}"
+                                                method="post" style="display:inline;">
+                                                <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                                                <input type="hidden" name="id" th:value="${subscription.id}" />
+                                                <button type="submit" class="maintenance-btn btn-danger"
+                                                    onclick="return confirm('Sei sicuro di voler eliminare questo abbonamento?');">
+                                                    <i class="fas fa-trash"></i> Elimina
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div th:if="${subscriptions == null or #lists.isEmpty(subscriptions)}" class="empty-state">
+                    <i class="fas fa-credit-card"></i>
+                    <p>Nessun abbonamento presente.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL PER MODIFICA PRODOTTO -->
+    <div id="editProductPopup" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePopup('editProductPopup')">&times;</span>
+            <h2>Modifica Prodotto</h2>
+            <form id="editProductForm" class="maintenance-form" method="post">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                <input type="hidden" id="editProductId" name="id" />
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="editProductDescription"><i class="fas fa-align-left"></i> Descrizione</label>
+                        <textarea id="editProductDescription" name="description"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editProductPrice"><i class="fas fa-euro-sign"></i> Prezzo</label>
+                        <input type="number" step="0.01" id="editProductPrice" name="price" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editProductCategory"><i class="fas fa-tags"></i> Categoria</label>
+                        <input type="text" id="editProductCategory" name="category" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editProductBrand"><i class="fas fa-industry"></i> Marca</label>
+                        <input type="text" id="editProductBrand" name="brand" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editProductModel"><i class="fas fa-car"></i> Modello</label>
+                        <input type="text" id="editProductModel" name="model" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editProductMileage"><i class="fas fa-tachometer-alt"></i> Chilometraggio</label>
+                        <input type="number" id="editProductMileage" name="mileage" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editProductYear"><i class="fas fa-calendar"></i> Anno</label>
+                        <input type="number" id="editProductYear" name="year" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editProductFuelType"><i class="fas fa-gas-pump"></i> Carburante</label>
+                        <input type="text" id="editProductFuelType" name="fuelType" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editProductTransmission"><i class="fas fa-cogs"></i> Trasmissione</label>
+                        <input type="text" id="editProductTransmission" name="transmission" />
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="maintenance-btn btn-primary">Salva Modifiche</button>
+                    <button type="button" class="maintenance-btn btn-secondary"
+                        onclick="closePopup('editProductPopup')">Annulla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PER MODIFICA CONCESSIONARIO -->
+    <div id="editDealerPopup" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePopup('editDealerPopup')">&times;</span>
+            <h2>Modifica Concessionario</h2>
+            <form id="editDealerForm" class="maintenance-form" method="post">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                <input type="hidden" id="editDealerId" name="id" />
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="editDealerName"><i class="fas fa-building"></i> Nome</label>
+                        <input type="text" id="editDealerName" name="name" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="editDealerDescription"><i class="fas fa-align-left"></i> Descrizione</label>
+                        <textarea id="editDealerDescription" name="description"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editDealerAddress"><i class="fas fa-map-marker-alt"></i> Indirizzo</label>
+                        <input type="text" id="editDealerAddress" name="address" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDealerEmail"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="editDealerEmail" name="email" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editDealerPhone"><i class="fas fa-phone"></i> Telefono</label>
+                        <input type="tel" id="editDealerPhone" name="phone" />
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="maintenance-btn btn-primary">Salva Modifiche</button>
+                    <button type="button" class="maintenance-btn btn-secondary"
+                        onclick="closePopup('editDealerPopup')">Annulla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PER AGGIUNGI ABBONAMENTO -->
+    <div id="addSubscriptionPopup" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePopup('addSubscriptionPopup')">&times;</span>
+            <h2>Aggiungi Abbonamento</h2>
+            <form action="/admin/subscription/add" class="maintenance-form" method="post">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="addSubscriptionName"><i class="fas fa-tag"></i> Nome</label>
+                        <input type="text" id="addSubscriptionName" name="name" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="addSubscriptionDescription"><i class="fas fa-align-left"></i> Descrizione</label>
+                        <textarea id="addSubscriptionDescription" name="description" required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="addSubscriptionPrice"><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
+                        <input type="number" step="0.01" id="addSubscriptionPrice" name="price" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="addSubscriptionDuration"><i class="fas fa-calendar-days"></i> Durata
+                            (giorni)</label>
+                        <input type="number" id="addSubscriptionDuration" name="durationDays" min="1" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="addSubscriptionMaxCars"><i class="fas fa-star"></i> Macchine in Evidenza Max</label>
+                        <input type="number" id="addSubscriptionMaxCars" name="maxFeaturedCars" min="0" required />
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="maintenance-btn btn-success">Aggiungi</button>
+                    <button type="button" class="maintenance-btn btn-secondary"
+                        onclick="closePopup('addSubscriptionPopup')">Annulla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PER MODIFICA ABBONAMENTO -->
+    <div id="editSubscriptionPopup" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePopup('editSubscriptionPopup')">&times;</span>
+            <h2>Modifica Abbonamento</h2>
+            <form id="editSubscriptionForm" class="maintenance-form" method="post">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                <input type="hidden" id="editSubscriptionId" name="id" />
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="editSubscriptionName"><i class="fas fa-tag"></i> Nome</label>
+                        <input type="text" id="editSubscriptionName" name="name" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="editSubscriptionDescription"><i class="fas fa-align-left"></i> Descrizione</label>
+                        <textarea id="editSubscriptionDescription" name="description" required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editSubscriptionPrice"><i class="fas fa-euro-sign"></i> Prezzo (€)</label>
+                        <input type="number" step="0.01" id="editSubscriptionPrice" name="price" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editSubscriptionDuration"><i class="fas fa-calendar-days"></i> Durata
+                            (giorni)</label>
+                        <input type="number" id="editSubscriptionDuration" name="durationDays" min="1" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editSubscriptionMaxCars"><i class="fas fa-star"></i> Macchine in Evidenza
+                            Max</label>
+                        <input type="number" id="editSubscriptionMaxCars" name="maxFeaturedCars" min="0" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editSubscriptionDiscount"><i class="fas fa-percent"></i> Sconto Attuale (%)</label>
+                        <input type="number" step="0.01" id="editSubscriptionDiscount" name="discount" readonly
+                            style="background: rgba(255,255,255,0.05);" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editSubscriptionDiscountExpiry"><i class="fas fa-clock"></i> Scadenza Sconto</label>
+                        <input type="date" id="editSubscriptionDiscountExpiry" name="discountExpiry" readonly
+                            style="background: rgba(255,255,255,0.05);" />
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="maintenance-btn btn-primary">Salva</button>
+                    <button type="button" class="maintenance-btn btn-secondary"
+                        onclick="closePopup('editSubscriptionPopup')">Annulla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PER APPLICA SCONTO -->
+    <div id="discountPopup" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePopup('discountPopup')">&times;</span>
+            <h2>Applica Sconto</h2>
+            <form id="discountForm" class="maintenance-form" method="post">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <p style="text-align: center; font-size: 1.1rem; margin-bottom: 20px;">
+                            Applica sconto a: <strong id="discountSubscriptionName" style="color: #F5A623;"></strong>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="discountAmount"><i class="fas fa-percent"></i> Sconto (%)</label>
+                        <input type="number" id="discountAmount" name="discount" step="0.01" min="0" max="100"
+                            required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="discountExpiry"><i class="fas fa-calendar"></i> Scadenza Sconto</label>
+                        <input type="date" id="discountExpiry" name="discountExpiry" required />
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="maintenance-btn"
+                        style="background: linear-gradient(45deg, #ffc107, #e0a800);">Applica Sconto</button>
+                    <button type="button" class="maintenance-btn btn-secondary"
+                        onclick="closePopup('discountPopup')">Annulla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Navigazione</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Trova Auto</a></li>
+                    <li><a href="/dealers">Concessionari</a></li>
+                    <li><a href="/cart">Carrello</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contatti</h4>
+                <p>Email: info@fcfmotors.com</p>
+                <p>Telefono: +39 123 456 7890</p>
+                <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+            </div>
+            <div class="footer-section">
+                <h4>Informazioni</h4>
+                <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+    <script src="/js/dropdown.js"></script>
+    <script src="/js/popup-manager.js"></script>
+</body>
+</html>

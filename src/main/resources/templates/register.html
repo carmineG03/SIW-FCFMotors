@@ -1,35 +1,99 @@
-<html>
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glassmorphism Registration Form</title>
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/allert.css">
+    <link rel="stylesheet" href="/css/auth.css"> 
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+<header id="main-header">
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
+            </div>
+        </a>
+        <div class="title-container">
+            <h1 class="main-title">FCF MOTORS</h1>
+        </div>
+    </div>
+    <div class="nav-container">
+        <div class="nav-bar">
+        </div>
+    </div>
+    <div class="header-right">
+        <div class="dropdown">
+            <button class="dropdown-toggle" aria-label="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu">
+                <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+            </div>
+        </div>
+    </div>
+</header>
+
 <div class="wrapper">
-    <form th:action="@{/register}" th:object="${user}" method="post">
-        <h2>Registration Form</h2>
+    <form th:action="@{/register}" th:object="${user}" method="post" class="auth-form">
+        <h2>Registrazione</h2>
         <div class="input-field">
             <input type="text" th:field="*{username}" required>
-            <label>Enter your username</label>
+            <label>Inserisci il tuo username</label>
         </div>
         <div class="input-field">
             <input type="email" th:field="*{email}" required>
-            <label>Enter your email</label>
+            <label>Inserisci la tua email</label>
         </div>
         <div class="input-field">
             <input type="password" th:field="*{password}" required>
-            <label>Enter your password</label>
+            <label>Inserisci la tua password</label>
         </div>
-        <button type="submit">Register</button>
+        <div class="input-field">
+            <input type="password" th:field="*{confirmPassword}" required>
+            <label>Conferma password</label>
+        </div>
+        <button type="submit">Registrati</button>
         <div class="login">
-            <p>Already have an account\? <a th:href="@{/login}">Login</a></p>
+            <p>Hai gia un account? <a th:href="@{/login}">Login</a></p>
         </div>
     </form>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
     <a th:href="@{/}" class="icon-button"><i class="fas fa-arrow-left"></i></a>
 </div>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Navigazione</h4>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Trova Auto</a></li>
+                <li><a href="/dealers">Concessionari</a></li>
+                <li><a href="/cart">Carrello</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contatti</h4>
+            <p>Email: info@fcfmotors.com</p>
+            <p>Telefono: +39 123 456 7890</p>
+            <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+        </div>
+        <div class="footer-section">
+            <h4>Informazioni</h4>
+            <p>FCF Motors offre una vasta gamma di auto nuove e usate. Scopri la tua prossima auto con noi!</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+    </div>
+</footer>
+<script src="/js/dropdown.js"></script>
 </body>
 </html>

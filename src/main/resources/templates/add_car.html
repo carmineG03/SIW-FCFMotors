@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Aggiungi Auto - FCF Motors</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/alerts.css">
+    <link rel="stylesheet" href="/css/maintenance.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap">
+</head>
+
+<body class="maintenance-page">
+
+<header id="main-header">
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-container">
+                <img th:src="@{/image/logo1.png}" alt="FCF Motors Logo" class="logo"/>
+            </div>
+        </a>
+        <div class="title-container">
+            <h1 class="main-title">FCF MOTORS</h1>
+        </div>
+    </div>
+    <div class="header-right">
+        <div class="dropdown">
+            <button class="dropdown-toggle" aria-label="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu">
+                <a th:href="@{/products}"><i class="fas fa-car"></i> Trova Auto</a>
+                <a th:href="@{/dealers}"><i class="fas fa-map-marker-alt"></i> Concessionari</a>
+                <a th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Carrello</a>
+                <a th:href="@{/account}"><i class="fas fa-user"></i> Account</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-car-side"></i> Aggiungi la Tua Auto</h1>
+            <p>Compila tutti i campi per aggiungere la tua auto al sistema FCF Motors</p>
+        </div>
+
+        <!-- Messaggi di feedback -->
+        <div th:if="${param.error}" class="alert alert-danger">
+            <strong><i class="fas fa-exclamation-triangle"></i> Errore:</strong>
+            <span th:switch="${param.error}">
+                <span th:case="'already_has_car'">Hai già una macchina associata!</span>
+                <span th:case="'no_images'">Devi caricare almeno un'immagine!</span>
+                <span th:case="'missing_brand'">La marca è obbligatoria!</span>
+                <span th:case="'missing_model'">Il modello è obbligatorio!</span>
+                <span th:case="'missing_category'">La categoria è obbligatoria!</span>
+                <span th:case="'missing_fuel_type'">Il tipo di carburante è obbligatorio!</span>
+                <span th:case="'missing_transmission'">La trasmissione è obbligatoria!</span>
+                <span th:case="'missing_description'">La descrizione è obbligatoria!</span>
+                <span th:case="'invalid_price'">Il prezzo deve essere maggiore di 0!</span>
+                <span th:case="'invalid_year'">Anno non valido!</span>
+                <span th:case="'invalid_mileage'">Chilometraggio non valido!</span>
+                <span th:case="'no_valid_images'">Nessuna immagine valida processata!</span>
+                <span th:case="'add_failed'">Impossibile aggiungere l'auto!</span>
+                <span th:case="*">Si è verificato un errore!</span>
+            </span>
+        </div>
+
+    
+        <div class="maintenance-section">
+            <form th:action="@{/private/add}" method="post" enctype="multipart/form-data" id="carForm" class="maintenance-form">
+                <!-- CSRF Token -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <!-- Sezione Informazioni Base -->
+                <div class="form-section">
+                    <h3><i class="fas fa-info-circle"></i> Informazioni Base</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="brand"><i class="fas fa-industry"></i> Marca *</label>
+                            <input type="text" id="brand" name="brand" required maxlength="50" placeholder="Es. BMW, Audi, Ford..."/>
+                        </div>
+                        <div class="form-group">
+                            <label for="model"><i class="fas fa-car"></i> Modello *</label>
+                            <input type="text" id="model" name="model" required maxlength="50" placeholder="Es. Serie 3, A4, Focus..."/>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="category"><i class="fas fa-tags"></i> Categoria *</label>
+                            <select id="category" name="category" required>
+                                <option value="">Seleziona categoria</option>
+                                <option value="City Car">City Car</option>
+                                <option value="Utilitaria">Utilitaria</option>
+                                <option value="Berlina">Berlina</option>
+                                <option value="Station Wagon">Station Wagon</option>
+                                <option value="SUV">SUV</option>
+                                <option value="Crossover">Crossover</option>
+                                <option value="Coupé">Coupé</option>
+                                <option value="Cabrio">Cabrio</option>
+                                <option value="Monovolume">Monovolume</option>
+                                <option value="Pick-up">Pick-up</option>
+                                <option value="Sportiva">Sportiva</option>
+                                <option value="Elettrica">Elettrica</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="price"><i class="fas fa-euro-sign"></i> Prezzo (€) *</label>
+                            <input type="number" id="price" name="price" required min="1" max="999999" step="0.01" placeholder="25000"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sezione Dettagli Tecnici -->
+                <div class="form-section">
+                    <h3><i class="fas fa-cogs"></i> Dettagli Tecnici</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="year"><i class="fas fa-calendar"></i> Anno *</label>
+                            <input type="number" id="year" name="year" required min="1900" max="2030" placeholder="2020"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="mileage"><i class="fas fa-tachometer-alt"></i> Chilometraggio *</label>
+                            <input type="number" id="mileage" name="mileage" required min="0" max="9999999" placeholder="50000"/>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fuelType"><i class="fas fa-gas-pump"></i> Carburante *</label>
+                            <select id="fuelType" name="fuelType" required>
+                                <option value="">Seleziona carburante</option>
+                                <option value="Benzina">Benzina</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Elettrico">Elettrico</option>
+                                <option value="Ibrido">Ibrido</option>
+                                <option value="GPL">GPL</option>
+                                <option value="Metano">Metano</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="transmission"><i class="fas fa-cogs"></i> Trasmissione *</label>
+                            <select id="transmission" name="transmission" required>
+                                <option value="">Seleziona trasmissione</option>
+                                <option value="Manuale">Manuale</option>
+                                <option value="Automatica">Automatica</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sezione Descrizione -->
+                <div class="form-section">
+                    <h3><i class="fas fa-align-left"></i> Descrizione</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="description"><i class="fas fa-edit"></i> Descrizione Auto *</label>
+                            <textarea id="description" name="description" required maxlength="2000" rows="5" 
+                                      placeholder="Descrivi la tua auto: condizioni generali, optional installati, storia del veicolo, eventuali danni o riparazioni, motivo della vendita, ecc..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sezione Upload Immagini -->
+                <div class="form-section images-section">
+                    <h3><i class="fas fa-images"></i> Immagini Auto</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <div class="file-upload">
+                                <input type="file" id="images" name="images" multiple accept="image/*" required onchange="previewImages(this)"/>
+                                <label for="images">
+                                    <i class="fas fa-cloud-upload-alt"></i><br>
+                                    Clicca per selezionare le immagini della tua auto<br>
+                                    <small>Minimo 1, massimo 10 immagini - Formati: JPG, PNG, GIF (max 5MB ciascuna)</small>
+                                </label>
+                            </div>
+                            
+                            <!-- Preview Container -->
+                            <div id="preview-container" class="preview-container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="maintenance-btn btn-success" id="submitBtn">
+                        <i class="fas fa-plus"></i> Aggiungi Auto
+                        <span class="spinner" id="submitSpinner"></span>
+                    </button>
+                    <a href="/account" class="maintenance-btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Torna al Profilo
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Navigazione</h4>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Trova Auto</a></li>
+                <li><a href="/dealers">Concessionari</a></li>
+                <li><a href="/cart">Carrello</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Servizi</h4>
+            <ul>
+                <li><a href="/services">Finanziamenti</a></li>
+                <li><a href="/services">Assicurazioni</a></li>
+                <li><a href="/services">Garanzie</a></li>
+                <li><a href="/services">Assistenza</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Supporto</h4>
+            <ul>
+                <li><a href="/contact">Contattaci</a></li>
+                <li><a href="/help">Centro Aiuto</a></li>
+                <li><a href="/privacy">Privacy Policy</a></li>
+                <li><a href="/terms">Termini di Servizio</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contatti</h4>
+            <p>Email: info@fcfmotors.com</p>
+            <p>Telefono: +39 123 456 7890</p>
+            <p>Indirizzo: Via Auto, 123, Milano, Italia</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 FCF Motors. Tutti i diritti riservati.</p>
+    </div>
+</footer>
+<script src="/js/add-car.js"></script>
+<script src="/js/dropdown.js"></script>
+<script src="/js/popup-manager.js"></script>
+</body>
+</html>

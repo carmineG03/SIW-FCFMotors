@@ -1,0 +1,373 @@
+/* ===========================================
+   MESSAGING PAGES STYLES CSS
+   (private_messages, send_private_message, quote_requests)
+   =========================================== */
+
+/* Stile generale per la pagina */
+body {
+    background: linear-gradient(135deg, #010A33, #003087);
+    color: #FFFFFF;
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Main content area */
+main {
+    min-height: 100vh;
+    padding: 20px 0;
+}
+
+.wrapperM {
+    max-width: 1200px; 
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Quote requests container */
+.quote-requests-section,
+.messaging-section,
+.send-message-section {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 12px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.send-message-section {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.quote-requests-section h2,
+.messaging-section h2,
+.send-message-section h2 {
+    color: #F5A623;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Layout a due colonne */
+.quote-requests-container,
+.messages-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.column {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.column:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.column h3 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #F5A623;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Stile per le card delle richieste */
+.quote-request-card,
+.message-card,
+.message-form-card {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.message-form-card {
+    padding: 30px;
+}
+
+.quote-request-card:hover,
+.message-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.quote-request-card::before,
+.message-card::before,
+.message-form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #F5A623, #E59400);
+}
+
+.quote-request-card .info-row,
+.message-card .info-row,
+.message-form-card .info-row {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.message-form-card .info-row {
+    margin-bottom: 15px;
+}
+
+.quote-request-card .info-row .label,
+.message-card .info-row .label,
+.message-form-card .info-row .label {
+    font-weight: 600;
+    margin-right: 10px;
+    color: #F5A623;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    min-width: 120px;
+    flex-shrink: 0;
+}
+
+.quote-request-card .info-row .value,
+.message-card .info-row .value,
+.message-form-card .info-row .value {
+    color: #FFFFFF;
+    word-break: break-word;
+    flex: 1;
+}
+
+.message-form-card .info-row .value {
+    font-size: 1.1rem;
+}
+
+/* Form di risposta */
+.respond-quote-form,
+.messaging-form,
+.send-message-form {
+    width: 100%;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.send-message-form {
+    margin-top: 25px;
+    padding-top: 20px;
+}
+
+.respond-quote-form .input-field,
+.messaging-form .input-field,
+.send-message-form .input-field {
+    margin-bottom: 15px;
+}
+
+.send-message-form .input-field {
+    margin-bottom: 20px;
+}
+
+.respond-quote-form label,
+.messaging-form label,
+.send-message-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #F5A623;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.send-message-form label {
+    font-size: 1rem;
+}
+
+.respond-quote-form textarea,
+.messaging-form textarea,
+.send-message-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #FFFFFF;
+    resize: vertical;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.send-message-form textarea {
+    padding: 15px;
+    font-size: 1rem;
+    min-height: 120px;
+}
+
+.respond-quote-form textarea:focus,
+.messaging-form textarea:focus,
+.send-message-form textarea:focus {
+    border-color: #F5A623;
+    background: rgba(0, 0, 0, 0.5);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.2);
+}
+
+.respond-quote-form textarea::placeholder,
+.messaging-form textarea::placeholder,
+.send-message-form textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.respond-quote-form .modern-button,
+.messaging-form .modern-button,
+.send-message-form .modern-button {
+    background: linear-gradient(45deg, #F5A623, #E59400);
+    color: #FFFFFF;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    font-weight: 600;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.95rem;
+}
+
+.send-message-form .modern-button {
+    padding: 15px 25px;
+    gap: 10px;
+    font-size: 1rem;
+}
+
+.respond-quote-form .modern-button:hover,
+.messaging-form .modern-button:hover,
+.send-message-form .modern-button:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(45deg, #E59400, #F5A623);
+    box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
+}
+
+/* Messaggio di assenza richieste */
+.no-requests,
+.no-messages {
+    text-align: center;
+    color: #FFFFFF;
+    font-size: 1.1rem;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.no-requests-icon,
+.no-messages-icon {
+    font-size: 2.5rem;
+    color: #F5A623;
+    margin-bottom: 15px;
+    display: block;
+}
+
+/* Back button */
+.back-button-container {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.back-button {
+    background: linear-gradient(45deg, #003087, #0059b3);
+    color: #FFFFFF;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.back-button:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(45deg, #002066, #004080);
+    box-shadow: 0 4px 15px rgba(0, 48, 135, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .quote-requests-container,
+    .messages-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .column {
+        margin-bottom: 20px;
+    }
+
+    .quote-requests-section,
+    .messaging-section,
+    .send-message-section {
+        margin: 0 10px;
+        padding: 20px;
+    }
+
+    .quote-request-card,
+    .message-card,
+    .message-form-card {
+        padding: 20px;
+    }
+
+    .quote-request-card .info-row,
+    .message-card .info-row,
+    .message-form-card .info-row {
+        flex-direction: column;
+    }
+
+    .quote-request-card .info-row .label,
+    .message-card .info-row .label,
+    .message-form-card .info-row .label {
+        min-width: auto;
+        margin-bottom: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .quote-requests-section h2,
+    .messaging-section h2,
+    .send-message-section h2 {
+        font-size: 2rem;
+    }
+
+    .column h3 {
+        font-size: 1.5rem;
+    }
+
+    .respond-quote-form .modern-button,
+    .messaging-form .modern-button,
+    .send-message-form .modern-button {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+
+    .back-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
